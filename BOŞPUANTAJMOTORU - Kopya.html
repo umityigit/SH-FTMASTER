@@ -295,118 +295,110 @@ function tarihGuncelle(){ let bas=new Date(document.getElementById('inpTarihBas'
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
 function excelTarih(s){if(!s)return null; let m=s.trim().match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); return m?m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0'):null;}
 
+// 1. TEMİZLEME FONKSİYONUNU GÜNCELLE (Daha sağlam olması için)
+function getCleanValue(html) { 
+    if(!html) return "";
+    // HTML etiketlerini, boşlukları ve satır sonlarını temizler
+    return html.replace(/<br\s*\/?>/gi, "-").replace(/&nbsp;/g, " ").replace(/<(?:.|\n)*?>/gm, '').trim().toUpperCase(); 
+}
+
+// 2. ANA HESAPLAMA MOTORUNU GÜNCELLE
 function satirHesapla(td) {
     if (!td) return;
-    let tr = td.parentElement;
-    if (!tr || tr.tagName !== 'TR') return;
+    const tr = td.closest('tr');
+    if (!tr) return;
 
-    // 1. ADIM: Anlık Renk ve Format Düzenleyici
-    // Sen hücreye yazar yazmaz rengi ve formatı kontrol eder
-    let currentVal = getCleanValue(td.innerHTML);
-    let currentInfo = getVardiyaInfo(currentVal);
-
-    // Renkleri tamamen sıfırla ve yeniden tanı
-    td.classList.remove('hucre-izin'); 
+    // --- HÜCREYE ÖZEL GÖRSEL GÜNCELLEME (Renk ve Format) ---
+    const rawVal = getCleanValue(td.innerHTML);
+    const info = getVardiyaInfo(rawVal);
     
-    // Eğer girilen değer HT, R, İ veya saat değeri 0 olan bir izin koduysa pembe yap
-    if ((currentInfo.tip === 'izin' || ["HT", "R", "İ", "Nİ"].includes(currentVal)) && currentVal !== "") {
-        // Ama eğer kullanıcı HT hücresine sayı girdiyse pembe yapma!
-        let isNumber = !isNaN(parseFloat(currentVal.replace(",", ".")));
-        if (!isNumber) {
-            td.classList.add('hucre-izin');
-        }
+    // Manuel saat girişi (Örn: "12")
+    const manuelSaat = parseFloat(rawVal.replace(",", "."));
+    const aktifSaat = (info && info.t > 0) ? info.t : (!isNaN(manuelSaat) ? manuelSaat : 0);
+
+    // RENK YÖNETİMİ: Önce pembe rengi siliyoruz.
+    td.classList.remove('hucre-izin');
+    
+    // Eğer saat 0 ise ve hücre boş değilse (Yani R, HT, İ gibi bir izin koduysa) pembe yap
+    if (aktifSaat === 0 && rawVal !== "" && rawVal !== "0") {
+        td.classList.add('hucre-izin');
     }
 
-    // Vardiya formatını (08:00-18:00) güzelleştir
-    if (currentVal.length > 5 && currentVal.includes("-")) {
-        td.innerHTML = formatliVardiya(currentVal);
+    // Uzun vardiyaları alt alta getir (Örn: 08:00-18:00)
+    if (rawVal.length > 5 && rawVal.includes("-")) {
+        td.innerHTML = formatliVardiya(rawVal);
     }
 
-    // 2. ADIM: Tüm Satırı Baştan Aşağı Yeniden Hesapla
-    // Değişkenleri her seferinde sıfırdan topluyoruz ki "artmama" sorunu olmasın
-    let totalAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, age = 0, totalFM = 0;
-    let weekHs = 0, weekHg = 0, weekHi = 0; 
+    // --- TÜM SATIRI SIFIRDAN HESAPLA (Kesin Çözüm) ---
+    let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0, tFM = 0;
+    let wHs = 0, wHg = 0, wHi = 0;
 
-    let allCells = Array.from(tr.children);
-
-    allCells.forEach((c) => {
-        // Birleştirilmiş veya gizli hücreleri geç
+    const allCells = Array.from(tr.children);
+    allCells.forEach(c => {
+        // Birleştirilmiş (gizli) hücreleri atla
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
 
-        // VARDİYA HÜCRESİ Mİ?
+        // VARDİYA HÜCRELERİ
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
-            let val = getCleanValue(c.innerHTML);
-            if (val === "" || val === "0") return;
+            const v = getCleanValue(c.innerHTML);
+            if (v === "" || v === "0") return;
 
-            let info = getVardiyaInfo(val);
+            const inf = getVardiyaInfo(v);
+            const mS = parseFloat(v.replace(",", "."));
+            const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
+
+            tAg++; // Boş olmayan her hücre 1 gün sayılır
             
-            // SAYI MI GİRİLDİ? (Örn: "12")
-            let manuelSaat = parseFloat(val.replace(",", "."));
-            let aktifSaat = info.t;
-            if (aktifSaat === 0 && !isNaN(manuelSaat)) {
-                aktifSaat = manuelSaat;
-            }
+            // Kod bazlı sayımlar
+            if (v === "RT") n_rt++;
+            else if (v === "HT" && s === 0) n_ht++;
+            else if (v === "R") n_r++;
+            else if (inf && inf.tip === "izin") n_i++;
 
-            // HAFTALIK HESAPLAMA (YEŞİL ALAN)
-            if (aktifSaat > 0) {
-                weekHs += aktifSaat;
-                weekHg += 1;
-            } else {
-                weekHi += 1;
-            }
-
-            // GENEL TOPLAMLAR (SARI ALAN)
-            totalAg++; 
-            if (val === "RT") n_rt++;
-            else if (val === "HT" && aktifSaat === 0) n_ht++; // Sadece çalışılmayan HT'leri say
-            else if (val === "R") n_r++;
-            else if (info.tip === "izin") n_i++;
-
-            if (aktifSaat > 0) {
-                age += (info.g || 0);
-                if (val === "RTÇ") n_rtc++;
+            if (s > 0) {
+                wHs += s;
+                wHg++;
+                tAge += (inf.g || 0);
+                if (v === "RTÇ") n_rtc++;
                 if (c.classList.contains('hucre-haftasonu')) n_htc++;
+            } else {
+                wHi++;
             }
         }
 
-        // HAFTA TOPLAMI (YEŞİL) HÜCRESİNE GELDİYSEK
+        // HAFTA TOPLAMI (YEŞİL) HÜCRELERİ
         if (c.classList.contains('bg-hafta')) {
-            let type = c.getAttribute('data-type');
+            const type = c.getAttribute('data-type');
             if (type === 'h-saat') {
-                c.innerText = weekHs > 0 ? weekHs : "";
-                // Her hafta 45'i kontrol et ve aşanları FM'ye ekle
-                if (weekHs > 45) {
-                    totalFM += (weekHs - 45);
-                }
-            } 
-            else if (type === 'h-gun') {
-                c.innerText = weekHg || "";
-            } 
-            else if (type === 'h-izin') {
-                c.innerText = weekHi || "";
-                // HAFTAYI SIFIRLA (Yeni haftaya geçiş)
-                weekHs = 0; weekHg = 0; weekHi = 0;
+                c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "";
+                if (wHs > 45) tFM += (wHs - 45); // 45 saati aşan her şeyi FM'ye ekle
+            } else if (type === 'h-gun') {
+                c.innerText = wHg || "";
+            } else if (type === 'h-izin') {
+                c.innerText = wHi || "";
+                // SIFIRLA (Sonraki haftaya temiz başla)
+                wHs = 0; wHg = 0; wHi = 0;
             }
         }
     });
 
-    // 3. ADIM: ÖZET PANELİNİ ŞAK DİYE GÜNCELLE
-    const s = (cls, val) => { 
-        let e = tr.querySelector(cls); 
-        if (e) e.innerText = (val === 0 || !val) ? "0" : val; 
+    // --- SAĞ TARAFTAKİ ÖZET ALANLARINI GÜNCELLE ---
+    const update = (cls, v) => {
+        const el = tr.querySelector(cls);
+        if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2));
     };
 
-    s('.s-calisma', totalAg);
-    s('.s-yol', totalAg + n_rtc);
-    s('.s-rapor', n_r);
-    s('.s-izin', n_i);
-    s('.s-ht', n_ht);
-    s('.s-rt', n_rt);
-    s('.s-rtc', n_rtc);
-    s('.s-htc', n_htc * 9); // Hafta sonu nöbetine 9 saat ekle
-    s('.s-fm', totalFM);
-    s('.s-gece', age);
-    s('.s-tgece', age);
+    update('.s-calisma', tAg);
+    update('.s-yol', tAg + n_rtc);
+    update('.s-rapor', n_r);
+    update('.s-izin', n_i);
+    update('.s-ht', n_ht);
+    update('.s-rt', n_rt);
+    update('.s-rtc', n_rtc);
+    update('.s-htc', n_htc * 9); // Hafta sonu sabit 9 saat mesai
+    update('.s-fm', tFM);
+    update('.s-gece', tAge);
+    update('.s-tgece', tAge);
 }
 
 function raporuOlustur() {
@@ -629,6 +621,7 @@ function exceleSifirKayipsizKopyala() {
 </script>
 </body>
 </html>
+
 
 
 
