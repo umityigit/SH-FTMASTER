@@ -300,25 +300,23 @@ function satirHesapla(td) {
     let tr = td.parentElement;
     if (!tr || tr.tagName !== 'TR') return;
 
-    // 1. ADIM: Sadece asıl veri giriş hücrelerini topla (Toplam hücrelerini ve gizli hücreleri ayır)
-    let allCells = Array.from(tr.children);
-    let dataCells = allCells.filter(c => c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta'));
-    
-    // Düzenlenen hücrenin içeriğini temizle (Görsel format)
+    // 1. ADIM: Hücre formatını düzelt
     if (td.classList.contains('veri-hucre')) {
         let rawVal = getCleanValue(td.innerHTML);
         td.innerHTML = formatliVardiya(rawVal);
     }
 
-    let hs = 0, hg = 0, hi = 0;
+    // 2. ADIM: Satır verilerini topla
+    let allCells = Array.from(tr.children);
     let ag = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, age = 0, totalFM = 0;
+    
+    // Geçici hafta toplamları
+    let hs = 0, hg = 0;
 
-    // 2. ADIM: Satırı baştan sona tara
     allCells.forEach((c) => {
-        // Eğer hücre birleştirilmişse veya gizliyse hesaplamaya dahil etme ama üzerinden geç
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
 
-        // EĞER BU BİR VERİ HÜCRESİ İSE (Nöbet girilen yer)
+        // SADECE VARDİYA HÜCRESİ İSE
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
             let val = getCleanValue(c.innerHTML);
             if (val === "" || val === "0") return;
@@ -342,53 +340,23 @@ function satirHesapla(td) {
             if (c.classList.contains('hucre-haftasonu') && info.t > 0) n_htc++;
         }
 
-        // EĞER BU BİR HAFTA TOPLAMI HÜCRESİ İSE (Yazma vakti geldi)
+        // HAFTA TOPLAMI HÜCRESİNE GELDİYSEK
         if (c.classList.contains('bg-hafta')) {
-            // Haftalık saat, gün veya izin olduğunu belirleyelim
-            if (c.innerText.includes("H.SAAT") || c.querySelector('.dikey-yazi')?.innerText.includes("SAAT")) {
-                // Bu bir başlıktır, geç
-            } else {
-                // Sırasıyla H.SAAT, H.GÜN ve H.İZİN hücrelerini doldur
-                // Bu mantık hücreyi doğrudan sınıfa göre bulduğu için yandaki hücreyi SİLMEZ.
-                if (hs > 0 || hg > 0 || hi > 0) {
-                   // Toplamları burada sıfırlayacağız, aşağıda hücrelere yazacağız
-                }
+            // Sınıfına göre hangi toplamı yazacağını bul
+            if (c.getAttribute('data-type') === 'h-saat') {
+                c.innerText = hs || "";
+                totalFM += Math.max(0, hs - 45);
+            } else if (c.getAttribute('data-type') === 'h-gun') {
+                c.innerText = hg || "";
+            } else if (c.getAttribute('data-type') === 'h-izin') {
+                c.innerText = ""; 
+                // Haftayı sıfırla
+                hs = 0; hg = 0;
             }
         }
     });
 
-    // 3. ADIM: Toplamları Güvenli Şekilde Yazdır (Yandaki hücreyi asla silmez)
-    // Hafta toplamlarını hücrelerin sırasına göre değil, direkt bulup yazıyoruz
-    let weekGroups = tr.querySelectorAll('.bg-hafta');
-    let groupIdx = 0;
-    let tempHS = 0, tempHG = 0;
-
-    allCells.forEach(c => {
-        if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
-        
-        if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
-            let val = getCleanValue(c.innerHTML);
-            let info = getVardiyaInfo(val);
-            tempHS += info.t;
-            tempHG += info.g;
-        }
-
-        if (c.classList.contains('bg-hafta')) {
-            // Her hafta bitiminde (bg-hafta hücresine gelindiğinde) o haftanın toplamını yaz
-            if (groupIdx % 3 === 0) { // H.SAAT hücresi
-                c.innerText = tempHS || "";
-                totalFM += Math.max(0, tempHS - 45);
-            } else if (groupIdx % 3 === 1) { // H.GÜN hücresi
-                c.innerText = tempHG || "";
-            } else if (groupIdx % 3 === 2) { // H.İZİN hücresi
-                c.innerText = ""; // İzin hesabı gerekirse buraya
-                tempHS = 0; tempHG = 0; // Haftayı sıfırla
-            }
-            groupIdx++;
-        }
-    });
-
-    // 4. ADIM: Sağ taraftaki genel özetleri güncelle
+    // 3. ADIM: Sağ taraftaki özetleri güncelle
     const s = (cls, val) => { let e = tr.querySelector(cls); if (e) e.innerText = val || "0"; };
     s('.s-calisma', ag + n_rt + n_ht + n_i + n_r);
     s('.s-yol', ag + n_rtc);
@@ -401,9 +369,6 @@ function satirHesapla(td) {
     s('.s-fm', totalFM);
     s('.s-gece', age);
     s('.s-tgece', age);
-}
-    
-    td.innerHTML = formatliVardiya(rawVal);
 }
 
 function raporuOlustur() {
@@ -451,7 +416,7 @@ function raporuOlustur() {
             <td colspan="4" style="border: none !important; text-align: left;"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/T.C._Sa%C4%9Fl%C4%B1k_Bakanl%C4%B1%C4%9F%C4%B1_Logo.png" style="height: 40px; margin-top:5px; margin-left: 10px;"></td>
             <td colspan="${days.length + Math.floor(days.length/7)*3 + HDR.length - 1}" style="border: none !important; text-align: center; vertical-align: middle;">
                 <div contenteditable="true" style="font-weight: bold; font-size: 14px; letter-spacing: 1px; margin-bottom: 2px;">.................... HASTANESİ BAŞHEKİMLİĞİ</div>
-                <div style="font-size: 10px; font-weight: bold;">GÜVENLİK BİRİMİ / SÜREKLİ İŞÇİ NÖBET LİSTESİ VE PUANTAJ CETVELİ (${str})</div>
+                <div style="font-size: 10px; font-weight: bold;">TEMİZLİK BİRİMİ / SÜREKLİ İŞÇİ NÖBET LİSTESİ VE PUANTAJ CETVELİ (${str})</div>
             </td>
             <td colspan="3" style="border: none !important; text-align: right; font-size: 10px; font-family: 'Times New Roman', serif; padding-bottom: 10px;" contenteditable="true">
                 Kodu: ............. &nbsp;&nbsp;|&nbsp;&nbsp; Yayın Tarihi: .../.../....... &nbsp;&nbsp;|&nbsp;&nbsp; Revizyon Tarihi: 0 &nbsp;&nbsp;|&nbsp;&nbsp; Revizyon No: 0 &nbsp;&nbsp;|&nbsp;&nbsp; Sayfa No/Sayısı: 1/1
@@ -462,12 +427,12 @@ function raporuOlustur() {
         days.forEach(d=>{
             let gg = String(d.getDate()).padStart(2, '0');
             let aa = String(d.getMonth() + 1).padStart(2, '0');
-            let yyyy = d.getFullYear();
             let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
-            let tamTarih = `${gg}/${aa}/${yyyy}<br><span style="font-weight:normal; font-size:5.5px">${gunAdi}</span>`;
-            let s=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; border-top:none;"><div class="dikey-tarih">${tamTarih}</div></th>`;
-            if(d.getDay()===0) s+=`<th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.SAAT</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.GÜN</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi" style="color:red">H.İZİN</div></th>`;
-            h+=s;
+            let tamTarih = `${gg}/${aa}/${d.getFullYear()}<br><span style="font-weight:normal; font-size:5.5px">${gunAdi}</span>`;
+            h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; border-top:none;"><div class="dikey-tarih">${tamTarih}</div></th>`;
+            if(d.getDay()===0) {
+                h+=`<th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.SAAT</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.GÜN</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi" style="color:red">H.İZİN</div></th>`;
+            }
         });
 
         HDR.forEach(b => { h += `<th class="bg-genel" style="border-top:none"><div class="dikey-yazi">${b.n}</div></th>`; });
@@ -477,444 +442,152 @@ function raporuOlustur() {
 
         list.forEach((p, index)=>{
             h+=`<tr><td contenteditable="true">${index + 1}</td><td contenteditable="true"></td><td class="isim-hucre" style="border-left:none; text-align:left; padding-left:3px;" contenteditable="true">${p.n}</td>`;
-            let hs=0, hg=0, hi=0;
-            let ag=0, as=0, n_rt=0, n_ht=0, n_r=0, n_i=0, n_rtc=0, n_htc=0, age=0, totalFM=0;
-
+            let hs=0, hg=0;
             days.forEach(d=>{
-                let info = getVardiyaInfo(p.data[getKey(d)]);
-                let v = info.val;
-                let isIzin = (info.tip === "izin");
-
-                if(v === "RT") n_rt++; else if(v === "HT") n_ht++; else if(v === "R") n_r++; else if(isIzin && !["RT","HT","R"].includes(v)) n_i++;
-                if(info.t > 0) { ag++; as+=info.t; age+=info.g; hs+=info.t; hg+=info.g; if(v==="RTÇ") n_rtc++; }
+                let v = p.data[getKey(d)] || "";
                 let isHS = (d.getDay()===0||d.getDay()===6);
-                if(isHS && info.t > 0) n_htc++;
-
-                let bg=isHS?'hucre-haftasonu':''; if(isIzin) bg='hucre-izin';
-                h+=`<td contenteditable="true" class="veri-hucre ${bg}" onblur="satirHesapla(this)">${formatliVardiya(v)}</td>`;
+                let info = getVardiyaInfo(v);
+                let bg=isHS?'hucre-haftasonu':''; if(info.tip==='izin') bg='hucre-izin';
+                h+=`<td contenteditable="true" class="veri-hucre ${bg}" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
                 if(d.getDay()===0){
-                    totalFM += Math.max(0, hs - 45);
-                    h+=`<th class="bg-hafta veri-hucre">${hs||""}</th><th class="bg-hafta veri-hucre">${hg||""}</th><th class="bg-hafta veri-hucre" style="color:red">${hi||""}</th>`;
-                    hs=0; hg=0; hi=0;
+                    h+=`<th class="bg-hafta veri-hucre" data-type="h-saat"></th><th class="bg-hafta veri-hucre" data-type="h-gun"></th><th class="bg-hafta veri-hucre" style="color:red" data-type="h-izin"></th>`;
                 }
             });
-
-            totalFM += Math.max(0, hs - 45);
-
-            h+=`<th class="bg-genel s-calisma">${ag+n_rt+n_ht+n_i+n_r}</th><th class="bg-genel s-yol">${ag+n_rtc}</th><th class="bg-genel s-rapor">${n_r||"0"}</th>
-            <th class="bg-genel s-izin">${n_i||"0"}</th><th class="bg-genel s-ht">${n_ht||"0"}</th><th class="bg-genel s-rt">${n_rt||"0"}</th>
-            <th class="bg-genel s-rtc">${n_rtc||"0"}</th><th class="bg-genel s-htc">${n_htc*9||"0"}</th><th class="bg-genel s-fm">${totalFM||"0"}</th>
-            <th class="bg-gece s-gece">${age||"0"}</th><th class="bg-gece s-tgece" style="border-right:none">${age||"0"}</th></tr>`;
+            HDR.forEach(b => { h += `<th class="bg-genel ${b.c}">0</th>`; });
+            h += `<th class="bg-gece s-gece">0</th><th class="bg-gece s-tgece" style="border-right:none">0</th></tr>`;
         });
 
         let colCount = 3 + days.length + Math.floor(days.length/7)*3 + HDR.length + 2;
 
         h+=`</tbody>
         <tfoot>
+            <tr><td colspan="${colCount}" style="border: none; text-align: left; padding-top: 5px;"><div style="font-size: 8px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır.</div></td></tr>
+            <tr><td colspan="${colCount}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 5px 0;">AÇIKLAMALAR</td></tr>
+            <tr><td colspan="${colCount}" style="border: 1px solid #000; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
             <tr>
-                <td colspan="${colCount}" style="border: none !important; text-align: left; padding-top: 5px;">
-                    <div style="font-size: 8px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır. Ayrıca "Gündüz Fazla Mesai Toplamı" ve "Gece Fazla Mesai Toplamı" SÜTUNUNA MANUEL OLARAK İŞLENMİŞTİR</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="${colCount}" style="border: none !important; text-align: center; font-weight: bold; font-size: 11px; padding: 5px 0;">
-                    AÇIKLAMALAR
-                </td>
-            </tr>
-            <tr>
-                <td colspan="${colCount}" style="border: 1px solid #000 !important; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true">
-                    <strong>1-</strong> (Buraya hastanenize özel açıklamalarınızı, yol parası alacak personelleri vb. yazabilirsiniz...)
-                </td>
-            </tr>
-            <tr>
-                <td colspan="${colCount}" style="border: 1px solid #000 !important; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true">
-                    <strong>2-</strong> 
-                </td>
-            </tr>
-            <tr>
-                <td colspan="${Math.floor(colCount/2)}" style="border: 1px solid #000 !important; border-right: none !important; text-align: left; font-size: 7px; padding: 4px; vertical-align: top;">
-                    <div contenteditable="true" style="margin-bottom:2px;">1-Devreden Çalışma Saati; Bir önceki ayın son artık haftasından kalan çalışma saatidir.</div>
-                    <div contenteditable="true">2-Hafta Toplamı; Çalışma saatine dahil olan mesailerin saat toplamıdır.</div>
-                </td>
-                <td colspan="${Math.ceil(colCount/2)}" style="border: 1px solid #000 !important; border-left: none !important; text-align: left; font-size: 7px; padding: 4px; vertical-align: top;">
-                    <div contenteditable="true" style="margin-bottom:2px;">9-Hafta Tatili Toplamı; Hafta sonu(HT) gün toplamı girilir.</div>
-                    <div contenteditable="true">10-Resmi Tatil(Tam Gün)(RT); Resmi Tatilde tam gün çalışan personellerin, çalışma saati girilir.</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="${Math.floor(colCount/3)}" style="border: none !important; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true">
-                    <strong>Düzenleyen</strong><br>Birim Sorumlusu<br><br><br>...................
-                </td>
-                <td colspan="${Math.floor(colCount/3)}" style="border: none !important; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true">
-                    <strong>Kontrol Eden</strong><br>İdari ve Mali İşler Müdür Yardımcısı<br><br><br>...................
-                </td>
-                <td colspan="${colCount - 2*Math.floor(colCount/3)}" style="border: none !important; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true">
-                    <strong>Onaylayan</strong><br>İdari ve Mali İşler Müdürü<br><br><br>...................
-                </td>
+                <td colspan="${Math.floor(colCount/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Düzenleyen</strong><br>Birim Sorumlusu<br><br><br>...................</td>
+                <td colspan="${Math.floor(colCount/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Kontrol Eden</strong><br>Müdür Yardımcısı<br><br><br>...................</td>
+                <td colspan="${colCount - 2*Math.floor(colCount/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Onaylayan</strong><br>Hastane Müdürü<br><br><br>...................</td>
             </tr>
         </tfoot>
         </table></div>`;
         sayfaHtml+=h;
     }
     document.getElementById('raporAlani').innerHTML = sayfaHtml;
-    document.getElementById('inpExcel').value="";
+    // Otomatik hesaplama başlat
+    document.querySelectorAll('.veri-hucre').forEach(td => satirHesapla(td));
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
 
 // ------------------------------------
 // HÜCRE BİRLEŞTİRME (MERGE) İŞLEMLERİ
 // ------------------------------------
-let isSelecting = false;
-let startCell = null;
-let selectedCells = [];
-
+let isSelecting = false; let startCell = null; let selectedCells = [];
 function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
-function getColIdx(td) {
-    let tr = td.parentNode;
-    let idx = 0;
-    for (let i = 0; i < tr.children.length; i++) {
-        if (tr.children[i] === td) return idx;
-        idx += parseInt(tr.children[i].getAttribute('colspan') || 1);
-    }
-    return idx;
-}
-function getCellAt(tr, targetColIdx) {
-    let idx = 0;
-    for (let i = 0; i < tr.children.length; i++) {
-        let cell = tr.children[i];
-        if (idx === targetColIdx) return cell;
-        idx += parseInt(cell.getAttribute('colspan') || 1);
-    }
-    return null;
-}
+function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
 
-function clearSelection() {
-    selectedCells.forEach(td => {
-        if(td) td.classList.remove('selected-cell');
-    });
-    selectedCells = [];
-}
-
+function clearSelection() { selectedCells.forEach(td => { if(td) td.classList.remove('selected-cell'); }); selectedCells = []; }
 function selectRectangle(start, end) {
-    clearSelection();
-    let r1 = getRowIdx(start), r2 = getRowIdx(end);
-    let c1 = getColIdx(start), c2 = getColIdx(end);
-    let minR = Math.min(r1, r2), maxR = Math.max(r1, r2);
-    let minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
-
-    let tbody = start.closest('tbody');
-    let rows = tbody.children;
-
+    clearSelection(); let r1 = getRowIdx(start), r2 = getRowIdx(end); let c1 = getColIdx(start), c2 = getColIdx(end);
+    let minR = Math.min(r1, r2), maxR = Math.max(r1, r2); let minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
+    let rows = start.closest('tbody').children;
     for (let r = minR; r <= maxR; r++) {
-        let tr = rows[r];
-        let tds = tr.children;
+        let tds = rows[r].children;
         for (let c = minC; c <= maxC; c++) {
-            let td = tds[c];
-            if (td && td.style.display !== 'none' && !td.hasAttribute('colspan')) {
-                td.classList.add('selected-cell');
-                selectedCells.push(td);
-            }
+            let td = tds[c]; if (td && td.style.display !== 'none' && !td.hasAttribute('colspan')) { td.classList.add('selected-cell'); selectedCells.push(td); }
         }
     }
 }
-
-document.addEventListener('mousedown', function(e) {
-    if (e.button !== 0) return; 
-    if (e.target.closest('#tableContextMenu')) return;
-
-    if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) {
-        isSelecting = true;
-        startCell = e.target;
-        clearSelection();
-        e.target.classList.add('selected-cell');
-        selectedCells.push(e.target);
-    } else clearSelection();
-});
-
-document.addEventListener('mouseover', function(e) {
-    if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target);
-});
+document.addEventListener('mousedown', function(e) { if (e.button !== 0 || e.target.closest('#tableContextMenu')) return; if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { isSelecting = true; startCell = e.target; clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } else clearSelection(); });
+document.addEventListener('mouseover', function(e) { if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target); });
 document.addEventListener('mouseup', function() { isSelecting = false; });
-
-document.addEventListener('contextmenu', function(e) {
-    if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) {
-        e.preventDefault();
-        if (!selectedCells.includes(e.target)) {
-            clearSelection();
-            e.target.classList.add('selected-cell');
-            selectedCells.push(e.target);
-        }
-        let ctxMenu = document.getElementById('tableContextMenu');
-        ctxMenu.style.display = 'block';
-        ctxMenu.style.left = e.pageX + 'px';
-        ctxMenu.style.top = e.pageY + 'px';
-    }
-});
+document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { e.preventDefault(); if (!selectedCells.includes(e.target)) { clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } let ctxMenu = document.getElementById('tableContextMenu'); ctxMenu.style.display = 'block'; ctxMenu.style.left = e.pageX + 'px'; ctxMenu.style.top = e.pageY + 'px'; } });
 
 function mergeSelectedCells() {
-    document.getElementById('tableContextMenu').style.display = 'none';
-    if (selectedCells.length <= 1) return clearSelection();
-
-    selectedCells.sort((a, b) => {
-        let rDiff = getRowIdx(a) - getRowIdx(b);
-        return rDiff !== 0 ? rDiff : getColIdx(a) - getColIdx(b);
-    });
-
-    let mainCell = selectedCells[0];
-    mergeCounter++;
-    let mergeId = "merge_" + mergeCounter;
-    
+    document.getElementById('tableContextMenu').style.display = 'none'; if (selectedCells.length <= 1) return clearSelection();
+    selectedCells.sort((a, b) => { let rDiff = getRowIdx(a) - getRowIdx(b); return rDiff !== 0 ? rDiff : getColIdx(a) - getColIdx(b); });
+    let mainCell = selectedCells[0]; let mergeId = "merge_" + Date.now();
     let isRowMerge = getRowIdx(selectedCells[0]) === getRowIdx(selectedCells[1]);
-
     if (isRowMerge) {
-        let totalColSpan = 0;
-        let mergedText = "";
-        selectedCells.forEach((td, index) => {
-            totalColSpan += parseInt(td.getAttribute('colspan') || 1);
-            let val = getCleanValue(td.innerHTML);
-            if(val !== "" && mergedText === "") mergedText = td.innerHTML; 
-            
-            if (index > 0) {
-                td.style.display = 'none';
-                td.setAttribute('data-merged-by', mergeId);
-                td.innerHTML = ""; 
-            }
-        });
-        mainCell.setAttribute('colspan', totalColSpan);
-        mainCell.setAttribute('data-merge-id', mergeId);
-        mainCell.innerHTML = mergedText;
-    } 
-    else {
-        let totalRowSpan = 0;
-        let mergedText = "";
-        selectedCells.forEach((td, index) => {
-            totalRowSpan += parseInt(td.getAttribute('rowspan') || 1);
-            let val = getCleanValue(td.innerHTML);
-            if(val !== "" && mergedText === "") mergedText = td.innerHTML; 
-
-            if (index > 0) {
-                td.style.display = 'none';
-                td.setAttribute('data-merged-by', mergeId);
-                td.innerHTML = ""; 
-            }
-        });
-        mainCell.setAttribute('rowspan', totalRowSpan);
-        mainCell.setAttribute('data-merge-id', mergeId);
-        mainCell.innerHTML = mergedText;
+        let totalColSpan = 0; let mergedText = "";
+        selectedCells.forEach((td, index) => { totalColSpan += parseInt(td.getAttribute('colspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        mainCell.setAttribute('colspan', totalColSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
+    } else {
+        let totalRowSpan = 0; let mergedText = "";
+        selectedCells.forEach((td, index) => { totalRowSpan += parseInt(td.getAttribute('rowspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        mainCell.setAttribute('rowspan', totalRowSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
     }
-
-    satirHesapla(mainCell); 
-    clearSelection();
+    satirHesapla(mainCell); clearSelection();
 }
-
-let mergeCounter = 0;
-
 function unmergeSelectedCells() {
     document.getElementById('tableContextMenu').style.display = 'none';
-    
     selectedCells.forEach(td => {
-        if (td.hasAttribute('colspan') || td.hasAttribute('rowspan')) {
-            let mergeId = td.getAttribute('data-merge-id');
-            if (mergeId) {
-                td.removeAttribute('colspan');
-                td.removeAttribute('rowspan');
-                td.removeAttribute('data-merge-id');
-                
-                let tbody = td.closest('tbody');
-                let hiddenCells = tbody.querySelectorAll(`td[data-merged-by="${mergeId}"]`);
-                
-                hiddenCells.forEach(hiddenTd => {
-                    hiddenTd.style.display = '';
-                    hiddenTd.removeAttribute('data-merged-by');
-                    satirHesapla(hiddenTd);
-                });
-            }
+        let mergeId = td.getAttribute('data-merge-id');
+        if (mergeId) {
+            td.removeAttribute('colspan'); td.removeAttribute('rowspan'); td.removeAttribute('data-merge-id');
+            td.closest('tbody').querySelectorAll(`td[data-merged-by="${mergeId}"]`).forEach(hiddenTd => { hiddenTd.style.display = ''; hiddenTd.removeAttribute('data-merged-by'); satirHesapla(hiddenTd); });
         }
     });
-    
-    if(selectedCells.length > 0) satirHesapla(selectedCells[0]);
-    clearSelection();
+    if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
 }
 
-window.onclick = function(e) { if (!e.target.closest('#tableContextMenu')) document.getElementById('tableContextMenu').style.display = 'none'; };
+// --- FİREBASE BAĞLANTISI ---
+const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-// --- SHIFTMASTER VERİTABANI BAĞLANTISI ---
-const firebaseConfig = {
-    apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ",
-    databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "shiftmaster1-7fc5f"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-// --- OTOMATİK VERİ ÇEKME MOTORU ---
 function shiftMasterdanCek() {
-    let basInput = document.getElementById('inpTarihBas').value;
-    let bitInput = document.getElementById('inpTarihBit').value;
-    
-    if(!basInput || !bitInput) return alert("Lütfen önce Başlangıç ve Bitiş tarihlerini seçin!");
-
-    let btn = document.querySelector('button[onclick="shiftMasterdanCek()"]');
-    let oldText = btn.innerHTML;
-    btn.innerHTML = "⏳ VERİLER ÇEKİLİYOR...";
-    btn.style.pointerEvents = "none";
-
-    let bas = new Date(basInput);
-    let bit = new Date(bitInput);
+    let basInput = document.getElementById('inpTarihBas').value; let bitInput = document.getElementById('inpTarihBit').value;
+    if(!basInput || !bitInput) return alert("Tarih seçin!");
+    let btn = document.querySelector('button[onclick="shiftMasterdanCek()"]'); let oldText = btn.innerHTML;
+    btn.innerHTML = "⏳ ÇEKİLİYOR..."; btn.style.pointerEvents = "none";
+    let bas = new Date(basInput); let bit = new Date(bitInput);
 
     db.ref("arsivlenmis_shiftler").once("value").then(snap => {
-        let data = snap.val();
-        if(!data) {
-            btn.innerHTML = oldText; btn.style.pointerEvents = "auto";
-            return alert("ShiftMaster'da kayıtlı hiçbir arşiv bulunamadı!");
-        }
-
+        let data = snap.val(); if(!data) return alert("Arşiv yok!");
         let personelShiftleri = {};
-
-        // ShiftMaster'daki tüm arşivleri ve tabloları tara
         Object.values(data).forEach(arsiv => {
             let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
-            
             tablolar.forEach(tablo => {
                 let tBas = new Date(tablo.startDate);
-                
                 tablo.data.forEach(satir => {
-                    let isim = satir.name.trim().toUpperCase();
-                    if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
-                    
+                    let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
                     satir.shifts.forEach((shiftObj, index) => {
-                        let suankiTarih = new Date(tBas);
-                        suankiTarih.setDate(tBas.getDate() + index);
-                        
-                        // Sadece seçili tarih aralığında olanları al
+                        let suankiTarih = new Date(tBas); suankiTarih.setDate(tBas.getDate() + index);
                         if(suankiTarih >= bas && suankiTarih <= bit) {
-                            let gun = String(suankiTarih.getDate()).padStart(2, '0');
-                            let ay = String(suankiTarih.getMonth() + 1).padStart(2, '0');
-                            let yil = suankiTarih.getFullYear();
-                            let tarihStr = `${gun}.${ay}.${yil}`;
-                            
-                            if(shiftObj.text && shiftObj.text.trim() !== "") {
-                                personelShiftleri[isim][tarihStr] = shiftObj.text;
-                            }
+                            let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
+                            if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
                         }
                     });
                 });
             });
         });
-
-        // Verileri Puantaj Motoru'nun anlayacağı Excel formatına çevir (Arka Planda)
-        let days = []; 
-        let d = new Date(bas); 
-        while(d <= bit) { 
-            let gun = String(d.getDate()).padStart(2, '0');
-            let ay = String(d.getMonth() + 1).padStart(2, '0');
-            days.push(`${gun}.${ay}.${d.getFullYear()}`);
-            d.setDate(d.getDate() + 1); 
-        }
-
+        let days = []; let d = new Date(bas); while(d <= bit) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
         let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
-        
         Object.keys(personelShiftleri).forEach(isim => {
-            let satirStr = isim;
-            days.forEach(tarih => {
-                let shift = personelShiftleri[isim][tarih] || ""; // Veri yoksa boş bırak (Motor default atayacak)
-                satirStr += "\t" + shift;
-            });
-            excelStr += satirStr + "\n";
+            let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n";
         });
-
-        // Görünmez Excel Kutusuna Yapıştır
         document.getElementById('inpExcel').value = excelStr;
-        
-        // Butonu düzelt
-        btn.innerHTML = "✅ ÇEKİLDİ VE OLUŞTURULDU";
-        setTimeout(() => { btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; }, 2000);
-
-        // RAPORU OTOMATİK OLARAK OLUŞTUR!
+        btn.innerHTML = "✅ BAŞARILI"; setTimeout(() => { btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; }, 2000);
         raporuOlustur();
-
-    }).catch(err => {
-        alert("Bağlantı hatası: İnternetinizi kontrol edin.");
-        btn.innerHTML = oldText; btn.style.pointerEvents = "auto";
-        console.error(err);
     });
 }
 
-// ------------------------------------
-// EXCEL'E KOPYALAMA SİSTEMİ (SIFIR KAYIP)
-// ------------------------------------
 function exceleSifirKayipsizKopyala() {
-    const tablolar = document.querySelectorAll('.veri-tablosu');
-    if (tablolar.length === 0) return alert("Kopyalanacak tablo yok!");
-
-    let combinedHtml = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-        <meta charset="utf-8">
-        <style>
-            table { border-collapse: collapse; font-family: 'Arial Narrow', sans-serif; }
-            th, td { border: 0.5pt solid black; text-align: center; vertical-align: middle; white-space: normal; }
-            .dikey-yazi, .dikey-tarih { mso-rotate: 90; height: 80px; }
-            .bg-hafta { background-color: #dff0d8; }
-            .bg-genel { background-color: #fcf3cf; }
-            .bg-gece { background-color: #e8daef; }
-        </style>
-    </head>
-    <body>`;
-
+    const tablolar = document.querySelectorAll('.veri-tablosu'); if (tablolar.length === 0) return;
+    let combinedHtml = `<html><head><meta charset="utf-8"><style>table { border-collapse: collapse; } th, td { border: 0.5pt solid black; text-align: center; }</style></head><body>`;
     tablolar.forEach(tablo => {
         let clone = tablo.cloneNode(true);
-        
-        let hiddenCells = clone.querySelectorAll('td[style*="display: none"]');
-        hiddenCells.forEach(cell => {
-            if(cell.parentNode) cell.parentNode.removeChild(cell);
-        });
-
-        let selected = clone.querySelectorAll('.selected-cell');
-        selected.forEach(c => c.classList.remove('selected-cell'));
-
-        combinedHtml += clone.outerHTML + "<br><br><br>"; 
+        clone.querySelectorAll('td[style*="display: none"]').forEach(c => c.remove());
+        clone.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
+        combinedHtml += clone.outerHTML + "<br><br>"; 
     });
-
     combinedHtml += "</body></html>";
-
     const blob = new Blob([combinedHtml], { type: 'text/html' });
     try {
         const data = [new ClipboardItem({ 'text/html': blob })];
-        navigator.clipboard.write(data).then(() => {
-            alert("✅ Tüm sayfa Excel uyumlu panoya kopyalandı!\n\nŞimdi Excel'i açıp CTRL+V ile yapıştırın.");
-        }).catch(err => kopyalamaYedekYontemi(combinedHtml));
-    } catch (e) {
-        kopyalamaYedekYontemi(combinedHtml);
-    }
-}
-
-function kopyalamaYedekYontemi(htmlStr) {
-    let tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlStr;
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.left = '-9999px';
-    document.body.appendChild(tempDiv);
-    
-    let range = document.createRange();
-    range.selectNodeContents(tempDiv);
-    let sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-    
-    try {
-        document.execCommand('copy');
-        alert("✅ Tüm sayfa Excel uyumlu panoya kopyalandı!\n\nŞimdi Excel'i açıp CTRL+V ile yapıştırın.");
-    } catch (err) {
-        alert("Kopyalama başarısız oldu. Tarayıcınız desteklemiyor olabilir.");
-    }
-    
-    document.body.removeChild(tempDiv);
+        navigator.clipboard.write(data).then(() => alert("✅ Kopyalandı! Excel'e yapıştırın."));
+    } catch (e) { alert("Tarayıcı hatası!"); }
 }
 </script>
-
 </body>
-
 </html>
-
-
