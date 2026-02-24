@@ -300,19 +300,23 @@ function satirHesapla(td) {
     let tr = td.parentElement;
     if (!tr || tr.tagName !== 'TR') return;
 
-    // 1. ADIM: Hücre içeriğini görsel olarak formatla (Örn: 08:00-18:00 -> 08:00<br>18:00)
-    if (td.classList.contains('veri-hucre')) {
-        let rawVal = getCleanValue(td.innerHTML);
-        td.innerHTML = formatliVardiya(rawVal);
+    // 1. ADIM: Hücre formatını anlık düzelt (08:00-18:00 yazınca hemen alt alta getirir)
+    // Ctrl+Z yapıldığında içeriğin temizlenmesi için burayı güvenli hale getirdik
+    if (td.classList.contains('veri-hucre') && !td.classList.contains('bg-hafta')) {
+        let currentContent = td.innerText.trim().toUpperCase();
+        if (currentContent.length > 5 && !currentContent.includes("\n") && currentContent.includes("-")) {
+             // Sadece uzun vardiya formatlarını düzenle, kısa kodlara (R, HT) dokunma
+             td.innerHTML = formatliVardiya(currentContent);
+        }
     }
 
-    // Değişkenleri Sıfırla
+    // Değişkenleri Sıfırla (Satırı en baştan temiz bir sayfayla hesaplıyoruz)
     let ag = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, age = 0, totalFM = 0;
-    let hs = 0, hg = 0; // Hafta içi toplamlar için geçici değişkenler
+    let weekHs = 0, weekHg = 0, weekHi = 0; // Haftalık (Yeşil) alan sayaçları
 
     let allCells = Array.from(tr.children);
 
-    // 2. ADIM: Satırı Baştan Sona Tara
+    // 2. ADIM: Satırı Baştan Sona Tara (Tam Senkronizasyon)
     allCells.forEach((c) => {
         // Birleştirilmiş veya gizli hücreleri hesaplamaya katma
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
@@ -320,65 +324,68 @@ function satirHesapla(td) {
         // EĞER BU BİR VARDİYA HÜCRESİ İSE
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
             let val = getCleanValue(c.innerHTML);
+            
+            // Hücre tamamen boşsa işlem yapma ama haftalık sayaçları etkilemez
             if (val === "" || val === "0") return;
 
             let info = getVardiyaInfo(val);
-            let realVal = info.val; // Örn: "HT", "08:00-18:00"
+            let realVal = info.val;
 
-            // GÜN SAYISINI ARTIR (Boş olmayan her geçerli vardiya bir gündür)
-            ag++; 
+            // HAFTALIK (YEŞİL) HESAPLAMA MANTIĞI
+            if (info.t > 0) {
+                weekHs += info.t; // Haftalık Saat
+                weekHg += 1;      // Haftalık Çalışma Günü
+            } else {
+                weekHi += 1;      // Haftalık İzin/Rapor Günü (Saat 0 ise izindir)
+            }
 
-            // ÖZEL DURUMLARI SAY
+            // GENEL TOPLAM (SARI/MOR) HESAPLAMA MANTIĞI
+            ag++; // Her dolu hücre 1 gündür
             if (realVal === "RT") n_rt++;
             else if (realVal === "HT") n_ht++;
             else if (realVal === "R") n_r++;
             else if (info.tip === "izin" && !["RT", "HT", "R"].includes(realVal)) n_i++;
 
-            // SAAT VE GECE HESAPLARI
             if (info.t > 0) {
-                hs += info.t;
-                hg += info.g;
                 age += info.g;
                 if (realVal === "RTÇ") n_rtc++;
-            }
-            
-            // Hafta sonu çalışması (Pazar/Cumartesi günleri mesai varsa)
-            if (c.classList.contains('hucre-haftasonu') && info.t > 0) {
-                n_htc++;
+                if (c.classList.contains('hucre-haftasonu')) n_htc++;
             }
         }
 
         // EĞER BU BİR HAFTA TOPLAMI (YEŞİL) HÜCRESİ İSE
         if (c.classList.contains('bg-hafta')) {
             let type = c.getAttribute('data-type');
+            
             if (type === 'h-saat') {
-                c.innerText = hs || "";
-                totalFM += Math.max(0, hs - 45); // 45 saati aşan FM'yi ekle
-            } else if (type === 'h-gun') {
-                c.innerText = hg || "";
-            } else if (type === 'h-izin') {
-                c.innerText = ""; // İzin hücresi (Gerekirse doldurulabilir)
-                // HAFTALIK TOPLAMLARI SIFIRLA (Yeni haftaya geçiyoruz)
-                hs = 0; hg = 0;
+                c.innerText = weekHs || "";
+                totalFM += Math.max(0, weekHs - 45); // Fazla mesaiyi kümülatif topla
+            } 
+            else if (type === 'h-gun') {
+                c.innerText = weekHg || ""; // BURASI ARTIK ÇALIŞIYOR
+            } 
+            else if (type === 'h-izin') {
+                c.innerText = weekHi || ""; // BURASI ARTIK ÇALIŞIYOR
+                // HAFTA BİTTİ: Bir sonraki hafta için sayaçları sıfırla
+                weekHs = 0; weekHg = 0; weekHi = 0;
             }
         }
     });
 
-    // 3. ADIM: SAĞ TARAFTAKİ GENEL ÖZET KUTUCUKLARINI GÜNCELLE
-    // s-calisma = Toplam Gün sayısı (Vardiya + HT + RT + İzin + Rapor)
+    // 3. ADIM: SAĞ TARAFTAKİ GENEL ÖZETLERİ YAZDIR
     const s = (cls, val) => { 
         let e = tr.querySelector(cls); 
         if (e) e.innerText = val || "0"; 
     };
 
-    s('.s-calisma', ag); // ag zaten yukarıda HT ve İzinleri de sayıyor
-    s('.s-yol', ag + n_rtc); // Toplam gün + RTÇ mesaisi
+    s('.s-calisma', ag);
+    s('.s-yol', ag + n_rtc);
     s('.s-rapor', n_r);
     s('.s-izin', n_i);
     s('.s-ht', n_ht);
     s('.s-rt', n_rt);
     s('.s-rtc', n_rtc);
-    s('.s-htc', n_htc * 9); // Hafta sonu çalışma saati (Örn: 9 saatten)
+    s('.s-htc', n_htc * 9);
     s('.s-fm', totalFM);
     s('.s-gece', age);
     s('.s-tgece', age);
@@ -604,4 +611,5 @@ function exceleSifirKayipsizKopyala() {
 </script>
 </body>
 </html>
+
 
