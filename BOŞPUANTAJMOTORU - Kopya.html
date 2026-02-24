@@ -438,57 +438,49 @@ function raporuOlustur() {
     for(let gAd in gArr) {
         let list = gArr[gAd].sort((a,b)=>a.n.localeCompare(b.n,'tr'));
         
-        // Colspan hesaplama (Hata payı bırakmamak için)
-        let totalDaysCols = days.length + Math.floor(days.length/7)*3;
-        let middleColSpan = totalDaysCols + HDR.length - 6; // Ortayı genişlettik
+        // Toplam Sütun Sayısını Hesapla (Başlığı sığdırmak için)
+        let gunSutunSayisi = days.length + (Math.floor(days.length / 7) * 3);
+        let toplamSutun = 3 + gunSutunSayisi + HDR.length + 2;
 
         let h = `<div class="sayfa"><table class="veri-tablosu" data-grup="${gAd}">
         <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim">`;
         days.forEach(d=>{ h+=`<col class="c-gun">`; if(d.getDay()===0) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
         HDR.forEach(()=>h+=`<col class="c-gun">`);
         h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
+        
         <tr>
-            <td colspan="5" style="border: none !important; text-align: left; vertical-align: middle;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/T.C._Sa%C4%9Fl%C4%B1k_Bakanl%C4%B1%C4%9F%C4%B1_Logo.png" style="height: 50px; margin: 10px;">
-            </td>
-            
-            <td colspan="${middleColSpan}" style="border: none !important; text-align: center; vertical-align: middle; position: relative; z-index: 10;">
-                <div contenteditable="true" style="font-weight: 800; font-size: 16px; letter-spacing: 1px; color: #000; margin-bottom: 5px; text-transform: uppercase;">
-                    ${gAd.toUpperCase()} BAŞHEKİMLİĞİ
+            <td colspan="${toplamSutun}" style="border: none !important; padding: 10px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    
+                    <div style="flex: 1; text-align: left;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/T.C._Sa%C4%9Fl%C4%B1k_Bakanl%C4%B1%C4%9F%C4%B1_Logo.png" style="height: 55px;">
+                    </div>
+
+                    <div style="flex: 3; text-align: center;">
+                        <div contenteditable="true" style="font-weight: 800; font-size: 16px; text-transform: uppercase; margin-bottom: 3px;">
+                            ${gAd.toUpperCase()} BAŞHEKİMLİĞİ
+                        </div>
+                        <div style="font-size: 11px; font-weight: bold; color: #333;">
+                            TEMİZLİK BİRİMİ / SÜREKLİ İŞÇİ NÖBET LİSTESİ VE PUANTAJ CETVELİ
+                        </div>
+                        <div style="font-size: 10px; font-weight: bold; margin-top: 2px;">
+                            (${str})
+                        </div>
+                    </div>
+
+                    <div style="flex: 1; text-align: right;">
+                        <table style="width: 190px; border: 1pt solid #000; border-collapse: collapse; font-family: 'Arial Narrow', sans-serif; display: inline-table; background: #fff;">
+                            <tr><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-weight: bold; font-size: 8px;">DOKÜMAN KODU:</td><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-size: 8px;" contenteditable="true">PNT.FR.01</td></tr>
+                            <tr><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-weight: bold; font-size: 8px;">YAYIN TARİHİ:</td><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-size: 8px;" contenteditable="true">${new Date().toLocaleDateString('tr-TR')}</td></tr>
+                            <tr><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-weight: bold; font-size: 8px;">REVİZYON NO:</td><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-size: 8px;" contenteditable="true">00</td></tr>
+                            <tr><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-weight: bold; font-size: 8px;">REV. TARİHİ:</td><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-size: 8px;" contenteditable="true">--/--/----</td></tr>
+                            <tr><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-weight: bold; font-size: 8px;">SAYFA NO:</td><td style="border: 0.5pt solid #000; text-align: left; padding: 1px 3px; font-size: 8px;" contenteditable="true">1/1</td></tr>
+                        </table>
+                    </div>
                 </div>
-                <div style="font-size: 11px; font-weight: bold; color: #333;">
-                    TEMİZLİK BİRİMİ / SÜREKLİ İŞÇİ NÖBET LİSTESİ VE PUANTAJ CETVELİ
-                </div>
-                <div style="font-size: 10px; font-weight: bold; margin-top: 3px;">
-                    (${str})
-                </div>
-            </td>
-            
-            <td colspan="6" style="border: none !important; vertical-align: top; padding-top: 10px; text-align: right;">
-                <table style="width: 200px; display: inline-table; border: 1pt solid #000; border-collapse: collapse; font-family: 'Arial Narrow', sans-serif; background: white;">
-                    <tr>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-weight: bold; font-size: 8px; width: 50%;">DOKÜMAN KODU:</td>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-size: 8px;" contenteditable="true">PNT.FR.01</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-weight: bold; font-size: 8px;">YAYIN TARİHİ:</td>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-size: 8px;" contenteditable="true">${new Date().toLocaleDateString('tr-TR')}</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-weight: bold; font-size: 8px;">REVİZYON NO:</td>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-size: 8px;" contenteditable="true">00</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-weight: bold; font-size: 8px;">REVİZYON TARİHİ:</td>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-size: 8px;" contenteditable="true">--/--/----</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-weight: bold; font-size: 8px;">SAYFA NO:</td>
-                        <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-size: 8px;" contenteditable="true">1/1</td>
-                    </tr>
-                </table>
             </td>
         </tr>
+
         <tr><th>S.NO</th><th>TC KİMLİK NO</th><th style="border:none;">ADI SOYADI</th>`;
         
         days.forEach(d=>{
@@ -523,17 +515,15 @@ function raporuOlustur() {
             h += `<th class="bg-gece s-gece">0</th><th class="bg-gece s-tgece" style="border-right:none">0</th></tr>`;
         });
 
-        let colCount = 3 + days.length + Math.floor(days.length/7)*3 + HDR.length + 2;
-
         h+=`</tbody>
         <tfoot>
-            <tr><td colspan="${colCount}" style="border: none; text-align: left; padding-top: 5px;"><div style="font-size: 8px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır.</div></td></tr>
-            <tr><td colspan="${colCount}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 5px 0;">AÇIKLAMALAR</td></tr>
-            <tr><td colspan="${colCount}" style="border: 1px solid #000; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
+            <tr><td colspan="${toplamSutun}" style="border: none; text-align: left; padding-top: 5px;"><div style="font-size: 8px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır.</div></td></tr>
+            <tr><td colspan="${toplamSutun}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 5px 0;">AÇIKLAMALAR</td></tr>
+            <tr><td colspan="${toplamSutun}" style="border: 1px solid #000; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
             <tr>
-                <td colspan="${Math.floor(colCount/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Düzenleyen</strong><br>Birim Sorumlusu<br><br><br>...................</td>
-                <td colspan="${Math.floor(colCount/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Kontrol Eden</strong><br>Müdür Yardımcısı<br><br><br>...................</td>
-                <td colspan="${colCount - 2*Math.floor(colCount/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Onaylayan</strong><br>Hastane Müdürü<br><br><br>...................</td>
+                <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Düzenleyen</strong><br>Birim Sorumlusu<br><br><br>...................</td>
+                <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Kontrol Eden</strong><br>Müdür Yardımcısı<br><br><br>...................</td>
+                <td colspan="${toplamSutun - 2*Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Onaylayan</strong><br>Hastane Müdürü<br><br><br>...................</td>
             </tr>
         </tfoot>
         </table></div>`;
@@ -655,6 +645,7 @@ function exceleSifirKayipsizKopyala() {
 </script>
 </body>
 </html>
+
 
 
 
