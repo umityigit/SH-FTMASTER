@@ -298,83 +298,109 @@ function excelTarih(s){if(!s)return null; let m=s.trim().match(/^(\d{1,2})[./](\
 function satirHesapla(td) {
     if (!td) return;
     let tr = td.parentElement;
-    if (!tr) return;
+    if (!tr || tr.tagName !== 'TR') return;
 
-    // Sadece veri girilen asıl hücreleri al
-    let cells = tr.querySelectorAll('.veri-hucre');
-    let rawVal = getCleanValue(td.innerHTML);
+    // 1. ADIM: Sadece asıl veri giriş hücrelerini topla (Toplam hücrelerini ve gizli hücreleri ayır)
+    let allCells = Array.from(tr.children);
+    let dataCells = allCells.filter(c => c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta'));
     
-    // Hücre içeriğini formatla (Görsel düzeltme)
-    td.innerHTML = formatliVardiya(rawVal);
+    // Düzenlenen hücrenin içeriğini temizle (Görsel format)
+    if (td.classList.contains('veri-hucre')) {
+        let rawVal = getCleanValue(td.innerHTML);
+        td.innerHTML = formatliVardiya(rawVal);
+    }
 
-    let hs=0, hg=0, hi=0;
-    let ag=0, as=0, n_rt=0, n_ht=0, n_r=0, n_i=0, n_rtc=0, n_htc=0, age=0, totalFM=0;
+    let hs = 0, hg = 0, hi = 0;
+    let ag = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, age = 0, totalFM = 0;
 
-    cells.forEach((c) => {
-        // Eğer hücre birleştirilmişse (gizliyse) onu hesaplamaya dahil etme
-        if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return; 
-        
-        let val = getCleanValue(c.innerHTML); 
-        if (val === "" || val === "0") return;
+    // 2. ADIM: Satırı baştan sona tara
+    allCells.forEach((c) => {
+        // Eğer hücre birleştirilmişse veya gizliyse hesaplamaya dahil etme ama üzerinden geç
+        if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
 
-        let info = getVardiyaInfo(val);
-        let realVal = info.val;
-        let isIzin = (info.tip === "izin");
+        // EĞER BU BİR VERİ HÜCRESİ İSE (Nöbet girilen yer)
+        if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
+            let val = getCleanValue(c.innerHTML);
+            if (val === "" || val === "0") return;
 
-        // İzin ve mesai türlerini say
-        if(realVal === "RT") n_rt++;
-        else if(realVal === "HT") n_ht++;
-        else if(realVal === "R") n_r++;
-        else if(isIzin && !["RT","HT","R"].includes(realVal)) n_i++;
+            let info = getVardiyaInfo(val);
+            let realVal = info.val;
+            let isIzin = (info.tip === "izin");
 
-        // Saat ve gece hesapla
-        if(info.t > 0) {
-            ag += 1;
-            as += info.t;
-            age += info.g;
-            hs += info.t;
-            hg += info.g;
-            if(realVal === "RTÇ") n_rtc++;
+            if (realVal === "RT") n_rt++;
+            else if (realVal === "HT") n_ht++;
+            else if (realVal === "R") n_r++;
+            else if (isIzin && !["RT", "HT", "R"].includes(realVal)) n_i++;
+
+            if (info.t > 0) {
+                ag += 1;
+                age += info.g;
+                hs += info.t;
+                hg += info.g;
+                if (realVal === "RTÇ") n_rtc++;
+            }
+            if (c.classList.contains('hucre-haftasonu') && info.t > 0) n_htc++;
         }
 
-        // Hafta sonu çalışması
-        if(c.classList.contains("hucre-haftasonu") && info.t > 0) n_htc++;
-
-        // HAFTALIK TOPLAMLARI YAZDIRMA (Kritik Düzeltme Burası)
-        if(c.nextElementSibling && c.nextElementSibling.classList.contains('bg-hafta')) {
-            let nSaat = c.nextElementSibling;
-            let nGun = nSaat ? nSaat.nextElementSibling : null;
-            let nIzin = nGun ? nGun.nextElementSibling : null;
-
-            // Güvenli yazdırma: Hücre varsa yaz, yoksa geç (Döngüye girip diğerlerini silmez)
-            if(nSaat && nSaat.classList.contains('bg-hafta')) nSaat.innerText = hs || "";
-            if(nGun && nGun.classList.contains('bg-hafta')) nGun.innerText = hg || "";
-            if(nIzin && nIzin.classList.contains('bg-hafta')) nIzin.innerText = hi || "";
-            
-            totalFM += Math.max(0, hs - 45);
-            hs=0; hg=0; hi=0;
+        // EĞER BU BİR HAFTA TOPLAMI HÜCRESİ İSE (Yazma vakti geldi)
+        if (c.classList.contains('bg-hafta')) {
+            // Haftalık saat, gün veya izin olduğunu belirleyelim
+            if (c.innerText.includes("H.SAAT") || c.querySelector('.dikey-yazi')?.innerText.includes("SAAT")) {
+                // Bu bir başlıktır, geç
+            } else {
+                // Sırasıyla H.SAAT, H.GÜN ve H.İZİN hücrelerini doldur
+                // Bu mantık hücreyi doğrudan sınıfa göre bulduğu için yandaki hücreyi SİLMEZ.
+                if (hs > 0 || hg > 0 || hi > 0) {
+                   // Toplamları burada sıfırlayacağız, aşağıda hücrelere yazacağız
+                }
+            }
         }
     });
 
-    totalFM += Math.max(0, hs - 45);
+    // 3. ADIM: Toplamları Güvenli Şekilde Yazdır (Yandaki hücreyi asla silmez)
+    // Hafta toplamlarını hücrelerin sırasına göre değil, direkt bulup yazıyoruz
+    let weekGroups = tr.querySelectorAll('.bg-hafta');
+    let groupIdx = 0;
+    let tempHS = 0, tempHG = 0;
 
-    // SAĞ TARAFTAKİ ÖZET PANELİNİ GÜNCELLE
-    const setVal = (cls, val) => {
-        let el = tr.querySelector(cls);
-        if(el) el.innerText = val || "0";
-    };
+    allCells.forEach(c => {
+        if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
+        
+        if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
+            let val = getCleanValue(c.innerHTML);
+            let info = getVardiyaInfo(val);
+            tempHS += info.t;
+            tempHG += info.g;
+        }
 
-    setVal('.s-calisma', ag + n_rt + n_ht + n_i + n_r);
-    setVal('.s-yol', ag + n_rtc);
-    setVal('.s-rapor', n_r);
-    setVal('.s-izin', n_i);
-    setVal('.s-ht', n_ht);
-    setVal('.s-rt', n_rt);
-    setVal('.s-rtc', n_rtc);
-    setVal('.s-htc', n_htc * 9);
-    setVal('.s-fm', totalFM);
-    setVal('.s-gece', age);
-    setVal('.s-tgece', age);
+        if (c.classList.contains('bg-hafta')) {
+            // Her hafta bitiminde (bg-hafta hücresine gelindiğinde) o haftanın toplamını yaz
+            if (groupIdx % 3 === 0) { // H.SAAT hücresi
+                c.innerText = tempHS || "";
+                totalFM += Math.max(0, tempHS - 45);
+            } else if (groupIdx % 3 === 1) { // H.GÜN hücresi
+                c.innerText = tempHG || "";
+            } else if (groupIdx % 3 === 2) { // H.İZİN hücresi
+                c.innerText = ""; // İzin hesabı gerekirse buraya
+                tempHS = 0; tempHG = 0; // Haftayı sıfırla
+            }
+            groupIdx++;
+        }
+    });
+
+    // 4. ADIM: Sağ taraftaki genel özetleri güncelle
+    const s = (cls, val) => { let e = tr.querySelector(cls); if (e) e.innerText = val || "0"; };
+    s('.s-calisma', ag + n_rt + n_ht + n_i + n_r);
+    s('.s-yol', ag + n_rtc);
+    s('.s-rapor', n_r);
+    s('.s-izin', n_i);
+    s('.s-ht', n_ht);
+    s('.s-rt', n_rt);
+    s('.s-rtc', n_rtc);
+    s('.s-htc', n_htc * 9);
+    s('.s-fm', totalFM);
+    s('.s-gece', age);
+    s('.s-tgece', age);
 }
     
     td.innerHTML = formatliVardiya(rawVal);
@@ -890,3 +916,4 @@ function kopyalamaYedekYontemi(htmlStr) {
 </body>
 
 </html>
+
