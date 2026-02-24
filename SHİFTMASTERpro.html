@@ -1,0 +1,769 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ShiftMaster v113.0 - GHOST PIN EDITION</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc; --warning: #facc15; --danger: #ef4444; --success: #10b981; --week: #334155; --undo: #fb7185; }
+        
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); padding: 25px; margin: 0; padding-bottom: 90px; }
+
+        /* ✨ GİRİŞ EKRANI */
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; transition: opacity 1s ease; perspective: 1000px; }
+        .splash-hospital { font-size: 18px; color: var(--accent); letter-spacing: 4px; margin-bottom: 40px; font-weight: 800; text-align: center; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); line-height: 1.6; opacity: 0; animation: fadeUp 1s forwards 0.5s; }
+        .splash-logo { width: 150px; height: 150px; background: var(--accent); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 80px rgba(56, 189, 248, 0.5); animation: pulse 2.5s infinite, logoDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; margin-bottom: 30px; }
+        .splash-text-container { display: flex; gap: 5px; margin-bottom: 15px; }
+        .splash-char { font-size: 56px; font-weight: 900; color: var(--text); text-shadow: 0 5px 15px #000; opacity: 0; transform: rotateY(90deg) translateY(50px); display: inline-block; animation: letterReveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        .splash-prod { font-size: 14px; color: #94a3b8; letter-spacing: 3px; font-weight: 600; opacity: 0; border-top: 1px solid #334155; padding-top: 20px; margin-top: 10px; width: 300px; text-align: center; animation: fadeUp 1s forwards 1.5s; }
+
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 60px rgba(56, 189, 248, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 100px rgba(56, 189, 248, 0.8); } 100% { transform: scale(1); box-shadow: 0 0 60px rgba(56, 189, 248, 0.4); } }
+        @keyframes logoDrop { from { transform: scale(0) rotate(-180deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+        @keyframes letterReveal { to { opacity: 1; transform: rotateY(0) translateY(0); text-shadow: 0 0 20px var(--accent); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 0.8; transform: translateY(0); } }
+
+        /* 🔐 KİLİT EKRANI */
+        #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1e293b 0%, #020617 100%); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 999998; }
+        .lock-box { background: rgba(15, 23, 42, 0.95); padding: 45px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 400px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); transition: transform 0.2s; }
+        .lock-input { width: 85%; background: #020617; border: 2px solid var(--accent); color: var(--accent); padding: 20px; border-radius: 15px; font-size: 32px; text-align: center; margin-bottom: 25px; outline: none; transition: 0.3s; font-family: 'Poppins', sans-serif; }
+        .shake { animation: shake 0.5s; } @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+
+        /* ANA YAPI */
+        #mainContent { display: none; opacity: 0; animation: fadeIn 1s forwards; } @keyframes fadeIn { to { opacity: 1; } }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #334155; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden; transition: transform 0.3s; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7); }
+
+        /* 📢 HABERLEŞME & ARŞİV EKRANI */
+        .news-container { background: var(--card); border: 2px solid #334155; border-radius: 20px; padding: 20px; margin-bottom: 25px; }
+        .news-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .news-list { height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
+        .news-item { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent); padding: 12px; border-radius: 8px; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
+        .news-text { font-size: 13px; font-weight: 500; color: #fff; line-height: 1.4; }
+        .news-time { font-size: 10px; color: #94a3b8; align-self: flex-end; margin-top: 6px; font-weight: 400; font-style: italic; }
+        .news-delete { position: absolute; top: 10px; right: 10px; color: var(--danger); cursor: pointer; font-size: 16px; opacity: 0.6; transition: 0.3s; }
+
+        .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
+        .archive-card { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .archive-card:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.4); border-color: var(--accent); }
+        .archive-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); opacity: 0; transition: 0.3s; }
+        .archive-card:hover::after { opacity: 1; }
+
+        /* ✨ POPUP MODAL */
+        .full-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); z-index: 10005; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
+        .full-modal-content { background: var(--bg); width: 98%; height: 98%; border-radius: 25px; border: 1px solid var(--accent); box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 30px rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; position: relative; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
+        .full-modal-overlay.show { opacity: 1; }
+        .full-modal-overlay.show .full-modal-content { transform: scale(1); }
+        
+        .modal-header-bar { padding: 20px 30px; background: #0f172a; border-bottom: 2px solid #38bdf8; display: flex; justify-content: space-between; align-items: center; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-body-area { padding: 25px; flex: 1; overflow-y: auto; }
+
+        /* ÇOKLU TABLO YAPISI */
+        .table-wrapper { background: var(--card); border: 2px solid #334155; border-radius: 20px; padding: 20px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .table-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .table-title { font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
+        .table-actions-bottom { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; padding: 15px; background: rgba(15, 23, 42, 0.6); border-radius: 15px; border: 1px solid #334155; align-items: center; justify-content: flex-start; }
+        
+        .scroll-area { overflow-x: auto; border-radius: 15px; border: 1px solid #334155; background: #0f172a; max-width: 100%; box-shadow: inset 0 0 20px #000; position: relative; padding-bottom: 15px; }
+        table { width: auto; border-collapse: collapse; min-width: 100%; table-layout: auto; }
+        th, td { border: 1px solid #475569; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; white-space: normal; line-height: 1.2; position: relative; transition: all 0.2s; }
+        th { background: #1e293b; color: var(--accent); text-transform: uppercase; height: 50px; user-select: none; font-weight: 800; }
+        td { color: #cbd5e1; height: 50px; }
+        
+        .shift-cell:focus, .editable-name:focus { background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(12px); box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.6), 0 0 15px var(--accent) !important; color: #fff !important; outline: none; }
+        .selected-cell { background: rgba(56, 189, 248, 0.4) !important; outline: 2px solid var(--accent) !important; color: #fff !important; z-index: 10; }
+        .row-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+        .name-wrapper { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 190px; padding: 0 5px; }
+        .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 1px solid transparent; transition: 0.3s; font-weight: 700; }
+        .editable-name:focus { border-bottom: 2px solid var(--accent); color: var(--accent); }
+        .nav-box { display: flex; flex-direction: column; gap: 2px; }
+        .mini-btn { background: #334155; color: var(--accent); border: 1px solid #475569; padding: 2px 5px; border-radius: 4px; cursor: pointer; font-size: 8px; font-weight: 900; }
+        .select-icon { background: var(--accent); color: #000; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+
+        .btn { padding: 10px 18px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 11px; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Poppins', sans-serif; letter-spacing: 0.5px; }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .glass-input { background: rgba(30, 41, 59, 0.6); border: 1px solid #475569; color: white; padding: 12px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 500; transition: 0.3s; }
+        .glass-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); background: #1e293b; }
+
+        .custom-menu { display: none; position: absolute; background: #1e293b; border: 2px solid var(--accent); border-radius: 20px; z-index: 100010; width: 360px; box-shadow: 0 15px 50px #000; padding: 12px; animation: menuPop 0.2s; }
+        @keyframes menuPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .menu-item { padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 800; color: #fff; font-size: 11px; border: 1px solid #334155; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .menu-item:hover { transform: scale(1.05); border-color: white; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .stat-sub { display: inline-block; width: 44%; border: 1px solid #555; font-size: 11px; padding: 4px 0; border-radius: 6px; margin: 1px; font-weight: 800; background: rgba(0,0,0,0.2); transition: 0.2s; }
+        .week-summary-cell, .total-summary-cell { width: 95px !important; min-width: 95px !important; background: #334155 !important; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10015; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: var(--card); padding: 30px; border-radius: 30px; border: 1px solid #334155; width: 90%; max-width: 600px; }
+
+        /* 👥 PERSONEL HAVUZU */
+        .pool-header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; border-bottom: 2px solid #334155; padding-bottom: 10px; }
+        .pool-count { color: var(--accent); font-size: 24px; text-shadow: 0 0 10px var(--accent); }
+        .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; align-items: stretch; } 
+        .staff-chip { background: #1e293b; border: 1px solid #475569; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: flex-start; gap: 10px; font-size: 13px; color: #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); width: 100%; box-sizing: border-box; user-select: none; }
+        .staff-chip:hover { border-color: var(--accent); background: #29384d; transform: translateY(-3px); }
+        .staff-chip.selected { border-color: var(--accent); background: rgba(56, 189, 248, 0.15); box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); color: white; }
+        .staff-chip input { pointer-events: none; width: 18px; height: 18px; accent-color: var(--accent); }
+        .staff-del { margin-left: auto; color: #ef4444; font-size: 18px; font-weight: bold; cursor: pointer; padding: 2px 8px; border-radius: 4px; pointer-events: auto; }
+        .staff-del:hover { background: rgba(239, 68, 68, 0.2); }
+
+        /* ✨ YENİ: HÜCRE İÇİ HAYALET İĞNE (GHOST PIN) CSS ✨ */
+        .shift-cell[data-pin]::before {
+            content: '📍'; /* Kırmızı İğne İkonu */
+            position: absolute;
+            top: 2px; right: 2px;
+            font-size: 13px;
+            z-index: 10;
+            cursor: help;
+            text-shadow: 0 0 5px #000;
+            animation: pinPulse 2s infinite;
+        }
+        @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+        
+        /* ✨ İĞNENİN ÜSTÜNE GELİNCE AÇILAN SİYAH CAM EFEKTLİ NOT KUTUSU ✨ */
+        .shift-cell[data-pin]:hover::after {
+            content: attr(data-pin);
+            position: absolute;
+            bottom: calc(100% + 5px); left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: pre-wrap; /* Metni düzgün sığdırır */
+            width: max-content;
+            max-width: 200px;
+            z-index: 99999;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="splash">
+        <div class="splash-hospital">T.C. SAĞLIK BAKANLIĞI<br>ANTALYA DÖŞEMEALTI DEVLET HASTANESİ</div>
+        <div class="splash-logo"><svg viewBox="0 0 24 24" width="80" fill="#0f172a"><path d="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z"/></svg></div>
+        <div class="splash-text-container" id="splashTextContainer"></div>
+        <div class="splash-prod">PROD. BY ÜMİT ABİ 2026</div>
+    </div>
+
+    <div id="lockScreen">
+        <div class="lock-box">
+            <h2 style="color:white; margin-bottom:30px; font-weight:900;">🔐 SİSTEM KİLİTLİ</h2>
+            <input type="password" id="passInput" class="lock-input" placeholder="••••" onkeydown="if(event.key==='Enter') checkPass()">
+            <button class="btn" style="background:var(--accent); color:#000; width:80%; justify-content:center; font-size:16px; padding:15px;" onclick="checkPass()">SİSTEMİ AÇ</button>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <div class="container">
+            <div class="news-container card">
+                <div class="news-header"><h4 style="margin:0; color:var(--accent); display:flex; align-items:center; gap:10px;">📢 HABERLEŞME PANOSU</h4></div>
+                <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="newsInput" class="glass-input" style="flex:1;" placeholder="Ekip için bir not bırak..." onkeydown="if(event.key==='Enter') addNews()"><button class="btn" style="background:var(--accent); color:#000;" onclick="addNews()">GÖNDER</button></div>
+                <div id="newsList" class="news-list"></div>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-top:0; color:var(--text); border-bottom:1px solid #334155; padding-bottom:15px;">📁 PANODA KAYITLI ÇALIŞMA PLANLARI (KLASÖRLER)</h4>
+                <div id="archiveList" class="archive-grid"></div>
+            </div>
+
+            <div class="card">
+                <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:flex-end;">
+                    <div><label style="font-size:10px; color:var(--accent); font-weight:900; margin-left:5px;">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input"></div>
+                    <div><label style="font-size:10px; color:var(--accent); font-weight:900; margin-left:5px;">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:60px; text-align:center;"></div>
+                    <button class="btn" style="background:var(--accent); color:#000; padding:12px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 SIFIRDAN YENİ MATRİS OLUŞTUR</button>
+                    <button class="btn" style="background:var(--success); color:white; padding:12px 20px; font-size: 14px;" onclick="openExcelModal()">📥 SIFIRDAN BİR TABLOYA EXCEL'DEN ÇEK</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="pool-header"><div class="pool-title">PERSONEL HAVUZU <span id="staffCounter" class="pool-count">0</span> <span style="color:var(--accent);">👥</span></div></div>
+                <div id="staffPool" class="pool-grid" style="margin-bottom: 20px;"></div>
+                <div style="display:flex; gap:15px;"><input type="text" id="staffInput" placeholder="Personel ismi..." class="glass-input" style="flex:1;" onkeydown="if(event.key==='Enter') addStaff()"><button class="btn" style="background:var(--accent); color:#000;" onclick="addStaff()">EKLE</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tableModalOverlay" class="full-modal-overlay">
+        <div class="full-modal-content">
+            <div class="modal-header-bar">
+                <div style="font-size:22px; font-weight:900; color:var(--accent); display:flex; align-items:center; gap:10px;">
+                    <span id="masterArchiveTitle">📁 Yeni Dosya</span>
+                    <button class="btn" style="background:transparent; color:var(--warning); padding:5px; font-size:10px;" onclick="renameMasterArchive()">✏️ İSİM DEĞİŞTİR</button>
+                </div>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <button class="btn" style="background:#10b981; color:white; font-size:13px; padding:12px 25px; box-shadow:0 0 20px rgba(16,185,129,0.5);" onclick="saveMasterArchive()">💾 TÜMÜNÜ PANODA KAYDET</button>
+                    <span style="width:2px; height:30px; background:#334155; margin:0 5px;"></span>
+                    <button class="btn" style="background:#3b82f6; color:white;" onclick="addGlobalBlankTable()">➕ YENİ BOŞ TABLO EKLE</button>
+                    <button class="btn" style="background:var(--danger); color:white; padding:12px 20px;" onclick="closeTableModal()">❌ EKRANI KAPAT</button>
+                </div>
+            </div>
+            
+            <div class="modal-body-area" id="tablesContainer"></div>
+        </div>
+    </div>
+
+    <div id="excelModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="margin-top:0; color:var(--accent);" id="excelModalTitle">📥 Excel'den Veri Çek</h3>
+            <p style="font-size: 11px; color: #94a3b8; margin-top: -10px; margin-bottom: 15px;">Akıllı Sistem: Başlıkları ve tarihleri kendisi siler. Sadece veriyi yapıştırın yeter.</p>
+            <textarea id="excelInput" class="glass-input" style="width:100%; height:200px; font-family:monospace; font-size:11px; margin-bottom:15px;"></textarea>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:1; background:var(--success); color:white; justify-content:center;" onclick="importFromExcel()">VERİLERİ İŞLE</button>
+                <button class="btn" style="flex:1; background:var(--danger); color:white; justify-content:center;" onclick="closeExcelModal()">İPTAL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contextMenu" class="custom-menu">
+        <div class="menu-grid">
+            <div class="menu-item" style="background:#EAB308; color:#000;" onclick="setShift('08:00-20:00','#EAB308')">☀️ 08-20 (11)</div>
+            <div class="menu-item" style="background:#1E3A8A;" onclick="setShift('20:00-08:00','#1E3A8A')">🌙 20-08 (11)</div>
+            <div class="menu-item" style="background:#a855f7;" onclick="setShift('08:00-18:00','#a855f7')">🕒 08-18 (9)</div>
+            <div class="menu-item" style="background:#38bdf8; color:#000;" onclick="setShift('08:00-16:00','#38bdf8')">🕘 08-16 (7.5)</div>           
+            <div class="menu-item" style="background:#1D4ED8;" onclick="setShift('16:00-24:00','#1D4ED8')">🌆 16-24 (7.5)</div>
+            <div class="menu-item" style="background:#4f46e5;" onclick="setShift('24:00-08:00','#4f46e5')">🌑 24-08 (7.5)</div>
+            <div class="menu-item" style="background:#15803D;" onclick="setShift('HT','#15803D')">🏖️ HT</div>
+            <div class="menu-item" style="background:#EA580C;" onclick="setShift('Yİ','#EA580C')">🌴 Yİ</div>
+            <div class="menu-item" style="background:#B91C1C;" onclick="setShift('R','#B91C1C')">💊 R</div>
+            <div class="menu-item" style="background:#334155;" onclick="setShift('')">❌ SİL</div>
+            <div class="menu-item" style="background:var(--warning); color:#000; font-size:11px; box-shadow: 0 0 10px var(--warning);" onclick="addGhostPinToCell()">📍 İĞNE/NOT AT</div>
+            <div class="menu-item" style="background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;" onclick="removeGhostPinFromCell()">🗑️ İĞNEYİ SİL</div>
+        </div>
+    </div>
+    <div id="staffSelectMenu" class="custom-menu" style="max-height:300px; overflow-y:auto; width:200px;"></div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        firebase.initializeApp(firebaseConfig);
+    const connectedRef = firebase.database().ref(".info/connected");
+        connectedRef.on("value", (snap) => {
+          if (snap.val() === true) {
+            console.log("Sistem Çevrimiçi: Veriler Firebase'e eşitleniyor... ✅");
+          } else {
+            console.log("Sistem Çevrimdışı: Değişiklikler tarayıcıya kaydediliyor... 📶");
+          }
+        });
+        const db = firebase.database();
+
+// ✨ TAM ÇEVRİMDIŞI (OFFLINE-FIRST) KALKANI - V2 ✨
+            (function() {
+                if (!window.firebase || !firebase.database) return;
+
+                // Firebase'in arka plan referans motorunu ele geçiriyoruz
+                const dummyRef = firebase.database().ref();
+                const dbProto = Object.getPrototypeOf(dummyRef);
+
+                // Yolu temizleyen yardımcı fonksiyon
+                function getPath(ref) {
+                    return ref.toString().replace(ref.root.toString(), '') || 'ana_dizin';
+                }
+
+                // 1. TABLOLARI VE VERİLERİ OKUMA (ON) YAKALAYICISI
+                const origOn = dbProto.on;
+                dbProto.on = function(eventType, callback, cancelCallback, context) {
+                    if (eventType === 'value') {
+                        const safePath = getPath(this);
+                        const cachedData = localStorage.getItem('sm_v2_' + safePath);
+
+                        if (cachedData) {
+                            try {
+                                const parsed = JSON.parse(cachedData);
+                                const fakeSnap = {
+                                    val: () => parsed,
+                                    exists: () => parsed !== null,
+                                    key: this.key
+                                };
+                                setTimeout(() => {
+                                    if (typeof callback === 'function') callback(fakeSnap);
+                                }, 10);
+                            } catch (e) {}
+                        }
+
+                        const wrappedCallback = function(snap) {
+                            if (snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val()));
+                            if (typeof callback === 'function') callback(snap);
+                        };
+                        return origOn.call(this, eventType, wrappedCallback, cancelCallback, context);
+                    }
+                    return origOn.call(this, eventType, callback, cancelCallback, context);
+                };
+
+                // 2. TEK SEFERLİK OKUMA (ONCE) YAKALAYICISI
+                const origOnce = dbProto.once;
+                dbProto.once = function(eventType, callback, failureCallback, context) {
+                    const safePath = getPath(this);
+                    if (eventType === 'value' && !navigator.onLine) {
+                        const cachedData = localStorage.getItem('sm_v2_' + safePath);
+                        if (cachedData) {
+                            try {
+                                const parsed = JSON.parse(cachedData);
+                                const fakeSnap = {
+                                    val: () => parsed,
+                                    exists: () => parsed !== null,
+                                    key: this.key
+                                };
+                                if (typeof callback === 'function') callback(fakeSnap);
+                                return Promise.resolve(fakeSnap);
+                            } catch (e) {}
+                        }
+                    }
+                    return origOnce.call(this, eventType, callback, failureCallback, context).then(snap => {
+                        if (eventType === 'value' && snap)
+                            localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val()));
+                        return snap;
+                    });
+                };
+
+                // 3. KAYIT ETME VE DEĞİŞİKLİK (SET) YAKALAYICISI
+                const origSet = dbProto.set;
+                dbProto.set = function(value, onComplete) {
+                    const safePath = getPath(this);
+                    localStorage.setItem('sm_v2_' + safePath, JSON.stringify(value));
+                    if (!navigator.onLine) {
+                        let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
+                        queue.push({ type: 'set', path: safePath, data: value });
+                        localStorage.setItem('sm_queue', JSON.stringify(queue));
+                        console.log("Çevrimdışı SET kuyruğa alındı: " + safePath);
+                        if (typeof onComplete === 'function') onComplete(null);
+                        return Promise.resolve();
+                    }
+                    return origSet.call(this, value, onComplete);
+                };
+
+                // 3.5. GÜNCELLEME (UPDATE) YAKALAYICISI (Tüm Sorunları Çözen Kısım)
+                const origUpdate = dbProto.update;
+                dbProto.update = function(value, onComplete) {
+                    const safePath = getPath(this);
+                    if (!navigator.onLine) {
+                        let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
+                        queue.push({ type: 'update', path: safePath, data: value });
+                        localStorage.setItem('sm_queue', JSON.stringify(queue));
+                        console.log("Çevrimdışı UPDATE kuyruğa alındı: " + safePath);
+                        if (typeof onComplete === 'function') onComplete(null);
+                        return Promise.resolve();
+                    }
+                    return origUpdate.call(this, value, onComplete);
+                };
+
+                // 3.6. SİLME (REMOVE) YAKALAYICISI 
+                const origRemove = dbProto.remove;
+                dbProto.remove = function(onComplete) {
+                    const safePath = getPath(this);
+                    if (!navigator.onLine) {
+                        let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
+                        queue.push({ type: 'remove', path: safePath });
+                        localStorage.setItem('sm_queue', JSON.stringify(queue));
+                        console.log("Çevrimdışı REMOVE kuyruğa alındı: " + safePath);
+                        if (typeof onComplete === 'function') onComplete(null);
+                        return Promise.resolve();
+                    }
+                    return origRemove.call(this, onComplete);
+                };
+
+                // 4. KUYRUĞU BOŞALTMA MOTORU VE SENKRONİZASYON
+                function kuyruguBosalt() {
+                    let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
+                    if (queue.length > 0) {
+                        console.log("İnternet var! Bekleyen " + queue.length + " işlem Firebase'e gönderiliyor... 🚀");
+                        queue.forEach(item => {
+                            if (item.type === 'set') firebase.database().ref(item.path).set(item.data);
+                            else if (item.type === 'update') firebase.database().ref(item.path).update(item.data);
+                            else if (item.type === 'remove') firebase.database().ref(item.path).remove();
+                        });
+                        localStorage.removeItem('sm_queue'); // Gönderilenleri temizle
+                    }
+                }
+
+                window.addEventListener('online', kuyruguBosalt);
+
+                setTimeout(() => {
+                    if (navigator.onLine) kuyruguBosalt();
+                }, 1500);
+
+            })();
+            // KALKAN KODU BURADA BİTİYOR. Altında let activeCell = null; diye devam etmeli.
+
+        let activeCell = null, staffList = [], history = [];
+        let currentTargetTable = null; 
+        
+        let currentMasterArchiveId = null;
+        let currentMasterArchiveName = "Yeni Dosya";
+
+        const shiftRules = {
+            '08:00-20:00': { w: 11, n: 0, color: '#EAB308' },
+            '20:00-08:00': { w: 11, n: 11, color: '#1E3A8A' },
+            '08:00-18:00': { w: 9, n: 0, color: '#a855f7' },
+            '08:00-16:00': { w: 7.5, n: 0, color: '#38bdf8' },            
+            '16:00-24:00': { w: 7.5, n: 4, color: '#1D4ED8' },
+            '24:00-08:00': { w: 7.5, n: 7.5, color: '#4f46e5' },
+            'HT': { w: 0, n: 0, color: '#15803D' },
+            'Yİ': { w: 0, n: 0, color: '#EA580C' },
+            'R': { w: 0, n: 0, color: '#B91C1C' }
+        };
+
+        function checkPass() {
+            if(document.getElementById("passInput").value === "ADDH2026") {
+                document.getElementById("lockScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+                loadStaffPool(); loadArchives(); loadNews();
+            } else {
+                const box = document.querySelector(".lock-box"); box.classList.add("shake");
+                setTimeout(() => box.classList.remove("shake"), 500);
+                document.getElementById("passInput").value = "";
+            }
+        }
+
+        function openTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; setTimeout(() => modal.classList.add('show'), 10); }
+        function closeTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
+        function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
+        function loadNews() { db.ref("haberler").on("value", snap => { const l = document.getElementById("newsList"); l.innerHTML = ""; const data = snap.val(); if(data) { Object.entries(data).reverse().forEach(([id, val]) => { l.innerHTML += `<div class="news-item"><div class="news-text">${val.text}</div><div class="news-time">${val.time}</div><span class="news-delete" onclick="deleteNews('${id}')">×</span></div>`; }); } }); }
+        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), time: new Date().toLocaleString('tr-TR') }); i.value = ""; } }
+        function deleteNews(id) { if(confirm("Sil?")) db.ref("haberler").child(id).remove(); }
+
+        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const data = snap.val(); let count = 0; staffList = []; if(data) { Object.entries(data).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; const div = document.createElement("div"); div.className = "staff-chip"; div.innerHTML = `<input type="checkbox" value="${item.name}"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; p.appendChild(div); }); } document.getElementById("staffCounter").innerText = count; }); }
+        function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); inp.value = ""; } }
+        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); } }
+
+        // ✨ HAYALET İĞNE (GHOST PIN) FONKSİYONLARI ✨
+        function addGhostPinToCell() {
+            if(!activeCell) return;
+            let currentNote = activeCell.getAttribute("data-pin") || "";
+            let newNote = prompt("Bu hücreye iğnelemek istediğiniz notu yazın:\n(Hücrenin üzerine gelince görünecek)", currentNote);
+            if(newNote !== null) {
+                if(newNote.trim() === "") { activeCell.removeAttribute("data-pin"); } 
+                else { activeCell.setAttribute("data-pin", newNote.trim()); }
+                saveHistory();
+            }
+            document.getElementById("contextMenu").style.display = "none";
+        }
+        function removeGhostPinFromCell() {
+            if(!activeCell) return;
+            activeCell.removeAttribute("data-pin");
+            saveHistory();
+            document.getElementById("contextMenu").style.display = "none";
+        }
+
+        // --- ÇOKLU TABLO OLUŞTURMA ---
+        function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
+            const cols = customColCount || parseInt(document.getElementById("colCount").value);
+            let startDt = customStartDt;
+            if(!startDt) { let startDateVal = document.getElementById("startDate").value || new Date().toISOString().split('T')[0]; startDt = new Date(startDateVal); }
+            
+            let h = `<table><thead><tr><th style="display:flex; align-items:center; gap:8px; justify-content:center; border:none; background:transparent;"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox"> PERSONEL</th>`;
+            
+            for(let i=0; i<cols; i++) {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i);
+                let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`;
+                if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`;
+            }
+            h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`;
+            
+            if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); });
+            else data.forEach(n => { h += createRowHtml(n, cols, startDt); });
+            h += '</tbody></table>';
+
+            const wrapper = document.createElement("div"); wrapper.className = "table-wrapper";
+            wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName);
+            
+            wrapper.innerHTML = `
+                <div class="table-header">
+                    <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this)">📌 ${tableName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span></span>
+                    <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:4px 10px; border-radius:8px; margin-left:auto;">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span>
+                </div>
+                <div class="scroll-area">${h}</div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(15, 23, 42, 0.4); border-radius: 15px; border: 1px dashed var(--accent);">
+                    <label style="font-size: 12px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">📝 BU AY NE OLDU? <span style="color:#94a3b8; font-weight:400; font-size:10px;">(Genel Tablo Notları, Olaylar... Hepsi arşive kaydedilir.)</span></label>
+                    <textarea class="table-notes glass-input" style="width: 100%; height: 60px; margin-top: 10px; resize: vertical; box-sizing: border-box; font-size:12px; color:#fff; border-color:var(--accent);" placeholder="Bu tabloyla ilgili aklınızda tutamadığınız her şeyi buraya yazın... İleride hayat kurtarır!">${savedNotes}</textarea>
+                </div>
+
+                <div class="table-actions-bottom">
+                    <button class="btn" style="background:#10b981; color:white;" onclick="addEmptyRow(this)">➕ SATIR EKLE</button>
+                    <button class="btn" style="background:#0ea5e9; color:white;" onclick="copyTableRows(this)">📋 KOPYALA</button>
+                    <button class="btn" style="background:#f59e0b; color:white;" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button>
+                    <button class="btn" style="background:#a855f7; color:white;" onclick="pasteToTableRows(this)">📥 HIZLI YAPIŞTIR</button>
+                    <button class="btn" style="background:#0f766e; color:white;" onclick="openExcelModalForTable(this)">📥 EXCEL'DEN KUTUYA AL</button>
+                    <button class="btn" style="background:var(--danger); color:white;" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button>
+                    <span style="width: 2px; height: 20px; background: #334155; margin: 0 5px;"></span>
+                    <button class="btn" style="background:#8b5cf6; color:white;" onclick="calcTable(this)">🔄 HESAPLA</button>
+                    <button class="btn" style="background:#ec4899; color:white;" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button>
+                    <span style="flex-grow:1;"></span>
+                    <button class="btn" style="background:#3b82f6; color:white;" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO (AYNI KİŞİLERLE)</button>
+                    <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ TABLOYU EKRANDAN SİL</button>
+                </div>
+            `;
+            
+            if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling);
+            else document.getElementById("tablesContainer").appendChild(wrapper); 
+
+            saveHistory(); updateAllStats(); openTableModal(); 
+        }
+
+        // ✨ İĞNE (PIN) VERİSİNİ OLUŞTURURKEN EKLİYORUZ ✨
+        function createRowHtml(name, colCount, startDt, savedShifts = null) {
+            let cells = `<td><div style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" class="row-checkbox">
+                <div class="name-wrapper">
+                    <div class="nav-box"><button class="mini-btn" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" onclick="moveRow(this,1)">▼</button></div>
+                    <div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div>
+                    <button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button>
+                </div>
+            </div></td>`;
+            let shiftIdx = 0;
+            for(let i=0; i<colCount; i++) {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i);
+                const txt = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].text : "";
+                const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent";
+                const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : "";
+                const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; // İğne varsa attr ekle
+                
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`;
+                shiftIdx++; if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:#334155 !important;"></td>`;
+            }
+            cells += `<td class="total-summary-cell" style="background:#020617 !important;"></td>`;
+            return `<tr>${cells}</tr>`;
+        }
+
+        function takeFullScreenshot(btn) { 
+            const wrapper = btn.closest('.table-wrapper'); 
+            const captureArea = wrapper.querySelector(".scroll-area"); 
+            const table = wrapper.querySelector("table"); 
+            let oldText = btn.innerHTML; btn.innerHTML = "⏳ FOTO ALINIYOR..."; 
+            let oldOverflow = captureArea.style.overflowX; captureArea.style.overflowX = 'visible'; 
+            html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, width: table.scrollWidth + 10 }).then(canvas => { 
+                const link = document.createElement("a"); link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; 
+                link.href = canvas.toDataURL(); link.click(); btn.innerHTML = oldText; captureArea.style.overflowX = oldOverflow; 
+            }); 
+        }
+
+        function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let current = wrapper.getAttribute("data-tablename"); let pName = prompt("Bu alt tablonun adı ne olsun?", current); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; } }
+        function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
+
+        function copyTableRows(btn) {
+            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
+            if(cbs.length === 0) return alert("Kopyalanacak satırları seçiniz!");
+            let html = "<table border='1'><thead><tr>"; let tsv = "";
+            table.querySelectorAll('thead th').forEach(th => { if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return; let text = getCleanCellText(th); html += `<th style="background-color: #1e293b; color: #38bdf8;">${text}</th>`; tsv += text + "\t"; });
+            html += "</tr></thead><tbody>"; tsv += "\n";
+            cbs.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; let bg = getCellColor(td); let text = getCleanCellText(td); html += `<td style="background-color: ${bg}; color: white;">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; });
+            html += "</tbody></table>";
+            navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { let oldText = btn.innerHTML; btn.innerHTML = "✅ KOPYALANDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#0ea5e9"; }, 2000); });
+        }
+
+        function cleanExcelRows(raw) {
+            let rows = raw.split("\n").filter(r => r.trim() !== "");
+            while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; }
+            return rows;
+        }
+
+        async function pasteToTableRows(btn) {
+            const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked');
+            try { const text = await navigator.clipboard.readText(); if(!text) return; saveHistory();
+                const rows = cleanExcelRows(text); const startDt = new Date(wrapper.getAttribute("data-startdt")); const colCount = parseInt(wrapper.getAttribute("data-colcount")); let tbody = wrapper.querySelector('tbody'); let existingNames = Array.from(tbody.querySelectorAll('.editable-name')).map(el => el.innerText.trim());
+                if(cbs.length > 0) {
+                    let rowIndex = 0;
+                    cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0;
+                        tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") td.querySelector('.editable-name').innerText = val; else if(td.classList.contains('shift-cell')) { td.innerText = val; const r = shiftRules[val] || Object.values(shiftRules).find(rule => keyMatchesVal(val, rule)); td.style.background = r ? r.color : "transparent"; } } colIndex++; }); rowIndex++; });
+                } else {
+                    if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } 
+                    rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { return { text: s ? s.trim() : "", bg: "transparent" } }); const newRowHtml = createRowHtml(name, colCount, startDt, shifts); tbody.insertAdjacentHTML('beforeend', newRowHtml); });
+                } updateAllStats(); let oldText = btn.innerHTML; btn.innerHTML = "✅ YAPIŞTIRILDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#a855f7"; }, 2000);
+            } catch (err) { alert("Tarayıcı panodan okuma izni vermedi! 'EXCEL'DEN KUTUYA AL' butonunu kullanabilirsiniz."); }
+        }
+
+        function exportTableToExcel(btn) {
+            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); let html = "<table border='1'>"; let tsv = "";
+            table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; let bg = getCellColor(cell); let text = getCleanCellText(cell); html += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>";
+            navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { alert("Tablo Puantaj Sistemine uygun formatta kopyalandı! 📤"); });
+        }
+
+        function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); } }
+        function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); }
+        function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) { closeTableModal(); } } }
+
+        function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); let staffNames = Array.from(wrapper.querySelectorAll('.editable-name')).map(el => el.innerText.trim()); if(staffNames.length === 0) return alert("Bu tabloda hiç personel yok!"); let d = prompt("Kaç günlük yeni bir tablo oluşturulsun?", "30"); if(!d) return; let c = parseInt(d); let currentStart = new Date(wrapper.getAttribute("data-startdt")); let nextMonth = new Date(currentStart.getFullYear(), currentStart.getMonth() + 1, 1); let nextMonthStr = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth()+1).padStart(2,'0')}-${String(nextMonth.getDate()).padStart(2,'0')}`; let s = prompt("Başlangıç tarihi (Yıl-Ay-Gün formatında):", nextMonthStr); if(!s) return; generateTable(false, staffNames, "Yeni Tablo", new Date(s), c, wrapper); }
+        function addGlobalBlankTable() { let cols = parseInt(document.getElementById("colCount").value) || 30; let startDateVal = document.getElementById("startDate").value || new Date().toISOString().split('T')[0]; generateTable(false, ["İSİM GİRİNİZ..."], "Yeni Tablo", new Date(startDateVal), cols); }
+
+        function renameMasterArchive() { let mName = prompt("Panodaki Ana Klasör Adı (Örn: Acil Servis):", currentMasterArchiveName); if(mName && mName.trim() !== "") { currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; } }
+
+        // ✨ MASTER KAYIT - İĞNELERİ (PINS) VE NOTLARI DA KAYDEDER ✨
+        function saveMasterArchive() {
+            if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { let mName = prompt("Panoda (Arşivde) görünecek ANA KLASÖR adını girin (Örn: Acil Servis):", "Vardiya Klasörü"); if(!mName) return; currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; }
+            const tables = document.querySelectorAll('.table-wrapper'); if(tables.length === 0) return alert("Kaydedilecek hiçbir tablo yok!");
+
+            const tablesData = [];
+            tables.forEach((wrapper, index) => {
+                let tName = wrapper.getAttribute("data-tablename");
+                if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { let pName = prompt((index+1) + ". Tablonun adını belirleyin (Örn: Doktorlar):", tName); if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; } }
+
+                const rowsData = [];
+                wrapper.querySelectorAll("tbody tr").forEach(tr => { 
+                    let name = tr.querySelector(".editable-name").innerText.trim(); 
+                    let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
+                        text: td.innerText, 
+                        bg: td.style.background,
+                        pin: td.getAttribute("data-pin") || "" // ✨ İĞNEYİ VERİTABANINA YAZ ✨
+                    })); 
+                    rowsData.push({ name: name, shifts: shifts }); 
+                });
+
+                let notesVal = wrapper.querySelector(".table-notes").value;
+                tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
+            });
+
+            const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData };
+            if(currentMasterArchiveId) { db.ref("arsivlenmis_shiftler").child(currentMasterArchiveId).update(saveData); } else { const ref = db.ref("arsivlenmis_shiftler").push(); ref.set(saveData); currentMasterArchiveId = ref.key; }
+            alert(`💾 Defter Notları, İğneler ve Tüm Tablolar başarıyla '${currentMasterArchiveName}' içine kaydedildi!`);
+        }
+
+        function openExcelModalForTable(btn) { currentTargetTable = btn.closest('.table-wrapper'); document.getElementById("excelModalTitle").innerText = "📥 Bu Tabloya Veri Ekle"; document.getElementById("excelModal").style.display = "flex"; document.getElementById("excelInput").value = ""; setTimeout(() => document.getElementById("excelInput").focus(), 100); }
+        function openExcelModal() { startNewSession(); currentTargetTable = null; document.getElementById("excelModalTitle").innerText = "📥 Sıfır Tablo Oluştur"; document.getElementById("excelModal").style.display = "flex"; document.getElementById("excelInput").value = ""; setTimeout(() => document.getElementById("excelInput").focus(), 100); }
+        function closeExcelModal() { document.getElementById("excelModal").style.display = "none"; }
+        
+        function importFromExcel() { 
+            saveHistory(); const raw = document.getElementById("excelInput").value; if(!raw) return alert("Veri yapıştırılmadı!"); 
+            const rows = cleanExcelRows(raw); 
+            const parsed = rows.map(row => { const p = row.split("\t"); return { name: p[0] ? p[0].trim() : "İSİM GİRİNİZ...", shifts: p.slice(1).map(s => { let text = s ? s.trim() : ""; let r = shiftRules[text] || Object.values(shiftRules).find(rule => keyMatchesVal(text, rule)); let bg = r ? r.color : "transparent"; return { text: text, bg: bg }; })}; }); 
+            if(currentTargetTable) {
+                const startDt = new Date(currentTargetTable.getAttribute("data-startdt")); const colCount = parseInt(currentTargetTable.getAttribute("data-colcount")); let tbody = currentTargetTable.querySelector('tbody'); let existingNames = Array.from(tbody.querySelectorAll('.editable-name')).map(el => el.innerText.trim());
+                if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } 
+                parsed.forEach(p => { const newRowHtml = createRowHtml(p.name, colCount, startDt, p.shifts); tbody.insertAdjacentHTML('beforeend', newRowHtml); }); updateAllStats();
+            } else { if(parsed.length > 0 && parsed[0].shifts.length > 0) { document.getElementById("colCount").value = parsed[0].shifts.length; } generateTable(true, parsed, "İçe Aktarılan Liste"); }
+            closeExcelModal(); document.getElementById("excelInput").value = "";
+        }
+
+        function toggleAllRows(cb) { const table = cb.closest('table'); table.querySelectorAll('.row-checkbox').forEach(c => { if(c !== cb) c.checked = cb.checked; }); }
+        function getCleanCellText(cell) { if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').innerText.trim(); if (cell.querySelector('.stat-sub')) return cell.innerText.replace(/\n/g, " | "); let text = cell.innerText.replace(/\n/g, " ").trim(); if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; return text; }
+        function getCellColor(cell) { let bg = cell.style.background || cell.style.backgroundColor || 'transparent'; if (bg.includes('transparent') || bg === '') bg = cell.tagName === 'TH' ? '#1e293b' : '#0f172a'; return bg; }
+        function keyMatchesVal(val, rule) { for(let k in shiftRules) { if(k.replace(/\s/g,'') === val.replace(/\s/g,'') || (val !== "" && k.includes(val))) return shiftRules[k]; } return null; }
+
+        function updateAllStats() {
+            document.querySelectorAll("table tbody tr").forEach(row => {
+                const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0;
+                cells.forEach(td => {
+                    if(td.classList.contains("shift-cell")) {
+                        const val = td.innerText.trim(); let r = null; for(let key in shiftRules) { if(key.replace(/\s/g,'') === val.replace(/\s/g,'') || (val !== "" && key.includes(val))) { r = shiftRules[key]; break; } }
+                        if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(val === "") { td.style.background = "transparent"; }
+                    }
+                    if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
+                    if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
+                });
+            });
+        }
+
+        function moveRow(btn, dir) { saveHistory(); const row = btn.closest('tr'); if(dir===-1 && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); else if(dir===1 && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); }
+        function setShift(v, c) { if(activeCell) { saveHistory(); activeCell.innerText = v; activeCell.style.background = v==="" ? "transparent" : c; updateAllStats(); } document.getElementById("contextMenu").style.display = "none"; }
+        
+        function openStaffQuickMenu(e, btn) { e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; const poolNames = Array.from(document.querySelectorAll("#staffPool input")).map(i => i.value); poolNames.forEach(n => { const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; d.onclick = () => { saveHistory(); activeCell.innerText = n; m.style.display = "none"; }; m.appendChild(d); }); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
+
+        function loadArchives() { 
+            db.ref("arsivlenmis_shiftler").on("value", snap => { 
+                const l = document.getElementById("archiveList"); l.innerHTML = ""; const data = snap.val(); 
+                if(data) { Object.entries(data).reverse().forEach(([id, val]) => { 
+                    let tableCount = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; 
+                    div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${val.name.replace(/'/g,"\\'")}')"><b style="color:var(--accent); font-size:15px;">📁 ${val.name}</b><br><small style="color:#94a3b8; font-size:10px;">${val.date} | <b>${tableCount}</b> Tablo İçeriyor</small></div><div style="display:flex; flex-direction:column; gap:5px; margin-left:10px;"><button class="btn" style="background:var(--warning); color:#000; padding:4px 8px; font-size:10px; justify-content:center;" onclick="renameArchive(event, '${id}', '${val.name.replace(/'/g,"\\'")}')">✏️ KLASÖR ADI</button><button class="btn" style="background:transparent; color:var(--danger); border:1px solid var(--danger); padding:4px 8px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); 
+                }); } 
+            }); 
+        }
+        function delArchive(e, id) { e.stopPropagation(); if(confirm("Tüm klasörü ve içindeki tabloları kalıcı olarak silmek istediğine emin misin?")) db.ref("arsivlenmis_shiftler").child(id).remove(); }
+        function renameArchive(e, id, oldName) { e.stopPropagation(); let newName = prompt("Klasörün yeni adını girin:", oldName); if (newName && newName.trim() !== "" && newName !== oldName) { db.ref("arsivlenmis_shiftler").child(id).update({name: newName.trim()}); } }
+        
+        function openArchive(id, name) { 
+            db.ref("arsivlenmis_shiftler").child(id).once("value", snap => {
+                const val = snap.val(); currentMasterArchiveId = id; currentMasterArchiveName = name;
+                document.getElementById("masterArchiveTitle").innerText = "📁 " + name; document.getElementById("tablesContainer").innerHTML = ""; 
+                if(val.tables) { val.tables.forEach(t => { generateTable(true, t.data, t.tableName, new Date(t.startDate), t.colCount, null, t.notes || ""); }); } 
+                else if(val.data) { generateTable(true, val.data, val.name, new Date(val.startDate), val.colCount); }
+            });
+        }
+        function openShiftMenu(e, c) { e.preventDefault(); activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
+
+        function saveHistory() { const cont = document.getElementById("tablesContainer").innerHTML; history.push(cont); if(history.length > 25) history.shift(); }
+        function undo() { if(history.length > 0) { document.getElementById("tablesContainer").innerHTML = history.pop(); updateAllStats(); } }
+        document.addEventListener('keydown', e => { if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
+        function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll("#staffPool input:checked")).map(cb => cb.value); if(sel.length===0) return alert("Lütfen havuzdan personel seçin!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); }
+
+        let isDraggingCells = false; let startSelectCell = null;
+        document.addEventListener('mousedown', e => {
+            if(e.button !== 0) return; if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return; 
+            const cell = e.target.closest('td, th');
+            if(cell && cell.closest('table')) { isDraggingCells = true; startSelectCell = cell; document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); cell.classList.add('selected-cell'); if (cell.classList.contains('shift-cell')) activeCell = cell; } 
+            else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn')) { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
+        });
+        document.addEventListener('mouseover', e => { if(isDraggingCells) { const cell = e.target.closest('td, th'); if(cell && cell.closest('table') === startSelectCell.closest('table')) selectCellRange(startSelectCell, cell); } });
+        document.addEventListener('mouseup', () => { isDraggingCells = false; });
+        document.addEventListener('selectstart', e => { if(isDraggingCells) e.preventDefault(); }); 
+        
+        function selectCellRange(start, end) {
+            document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
+            const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tr')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').querySelectorAll('th, td')).indexOf(start); const endColIdx = Array.from(end.closest('tr').querySelectorAll('th, td')).indexOf(end);
+            const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx);
+            for(let r = minRow; r <= maxRow; r++) { const trCells = Array.from(rows[r].querySelectorAll('th, td')); for(let c = minCol; c <= maxCol; c++) { if(trCells[c]) trCells[c].classList.add('selected-cell'); } }
+        }
+
+        document.addEventListener('copy', e => {
+            const selected = document.querySelectorAll('.selected-cell');
+            if(selected.length > 0) { 
+                e.preventDefault(); let html = "<table border='1'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
+                selected.forEach(cell => {
+                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; 
+                    const cellRow = cell.closest('tr');
+                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
+                    let bg = getCellColor(cell); let text = getCleanCellText(cell); trHtml += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text);
+                });
+                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } html += "</table>";
+                e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv);
+            }
+        });
+
+        document.addEventListener('paste', e => {
+            const selectedCells = document.querySelectorAll('.selected-cell'); const targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell;
+            if(document.activeElement && (document.activeElement.classList.contains('shift-cell') || document.activeElement.classList.contains('editable-name')) && selectedCells.length <= 1) { const pastedData = (e.clipboardData || window.clipboardData).getData('text'); if(!pastedData.includes('\t') && !pastedData.includes('\n')) return; }
+            if(targetCell && (targetCell.classList.contains('shift-cell') || targetCell.closest('td'))) {
+                e.preventDefault(); saveHistory(); const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+                const rows = cleanExcelRows(pastedData); const table = targetCell.closest('table'); const tableRows = Array.from(table.querySelectorAll('tr')); const startRowIdx = tableRows.indexOf(targetCell.closest('tr')); 
+                let validCellsInStartRow = Array.from(targetCell.closest('tr').querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); let startValidColIdx = validCellsInStartRow.indexOf(targetCell); if(startValidColIdx === -1) startValidColIdx = 0;
+                for(let i = 0; i < rows.length; i++) {
+                    const cols = rows[i].split('\t'); const targetTr = tableRows[startRowIdx + i]; if(!targetTr) break;
+                    let validCells = Array.from(targetTr.querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell'));
+                    for(let j = 0; j < cols.length; j++) { 
+                        const cell = validCells[startValidColIdx + j]; if(!cell) break; let val = cols[j].trim(); 
+                        if(cell.querySelector('.editable-name')) cell.querySelector('.editable-name').innerText = val; 
+                        else if(cell.classList.contains('shift-cell')) { 
+                            let oldPin = cell.getAttribute("data-pin"); // İğneyi koru!
+                            cell.innerText = val; 
+                            if(oldPin) cell.setAttribute("data-pin", oldPin); 
+                            const r = shiftRules[val] || Object.values(shiftRules).find(rule => keyMatchesVal(val, rule)); cell.style.background = r ? r.color : "transparent"; 
+                        } 
+                    }
+                } updateAllStats();
+            }
+        });
+
+        window.onclick = (e) => { if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { document.getElementById("contextMenu").style.display = "none"; document.getElementById("staffSelectMenu").style.display = "none"; } };
+        window.onload = () => {
+            const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
+            text.split("").forEach((char, index) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.5 + (index * 0.1)) + "s"; container.appendChild(span); });
+            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('lockScreen').style.display = 'flex'; document.getElementById('passInput').focus(); }, 1000); }, 3500);
+            document.getElementById('startDate').valueAsDate = new Date();
+        };
+    </script>
+</body>
+</html>
