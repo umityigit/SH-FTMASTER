@@ -437,19 +437,35 @@ function raporuOlustur() {
     
     for(let gAd in gArr) {
         let list = gArr[gAd].sort((a,b)=>a.n.localeCompare(b.n,'tr'));
+        
+        // Colspan hesaplama (Hata payı bırakmamak için)
+        let totalDaysCols = days.length + Math.floor(days.length/7)*3;
+        let middleColSpan = totalDaysCols + HDR.length - 6; // Ortayı genişlettik
+
         let h = `<div class="sayfa"><table class="veri-tablosu" data-grup="${gAd}">
         <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim">`;
         days.forEach(d=>{ h+=`<col class="c-gun">`; if(d.getDay()===0) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
         HDR.forEach(()=>h+=`<col class="c-gun">`);
         h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
         <tr>
-            <td colspan="4" style="border: none !important; text-align: left;"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/T.C._Sa%C4%9Fl%C4%B1k_Bakanl%C4%B1%C4%9F%C4%B1_Logo.png" style="height: 40px; margin-top:5px; margin-left: 10px;"></td>
-            <td colspan="${days.length + Math.floor(days.length/7)*3 + HDR.length - 1}" style="border: none !important; text-align: center; vertical-align: middle;">
-                <div contenteditable="true" style="font-weight: bold; font-size: 14px; letter-spacing: 1px; margin-bottom: 2px;">${gAd.toUpperCase()} BAŞHEKİMLİĞİ</div>
-                <div style="font-size: 10px; font-weight: bold;">TEMİZLİK BİRİMİ / SÜREKLİ İŞÇİ NÖBET LİSTESİ VE PUANTAJ CETVELİ (${str})</div>
+            <td colspan="5" style="border: none !important; text-align: left; vertical-align: middle;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/T.C._Sa%C4%9Fl%C4%B1k_Bakanl%C4%B1%C4%9F%C4%B1_Logo.png" style="height: 50px; margin: 10px;">
             </td>
-            <td colspan="3" style="border: none !important; vertical-align: top; padding-top: 10px;">
-                <table style="width: 220px; float: right; border: 1pt solid #000; border-collapse: collapse; font-family: 'Arial Narrow', sans-serif;">
+            
+            <td colspan="${middleColSpan}" style="border: none !important; text-align: center; vertical-align: middle; position: relative; z-index: 10;">
+                <div contenteditable="true" style="font-weight: 800; font-size: 16px; letter-spacing: 1px; color: #000; margin-bottom: 5px; text-transform: uppercase;">
+                    ${gAd.toUpperCase()} BAŞHEKİMLİĞİ
+                </div>
+                <div style="font-size: 11px; font-weight: bold; color: #333;">
+                    TEMİZLİK BİRİMİ / SÜREKLİ İŞÇİ NÖBET LİSTESİ VE PUANTAJ CETVELİ
+                </div>
+                <div style="font-size: 10px; font-weight: bold; margin-top: 3px;">
+                    (${str})
+                </div>
+            </td>
+            
+            <td colspan="6" style="border: none !important; vertical-align: top; padding-top: 10px; text-align: right;">
+                <table style="width: 200px; display: inline-table; border: 1pt solid #000; border-collapse: collapse; font-family: 'Arial Narrow', sans-serif; background: white;">
                     <tr>
                         <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-weight: bold; font-size: 8px; width: 50%;">DOKÜMAN KODU:</td>
                         <td style="border: 0.5pt solid #000; text-align: left; padding: 2px; font-size: 8px;" contenteditable="true">PNT.FR.01</td>
@@ -493,12 +509,11 @@ function raporuOlustur() {
 
         list.forEach((p, index)=>{
             h+=`<tr><td contenteditable="true">${index + 1}</td><td contenteditable="true"></td><td class="isim-hucre" style="border-left:none; text-align:left; padding-left:3px;" contenteditable="true">${p.n}</td>`;
-            let hs=0, hg=0;
             days.forEach(d=>{
                 let v = p.data[getKey(d)] || "";
-                let isHS = (d.getDay()===0||d.getDay()===6);
                 let info = getVardiyaInfo(v);
-                let bg=isHS?'hucre-haftasonu':''; if(info.tip==='izin') bg='hucre-izin';
+                let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
+                if(info.tip==='izin') bg='hucre-izin';
                 h+=`<td contenteditable="true" class="veri-hucre ${bg}" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
                 if(d.getDay()===0){
                     h+=`<th class="bg-hafta veri-hucre" data-type="h-saat"></th><th class="bg-hafta veri-hucre" data-type="h-gun"></th><th class="bg-hafta veri-hucre" style="color:red" data-type="h-izin"></th>`;
@@ -525,7 +540,6 @@ function raporuOlustur() {
         sayfaHtml+=h;
     }
     document.getElementById('raporAlani').innerHTML = sayfaHtml;
-    // Otomatik hesaplama başlat
     document.querySelectorAll('.veri-hucre').forEach(td => satirHesapla(td));
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
@@ -641,6 +655,7 @@ function exceleSifirKayipsizKopyala() {
 </script>
 </body>
 </html>
+
 
 
 
