@@ -296,24 +296,38 @@ function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2
 function excelTarih(s){if(!s)return null; let m=s.trim().match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); return m?m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0'):null;}
 
 function satirHesapla(td) {
-    let tr = td.parentElement, cells = tr.querySelectorAll('.veri-hucre:not([style*="display: none"])');
+    if (!td) return;
+    let tr = td.parentElement;
+    if (!tr) return;
+
+    // Sadece veri girilen asıl hücreleri al
+    let cells = tr.querySelectorAll('.veri-hucre');
     let rawVal = getCleanValue(td.innerHTML);
+    
+    // Hücre içeriğini formatla (Görsel düzeltme)
+    td.innerHTML = formatliVardiya(rawVal);
+
     let hs=0, hg=0, hi=0;
     let ag=0, as=0, n_rt=0, n_ht=0, n_r=0, n_i=0, n_rtc=0, n_htc=0, age=0, totalFM=0;
 
     cells.forEach((c) => {
-        if(c.hasAttribute('data-merged-by')) return; 
+        // Eğer hücre birleştirilmişse (gizliyse) onu hesaplamaya dahil etme
+        if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return; 
         
         let val = getCleanValue(c.innerHTML); 
+        if (val === "" || val === "0") return;
+
         let info = getVardiyaInfo(val);
         let realVal = info.val;
         let isIzin = (info.tip === "izin");
 
+        // İzin ve mesai türlerini say
         if(realVal === "RT") n_rt++;
         else if(realVal === "HT") n_ht++;
         else if(realVal === "R") n_r++;
         else if(isIzin && !["RT","HT","R"].includes(realVal)) n_i++;
 
+        // Saat ve gece hesapla
         if(info.t > 0) {
             ag += 1;
             as += info.t;
@@ -323,19 +337,20 @@ function satirHesapla(td) {
             if(realVal === "RTÇ") n_rtc++;
         }
 
+        // Hafta sonu çalışması
         if(c.classList.contains("hucre-haftasonu") && info.t > 0) n_htc++;
 
+        // HAFTALIK TOPLAMLARI YAZDIRMA (Kritik Düzeltme Burası)
         if(c.nextElementSibling && c.nextElementSibling.classList.contains('bg-hafta')) {
-            let n = c.nextElementSibling;
-            if(n) { 
-                n.innerText = hs||""; 
-                n = n.nextElementSibling; 
-                while(n && n.style.display === 'none') n = n.nextElementSibling;
-                n.innerText = hg||""; 
-                n = n.nextElementSibling; 
-                while(n && n.style.display === 'none') n = n.nextElementSibling;
-                n.innerText = hi||""; 
-            }
+            let nSaat = c.nextElementSibling;
+            let nGun = nSaat ? nSaat.nextElementSibling : null;
+            let nIzin = nGun ? nGun.nextElementSibling : null;
+
+            // Güvenli yazdırma: Hücre varsa yaz, yoksa geç (Döngüye girip diğerlerini silmez)
+            if(nSaat && nSaat.classList.contains('bg-hafta')) nSaat.innerText = hs || "";
+            if(nGun && nGun.classList.contains('bg-hafta')) nGun.innerText = hg || "";
+            if(nIzin && nIzin.classList.contains('bg-hafta')) nIzin.innerText = hi || "";
+            
             totalFM += Math.max(0, hs - 45);
             hs=0; hg=0; hi=0;
         }
@@ -343,19 +358,24 @@ function satirHesapla(td) {
 
     totalFM += Math.max(0, hs - 45);
 
-    if(tr.querySelector('.s-calisma')) {
-        tr.querySelector('.s-calisma').innerText = ag + n_rt + n_ht + n_i + n_r;
-        tr.querySelector('.s-yol').innerText = ag + n_rtc;
-        tr.querySelector('.s-rapor').innerText = n_r || "0";
-        tr.querySelector('.s-izin').innerText = n_i || "0";
-        tr.querySelector('.s-ht').innerText = n_ht || "0";
-        tr.querySelector('.s-rt').innerText = n_rt || "0";
-        tr.querySelector('.s-rtc').innerText = n_rtc || "0";
-        tr.querySelector('.s-htc').innerText = n_htc * 9 || "0";
-        tr.querySelector('.s-fm').innerText = totalFM || "0";
-        tr.querySelector('.s-gece').innerText = age || "0";
-        tr.querySelector('.s-tgece').innerText = age || "0";
-    }
+    // SAĞ TARAFTAKİ ÖZET PANELİNİ GÜNCELLE
+    const setVal = (cls, val) => {
+        let el = tr.querySelector(cls);
+        if(el) el.innerText = val || "0";
+    };
+
+    setVal('.s-calisma', ag + n_rt + n_ht + n_i + n_r);
+    setVal('.s-yol', ag + n_rtc);
+    setVal('.s-rapor', n_r);
+    setVal('.s-izin', n_i);
+    setVal('.s-ht', n_ht);
+    setVal('.s-rt', n_rt);
+    setVal('.s-rtc', n_rtc);
+    setVal('.s-htc', n_htc * 9);
+    setVal('.s-fm', totalFM);
+    setVal('.s-gece', age);
+    setVal('.s-tgece', age);
+}
     
     td.innerHTML = formatliVardiya(rawVal);
 }
@@ -868,4 +888,5 @@ function kopyalamaYedekYontemi(htmlStr) {
 </script>
 
 </body>
+
 </html>
