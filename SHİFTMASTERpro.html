@@ -668,8 +668,25 @@
                 const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0;
                 cells.forEach(td => {
                     if(td.classList.contains("shift-cell")) {
-                        const val = td.innerText.trim(); let r = null; for(let key in shiftRules) { if(key.replace(/\s/g,'') === val.replace(/\s/g,'') || (val !== "" && key.includes(val))) { r = shiftRules[key]; break; } }
-                        if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(val === "") { td.style.background = "transparent"; }
+                        const val = td.innerText.trim();
+                        let r = null;
+                        
+                        // Önce standart kurallara bak
+                        for(let key in shiftRules) {
+                            if(key.replace(/\s/g,'') === val.replace(/\s/g,'')) { r = shiftRules[key]; break; }
+                        }
+                        
+                        if(r) {
+                            td.style.background = r.color;
+                            hW += r.w; hN += r.n; aW += r.w; aN += r.n;
+                        } 
+                        // EĞER ÖZEL GİRİLMİŞ BİR SAAT VARSA
+                        else if(td.hasAttribute("data-custom-w")) {
+                            let customW = parseFloat(td.getAttribute("data-custom-w")) || 0;
+                            let customN = parseFloat(td.getAttribute("data-custom-n")) || 0;
+                            hW += customW; hN += customN; aW += customW; aN += customN;
+                        }
+                        else if(val === "") { td.style.background = "transparent"; }
                     }
                     if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
                     if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
@@ -799,4 +816,5 @@
 </body>
 
 </html>
+
 
