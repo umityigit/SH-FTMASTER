@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v113.0 - GHOST PIN EDITION</title>
+    <title>ShiftMaster v113.0 - GHOST PIN & PATRON EDITION</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,18 +24,32 @@
         .splash-logo { width: 150px; height: 150px; background: var(--accent); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 80px rgba(56, 189, 248, 0.5); animation: pulse 2.5s infinite, logoDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; margin-bottom: 30px; }
         .splash-text-container { display: flex; gap: 5px; margin-bottom: 15px; }
         .splash-char { font-size: 56px; font-weight: 900; color: var(--text); text-shadow: 0 5px 15px #000; opacity: 0; transform: rotateY(90deg) translateY(50px); display: inline-block; animation: letterReveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-        .splash-prod { font-size: 14px; color: #94a3b8; letter-spacing: 3px; font-weight: 600; opacity: 0; border-top: 1px solid #334155; padding-top: 20px; margin-top: 10px; width: 300px; text-align: center; animation: fadeUp 1s forwards 1.5s; }
+        
+        /* GİZLİ KİLİT TETİKLEYİCİSİ */
+        .splash-prod { font-size: 14px; color: #94a3b8; letter-spacing: 3px; font-weight: 600; opacity: 0; border-top: 1px solid #334155; padding-top: 20px; margin-top: 10px; width: 300px; text-align: center; animation: fadeUp 1s forwards 1.5s; cursor: pointer; user-select: none; }
+        .splash-prod:active { color: var(--warning); }
 
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 60px rgba(56, 189, 248, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 100px rgba(56, 189, 248, 0.8); } 100% { transform: scale(1); box-shadow: 0 0 60px rgba(56, 189, 248, 0.4); } }
         @keyframes logoDrop { from { transform: scale(0) rotate(-180deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
         @keyframes letterReveal { to { opacity: 1; transform: rotateY(0) translateY(0); text-shadow: 0 0 20px var(--accent); } }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 0.8; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 🔐 KİLİT EKRANI */
+        /* 🔐 KİŞİSEL KİLİT EKRANI */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1e293b 0%, #020617 100%); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 999998; }
-        .lock-box { background: rgba(15, 23, 42, 0.95); padding: 45px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 400px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); transition: transform 0.2s; }
-        .lock-input { width: 85%; background: #020617; border: 2px solid var(--accent); color: var(--accent); padding: 20px; border-radius: 15px; font-size: 32px; text-align: center; margin-bottom: 25px; outline: none; transition: 0.3s; font-family: 'Poppins', sans-serif; }
+        
+        .profile-container { display: flex; gap: 30px; margin-bottom: 40px; }
+        .profile-card { background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; padding: 30px 20px; border-radius: 20px; width: 140px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
+        .profile-card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 15px 40px rgba(56, 189, 248, 0.3); }
+        .profile-card.active { border-color: var(--success); background: rgba(16, 185, 129, 0.1); transform: scale(1.05); }
+        .profile-icon { font-size: 50px; margin-bottom: 15px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); }
+        .profile-name { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 1px; }
+        
+        .pass-box { background: rgba(15, 23, 42, 0.95); padding: 30px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 350px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); transition: transform 0.2s; display: none; flex-direction: column; align-items: center; }
+        .pass-input { width: 80%; background: #020617; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; font-size: 24px; text-align: center; margin-bottom: 20px; outline: none; transition: 0.3s; font-family: 'Poppins', sans-serif; letter-spacing: 5px; }
         .shake { animation: shake 0.5s; } @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+
+        /* KICK (GÖLGE KİLİT) EKRANI */
+        #kickScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10000000; }
 
         /* ANA YAPI */
         #mainContent { display: none; opacity: 0; animation: fadeIn 1s forwards; } @keyframes fadeIn { to { opacity: 1; } }
@@ -43,14 +57,21 @@
         .card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #334155; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden; transition: transform 0.3s; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7); }
 
-        /* 📢 HABERLEŞME & ARŞİV EKRANI */
-        .news-container { background: var(--card); border: 2px solid #334155; border-radius: 20px; padding: 20px; margin-bottom: 25px; }
+        /* 📢 HABERLEŞME VE LOG EKRANI YAN YANA */
+        .top-panels { display: flex; gap: 20px; margin-bottom: 25px; }
+        
+        .news-container { flex: 1; background: var(--card); border: 2px solid #334155; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; }
         .news-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .news-list { height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
         .news-item { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent); padding: 12px; border-radius: 8px; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
         .news-text { font-size: 13px; font-weight: 500; color: #fff; line-height: 1.4; }
         .news-time { font-size: 10px; color: #94a3b8; align-self: flex-end; margin-top: 6px; font-weight: 400; font-style: italic; }
-        .news-delete { position: absolute; top: 10px; right: 10px; color: var(--danger); cursor: pointer; font-size: 16px; opacity: 0.6; transition: 0.3s; }
+        
+        /* 🕵️‍♂️ LOG PANOSU */
+        .log-container { flex: 1; background: #0f172a; border: 2px solid var(--warning); border-radius: 20px; padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
+        .log-list { height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 5px; }
+        .log-item { background: rgba(0,0,0,0.5); border-left: 3px solid var(--warning); padding: 8px 12px; border-radius: 6px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; }
+        .log-user { font-weight: 800; color: var(--warning); margin-right: 8px; }
 
         .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
         .archive-card { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
@@ -76,17 +97,12 @@
         .scroll-area { overflow-x: auto; border-radius: 15px; border: 1px solid #334155; background: #0f172a; max-width: 100%; box-shadow: inset 0 0 20px #000; position: relative; padding-bottom: 15px; }
         table { width: auto; border-collapse: collapse; min-width: 100%; table-layout: auto; }
         
-        /* ✨ TABLO HÜCRELERİ VE 3D EFEKT ✨ */
+        /* TABLO HÜCRELERİ */
         th, td { border: 1px solid #1e293b; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; white-space: normal; line-height: 1.2; position: relative; transition: all 0.2s; }
         th { background: #1e293b; color: var(--accent); text-transform: uppercase; height: 50px; user-select: none; font-weight: 800; }
         td { color: #cbd5e1; height: 50px; }
 
-        .shift-cell { 
-            box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.3), inset -2px -2px 6px rgba(0, 0, 0, 0.6); 
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); 
-            color: #ffffff !important; 
-        }
-        
+        .shift-cell { box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.3), inset -2px -2px 6px rgba(0, 0, 0, 0.6); text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); color: #ffffff !important; }
         .shift-cell:focus, .editable-name:focus { background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(12px); box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.6), 0 0 15px var(--accent) !important; color: #fff !important; outline: none; }
         .selected-cell { background: rgba(56, 189, 248, 0.4) !important; outline: 2px solid var(--accent) !important; color: #fff !important; z-index: 10; }
         .row-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
@@ -105,15 +121,7 @@
         .custom-menu { display: none; position: absolute; background: #1e293b; border: 2px solid var(--accent); border-radius: 20px; z-index: 100010; width: 360px; box-shadow: 0 15px 50px #000; padding: 12px; animation: menuPop 0.2s; }
         @keyframes menuPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        /* ✨ 3D MENÜ BUTON EFEKTİ ✨ */
-        .menu-item { 
-            padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 800; font-size: 11px; transition: 0.2s; display: flex; align-items: center; justify-content: center;
-            box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.25), inset -3px -3px 8px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.4);
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #ffffff !important;
-        }
+        .menu-item { padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 800; font-size: 11px; transition: 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.25), inset -3px -3px 8px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.4); text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; }
         .menu-item:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.5); box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.4), inset -3px -3px 8px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(56, 189, 248, 0.4); }
         
         .stat-sub { display: inline-block; width: 44%; border: 1px solid #555; font-size: 11px; padding: 4px 0; border-radius: 6px; margin: 1px; font-weight: 800; background: rgba(0,0,0,0.2); transition: 0.2s; }
@@ -133,40 +141,9 @@
         .staff-del { margin-left: auto; color: #ef4444; font-size: 18px; font-weight: bold; cursor: pointer; padding: 2px 8px; border-radius: 4px; pointer-events: auto; }
         .staff-del:hover { background: rgba(239, 68, 68, 0.2); }
 
-        /* ✨ YENİ: HÜCRE İÇİ HAYALET İĞNE (GHOST PIN) CSS ✨ */
-        .shift-cell[data-pin]::before {
-            content: '📍'; /* Kırmızı İğne İkonu */
-            position: absolute;
-            top: 2px; right: 2px;
-            font-size: 13px;
-            z-index: 10;
-            cursor: help;
-            text-shadow: 0 0 5px #000;
-            animation: pinPulse 2s infinite;
-        }
+        .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: 2px; right: 2px; font-size: 13px; z-index: 10; cursor: help; text-shadow: 0 0 5px #000; animation: pinPulse 2s infinite; }
         @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
-        
-        /* ✨ İĞNENİN ÜSTÜNE GELİNCE AÇILAN SİYAH CAM EFEKTLİ NOT KUTUSU ✨ */
-        .shift-cell[data-pin]:hover::after {
-            content: attr(data-pin);
-            position: absolute;
-            bottom: calc(100% + 5px); left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid var(--warning);
-            color: var(--warning);
-            padding: 10px 15px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            white-space: pre-wrap; /* Metni düzgün sığdırır */
-            width: max-content;
-            max-width: 200px;
-            z-index: 99999;
-            pointer-events: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-        }
+        .shift-cell[data-pin]:hover::after { content: attr(data-pin); position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); border: 1px solid var(--warning); color: var(--warning); padding: 10px 15px; border-radius: 12px; font-size: 12px; font-weight: 700; white-space: pre-wrap; width: max-content; max-width: 200px; z-index: 99999; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -175,23 +152,56 @@
         <div class="splash-hospital">T.C. SAĞLIK BAKANLIĞI<br>ANTALYA DÖŞEMEALTI DEVLET HASTANESİ</div>
         <div class="splash-logo"><svg viewBox="0 0 24 24" width="80" fill="#0f172a"><path d="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z"/></svg></div>
         <div class="splash-text-container" id="splashTextContainer"></div>
-        <div class="splash-prod">PROD. BY ÜMİT ABİ 2026</div>
+        <div class="splash-prod" id="secretTrigger">PROD. BY ÜMİT ABİ 2026</div>
+    </div>
+
+    <div id="kickScreen">
+        <div style="font-size: 80px; margin-bottom: 20px;">🛑</div>
+        <h1 style="color: var(--danger); font-weight: 900; text-align: center; text-transform: uppercase;">SİSTEM YÖNETİCİ TARAFINDAN KİLİTLENDİ</h1>
+        <p style="color: #94a3b8; font-size: 18px; text-align: center; max-width: 600px;">Sistem şu anda Ümit tarafından bakıma alınmış veya kilitlenmiştir. Lütfen yöneticiniz ile iletişime geçin.</p>
     </div>
 
     <div id="lockScreen">
-        <div class="lock-box">
-            <h2 style="color:white; margin-bottom:30px; font-weight:900;">🔐 SİSTEM KİLİTLİ</h2>
-            <input type="password" id="passInput" class="lock-input" placeholder="••••" onkeydown="if(event.key==='Enter') checkPass()">
-            <button class="btn" style="background:var(--accent); color:#000; width:80%; justify-content:center; font-size:16px; padding:15px;" onclick="checkPass()">SİSTEMİ AÇ</button>
+        <h2 style="color:white; margin-bottom:40px; font-weight:900; font-size: 28px; letter-spacing: 2px;">👥 KULLANICI SEÇİN</h2>
+        
+        <div class="profile-container">
+            <div class="profile-card" onclick="selectProfile('ali')">
+                <div class="profile-icon">⚔️</div>
+                <div class="profile-name">ALİ</div>
+            </div>
+            <div class="profile-card" onclick="selectProfile('gullu')">
+                <div class="profile-icon">🌹</div>
+                <div class="profile-name">GÜLLÜ</div>
+            </div>
+            <div class="profile-card" onclick="selectProfile('umit')" style="border-color: var(--warning);">
+                <div class="profile-icon">☀️</div>
+                <div class="profile-name" style="color: var(--warning);">ÜMİT</div>
+            </div>
+        </div>
+
+        <div class="pass-box" id="passBox">
+            <h3 style="color:var(--accent); margin-top:0;" id="loginTitle">ŞİFRE GİRİNİZ</h3>
+            <input type="password" id="passInput" class="pass-input" placeholder="••••" onkeydown="if(event.key==='Enter') checkPass()">
+            <button class="btn" style="background:var(--accent); color:#000; width:100%; justify-content:center; font-size:16px; padding:15px;" onclick="checkPass()">GİRİŞ YAP</button>
+            <button class="btn" style="background:transparent; color:#94a3b8; margin-top:10px; font-size: 10px;" onclick="cancelLogin()">GERİ DÖN</button>
         </div>
     </div>
 
     <div id="mainContent">
         <div class="container">
-            <div class="news-container card">
-                <div class="news-header"><h4 style="margin:0; color:var(--accent); display:flex; align-items:center; gap:10px;">📢 HABERLEŞME PANOSU</h4></div>
-                <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="newsInput" class="glass-input" style="flex:1;" placeholder="Ekip için bir not bırak..." onkeydown="if(event.key==='Enter') addNews()"><button class="btn" style="background:var(--accent); color:#000;" onclick="addNews()">GÖNDER</button></div>
-                <div id="newsList" class="news-list"></div>
+            <div class="top-panels">
+                <div class="news-container card">
+                    <div class="news-header"><h4 style="margin:0; color:var(--accent); display:flex; align-items:center; gap:10px;">📢 HABERLEŞME PANOSU</h4></div>
+                    <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="newsInput" class="glass-input" style="flex:1;" placeholder="Ekip için bir not bırak..." onkeydown="if(event.key==='Enter') addNews()"><button class="btn" style="background:var(--accent); color:#000;" onclick="addNews()">GÖNDER</button></div>
+                    <div id="newsList" class="news-list"></div>
+                </div>
+
+                <div class="log-container card">
+                    <div class="news-header"><h4 style="margin:0; color:var(--warning); display:flex; align-items:center; gap:10px;">🕵️‍♂️ SON İŞLEMLER (LOG)</h4></div>
+                    <div id="logList" class="log-list">
+                        <div style="color: #475569; font-size: 11px; text-align: center; margin-top: 20px;">Sistem hareketleri bekleniyor...</div>
+                    </div>
+                </div>
             </div>
 
             <div class="card">
@@ -252,15 +262,12 @@
             <div class="menu-item" style="background:linear-gradient(145deg, #f59e0b, #b45309);" onclick="setShift('08:00-20:00','linear-gradient(145deg, #f59e0b, #b45309)')">☀️ 08-20</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #1e3a8a, #020617);" onclick="setShift('20:00-08:00','linear-gradient(145deg, #1e3a8a, #020617)')">🌙 20-08</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #f97316, #9a3412);" onclick="setShift('12:00-24:00','linear-gradient(145deg, #f97316, #9a3412)')">🕒 12-24</div>
-            
             <div class="menu-item" style="background:linear-gradient(145deg, #0ea5e9, #0369a1);" onclick="setShift('08:00-16:00','linear-gradient(145deg, #0ea5e9, #0369a1)')">🕘 08-16</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #3b82f6, #1d4ed8);" onclick="setShift('16:00-24:00','linear-gradient(145deg, #3b82f6, #1d4ed8)')">🌆 16-24</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #4338ca, #1e1b4b);" onclick="setShift('24:00-08:00','linear-gradient(145deg, #4338ca, #1e1b4b)')">🌑 24-08</div>
-
             <div class="menu-item" style="background:linear-gradient(145deg, #10b981, #047857);" onclick="setShift('07:00-15:00','linear-gradient(145deg, #10b981, #047857)')">🌅 07-15</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #8b5cf6, #5b21b6);" onclick="setShift('15:00-23:00','linear-gradient(145deg, #8b5cf6, #5b21b6)')">🌆 15-23</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #4c1d95, #2e1065);" onclick="setShift('23:00-07:00','linear-gradient(145deg, #4c1d95, #2e1065)')">🌃 23-07</div>
-
             <div class="menu-item" style="background:linear-gradient(145deg, #d946ef, #86198f);" onclick="setShift('08:00-18:00','linear-gradient(145deg, #d946ef, #86198f)')">🕒 08-18</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #14b8a6, #0f766e);" onclick="setShift('HT','linear-gradient(145deg, #14b8a6, #0f766e)')">🏖️ HT</div>
             <div class="menu-item" style="background:linear-gradient(145deg, #f43f5e, #be123c);" onclick="setShift('Yİ','linear-gradient(145deg, #f43f5e, #be123c)')">🌴 Yİ</div>
@@ -277,160 +284,149 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
         firebase.initializeApp(firebaseConfig);
-    const connectedRef = firebase.database().ref(".info/connected");
-        connectedRef.on("value", (snap) => {
-          if (snap.val() === true) {
-            console.log("Sistem Çevrimiçi: Veriler Firebase'e eşitleniyor... ✅");
-          } else {
-            console.log("Sistem Çevrimdışı: Değişiklikler tarayıcıya kaydediliyor... 📶");
-          }
-        });
         const db = firebase.database();
+
+        // KULLANICI BİLGİLERİ VE LOG SİSTEMİ
+        const users = {
+            'ali': { name: 'ALİ', pass: 'ali2026', icon: '⚔️' },
+            'gullu': { name: 'GÜLLÜ', pass: 'gullu2026', icon: '🌹' },
+            'umit': { name: 'ÜMİT', pass: 'umit2026', icon: '☀️' }
+        };
+        let currentUser = "";
+        let selectedUserKey = "";
+
+        // GÖLGE KİLİT (PATRON MODU) DİNLEYİCİSİ
+        db.ref('sistem_kilitli').on('value', snap => {
+            const isLocked = snap.val();
+            if(isLocked && currentUser !== 'ÜMİT' && currentUser !== "") {
+                // Eğer kilitlendiyse ve içeride Ümit hariç biri varsa anında atılır!
+                document.getElementById('kickScreen').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+            }
+        });
+
+        // İŞLEM LOGLAMASI FONKSİYONU
+        function logAction(actionText) {
+            if(!currentUser) return;
+            const logData = { user: currentUser, action: actionText, time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}) };
+            db.ref("islem_loglari").push(logData);
+        }
+
+        // LOGLARI EKRANDA GÖSTERME
+        db.ref("islem_loglari").limitToLast(15).on("value", snap => {
+            const l = document.getElementById("logList"); l.innerHTML = "";
+            const data = snap.val();
+            if(data) {
+                Object.values(data).reverse().forEach(val => {
+                    l.innerHTML += `<div class="log-item"><span class="log-user">${val.user}:</span> <span style="flex:1;">${val.action}</span> <span style="color:#64748b; font-size:9px;">${val.time}</span></div>`;
+                });
+            } else { l.innerHTML = `<div style="color: #475569; font-size: 11px; text-align: center; margin-top: 20px;">Henüz işlem yok.</div>`; }
+        });
+
+        // KİŞİSEL GİRİŞ SİSTEMİ
+        function selectProfile(key) {
+            db.ref('sistem_kilitli').once('value').then(snap => {
+                if(snap.val() && key !== 'umit') {
+                    alert("🛑 SİSTEM YÖNETİCİ TARAFINDAN GEÇİCİ OLARAK BAKIMA ALINMIŞTIR.");
+                    return;
+                }
+                selectedUserKey = key;
+                document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+                
+                document.getElementById('loginTitle').innerText = `${users[key].icon} ${users[key].name} ŞİFRESİ`;
+                document.getElementById('passBox').style.display = 'flex';
+                document.querySelector('.profile-container').style.display = 'none';
+                document.getElementById('passInput').focus();
+            });
+        }
+
+        function cancelLogin() {
+            document.getElementById('passBox').style.display = 'none';
+            document.querySelector('.profile-container').style.display = 'flex';
+            document.getElementById('passInput').value = "";
+            document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('active'));
+        }
+
+        function checkPass() {
+            const input = document.getElementById("passInput").value;
+            if(input === users[selectedUserKey].pass) {
+                currentUser = users[selectedUserKey].name;
+                logAction("Sisteme giriş yaptı.");
+                document.getElementById("lockScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+                loadStaffPool(); loadArchives(); loadNews();
+            } else {
+                const box = document.getElementById("passBox"); box.classList.add("shake");
+                setTimeout(() => box.classList.remove("shake"), 500);
+                document.getElementById("passInput").value = "";
+            }
+        }
+
+        // GÖLGE KİLİT TETİKLEYİCİSİ (PROD. BY YAZISINA 3 TIK)
+        let secretClicks = 0;
+        let secretTimer;
+        document.getElementById('secretTrigger').addEventListener('click', () => {
+            secretClicks++;
+            clearTimeout(secretTimer);
+            secretTimer = setTimeout(() => { secretClicks = 0; }, 1500);
+            
+            if(secretClicks >= 3) {
+                secretClicks = 0;
+                const godPass = prompt("🔥 GÖLGE KİLİT MASTER ŞİFRE:");
+                if(godPass === "PATRON") {
+                    db.ref('sistem_kilitli').once('value').then(snap => {
+                        let isLocked = snap.val();
+                        if(isLocked) {
+                            if(confirm("Sistem şu an kilitli. KİLİDİ AÇMAK ister misin?")) { db.ref('sistem_kilitli').set(false); alert("Sistem Kiliti Açıldı. Herkes girebilir."); }
+                        } else {
+                            if(confirm("Sistemi kitlemek üzeresin. Senin dışında herkes ATILACAK. Onaylıyor musun?")) { db.ref('sistem_kilitli').set(true); alert("Sistem kilitlendi. Yalnızca sen varsın."); }
+                        }
+                    });
+                }
+            }
+        });
+
 
 // ✨ TAM ÇEVRİMDIŞI (OFFLINE-FIRST) KALKANI - V2 ✨
             (function() {
                 if (!window.firebase || !firebase.database) return;
+                const dummyRef = firebase.database().ref(); const dbProto = Object.getPrototypeOf(dummyRef);
+                function getPath(ref) { return ref.toString().replace(ref.root.toString(), '') || 'ana_dizin'; }
 
-                // Firebase'in arka plan referans motorunu ele geçiriyoruz
-                const dummyRef = firebase.database().ref();
-                const dbProto = Object.getPrototypeOf(dummyRef);
-
-                // Yolu temizleyen yardımcı fonksiyon
-                function getPath(ref) {
-                    return ref.toString().replace(ref.root.toString(), '') || 'ana_dizin';
-                }
-
-                // 1. TABLOLARI VE VERİLERİ OKUMA (ON) YAKALAYICISI
                 const origOn = dbProto.on;
                 dbProto.on = function(eventType, callback, cancelCallback, context) {
                     if (eventType === 'value') {
-                        const safePath = getPath(this);
-                        const cachedData = localStorage.getItem('sm_v2_' + safePath);
-
-                        if (cachedData) {
-                            try {
-                                const parsed = JSON.parse(cachedData);
-                                const fakeSnap = {
-                                    val: () => parsed,
-                                    exists: () => parsed !== null,
-                                    key: this.key
-                                };
-                                setTimeout(() => {
-                                    if (typeof callback === 'function') callback(fakeSnap);
-                                }, 10);
-                            } catch (e) {}
-                        }
-
-                        const wrappedCallback = function(snap) {
-                            if (snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val()));
-                            if (typeof callback === 'function') callback(snap);
-                        };
+                        const safePath = getPath(this); const cachedData = localStorage.getItem('sm_v2_' + safePath);
+                        if (cachedData) { try { const parsed = JSON.parse(cachedData); const fakeSnap = { val: () => parsed, exists: () => parsed !== null, key: this.key }; setTimeout(() => { if (typeof callback === 'function') callback(fakeSnap); }, 10); } catch (e) {} }
+                        const wrappedCallback = function(snap) { if (snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val())); if (typeof callback === 'function') callback(snap); };
                         return origOn.call(this, eventType, wrappedCallback, cancelCallback, context);
-                    }
-                    return origOn.call(this, eventType, callback, cancelCallback, context);
+                    } return origOn.call(this, eventType, callback, cancelCallback, context);
                 };
 
-                // 2. TEK SEFERLİK OKUMA (ONCE) YAKALAYICISI
                 const origOnce = dbProto.once;
                 dbProto.once = function(eventType, callback, failureCallback, context) {
                     const safePath = getPath(this);
                     if (eventType === 'value' && !navigator.onLine) {
                         const cachedData = localStorage.getItem('sm_v2_' + safePath);
-                        if (cachedData) {
-                            try {
-                                const parsed = JSON.parse(cachedData);
-                                const fakeSnap = {
-                                    val: () => parsed,
-                                    exists: () => parsed !== null,
-                                    key: this.key
-                                };
-                                if (typeof callback === 'function') callback(fakeSnap);
-                                return Promise.resolve(fakeSnap);
-                            } catch (e) {}
-                        }
+                        if (cachedData) { try { const parsed = JSON.parse(cachedData); const fakeSnap = { val: () => parsed, exists: () => parsed !== null, key: this.key }; if (typeof callback === 'function') callback(fakeSnap); return Promise.resolve(fakeSnap); } catch (e) {} }
                     }
-                    return origOnce.call(this, eventType, callback, failureCallback, context).then(snap => {
-                        if (eventType === 'value' && snap)
-                            localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val()));
-                        return snap;
-                    });
+                    return origOnce.call(this, eventType, callback, failureCallback, context).then(snap => { if (eventType === 'value' && snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val())); return snap; });
                 };
 
-                // 3. KAYIT ETME VE DEĞİŞİKLİK (SET) YAKALAYICISI
-                const origSet = dbProto.set;
-                dbProto.set = function(value, onComplete) {
-                    const safePath = getPath(this);
-                    localStorage.setItem('sm_v2_' + safePath, JSON.stringify(value));
-                    if (!navigator.onLine) {
-                        let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
-                        queue.push({ type: 'set', path: safePath, data: value });
-                        localStorage.setItem('sm_queue', JSON.stringify(queue));
-                        console.log("Çevrimdışı SET kuyruğa alındı: " + safePath);
-                        if (typeof onComplete === 'function') onComplete(null);
-                        return Promise.resolve();
-                    }
-                    return origSet.call(this, value, onComplete);
-                };
+                const origSet = dbProto.set; dbProto.set = function(value, onComplete) { const safePath = getPath(this); localStorage.setItem('sm_v2_' + safePath, JSON.stringify(value)); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'set', path: safePath, data: value }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origSet.call(this, value, onComplete); };
+                const origUpdate = dbProto.update; dbProto.update = function(value, onComplete) { const safePath = getPath(this); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'update', path: safePath, data: value }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origUpdate.call(this, value, onComplete); };
+                const origRemove = dbProto.remove; dbProto.remove = function(onComplete) { const safePath = getPath(this); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'remove', path: safePath }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origRemove.call(this, onComplete); };
 
-                // 3.5. GÜNCELLEME (UPDATE) YAKALAYICISI (Tüm Sorunları Çözen Kısım)
-                const origUpdate = dbProto.update;
-                dbProto.update = function(value, onComplete) {
-                    const safePath = getPath(this);
-                    if (!navigator.onLine) {
-                        let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
-                        queue.push({ type: 'update', path: safePath, data: value });
-                        localStorage.setItem('sm_queue', JSON.stringify(queue));
-                        console.log("Çevrimdışı UPDATE kuyruğa alındı: " + safePath);
-                        if (typeof onComplete === 'function') onComplete(null);
-                        return Promise.resolve();
-                    }
-                    return origUpdate.call(this, value, onComplete);
-                };
-
-                // 3.6. SİLME (REMOVE) YAKALAYICISI 
-                const origRemove = dbProto.remove;
-                dbProto.remove = function(onComplete) {
-                    const safePath = getPath(this);
-                    if (!navigator.onLine) {
-                        let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
-                        queue.push({ type: 'remove', path: safePath });
-                        localStorage.setItem('sm_queue', JSON.stringify(queue));
-                        console.log("Çevrimdışı REMOVE kuyruğa alındı: " + safePath);
-                        if (typeof onComplete === 'function') onComplete(null);
-                        return Promise.resolve();
-                    }
-                    return origRemove.call(this, onComplete);
-                };
-
-                // 4. KUYRUĞU BOŞALTMA MOTORU VE SENKRONİZASYON
-                function kuyruguBosalt() {
-                    let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]');
-                    if (queue.length > 0) {
-                        console.log("İnternet var! Bekleyen " + queue.length + " işlem Firebase'e gönderiliyor... 🚀");
-                        queue.forEach(item => {
-                            if (item.type === 'set') firebase.database().ref(item.path).set(item.data);
-                            else if (item.type === 'update') firebase.database().ref(item.path).update(item.data);
-                            else if (item.type === 'remove') firebase.database().ref(item.path).remove();
-                        });
-                        localStorage.removeItem('sm_queue'); // Gönderilenleri temizle
-                    }
-                }
-
-                window.addEventListener('online', kuyruguBosalt);
-
-                setTimeout(() => {
-                    if (navigator.onLine) kuyruguBosalt();
-                }, 1500);
-
+                function kuyruguBosalt() { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); if (queue.length > 0) { queue.forEach(item => { if (item.type === 'set') firebase.database().ref(item.path).set(item.data); else if (item.type === 'update') firebase.database().ref(item.path).update(item.data); else if (item.type === 'remove') firebase.database().ref(item.path).remove(); }); localStorage.removeItem('sm_queue'); } }
+                window.addEventListener('online', kuyruguBosalt); setTimeout(() => { if (navigator.onLine) kuyruguBosalt(); }, 1500);
             })();
 
         let activeCell = null, staffList = [], history = [];
         let currentTargetTable = null; 
-        
         let currentMasterArchiveId = null;
         let currentMasterArchiveName = "Yeni Dosya";
 
-        // ✨ YENİ 3D RENKLER VE DOĞRU SAATLER ✨
         const shiftRules = {
             '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
             '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' },
@@ -447,46 +443,29 @@
             'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }
         };
 
-        function checkPass() {
-            if(document.getElementById("passInput").value === "ADDH2026") {
-                document.getElementById("lockScreen").style.display = "none";
-                document.getElementById("mainContent").style.display = "block";
-                loadStaffPool(); loadArchives(); loadNews();
-            } else {
-                const box = document.querySelector(".lock-box"); box.classList.add("shake");
-                setTimeout(() => box.classList.remove("shake"), 500);
-                document.getElementById("passInput").value = "";
-            }
-        }
-
         function openTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; setTimeout(() => modal.classList.add('show'), 10); }
         function closeTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
-        function loadNews() { db.ref("haberler").on("value", snap => { const l = document.getElementById("newsList"); l.innerHTML = ""; const data = snap.val(); if(data) { Object.entries(data).reverse().forEach(([id, val]) => { l.innerHTML += `<div class="news-item"><div class="news-text">${val.text}</div><div class="news-time">${val.time}</div><span class="news-delete" onclick="deleteNews('${id}')">×</span></div>`; }); } }); }
-        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), time: new Date().toLocaleString('tr-TR') }); i.value = ""; } }
-        function deleteNews(id) { if(confirm("Sil?")) db.ref("haberler").child(id).remove(); }
+        function loadNews() { db.ref("haberler").on("value", snap => { const l = document.getElementById("newsList"); l.innerHTML = ""; const data = snap.val(); if(data) { Object.entries(data).reverse().forEach(([id, val]) => { l.innerHTML += `<div class="news-item"><div class="news-text">${val.text}</div><div class="news-time">${val.user} - ${val.time}</div><span class="news-delete" onclick="deleteNews('${id}')" style="position: absolute; top: 10px; right: 10px; color: var(--danger); cursor: pointer;">×</span></div>`; }); } }); }
+        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR') }); logAction(`Panoya not bıraktı: "${i.value.substring(0,10)}..."`); i.value = ""; } }
+        function deleteNews(id) { if(confirm("Sil?")) { db.ref("haberler").child(id).remove(); logAction("Panodan bir not sildi."); } }
 
         function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const data = snap.val(); let count = 0; staffList = []; if(data) { Object.entries(data).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; const div = document.createElement("div"); div.className = "staff-chip"; div.innerHTML = `<input type="checkbox" value="${item.name}"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; p.appendChild(div); }); } document.getElementById("staffCounter").innerText = count; }); }
-        function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); inp.value = ""; } }
-        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); } }
+        function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); logAction(`Havuz'a kişi ekledi: ${v}`); inp.value = ""; } }
+        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); logAction("Havuzdan kişi sildi."); } }
 
         function addGhostPinToCell() {
             if(!activeCell) return;
             let currentNote = activeCell.getAttribute("data-pin") || "";
-            let newNote = prompt("Bu hücreye iğnelemek istediğiniz notu yazın:\n(Hücrenin üzerine gelince görünecek)", currentNote);
+            let newNote = prompt("Bu hücreye iğnelemek istediğiniz notu yazın:", currentNote);
             if(newNote !== null) {
                 if(newNote.trim() === "") { activeCell.removeAttribute("data-pin"); } 
-                else { activeCell.setAttribute("data-pin", newNote.trim()); }
+                else { activeCell.setAttribute("data-pin", newNote.trim()); logAction(`Hücreye iğne taktı.`); }
                 saveHistory();
             }
             document.getElementById("contextMenu").style.display = "none";
         }
-        function removeGhostPinFromCell() {
-            if(!activeCell) return;
-            activeCell.removeAttribute("data-pin");
-            saveHistory();
-            document.getElementById("contextMenu").style.display = "none";
-        }
+        function removeGhostPinFromCell() { if(!activeCell) return; activeCell.removeAttribute("data-pin"); saveHistory(); document.getElementById("contextMenu").style.display = "none"; logAction(`Hücre iğnesini kaldırdı.`); }
 
         function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
             const cols = customColCount || parseInt(document.getElementById("colCount").value);
@@ -516,12 +495,10 @@
                     <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:4px 10px; border-radius:8px; margin-left:auto;">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span>
                 </div>
                 <div class="scroll-area">${h}</div>
-                
                 <div style="margin-top: 20px; padding: 15px; background: rgba(15, 23, 42, 0.4); border-radius: 15px; border: 1px dashed var(--accent);">
                     <label style="font-size: 12px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">📝 BU AY NE OLDU? <span style="color:#94a3b8; font-weight:400; font-size:10px;">(Genel Tablo Notları, Olaylar... Hepsi arşive kaydedilir.)</span></label>
-                    <textarea class="table-notes glass-input" style="width: 100%; height: 60px; margin-top: 10px; resize: vertical; box-sizing: border-box; font-size:12px; color:#fff; border-color:var(--accent);" placeholder="Bu tabloyla ilgili aklınızda tutamadığınız her şeyi buraya yazın... İleride hayat kurtarır!">${savedNotes}</textarea>
+                    <textarea class="table-notes glass-input" style="width: 100%; height: 60px; margin-top: 10px; resize: vertical; box-sizing: border-box; font-size:12px; color:#fff; border-color:var(--accent);" placeholder="Bu tabloyla ilgili aklınızda tutamadığınız her şeyi buraya yazın...">${savedNotes}</textarea>
                 </div>
-
                 <div class="table-actions-bottom">
                     <button class="btn" style="background:#10b981; color:white;" onclick="addEmptyRow(this)">➕ SATIR EKLE</button>
                     <button class="btn" style="background:#0ea5e9; color:white;" onclick="copyTableRows(this)">📋 KOPYALA</button>
@@ -545,14 +522,7 @@
         }
 
         function createRowHtml(name, colCount, startDt, savedShifts = null) {
-            let cells = `<td><div style="display:flex; align-items:center; gap:8px;">
-                <input type="checkbox" class="row-checkbox">
-                <div class="name-wrapper">
-                    <div class="nav-box"><button class="mini-btn" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" onclick="moveRow(this,1)">▼</button></div>
-                    <div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div>
-                    <button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button>
-                </div>
-            </div></td>`;
+            let cells = `<td><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="nav-box"><button class="mini-btn" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" onclick="moveRow(this,1)">▼</button></div><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`;
             let shiftIdx = 0;
             for(let i=0; i<colCount; i++) {
                 let d = new Date(startDt); d.setDate(startDt.getDate() + i);
@@ -560,7 +530,6 @@
                 const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent";
                 const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : "";
                 const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; 
-                
                 cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`;
                 shiftIdx++; if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:#334155 !important;"></td>`;
             }
@@ -568,18 +537,7 @@
             return `<tr>${cells}</tr>`;
         }
 
-        function takeFullScreenshot(btn) { 
-            const wrapper = btn.closest('.table-wrapper'); 
-            const captureArea = wrapper.querySelector(".scroll-area"); 
-            const table = wrapper.querySelector("table"); 
-            let oldText = btn.innerHTML; btn.innerHTML = "⏳ FOTO ALINIYOR..."; 
-            let oldOverflow = captureArea.style.overflowX; captureArea.style.overflowX = 'visible'; 
-            html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, width: table.scrollWidth + 10 }).then(canvas => { 
-                const link = document.createElement("a"); link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; 
-                link.href = canvas.toDataURL(); link.click(); btn.innerHTML = oldText; captureArea.style.overflowX = oldOverflow; 
-            }); 
-        }
-
+        function takeFullScreenshot(btn) { const wrapper = btn.closest('.table-wrapper'); const captureArea = wrapper.querySelector(".scroll-area"); const table = wrapper.querySelector("table"); let oldText = btn.innerHTML; btn.innerHTML = "⏳ FOTO ALINIYOR..."; let oldOverflow = captureArea.style.overflowX; captureArea.style.overflowX = 'visible'; html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, width: table.scrollWidth + 10 }).then(canvas => { const link = document.createElement("a"); link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; link.href = canvas.toDataURL(); link.click(); btn.innerHTML = oldText; captureArea.style.overflowX = oldOverflow; }); logAction("Tablonun fotoğrafını aldı."); }
         function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let current = wrapper.getAttribute("data-tablename"); let pName = prompt("Bu alt tablonun adı ne olsun?", current); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; } }
         function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
 
@@ -594,11 +552,7 @@
             navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { let oldText = btn.innerHTML; btn.innerHTML = "✅ KOPYALANDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#0ea5e9"; }, 2000); });
         }
 
-        function cleanExcelRows(raw) {
-            let rows = raw.split("\n").filter(r => r.trim() !== "");
-            while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; }
-            return rows;
-        }
+        function cleanExcelRows(raw) { let rows = raw.split("\n").filter(r => r.trim() !== ""); while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; } return rows; }
 
         async function pasteToTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked');
@@ -606,57 +560,43 @@
                 const rows = cleanExcelRows(text); const startDt = new Date(wrapper.getAttribute("data-startdt")); const colCount = parseInt(wrapper.getAttribute("data-colcount")); let tbody = wrapper.querySelector('tbody'); let existingNames = Array.from(tbody.querySelectorAll('.editable-name')).map(el => el.innerText.trim());
                 if(cbs.length > 0) {
                     let rowIndex = 0;
-                    cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0;
-                        tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") td.querySelector('.editable-name').innerText = val; else if(td.classList.contains('shift-cell')) { td.innerText = val; const r = shiftRules[val] || Object.values(shiftRules).find(rule => keyMatchesVal(val, rule)); td.style.background = r ? r.color : "transparent"; } } colIndex++; }); rowIndex++; });
+                    cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") td.querySelector('.editable-name').innerText = val; else if(td.classList.contains('shift-cell')) { td.innerText = val; const r = shiftRules[val] || Object.values(shiftRules).find(rule => keyMatchesVal(val, rule)); td.style.background = r ? r.color : "transparent"; } } colIndex++; }); rowIndex++; });
                 } else {
                     if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } 
                     rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { return { text: s ? s.trim() : "", bg: "transparent" } }); const newRowHtml = createRowHtml(name, colCount, startDt, shifts); tbody.insertAdjacentHTML('beforeend', newRowHtml); });
-                } updateAllStats(); let oldText = btn.innerHTML; btn.innerHTML = "✅ YAPIŞTIRILDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#a855f7"; }, 2000);
+                } updateAllStats(); logAction("Tabloya veri yapıştırdı."); let oldText = btn.innerHTML; btn.innerHTML = "✅ YAPIŞTIRILDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#a855f7"; }, 2000);
             } catch (err) { alert("Tarayıcı panodan okuma izni vermedi! 'EXCEL'DEN KUTUYA AL' butonunu kullanabilirsiniz."); }
         }
 
         function exportTableToExcel(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); let html = "<table border='1'>"; let tsv = "";
             table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; let bg = getCellColor(cell); let text = getCleanCellText(cell); html += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>";
-            navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { alert("Tablo Puantaj Sistemine uygun formatta kopyalandı! 📤"); });
+            navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { alert("Tablo Puantaj Sistemine uygun formatta kopyalandı! 📤"); logAction("Tabloyu Excel'e (Puantaja) kopyaladı."); });
         }
 
-        function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); } }
+        function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); logAction("Tablodan satır sildi."); } }
         function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); }
         function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) { closeTableModal(); } } }
 
         function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); let staffNames = Array.from(wrapper.querySelectorAll('.editable-name')).map(el => el.innerText.trim()); if(staffNames.length === 0) return alert("Bu tabloda hiç personel yok!"); let d = prompt("Kaç günlük yeni bir tablo oluşturulsun?", "30"); if(!d) return; let c = parseInt(d); let currentStart = new Date(wrapper.getAttribute("data-startdt")); let nextMonth = new Date(currentStart.getFullYear(), currentStart.getMonth() + 1, 1); let nextMonthStr = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth()+1).padStart(2,'0')}-${String(nextMonth.getDate()).padStart(2,'0')}`; let s = prompt("Başlangıç tarihi (Yıl-Ay-Gün formatında):", nextMonthStr); if(!s) return; generateTable(false, staffNames, "Yeni Tablo", new Date(s), c, wrapper); }
-        function addGlobalBlankTable() { let cols = parseInt(document.getElementById("colCount").value) || 30; let startDateVal = document.getElementById("startDate").value || new Date().toISOString().split('T')[0]; generateTable(false, ["İSİM GİRİNİZ..."], "Yeni Tablo", new Date(startDateVal), cols); }
-
+        function addGlobalBlankTable() { let cols = parseInt(document.getElementById("colCount").value) || 30; let startDateVal = document.getElementById("startDate").value || new Date().toISOString().split('T')[0]; generateTable(false, ["İSİM GİRİNİZ..."], "Yeni Tablo", new Date(startDateVal), cols); logAction("Yeni boş tablo ekledi."); }
         function renameMasterArchive() { let mName = prompt("Panodaki Ana Klasör Adı (Örn: Acil Servis):", currentMasterArchiveName); if(mName && mName.trim() !== "") { currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; } }
 
         function saveMasterArchive() {
             if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { let mName = prompt("Panoda (Arşivde) görünecek ANA KLASÖR adını girin (Örn: Acil Servis):", "Vardiya Klasörü"); if(!mName) return; currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; }
             const tables = document.querySelectorAll('.table-wrapper'); if(tables.length === 0) return alert("Kaydedilecek hiçbir tablo yok!");
-
             const tablesData = [];
             tables.forEach((wrapper, index) => {
                 let tName = wrapper.getAttribute("data-tablename");
                 if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { let pName = prompt((index+1) + ". Tablonun adını belirleyin (Örn: Doktorlar):", tName); if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; } }
-
                 const rowsData = [];
-                wrapper.querySelectorAll("tbody tr").forEach(tr => { 
-                    let name = tr.querySelector(".editable-name").innerText.trim(); 
-                    let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
-                        text: td.innerText, 
-                        bg: td.style.background,
-                        pin: td.getAttribute("data-pin") || "" 
-                    })); 
-                    rowsData.push({ name: name, shifts: shifts }); 
-                });
-
-                let notesVal = wrapper.querySelector(".table-notes").value;
-                tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
+                wrapper.querySelectorAll("tbody tr").forEach(tr => { let name = tr.querySelector(".editable-name").innerText.trim(); let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText, bg: td.style.background, pin: td.getAttribute("data-pin") || "" })); rowsData.push({ name: name, shifts: shifts }); });
+                let notesVal = wrapper.querySelector(".table-notes").value; tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
             });
-
             const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData };
             if(currentMasterArchiveId) { db.ref("arsivlenmis_shiftler").child(currentMasterArchiveId).update(saveData); } else { const ref = db.ref("arsivlenmis_shiftler").push(); ref.set(saveData); currentMasterArchiveId = ref.key; }
-            alert(`💾 Defter Notları, İğneler ve Tüm Tablolar başarıyla '${currentMasterArchiveName}' içine kaydedildi!`);
+            logAction(`'${currentMasterArchiveName}' klasörünü kaydetti.`);
+            alert(`💾 Tüm Tablolar başarıyla '${currentMasterArchiveName}' içine kaydedildi!`);
         }
 
         function openExcelModalForTable(btn) { currentTargetTable = btn.closest('.table-wrapper'); document.getElementById("excelModalTitle").innerText = "📥 Bu Tabloya Veri Ekle"; document.getElementById("excelModal").style.display = "flex"; document.getElementById("excelInput").value = ""; setTimeout(() => document.getElementById("excelInput").focus(), 100); }
@@ -672,7 +612,7 @@
                 if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } 
                 parsed.forEach(p => { const newRowHtml = createRowHtml(p.name, colCount, startDt, p.shifts); tbody.insertAdjacentHTML('beforeend', newRowHtml); }); updateAllStats();
             } else { if(parsed.length > 0 && parsed[0].shifts.length > 0) { document.getElementById("colCount").value = parsed[0].shifts.length; } generateTable(true, parsed, "İçe Aktarılan Liste"); }
-            closeExcelModal(); document.getElementById("excelInput").value = "";
+            logAction("Excel'den sisteme veri çekti."); closeExcelModal(); document.getElementById("excelInput").value = "";
         }
 
         function toggleAllRows(cb) { const table = cb.closest('table'); table.querySelectorAll('.row-checkbox').forEach(c => { if(c !== cb) c.checked = cb.checked; }); }
@@ -685,19 +625,8 @@
                 const cells = Array.from(row.querySelectorAll("td")); let hW=0, hN=0, aW=0, aN=0;
                 cells.forEach(td => {
                     if(td.classList.contains("shift-cell")) {
-                        const val = td.innerText.trim();
-                        let r = shiftRules[val]; 
-                        
-                        if(r) {
-                            td.style.background = r.color;
-                            hW += r.w; hN += r.n; aW += r.w; aN += r.n;
-                        } else if(td.hasAttribute("data-custom-w")) {
-                            hW += parseFloat(td.getAttribute("data-custom-w")) || 0;
-                            hN += parseFloat(td.getAttribute("data-custom-n")) || 0;
-                            aW += hW; aN += hN;
-                        } else {
-                            td.style.background = "transparent";
-                        }
+                        const val = td.innerText.trim(); let r = shiftRules[val]; 
+                        if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(td.hasAttribute("data-custom-w")) { hW += parseFloat(td.getAttribute("data-custom-w")) || 0; hN += parseFloat(td.getAttribute("data-custom-n")) || 0; aW += hW; aN += hN; } else { td.style.background = "transparent"; }
                     }
                     if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
                     if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
@@ -706,26 +635,12 @@
         }
 
         function moveRow(btn, dir) { saveHistory(); const row = btn.closest('tr'); if(dir===-1 && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); else if(dir===1 && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); }
-        function setShift(v, c) { if(activeCell) { saveHistory(); activeCell.innerText = v; activeCell.style.background = v==="" ? "transparent" : c; updateAllStats(); } document.getElementById("contextMenu").style.display = "none"; }
+        function setShift(v, c) { if(activeCell) { saveHistory(); activeCell.innerText = v; activeCell.style.background = v==="" ? "transparent" : c; updateAllStats(); if(v!=="") logAction(`Bir hücreye '${v}' yazdı.`); } document.getElementById("contextMenu").style.display = "none"; }
       
         function setAdjustableShift() {
-            if(!activeCell) return;
-            let label = prompt("Vardiya etiketini girin (Örn: 09:00-15:00):");
-            if(!label) return;
-            
-            let workHours = prompt("Toplam çalışma saati (Sayı girin, Örn: 6):", "7.5");
-            let nightHours = prompt("Gece çalışma saati (Varsa girin, Örn: 2):", "0");
-            
-            if(label && !isNaN(workHours)) {
-                saveHistory();
-                activeCell.innerText = label;
-                activeCell.style.background = "linear-gradient(145deg, #475569, #1e293b)";
-                
-                activeCell.setAttribute("data-custom-w", workHours);
-                activeCell.setAttribute("data-custom-n", nightHours);
-                
-                updateAllStats();
-            }
+            if(!activeCell) return; let label = prompt("Vardiya etiketini girin (Örn: 09:00-15:00):"); if(!label) return;
+            let workHours = prompt("Toplam çalışma saati (Sayı girin, Örn: 6):", "7.5"); let nightHours = prompt("Gece çalışma saati (Varsa girin, Örn: 2):", "0");
+            if(label && !isNaN(workHours)) { saveHistory(); activeCell.innerText = label; activeCell.style.background = "linear-gradient(145deg, #475569, #1e293b)"; activeCell.setAttribute("data-custom-w", workHours); activeCell.setAttribute("data-custom-n", nightHours); updateAllStats(); logAction(`Ayarlanabilir saat girdi: ${label}`); }
             document.getElementById("contextMenu").style.display = "none";
         }  
         
@@ -740,15 +655,15 @@
                 }); } 
             }); 
         }
-        function delArchive(e, id) { e.stopPropagation(); if(confirm("Tüm klasörü ve içindeki tabloları kalıcı olarak silmek istediğine emin misin?")) db.ref("arsivlenmis_shiftler").child(id).remove(); }
+        function delArchive(e, id) { e.stopPropagation(); if(confirm("Tüm klasörü ve içindeki tabloları kalıcı olarak silmek istediğine emin misin?")) { db.ref("arsivlenmis_shiftler").child(id).remove(); logAction("Arşivden bir klasör sildi."); } }
         function renameArchive(e, id, oldName) { e.stopPropagation(); let newName = prompt("Klasörün yeni adını girin:", oldName); if (newName && newName.trim() !== "" && newName !== oldName) { db.ref("arsivlenmis_shiftler").child(id).update({name: newName.trim()}); } }
         
         function openArchive(id, name) { 
             db.ref("arsivlenmis_shiftler").child(id).once("value", snap => {
                 const val = snap.val(); currentMasterArchiveId = id; currentMasterArchiveName = name;
                 document.getElementById("masterArchiveTitle").innerText = "📁 " + name; document.getElementById("tablesContainer").innerHTML = ""; 
-                if(val.tables) { val.tables.forEach(t => { generateTable(true, t.data, t.tableName, new Date(t.startDate), t.colCount, null, t.notes || ""); }); } 
-                else if(val.data) { generateTable(true, val.data, val.name, new Date(val.startDate), val.colCount); }
+                if(val.tables) { val.tables.forEach(t => { generateTable(true, t.data, t.tableName, new Date(t.startDate), t.colCount, null, t.notes || ""); }); } else if(val.data) { generateTable(true, val.data, val.name, new Date(val.startDate), val.colCount); }
+                logAction(`'${name}' klasörünü açtı.`);
             });
         }
         function openShiftMenu(e, c) { e.preventDefault(); activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
@@ -756,7 +671,7 @@
         function saveHistory() { const cont = document.getElementById("tablesContainer").innerHTML; history.push(cont); if(history.length > 25) history.shift(); }
         function undo() { if(history.length > 0) { document.getElementById("tablesContainer").innerHTML = history.pop(); updateAllStats(); } }
         document.addEventListener('keydown', e => { if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
-        function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll("#staffPool input:checked")).map(cb => cb.value); if(sel.length===0) return alert("Lütfen havuzdan personel seçin!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); }
+        function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll("#staffPool input:checked")).map(cb => cb.value); if(sel.length===0) return alert("Lütfen havuzdan personel seçin!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); logAction("Havuzdan seçerek yeni tablo oluşturdu."); }
 
         let isDraggingCells = false; let startSelectCell = null;
         document.addEventListener('mousedown', e => {
@@ -780,12 +695,7 @@
             const selected = document.querySelectorAll('.selected-cell');
             if(selected.length > 0) { 
                 e.preventDefault(); let html = "<table border='1'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
-                selected.forEach(cell => {
-                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; 
-                    const cellRow = cell.closest('tr');
-                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
-                    let bg = getCellColor(cell); let text = getCleanCellText(cell); trHtml += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text);
-                });
+                selected.forEach(cell => { if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; const cellRow = cell.closest('tr'); if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; } let bg = getCellColor(cell); let text = getCleanCellText(cell); trHtml += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text); });
                 if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } html += "</table>";
                 e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv);
             }
@@ -798,20 +708,7 @@
                 e.preventDefault(); saveHistory(); const pastedData = (e.clipboardData || window.clipboardData).getData('text');
                 const rows = cleanExcelRows(pastedData); const table = targetCell.closest('table'); const tableRows = Array.from(table.querySelectorAll('tr')); const startRowIdx = tableRows.indexOf(targetCell.closest('tr')); 
                 let validCellsInStartRow = Array.from(targetCell.closest('tr').querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); let startValidColIdx = validCellsInStartRow.indexOf(targetCell); if(startValidColIdx === -1) startValidColIdx = 0;
-                for(let i = 0; i < rows.length; i++) {
-                    const cols = rows[i].split('\t'); const targetTr = tableRows[startRowIdx + i]; if(!targetTr) break;
-                    let validCells = Array.from(targetTr.querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell'));
-                    for(let j = 0; j < cols.length; j++) { 
-                        const cell = validCells[startValidColIdx + j]; if(!cell) break; let val = cols[j].trim(); 
-                        if(cell.querySelector('.editable-name')) cell.querySelector('.editable-name').innerText = val; 
-                        else if(cell.classList.contains('shift-cell')) { 
-                            let oldPin = cell.getAttribute("data-pin"); // İğneyi koru!
-                            cell.innerText = val; 
-                            if(oldPin) cell.setAttribute("data-pin", oldPin); 
-                            let r = shiftRules[val]; cell.style.background = r ? r.color : "transparent"; 
-                        } 
-                    }
-                } updateAllStats();
+                for(let i = 0; i < rows.length; i++) { const cols = rows[i].split('\t'); const targetTr = tableRows[startRowIdx + i]; if(!targetTr) break; let validCells = Array.from(targetTr.querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); for(let j = 0; j < cols.length; j++) { const cell = validCells[startValidColIdx + j]; if(!cell) break; let val = cols[j].trim(); if(cell.querySelector('.editable-name')) cell.querySelector('.editable-name').innerText = val; else if(cell.classList.contains('shift-cell')) { let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); let r = shiftRules[val]; cell.style.background = r ? r.color : "transparent"; } } } updateAllStats(); logAction("Tablo içine veri yapıştırdı.");
             }
         });
 
@@ -819,7 +716,7 @@
         window.onload = () => {
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
             text.split("").forEach((char, index) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.5 + (index * 0.1)) + "s"; container.appendChild(span); });
-            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('lockScreen').style.display = 'flex'; document.getElementById('passInput').focus(); }, 1000); }, 3500);
+            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('lockScreen').style.display = 'flex'; }, 1000); }, 3500);
             document.getElementById('startDate').valueAsDate = new Date();
         };
     </script>
