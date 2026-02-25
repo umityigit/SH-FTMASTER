@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v113.0 - GHOST PIN & PATRON EDITION</title>
+    <title>ShiftMaster v113.5 - GHOST PIN & PATRON EDITION</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,6 +57,9 @@
         .card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #334155; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden; transition: transform 0.3s; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7); }
 
+        /* HEADER / KONTROL ÇUBUĞU */
+        .main-header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 25px; border-radius: 20px; border: 1px solid #334155; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
         /* 📢 HABERLEŞME VE LOG EKRANI YAN YANA */
         .top-panels { display: flex; gap: 20px; margin-bottom: 25px; }
         
@@ -79,7 +82,7 @@
         .archive-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); opacity: 0; transition: 0.3s; }
         .archive-card:hover::after { opacity: 1; }
 
-        /* ✨ POPUP MODAL */
+        /* ✨ POPUP MODALLARI */
         .full-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); z-index: 10005; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
         .full-modal-content { background: var(--bg); width: 98%; height: 98%; border-radius: 25px; border: 1px solid var(--accent); box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 30px rgba(56, 189, 248, 0.15); display: flex; flex-direction: column; position: relative; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
         .full-modal-overlay.show { opacity: 1; }
@@ -164,9 +167,9 @@
     <div id="lockScreen">
         <h2 style="color:white; margin-bottom:40px; font-weight:900; font-size: 28px; letter-spacing: 2px;">👥 KULLANICI SEÇİN</h2>
         
-        <div class="profile-container">
+        <div class="profile-container" id="profileContainer">
             <div class="profile-card" onclick="selectProfile('ali')">
-                <div class="profile-icon">⚔️</div>
+                <div class="profile-icon">🏍️</div>
                 <div class="profile-name">ALİ</div>
             </div>
             <div class="profile-card" onclick="selectProfile('gullu')">
@@ -185,10 +188,40 @@
             <button class="btn" style="background:var(--accent); color:#000; width:100%; justify-content:center; font-size:16px; padding:15px;" onclick="checkPass()">GİRİŞ YAP</button>
             <button class="btn" style="background:transparent; color:#94a3b8; margin-top:10px; font-size: 10px;" onclick="cancelLogin()">GERİ DÖN</button>
         </div>
+
+        <div class="pass-box" id="newPassBox">
+            <h3 style="color:var(--success); margin-top:0;">İLK GİRİŞ: ŞİFRE BELİRLE</h3>
+            <p style="font-size:11px; color:#94a3b8; margin-top:-10px; margin-bottom:15px;">Güvenliğiniz için lütfen şifrenizi değiştirin.</p>
+            <input type="password" id="newPass1" class="pass-input" placeholder="Yeni Şifre" style="margin-bottom:10px; font-size: 20px; letter-spacing: 2px;">
+            <input type="password" id="newPass2" class="pass-input" placeholder="Şifre (Tekrar)" style="font-size: 20px; letter-spacing: 2px;">
+            <button class="btn" style="background:var(--success); color:#fff; width:100%; justify-content:center; font-size:16px; padding:15px;" onclick="saveNewPassAndLogin()">KAYDET VE GİRİŞ YAP</button>
+            <button class="btn" style="background:transparent; color:#94a3b8; margin-top:10px; font-size: 10px;" onclick="cancelLogin()">GERİ DÖN</button>
+        </div>
+    </div>
+
+    <div id="changePassModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-top:0; color:var(--warning);">🔑 ŞİFRE DEĞİŞTİR</h3>
+            <input type="password" id="cpOld" class="glass-input" style="width:100%; margin-bottom:10px; text-align:center; box-sizing: border-box;" placeholder="Mevcut Şifreniz">
+            <input type="password" id="cpNew1" class="glass-input" style="width:100%; margin-bottom:10px; text-align:center; box-sizing: border-box;" placeholder="Yeni Şifre">
+            <input type="password" id="cpNew2" class="glass-input" style="width:100%; margin-bottom:15px; text-align:center; box-sizing: border-box;" placeholder="Yeni Şifre (Tekrar)">
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:1; background:var(--success); color:white; justify-content:center;" onclick="updatePassAnytime()">GÜNCELLE</button>
+                <button class="btn" style="flex:1; background:var(--danger); color:white; justify-content:center;" onclick="document.getElementById('changePassModal').style.display='none'">İPTAL</button>
+            </div>
+        </div>
     </div>
 
     <div id="mainContent">
         <div class="container">
+            <div class="main-header">
+                <div style="font-size: 18px; font-weight: 800; color: var(--accent);" id="welcomeText">👋 HOŞ GELDİN</div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" style="background: transparent; border: 1px solid var(--warning); color: var(--warning);" onclick="openChangePassModal()">🔑 ŞİFRE DEĞİŞTİR</button>
+                    <button class="btn" style="background: var(--danger); color: white;" onclick="logout()">🚪 ÇIKIŞ YAP</button>
+                </div>
+            </div>
+
             <div class="top-panels">
                 <div class="news-container card">
                     <div class="news-header"><h4 style="margin:0; color:var(--accent); display:flex; align-items:center; gap:10px;">📢 HABERLEŞME PANOSU</h4></div>
@@ -286,20 +319,26 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // KULLANICI BİLGİLERİ VE LOG SİSTEMİ
+        // KULLANICI BİLGİLERİ VE FIREBASE ŞİFRE SİSTEMİ
         const users = {
-            'ali': { name: 'ALİ', pass: 'ali2026', icon: '⚔️' },
-            'gullu': { name: 'GÜLLÜ', pass: 'gullu2026', icon: '🌹' },
-            'umit': { name: 'ÜMİT', pass: 'umit2026', icon: '☀️' }
+            'ali': { name: 'ALİ', icon: '🏍️' },
+            'gullu': { name: 'GÜLLÜ', icon: '🌹' },
+            'umit': { name: 'ÜMİT', icon: '☀️' }
         };
+        
+        let userPasswords = { ali: '1234', gullu: '1234', umit: '1234' };
         let currentUser = "";
         let selectedUserKey = "";
+
+        // Şifreleri Firebase'den anlık Çek
+        db.ref('kullanici_sifreleri').on('value', snap => {
+            if(snap.val()) { userPasswords = { ...userPasswords, ...snap.val() }; }
+        });
 
         // GÖLGE KİLİT (PATRON MODU) DİNLEYİCİSİ
         db.ref('sistem_kilitli').on('value', snap => {
             const isLocked = snap.val();
             if(isLocked && currentUser !== 'ÜMİT' && currentUser !== "") {
-                // Eğer kilitlendiyse ve içeride Ümit hariç biri varsa anında atılır!
                 document.getElementById('kickScreen').style.display = 'flex';
                 document.getElementById('mainContent').style.display = 'none';
             }
@@ -335,32 +374,94 @@
                 event.currentTarget.classList.add('active');
                 
                 document.getElementById('loginTitle').innerText = `${users[key].icon} ${users[key].name} ŞİFRESİ`;
+                document.getElementById('profileContainer').style.display = 'none';
                 document.getElementById('passBox').style.display = 'flex';
-                document.querySelector('.profile-container').style.display = 'none';
+                document.getElementById('newPassBox').style.display = 'none';
                 document.getElementById('passInput').focus();
             });
         }
 
         function cancelLogin() {
             document.getElementById('passBox').style.display = 'none';
-            document.querySelector('.profile-container').style.display = 'flex';
+            document.getElementById('newPassBox').style.display = 'none';
+            document.getElementById('profileContainer').style.display = 'flex';
             document.getElementById('passInput').value = "";
+            document.getElementById('newPass1').value = "";
+            document.getElementById('newPass2').value = "";
             document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('active'));
+            selectedUserKey = "";
         }
 
         function checkPass() {
             const input = document.getElementById("passInput").value;
-            if(input === users[selectedUserKey].pass) {
-                currentUser = users[selectedUserKey].name;
-                logAction("Sisteme giriş yaptı.");
-                document.getElementById("lockScreen").style.display = "none";
-                document.getElementById("mainContent").style.display = "block";
-                loadStaffPool(); loadArchives(); loadNews();
+            const correctPass = userPasswords[selectedUserKey];
+
+            if(input === correctPass) {
+                if(input === '1234') {
+                    // İlk defa giriyorsa Şifre Belirleme kutusunu aç
+                    document.getElementById('passBox').style.display = 'none';
+                    document.getElementById('newPassBox').style.display = 'flex';
+                    document.getElementById('newPass1').focus();
+                } else {
+                    executeLogin();
+                }
             } else {
                 const box = document.getElementById("passBox"); box.classList.add("shake");
                 setTimeout(() => box.classList.remove("shake"), 500);
                 document.getElementById("passInput").value = "";
             }
+        }
+
+        function saveNewPassAndLogin() {
+            const p1 = document.getElementById('newPass1').value;
+            const p2 = document.getElementById('newPass2').value;
+            
+            if(p1.length < 4) return alert("Şifre en az 4 haneli olmalıdır!");
+            if(p1 !== p2) return alert("Şifreler eşleşmiyor!");
+
+            // Firebase'e yeni şifreyi kaydet
+            db.ref('kullanici_sifreleri/' + selectedUserKey).set(p1);
+            alert("✅ Şifreniz onaylandı!\n\nİstediğiniz zaman sağ üst köşedeki 'ŞİFRE DEĞİŞTİR' butonuna tıklayarak güncelleyebilirsiniz.");
+            
+            executeLogin();
+        }
+
+        function executeLogin() {
+            currentUser = users[selectedUserKey].name;
+            logAction("Sisteme giriş yaptı.");
+            document.getElementById("lockScreen").style.display = "none";
+            document.getElementById("mainContent").style.display = "block";
+            document.getElementById("welcomeText").innerText = `👋 HOŞ GELDİN, ${currentUser}`;
+            loadStaffPool(); loadArchives(); loadNews();
+        }
+
+        function logout() {
+            currentUser = "";
+            selectedUserKey = "";
+            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("lockScreen").style.display = "flex";
+            cancelLogin();
+        }
+
+        function openChangePassModal() {
+            document.getElementById('cpOld').value = '';
+            document.getElementById('cpNew1').value = '';
+            document.getElementById('cpNew2').value = '';
+            document.getElementById('changePassModal').style.display = 'flex';
+        }
+
+        function updatePassAnytime() {
+            const oldP = document.getElementById('cpOld').value;
+            const newP1 = document.getElementById('cpNew1').value;
+            const newP2 = document.getElementById('cpNew2').value;
+
+            if(oldP !== userPasswords[selectedUserKey]) return alert("Mevcut şifrenizi yanlış girdiniz!");
+            if(newP1.length < 4) return alert("Yeni şifre en az 4 haneli olmalı!");
+            if(newP1 !== newP2) return alert("Yeni şifreler eşleşmiyor!");
+
+            db.ref('kullanici_sifreleri/' + selectedUserKey).set(newP1);
+            alert("✅ Şifreniz başarıyla değiştirildi.");
+            document.getElementById('changePassModal').style.display = 'none';
         }
 
         // GÖLGE KİLİT TETİKLEYİCİSİ (PROD. BY YAZISINA 3 TIK)
