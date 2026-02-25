@@ -252,7 +252,7 @@ function vardiyaArayuzCiz() {
 }
 
 function formatliVardiya(val) { if(!val) return ""; val = val.trim(); if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) return val.replace(/[\s-]+/, "<br>"); return val; }
-function getCleanValue(html) { return html.replace(/<br\s*\/?>/gi, "-").replace("&nbsp;", " ").trim().toUpperCase(); }
+function getCleanValue(html) { if(!html) return ""; return html.replace(/<br\s*\/?>/gi, "-").replace(/&nbsp;/g, " ").replace(/<(?:.|\n)*?>/gm, '').trim().toUpperCase(); }
 
 function getVardiyaInfo(val) {
     if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""};
@@ -295,50 +295,34 @@ function tarihGuncelle(){ let bas=new Date(document.getElementById('inpTarihBas'
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
 function excelTarih(s){if(!s)return null; let m=s.trim().match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); return m?m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0'):null;}
 
-// 1. TEMİZLEME FONKSİYONUNU GÜNCELLE (Daha sağlam olması için)
-function getCleanValue(html) { 
-    if(!html) return "";
-    // HTML etiketlerini, boşlukları ve satır sonlarını temizler
-    return html.replace(/<br\s*\/?>/gi, "-").replace(/&nbsp;/g, " ").replace(/<(?:.|\n)*?>/gm, '').trim().toUpperCase(); 
-}
-
-// 2. ANA HESAPLAMA MOTORUNU GÜNCELLE
+// ANA HESAPLAMA MOTORU GÜNCELLENDİ
 function satirHesapla(td) {
     if (!td) return;
     const tr = td.closest('tr');
     if (!tr) return;
 
-    // --- HÜCREYE ÖZEL GÖRSEL GÜNCELLEME (Renk ve Format) ---
     const rawVal = getCleanValue(td.innerHTML);
     const info = getVardiyaInfo(rawVal);
     
-    // Manuel saat girişi (Örn: "12")
     const manuelSaat = parseFloat(rawVal.replace(",", "."));
     const aktifSaat = (info && info.t > 0) ? info.t : (!isNaN(manuelSaat) ? manuelSaat : 0);
 
-    // RENK YÖNETİMİ: Önce pembe rengi siliyoruz.
     td.classList.remove('hucre-izin');
-    
-    // Eğer saat 0 ise ve hücre boş değilse (Yani R, HT, İ gibi bir izin koduysa) pembe yap
     if (aktifSaat === 0 && rawVal !== "" && rawVal !== "0") {
         td.classList.add('hucre-izin');
     }
 
-    // Uzun vardiyaları alt alta getir (Örn: 08:00-18:00)
     if (rawVal.length > 5 && rawVal.includes("-")) {
         td.innerHTML = formatliVardiya(rawVal);
     }
 
-    // --- TÜM SATIRI SIFIRDAN HESAPLA (Kesin Çözüm) ---
     let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0, tFM = 0;
-    let wHs = 0, wHg = 0, wHi = 0;
+    let wHs = 0, wHg = 0;
 
     const allCells = Array.from(tr.children);
     allCells.forEach(c => {
-        // Birleştirilmiş (gizli) hücreleri atla
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
 
-        // VARDİYA HÜCRELERİ
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
             const v = getCleanValue(c.innerHTML);
             if (v === "" || v === "0") return;
@@ -347,9 +331,7 @@ function satirHesapla(td) {
             const mS = parseFloat(v.replace(",", "."));
             const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
 
-            tAg++; // Boş olmayan her hücre 1 gün sayılır
-            
-            // Kod bazlı sayımlar
+            tAg++; 
             if (v === "RT") n_rt++;
             else if (v === "HT" && s === 0) n_ht++;
             else if (v === "R") n_r++;
@@ -361,28 +343,26 @@ function satirHesapla(td) {
                 tAge += (inf.g || 0);
                 if (v === "RTÇ") n_rtc++;
                 if (c.classList.contains('hucre-haftasonu')) n_htc++;
-            } else {
-                wHi++;
             }
         }
 
-        // HAFTA TOPLAMI (YEŞİL) HÜCRELERİ
         if (c.classList.contains('bg-hafta')) {
             const type = c.getAttribute('data-type');
-            if (type === 'h-saat') {
+            if (type === 'h-gun') {
+                c.innerText = wHg > 0 ? wHg : "";
+            } else if (type === 'h-saat') {
                 c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "";
-                if (wHs > 45) tFM += (wHs - 45); // 45 saati aşan her şeyi FM'ye ekle
-            } else if (type === 'h-gun') {
-                c.innerText = wHg || "";
-            } else if (type === 'h-izin') {
-                c.innerText = wHi || "";
-                // SIFIRLA (Sonraki haftaya temiz başla)
-                wHs = 0; wHg = 0; wHi = 0;
+            } else if (type === 'h-fm') {
+                let wFm = wHs > 45 ? (wHs - 45) : 0;
+                c.innerText = wFm > 0 ? Number(wFm.toFixed(2)) : "";
+                tFM += wFm; // AYLIK FM'ye ekle
+                
+                // HAFTA BİTTİĞİ İÇİN SIFIRLA
+                wHs = 0; wHg = 0;
             }
         }
     });
 
-    // --- SAĞ TARAFTAKİ ÖZET ALANLARINI GÜNCELLE ---
     const update = (cls, v) => {
         const el = tr.querySelector(cls);
         if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2));
@@ -395,10 +375,9 @@ function satirHesapla(td) {
     update('.s-ht', n_ht);
     update('.s-rt', n_rt);
     update('.s-rtc', n_rtc);
-    update('.s-htc', n_htc * 9); // Hafta sonu sabit 9 saat mesai
     update('.s-fm', tFM);
+    update('.s-gecefm', 0);
     update('.s-gece', tAge);
-    update('.s-tgece', tAge);
 }
 
 function raporuOlustur() {
@@ -431,20 +410,38 @@ function raporuOlustur() {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
 
-    const HDR = [{n:"ÇALIŞMA GÜNÜ", c:"s-calisma"}, {n:"İ.GELME G.(YOL)", c:"s-yol"}, {n:"RAPOR", c:"s-rapor"}, {n:"İZİN", c:"s-izin"}, {n:"HT", c:"s-ht"}, {n:"RT", c:"s-rt"}, {n:"RTÇ", c:"s-rtc"}, {n:"HT ÇALIŞMA", c:"s-htc"}, {n:"F.MESAİ SAAT", c:"s-fm"}];
+    // AY SONU SÜTUN BAŞLIKLARI (SENİN RESİMDEKİLERLE BİREBİR)
+    const HDR = [
+        {n:"Çalışma Günü", c:"s-calisma"}, 
+        {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, 
+        {n:"Raporlu Gün Sayısı", c:"s-rapor"}, 
+        {n:"İzinli Olduğu Gün Sayısı", c:"s-izin"}, 
+        {n:"Hafta Tatili Toplamı(HT)", c:"s-ht"}, 
+        {n:"Resmi Tatil(Tam Gün)(RT)", c:"s-rt"}, 
+        {n:"Resmi Tatil Çalışması(RTÇ)", c:"s-rtc"}, 
+        {n:"Gündüz Fazla Mesai Toplamı (Saat Sayısı)", c:"s-fm"}
+    ];
     
     let sayfaHtml = ""; let gArr = Object.values(people).reduce((acc, p) => { acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; }, {});
     
     for(let gAd in gArr) {
         let list = gArr[gAd].sort((a,b)=>a.n.localeCompare(b.n,'tr'));
         
-        // Toplam Sütun Sayısını Hesapla (Başlığı sığdırmak için)
-        let gunSutunSayisi = days.length + (Math.floor(days.length / 7) * 3);
+        let gunSutunSayisi = 0;
+        days.forEach((d, idx) => {
+            gunSutunSayisi++;
+            if (d.getDay() === 0 || idx === days.length - 1) gunSutunSayisi += 3;
+        });
+        
         let toplamSutun = 3 + gunSutunSayisi + HDR.length + 2;
 
         let h = `<div class="sayfa"><table class="veri-tablosu" data-grup="${gAd}">
         <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim">`;
-        days.forEach(d=>{ h+=`<col class="c-gun">`; if(d.getDay()===0) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
+        
+        days.forEach((d, idx)=>{ 
+            h+=`<col class="c-gun">`; 
+            if(d.getDay()===0 || idx === days.length - 1) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; 
+        });
         HDR.forEach(()=>h+=`<col class="c-gun">`);
         h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
         
@@ -483,36 +480,48 @@ function raporuOlustur() {
 
         <tr><th>S.NO</th><th>TC KİMLİK NO</th><th style="border:none;">ADI SOYADI</th>`;
         
-        days.forEach(d=>{
+        let weekCount = 1;
+        days.forEach((d, idx)=>{
             let gg = String(d.getDate()).padStart(2, '0');
             let aa = String(d.getMonth() + 1).padStart(2, '0');
             let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
             let tamTarih = `${gg}/${aa}/${d.getFullYear()}<br><span style="font-weight:normal; font-size:5.5px">${gunAdi}</span>`;
+            
             h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; border-top:none;"><div class="dikey-tarih">${tamTarih}</div></th>`;
-            if(d.getDay()===0) {
-                h+=`<th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.SAAT</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.GÜN</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi" style="color:red">H.İZİN</div></th>`;
+            
+            // HER PAZARDAN SONRA VEYA AYIN EN SON GÜNÜNDEYSE HAFTALIK ÖZETİ EKLE
+            if(d.getDay()===0 || idx === days.length - 1) {
+                h+=`<th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">${weekCount}-Haftalık İşe Gelme Günü</div></th>
+                    <th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">${weekCount}.Hafta Toplamı</div></th>
+                    <th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">${weekCount}.Hafta Fazla Mesai</div></th>`;
+                weekCount++;
             }
         });
 
         HDR.forEach(b => { h += `<th class="bg-genel" style="border-top:none"><div class="dikey-yazi">${b.n}</div></th>`; });
-        h += `<th class="bg-gece" style="border-top:none"><div class="dikey-yazi">GECE SAAT</div></th><th class="bg-gece" style="border-top:none; border-right:none"><div class="dikey-yazi">TOPLAM GECE</div></th></tr>
+        h += `<th class="bg-gece" style="border-top:none"><div class="dikey-yazi">Gece Fazla Mesai Toplamı (Saat Sayısı)</div></th><th class="bg-gece" style="border-top:none; border-right:none"><div class="dikey-yazi">Toplam Gece Çalışması (Saat Sayısı)</div></th></tr>
         </thead>
         <tbody>`;
 
         list.forEach((p, index)=>{
             h+=`<tr><td contenteditable="true">${index + 1}</td><td contenteditable="true"></td><td class="isim-hucre" style="border-left:none; text-align:left; padding-left:3px;" contenteditable="true">${p.n}</td>`;
-            days.forEach(d=>{
+            
+            days.forEach((d, idx)=>{
                 let v = p.data[getKey(d)] || "";
                 let info = getVardiyaInfo(v);
                 let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
                 if(info.tip==='izin') bg='hucre-izin';
                 h+=`<td contenteditable="true" class="veri-hucre ${bg}" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
-                if(d.getDay()===0){
-                    h+=`<th class="bg-hafta veri-hucre" data-type="h-saat"></th><th class="bg-hafta veri-hucre" data-type="h-gun"></th><th class="bg-hafta veri-hucre" style="color:red" data-type="h-izin"></th>`;
+                
+                if(d.getDay()===0 || idx === days.length - 1){
+                    // DİKKAT: h-gun -> h-saat -> h-fm sırasıyla diziliyor. Bu sıra hesaplama için çok önemlidir.
+                    h+=`<th class="bg-hafta veri-hucre" data-type="h-gun"></th>
+                        <th class="bg-hafta veri-hucre" data-type="h-saat"></th>
+                        <th class="bg-hafta veri-hucre" style="color:red" data-type="h-fm"></th>`;
                 }
             });
             HDR.forEach(b => { h += `<th class="bg-genel ${b.c}">0</th>`; });
-            h += `<th class="bg-gece s-gece">0</th><th class="bg-gece s-tgece" style="border-right:none">0</th></tr>`;
+            h += `<th class="bg-gece s-gecefm">0</th><th class="bg-gece s-gece" style="border-right:none">0</th></tr>`;
         });
 
         h+=`</tbody>
@@ -645,13 +654,3 @@ function exceleSifirKayipsizKopyala() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
