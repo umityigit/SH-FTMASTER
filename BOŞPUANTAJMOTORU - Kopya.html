@@ -61,8 +61,8 @@
         
         .veri-hucre { font-size: 7px; font-weight: bold; height: 22px; }
 
-        td[contenteditable="true"] { cursor: text; }
-        td[contenteditable="true"]:focus, div[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
+        td[contenteditable="true"], th[contenteditable="true"] { cursor: text; }
+        td[contenteditable="true"]:focus, th[contenteditable="true"]:focus, div[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
 
         /* SEÇİLMİŞ HÜCRE STİLİ */
         .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
@@ -378,6 +378,7 @@ function satirHesapla(td) {
     update('.s-fm', tFM);
     update('.s-gecefm', 0);
     update('.s-gece', tAge);
+    // NOT: .s-isg sütunu elle girileceği için update listesine bilerek eklenmedi!
 }
 
 function raporuOlustur() {
@@ -410,7 +411,7 @@ function raporuOlustur() {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
 
-    // AY SONU SÜTUN BAŞLIKLARI (SENİN RESİMDEKİLERLE BİREBİR)
+    // AY SONU SÜTUN BAŞLIKLARI
     const HDR = [
         {n:"Çalışma Günü", c:"s-calisma"}, 
         {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, 
@@ -419,7 +420,8 @@ function raporuOlustur() {
         {n:"Hafta Tatili Toplamı(HT)", c:"s-ht"}, 
         {n:"Resmi Tatil(Tam Gün)(RT)", c:"s-rt"}, 
         {n:"Resmi Tatil Çalışması(RTÇ)", c:"s-rtc"}, 
-        {n:"Gündüz Fazla Mesai Toplamı (Saat Sayısı)", c:"s-fm"}
+        {n:"Gündüz Fazla Mesai Toplamı (Saat Sayısı)", c:"s-fm"},
+        {n:"İŞ SAĞLIĞI VE GÜVENLİĞİ (YOL)", c:"s-isg"}
     ];
     
     let sayfaHtml = ""; let gArr = Object.values(people).reduce((acc, p) => { acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; }, {});
@@ -514,13 +516,13 @@ function raporuOlustur() {
                 h+=`<td contenteditable="true" class="veri-hucre ${bg}" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
                 
                 if(d.getDay()===0 || idx === days.length - 1){
-                    // DİKKAT: h-gun -> h-saat -> h-fm sırasıyla diziliyor. Bu sıra hesaplama için çok önemlidir.
                     h+=`<th class="bg-hafta veri-hucre" data-type="h-gun"></th>
                         <th class="bg-hafta veri-hucre" data-type="h-saat"></th>
                         <th class="bg-hafta veri-hucre" style="color:red" data-type="h-fm"></th>`;
                 }
             });
-            HDR.forEach(b => { h += `<th class="bg-genel ${b.c}">0</th>`; });
+            // Burada s-isg sütunu için contenteditable ekliyoruz
+            HDR.forEach(b => { h += `<th class="bg-genel ${b.c}" ${b.c === 's-isg' ? 'contenteditable="true"' : ''}>0</th>`; });
             h += `<th class="bg-gece s-gecefm">0</th><th class="bg-gece s-gece" style="border-right:none">0</th></tr>`;
         });
 
