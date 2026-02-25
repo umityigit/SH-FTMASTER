@@ -235,16 +235,21 @@
             <div class="menu-item" style="background:#EAB308; color:#000;" onclick="setShift('08:00-20:00','#EAB308')">☀️ 08-20</div>
             <div class="menu-item" style="background:#1E3A8A;" onclick="setShift('20:00-08:00','#1E3A8A')">🌙 20-08</div>
             <div class="menu-item" style="background:#f97316;" onclick="setShift('12:00-24:00','#f97316')">🕒 12-24</div>
+            
+            <div class="menu-item" style="background:#38bdf8; color:#000;" onclick="setShift('08:00-16:00','#38bdf8')">🕘 08-16</div>
+            <div class="menu-item" style="background:#1D4ED8;" onclick="setShift('16:00-24:00','#1D4ED8')">🌆 16-24</div>
+            <div class="menu-item" style="background:#4f46e5;" onclick="setShift('24:00-08:00','#4f46e5')">🌑 24-08</div>
+
             <div class="menu-item" style="background:#10b981;" onclick="setShift('07:00-15:00','#10b981')">🌅 07-15</div>
             <div class="menu-item" style="background:#6366f1;" onclick="setShift('15:00-23:00','#6366f1')">🌆 15-23</div>
             <div class="menu-item" style="background:#4338ca;" onclick="setShift('23:00-07:00','#4338ca')">🌃 23-07</div>
+
             <div class="menu-item" style="background:#a855f7;" onclick="setShift('08:00-18:00','#a855f7')">🕒 08-18</div>
             <div class="menu-item" style="background:#15803D;" onclick="setShift('HT','#15803D')">🏖️ HT</div>
             <div class="menu-item" style="background:#B91C1C;" onclick="setShift('R','#B91C1C')">💊 R</div>
             <div class="menu-item" style="background:#334155;" onclick="setShift('')">❌ SİL</div>
+
             <div class="menu-item" style="background:linear-gradient(45deg, #38bdf8, #a855f7); color:#fff; grid-column: span 2;" onclick="setAdjustableShift()">⚙️ AYARLANABİLİR SAAT GİR</div>
-            <div class="menu-item" style="background:var(--warning); color:#000; font-size:11px;" onclick="addGhostPinToCell()">📍 İĞNE AT</div>
-            <div class="menu-item" style="background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;" onclick="removeGhostPinFromCell()">🗑️ İĞNE SİL</div>
         </div>
     </div>
     <div id="staffSelectMenu" class="custom-menu" style="max-height:300px; overflow-y:auto; width:200px;"></div>
@@ -407,16 +412,23 @@
         let currentMasterArchiveName = "Yeni Dosya";
 
         const shiftRules = {
+            // 12 Saatlikler
             '08:00-20:00': { w: 11, n: 0, color: '#EAB308' },
             '20:00-08:00': { w: 11, n: 11, color: '#1E3A8A' },
-            '12:00-24:00': { w: 11, n: 4, color: '#f97316' }, // Yeni
-            '08:00-18:00': { w: 9, n: 0, color: '#a855f7' },
+            '12:00-24:00': { w: 11, n: 4, color: '#f97316' },
+
+            // 8 Saatlikler (8-16, 16-24, 24-08 Grubu)
             '08:00-16:00': { w: 7.5, n: 0, color: '#38bdf8' },
             '16:00-24:00': { w: 7.5, n: 4, color: '#1D4ED8' },
             '24:00-08:00': { w: 7.5, n: 7.5, color: '#4f46e5' },
-            '07:00-15:00': { w: 7.5, n: 0, color: '#10b981' }, // Yeni
-            '15:00-23:00': { w: 7.5, n: 3, color: '#6366f1' }, // Yeni
-            '23:00-07:00': { w: 7.5, n: 7.5, color: '#4338ca' }, // Yeni
+
+            // 8 Saatlikler (07-15, 15-23, 23-07 Grubu)
+            '07:00-15:00': { w: 7.5, n: 0, color: '#10b981' },
+            '15:00-23:00': { w: 7.5, n: 3, color: '#6366f1' },
+            '23:00-07:00': { w: 7.5, n: 7.5, color: '#4338ca' },
+
+            // Diğerleri
+            '08:00-18:00': { w: 9, n: 0, color: '#a855f7' },
             'HT': { w: 0, n: 0, color: '#15803D' },
             'Yİ': { w: 0, n: 0, color: '#EA580C' },
             'R': { w: 0, n: 0, color: '#B91C1C' }
@@ -661,25 +673,22 @@
 
         function updateAllStats() {
             document.querySelectorAll("table tbody tr").forEach(row => {
-                const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0;
+                const cells = Array.from(row.querySelectorAll("td")); let hW=0, hN=0, aW=0, aN=0;
                 cells.forEach(td => {
                     if(td.classList.contains("shift-cell")) {
                         const val = td.innerText.trim();
-                        let r = null;
-                        for(let key in shiftRules) {
-                            if(key.replace(/\s/g,'') === val.replace(/\s/g,'')) { r = shiftRules[key]; break; }
-                        }
+                        let r = shiftRules[val]; 
+                        
                         if(r) {
                             td.style.background = r.color;
                             hW += r.w; hN += r.n; aW += r.w; aN += r.n;
-                        } 
-                        // EĞER ÖZEL GİRİLMİŞ SAAT VARSA BURADA HESAPLAR:
-                        else if(td.hasAttribute("data-custom-w")) {
-                            let customW = parseFloat(td.getAttribute("data-custom-w")) || 0;
-                            let customN = parseFloat(td.getAttribute("data-custom-n")) || 0;
-                            hW += customW; hN += customN; aW += customW; aN += customN;
+                        } else if(td.hasAttribute("data-custom-w")) {
+                            hW += parseFloat(td.getAttribute("data-custom-w")) || 0;
+                            hN += parseFloat(td.getAttribute("data-custom-n")) || 0;
+                            aW += hW; aN += hN;
+                        } else {
+                            td.style.background = "transparent";
                         }
-                        else if(val === "") { td.style.background = "transparent"; }
                     }
                     if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
                     if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
@@ -809,6 +818,7 @@
 </body>
 
 </html>
+
 
 
 
