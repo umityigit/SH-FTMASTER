@@ -679,7 +679,29 @@
 
         function moveRow(btn, dir) { saveHistory(); const row = btn.closest('tr'); if(dir===-1 && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); else if(dir===1 && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); }
         function setShift(v, c) { if(activeCell) { saveHistory(); activeCell.innerText = v; activeCell.style.background = v==="" ? "transparent" : c; updateAllStats(); } document.getElementById("contextMenu").style.display = "none"; }
-        
+      function setAdjustableShift() {
+            if(!activeCell) return;
+            
+            let label = prompt("Vardiya etiketini girin (Örn: 09:00-15:00):");
+            if(!label) return;
+            
+            let workHours = prompt("Toplam çalışma saati (Sayı girin, Örn: 6):", "7.5");
+            let nightHours = prompt("Gece çalışma saati (Varsa girin, Örn: 2):", "0");
+            
+            if(label && !isNaN(workHours)) {
+                saveHistory();
+                activeCell.innerText = label;
+                activeCell.style.background = "#475569"; // Ayarlanabilir saatler için gri tonu
+                
+                // Bu hücreye özel veriyi saklamak için bir "geçici kural" oluşturuyoruz
+                // UpdateAllStats içinde manuel kontrol için bunu kullanacağız
+                activeCell.setAttribute("data-custom-w", workHours);
+                activeCell.setAttribute("data-custom-n", nightHours);
+                
+                updateAllStats();
+            }
+            document.getElementById("contextMenu").style.display = "none";
+        }  
         function openStaffQuickMenu(e, btn) { e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; const poolNames = Array.from(document.querySelectorAll("#staffPool input")).map(i => i.value); poolNames.forEach(n => { const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; d.onclick = () => { saveHistory(); activeCell.innerText = n; m.style.display = "none"; }; m.appendChild(d); }); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
 
         function loadArchives() { 
@@ -777,3 +799,4 @@
 </body>
 
 </html>
+
