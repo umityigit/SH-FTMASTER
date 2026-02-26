@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v118 (ÇİFT BAŞLIK & TEK SIRA DİK)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v119 (CANLI HESAP & TEK SIRA DİK)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -58,11 +58,12 @@
         }
         
         /* DİK YAZI ALANLARI */
-        .veri-hucre { height: 100px !important; padding: 0 !important; cursor: text; }
+        .veri-hucre { height: 100px !important; padding: 0 !important; cursor: text; transition: all 0.2s;}
+        .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; }
         
         .dik-yazi {
             writing-mode: vertical-lr; 
-            transform: rotate(180deg); /* Aşağıdan yukarı okunması için */
+            transform: rotate(180deg); 
             font-size: 12px; 
             font-weight: bold;
             white-space: nowrap;
@@ -71,9 +72,9 @@
             justify-content: center;
             height: 100%;
             width: 100%;
+            pointer-events: none; /* Mouse ile tıklamayı kolaylaştırır */
         }
 
-        td[contenteditable="true"]:focus, th[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
         .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
         
         .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; font-family: 'Roboto', sans-serif; color: #333; }
@@ -83,7 +84,7 @@
         col.c-sno { width: 35px; } 
         col.c-tc { width: 100px; } 
         col.c-isim { width: 130px; } 
-        col.c-gun { width: 38px; } /* Dikine sığması için sütun genişliği */
+        col.c-gun { width: 38px; } 
 
         .kalin-yatay { font-weight: bold !important; font-size: 12px !important; text-align: center; padding: 5px !important; }
         .isim-yatay { font-weight: bold !important; font-size: 12px !important; text-align: left; padding-left: 5px !important; }
@@ -301,19 +302,43 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// ARTIK SADECE TEK SIRA, DÜMDÜZ DİK YAZI
+// =========================================================================
+// YENİ FORMATLAMA VE HESAPLAMA MANTIĞI (SORUNSUZ DÜZENLEME İÇİN)
+// =========================================================================
+
+// Herhangi bir hücrediki HTML kalıntılarını temizleyip saf metni çıkarır
+function getCleanValue(text) { 
+    if(!text) return ""; 
+    // Boşlukları ve yeni satırları tireye çevirir (08:00 20:00 -> 08:00-20:00)
+    return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
+}
+
+// Kullanıcı hücreye TIKLADIĞINDA: Süslü div kaldırılır, düz metin olur (Rahatça yazsın diye)
+function temizleFormat(td) {
+    let metin = td.innerText || td.textContent || "";
+    metin = metin.trim();
+    td.innerHTML = metin; // Kutu silinir, sadece yazı kalır
+}
+
+// Kullanıcı hücreden ÇIKTIĞINDA: Yazdığı yazı tekrar süslü dik formata girer
+function uygulaFormat(td) {
+    let metin = getCleanValue(td.innerText || td.textContent);
+    if (metin !== "") {
+        td.innerHTML = `<div class="dik-yazi">${metin}</div>`;
+    } else {
+        td.innerHTML = "";
+    }
+    satirHesapla(td); // Garanti olsun diye tekrar hesaplat
+}
+
+// Sadece tablo ilk oluşurken çalışır
 function formatliVardiya(val) { 
     if(!val) return ""; 
     val = val.trim(); 
-    return `<div class="dik-yazi" data-raw="${val}">${val}</div>`;
+    return `<div class="dik-yazi">${val}</div>`;
 }
 
-function getCleanValue(html) { 
-    if(!html) return ""; 
-    let m = html.match(/data-raw="([^"]+)"/);
-    if (m) return m[1];
-    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
-}
+// =========================================================================
 
 function getVardiyaInfo(val) {
     if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""};
@@ -393,12 +418,14 @@ function excelTarih(s){
     return null;
 }
 
+// CANLI HESAPLAMA MOTORU (HER HARF YAZILDIĞINDA ANINDA ÇALIŞIR)
 function satirHesapla(td) {
     if (!td) return;
     const tr = td.closest('tr');
     if (!tr) return;
 
-    const rawVal = getCleanValue(td.innerHTML);
+    // YAZIYI GÜVENLİ ŞEKİLDE ALIR (Kutunun İçinden veya Düz Metinden)
+    const rawVal = getCleanValue(td.innerText || td.textContent);
     const info = getVardiyaInfo(rawVal);
     
     const manuelSaat = parseFloat(rawVal.replace(",", "."));
@@ -417,7 +444,7 @@ function satirHesapla(td) {
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
 
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
-            const v = getCleanValue(c.innerHTML);
+            const v = getCleanValue(c.innerText || c.textContent);
             if (v === "" || v === "0") return;
 
             const inf = getVardiyaInfo(v);
@@ -463,7 +490,8 @@ function satirHesapla(td) {
     update('.s-izin', n_i); update('.s-ht', n_ht); update('.s-rt', n_rt);
     update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
     
-    if (rawVal !== "") td.innerHTML = formatliVardiya(rawVal);
+    // NOT: BURADA FORMATLAMA YAPMIYORUZ Kİ KULLANICI YAZI YAZARKEN İMLECİ KAÇMASIN.
+    // FORMATLAMA İŞLEMİNİ ONBLUR (uygulaFormat) FONKSİYONUNA DEVRETTİK.
 }
 
 function raporuOlustur() {
@@ -529,7 +557,6 @@ function raporuOlustur() {
         
         let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
 
-        // 15 KİŞİLİK BLOKLARA BÖLME İŞLEMİ (SAYFALAMA)
         let chunkSize = 15;
         let globalIndex = 1;
         
@@ -560,7 +587,6 @@ function raporuOlustur() {
                 </td>
             </tr>`;
 
-            // İKİ SATIRLI YENİ BAŞLIK YAPISI
             let tr1 = `<tr>
                 <th rowspan="2"><div class="baslik-dik">SIRA NO</div></th>
                 <th rowspan="2" class="kalin-yatay">T.C. KİMLİK NUMARASI</th>
@@ -577,9 +603,7 @@ function raporuOlustur() {
                 
                 let bgStyle = (d.getDay()===0||d.getDay()===6) ? 'background:#eee;' : '';
                 
-                // ÜST SATIR (TARİH)
                 tr1 += `<th style="${bgStyle} padding: 2px;" data-tarih="${tamTarihStr}"><div class="baslik-dik">${tamTarihStr}</div></th>`;
-                // ALT SATIR (GÜN)
                 tr2 += `<th style="${bgStyle} padding: 2px;" data-gun="${gunAdi}"><div class="baslik-dik-kucuk">${gunAdi}</div></th>`;
                 
                 if(d.getDay()===0 || idx === days.length - 1) {
@@ -615,7 +639,8 @@ function raporuOlustur() {
                     let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
                     if(info.tip==='izin') bg='hucre-izin';
                     
-                    h+=`<td contenteditable="true" data-raw="${v}" class="veri-hucre ${bg}" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
+                    // ONFOCUS VE ONBLUR İLE KLAVYE/HESAP DOSTU SİSTEM EKLENDİ
+                    h+=`<td contenteditable="true" class="veri-hucre ${bg}" onfocus="temizleFormat(this)" onblur="uygulaFormat(this)" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
                     
                     if(d.getDay()===0 || idx === days.length - 1){
                         h+=`<th class="bg-hafta veri-hucre kalin-yatay" data-type="h-gun"></th>
@@ -669,11 +694,11 @@ function mergeSelectedCells() {
     let isRowMerge = getRowIdx(selectedCells[0]) === getRowIdx(selectedCells[1]);
     if (isRowMerge) {
         let totalColSpan = 0; let mergedText = "";
-        selectedCells.forEach((td, index) => { totalColSpan += parseInt(td.getAttribute('colspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        selectedCells.forEach((td, index) => { totalColSpan += parseInt(td.getAttribute('colspan') || 1); if(getCleanValue(td.innerText || td.textContent) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
         mainCell.setAttribute('colspan', totalColSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
     } else {
         let totalRowSpan = 0; let mergedText = "";
-        selectedCells.forEach((td, index) => { totalRowSpan += parseInt(td.getAttribute('rowspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        selectedCells.forEach((td, index) => { totalRowSpan += parseInt(td.getAttribute('rowspan') || 1); if(getCleanValue(td.innerText || td.textContent) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
         mainCell.setAttribute('rowspan', totalRowSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
     }
     satirHesapla(mainCell); clearSelection();
@@ -765,7 +790,6 @@ function exceleSifirKayipsizIndir() {
                 inlineStyle += "text-align: center;";
             }
 
-            // Başlıklar Excel'de dikey olsun
             if (el.hasAttribute('data-tarih')) {
                 el.innerHTML = el.getAttribute('data-tarih');
                 inlineStyle += "mso-rotate: 90; height: 75pt; white-space: nowrap; font-weight: bold;";
@@ -775,9 +799,12 @@ function exceleSifirKayipsizIndir() {
                 inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: normal; font-size: 9px;";
             }
             else {
-                let raw = el.getAttribute('data-raw') || el.innerText;
-                // Veri hücreleri dikey ve tek satır
+                // Temizlenmiş hücre verisi
+                let raw = el.innerText || el.textContent || "";
+                raw = raw.trim();
+                
                 if (el.classList.contains('veri-hucre') && raw) {
+                    raw = raw.replace(/\s+/g, '-').replace(/-+/g, '-');
                     el.innerHTML = raw;
                     inlineStyle += "mso-rotate: 90; height: 90pt; white-space: nowrap; font-weight: bold;";
                 }
@@ -801,7 +828,7 @@ function exceleSifirKayipsizIndir() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Hastane_Puantaj_Resmi_Format_Son.xls';
+    a.download = 'Hastane_Puantaj_Resmi_Format_Son_v2.xls';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
