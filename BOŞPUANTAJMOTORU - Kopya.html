@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v121 (RESMİ KURUM YAZICI FORMATI)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v122 (DİNAMİK BAŞLIK & 16 KİŞİ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -259,7 +259,7 @@ function ilkKurulumuYap() {
         "30328031684 - BURAK TURAN", "32827531146 - HATİCE KARAKUŞ", "00000000000 - FATMA KOÇAR", "10546692058 - HAFİZE ÖNAL", 
         "23467244800 - FUNDA POYRAZ", "62074286230 - BETÜL ŞİMŞEK"
     ];
-    appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL (GENEL LİSTE)", kisiler: genelListe }];
+    appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL", kisiler: genelListe }];
     veriKaydet(); 
 }
 
@@ -347,7 +347,7 @@ function getVardiyaInfo(val) {
     return {t:0, g:0, tip:"bilinmeyen", val: cleanVal};
 }
 
-function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ GRUP", kisiler: [] }); veriKaydet(); }
+function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ GRUP ADI", kisiler: [] }); veriKaydet(); }
 function grupSil(id) { if (confirm("Grup silinsin mi?")) { appData.gruplar = appData.gruplar.filter(g => g.id !== id); veriKaydet(); } }
 function grupAdiGuncelle(id, ad) { let g = appData.gruplar.find(g => g.id === id); if (g) { g.ad = ad.trim() || "İSİMSİZ GRUP"; veriKaydet(); } }
 
@@ -550,8 +550,8 @@ function raporuOlustur() {
         
         let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
 
-        // YAZICI VE İMZA UYUMU İÇİN SAYI 18'E SABİTLENDİ
-        let chunkSize = 18;
+        // YAZICI VE İMZA UYUMU İÇİN SAYI 16'YA DÜŞÜRÜLDÜ
+        let chunkSize = 16;
         let globalIndex = 1;
         
         for (let i = 0; i < fullList.length; i += chunkSize) {
@@ -569,7 +569,7 @@ function raporuOlustur() {
             
             <tr>
                 <td colspan="${toplamSutun}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold;">
-                    ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ DÖŞEMEALTI DEVLET HASTANESİ SÜREKLİ İŞÇİ PERSONEL PUANTAJ BİLDİRİMİ
+                    ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ ${gAd.toUpperCase()} SÜREKLİ İŞÇİ PERSONEL PUANTAJ BİLDİRİMİ
                 </td>
             </tr>
             <tr>
