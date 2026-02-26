@@ -15,7 +15,7 @@
         .prod-by { margin-top: 15px; font-size: 10px; color: #7f8c8d; font-weight: bold; letter-spacing: 1px; }
 
         /* ANA PANEL */
-        #mainContent { display: none; padding-bottom: 50px; }
+        #mainContent { display: none; padding-bottom: 50px; overflow-x: auto; }
         .panel-container { background: white; padding: 15px; width: 98%; margin: 10px auto; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--blue); }
         .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px; position: relative; }
         
@@ -43,7 +43,8 @@
         .vardiya-del:hover { color:#2c3e50; }
 
         /* TABLO VE ÇIKTI */
-        .sayfa { background: white; width: 297mm; min-height: 200mm; margin: 0 auto 20px auto; padding: 2mm; page-break-after: always; font-family: 'Arial Narrow', sans-serif; }
+        /* ARKAPLAN TAŞMA SORUNU İÇİN width: max-content YAPILDI */
+        .sayfa { background: white; width: max-content; min-width: 100%; min-height: 200mm; margin: 0 auto 20px auto; padding: 20px; page-break-after: always; font-family: 'Arial Narrow', sans-serif; box-sizing: border-box; }
         
         table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 7.5px; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
         
@@ -59,7 +60,7 @@
             position: relative;
         }
         
-        .veri-hucre { font-size: 7px; font-weight: bold; height: 22px; }
+        .veri-hucre { font-size: 7px; font-weight: bold; height: 28px; }
 
         td[contenteditable="true"], th[contenteditable="true"] { cursor: text; }
         td[contenteditable="true"]:focus, th[contenteditable="true"]:focus, div[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
@@ -71,7 +72,7 @@
         .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; font-family: 'Roboto', sans-serif; color: #333; }
         .ctx-item:hover { background-color: #f1f3f5; color: var(--blue); }
 
-        col.c-sno { width: 16px; } col.c-tc { width: 55px; } col.c-isim { width: 85px; } col.c-gun { width: 18px; }
+        col.c-sno { width: 16px; } col.c-tc { width: 55px; } col.c-isim { width: 85px; } col.c-gun { width: 22px; }
         th { background: #eee; padding: 2px 1px; }
         .bg-hafta { background-color: #dff0d8 !important; border-left: 1px solid #000; }
         .bg-genel { background-color: #fcf3cf !important; border-left: 1px solid #000; }
@@ -79,8 +80,8 @@
         .hucre-izin { background-color: #fadbd8 !important; color: #c0392b; font-weight: bold; }
         .hucre-haftasonu { background-color: #f2f2f2 !important; }
         
+        /* Üst Bilgiler için dikey yazı sınıfı (Tarihler buradan çıkarıldı) */
         .dikey-yazi { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 6px; font-weight: normal; letter-spacing: -0.4px; padding: 2px 0; line-height: 1; }
-        .dikey-tarih { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 6px; font-weight: bold; letter-spacing: -0.2px; padding: 2px 0; line-height: 1.1; color: #111; }
 
         #dynamicGroups { display: flex; gap: 15px; flex-wrap: wrap; width: 100%; }
 
@@ -92,9 +93,9 @@
         #cloudStatus { position: fixed; top: 10px; right: 10px; background: #27ae60; color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; display: none; z-index: 999999; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
         @media print {
-            @page { size: A4 landscape; margin: 2mm; }
+            @page { size: A3 landscape; margin: 2mm; } /* Tablo büyük olduğu için A3 veya scale kullanılması iyidir */
             #loginScreen, .panel-container, #tableContextMenu, #btnExceleKopyala, #cloudStatus { display: none !important; }
-            #mainContent { display: block !important; }
+            #mainContent { display: block !important; overflow: visible; }
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
             .selected-cell { outline: none !important; background-color: inherit !important; } 
         }
@@ -287,7 +288,14 @@ function vardiyaArayuzCiz() {
     }
 }
 
-function formatliVardiya(val) { if(!val) return ""; val = val.trim(); if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) return val.replace(/[\s-]+/, "<br>"); return val; }
+// VARDİYA SAATLERİNİ TABLODA ALT ALTA GÖSTERMEK İÇİN EKSİ(-) YERİNE <br> KOYUYOR
+function formatliVardiya(val) { 
+    if(!val) return ""; 
+    val = val.trim(); 
+    if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) return val.replace(/\s*-\s*/, "<br>"); 
+    return val; 
+}
+
 function getCleanValue(html) { if(!html) return ""; return html.replace(/<br\s*\/?>/gi, "-").replace(/&nbsp;/g, " ").replace(/<(?:.|\n)*?>/gm, '').trim().toUpperCase(); }
 
 function getVardiyaInfo(val) {
@@ -523,14 +531,13 @@ function raporuOlustur() {
         
         let weekCount = 1;
         days.forEach((d, idx)=>{
-            // ÜSTTE RAKAM ALTTA GÜN ADI FORMATI
+            // RAKAM ÜSTTE, GÜN ALTTA (DİKEY YAZI İPTAL EDİLDİ, DÜZ YAZILDI)
             let gg = String(d.getDate()).padStart(2, '0');
-            let aa = String(d.getMonth() + 1).padStart(2, '0');
-            let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
+            let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'short' }).replace('.', '').toUpperCase();
             
-            let tamTarih = `${gg}.${aa}.${d.getFullYear()}<br><span style="font-size:7px; font-weight:normal;">${gunAdi}</span>`;
+            let tamTarih = `<div style="line-height: 1.2; text-align: center;"><strong style="font-size: 12px;">${gg}</strong><br><span style="font-size: 8px;">${gunAdi}</span></div>`;
             
-            h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''};"><div class="dikey-tarih">${tamTarih}</div></th>`;
+            h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; padding: 2px;">${tamTarih}</th>`;
             
             if(d.getDay()===0 || idx === days.length - 1) {
                 h+=`<th class="bg-hafta"><div class="dikey-yazi">${weekCount}-Haftalık İşe Gelme Günü</div></th>
@@ -723,11 +730,14 @@ function exceleSifirKayipsizKopyala() {
             else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;";
             else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
 
-            let dikeyDiv = el.querySelector('.dikey-yazi') || el.querySelector('.dikey-tarih');
+            let dikeyDiv = el.querySelector('.dikey-yazi');
             if (dikeyDiv) {
-                // EXCEL'DE ALT ALTA YAZIYI DESTEKLEMEK İÇİN mso-data-placement:same-cell; KULLANILDI
+                // Diğer dikey yazılar için Excel rotasyon ayarı
                 el.innerHTML = dikeyDiv.innerHTML.replace(/<br\s*\/?>/gi, "<br style='mso-data-placement:same-cell;'>");
                 inlineStyle += "mso-rotate: 90; height: 120pt; white-space: normal;";
+            } else {
+                // EXCEL'DE HÜCRE İÇİ ALT ALTA YAZIYI DESTEKLEMEK İÇİN mso-data-placement:same-cell; KULLANILDI (ÖZELLİKLE SAATLER İÇİN)
+                el.innerHTML = el.innerHTML.replace(/<br\s*\/?>/gi, "<br style='mso-data-placement:same-cell;'>");
             }
 
             el.setAttribute('style', inlineStyle);
