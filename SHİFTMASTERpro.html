@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v113.5 - GHOST PIN & PATRON EDITION</title>
+    <title>ShiftMaster v114.0 - GHOST PIN & PATRON EDITION (SOCIAL PANEL)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,20 +60,41 @@
         /* HEADER / KONTROL ÇUBUĞU */
         .main-header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 25px; border-radius: 20px; border: 1px solid #334155; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
-        /* 📢 HABERLEŞME VE LOG EKRANI YAN YANA */
+        /* 📢 YENİ NESİL HABERLEŞME VE LOG EKRANI */
         .top-panels { display: flex; gap: 20px; margin-bottom: 25px; }
         
         .news-container { flex: 1; background: var(--card); border: 2px solid #334155; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; }
         .news-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .news-list { height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
-        .news-item { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--accent); padding: 12px; border-radius: 8px; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
-        .news-text { font-size: 13px; font-weight: 500; color: #fff; line-height: 1.4; }
-        .news-time { font-size: 10px; color: #94a3b8; align-self: flex-end; margin-top: 6px; font-weight: 400; font-style: italic; }
+        .news-list { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 5px; scroll-behavior: smooth; }
+        .news-item { background: rgba(56, 189, 248, 0.05); border-left: 4px solid var(--accent); padding: 15px; border-radius: 12px; position: relative; transition: 0.3s; display: flex; flex-direction: column; gap: 6px; }
+        .news-text { font-size: 13px; font-weight: 500; color: #fff; line-height: 1.5; }
+        .news-time { font-size: 10px; color: #94a3b8; font-weight: 400; font-style: italic; }
         
-        /* 🕵️‍♂️ LOG PANOSU */
+        /* Sosyal Butonlar ve Emoji Stilleri */
+        .news-actions { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+        .reaction-btn { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; padding: 4px 10px; border-radius: 20px; font-size: 12px; cursor: pointer; color: #cbd5e1; transition: 0.2s; display: flex; align-items: center; gap: 5px; user-select: none; }
+        .reaction-btn:hover { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); transform: translateY(-2px); }
+        .reaction-btn.active { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
+        .reply-btn { background: transparent; border: none; color: var(--accent); font-size: 12px; cursor: pointer; font-weight: 700; padding: 4px; margin-left: auto; transition: 0.2s; }
+        .reply-btn:hover { color: #fff; text-shadow: 0 0 5px var(--accent); }
+        
+        /* Emoji Açılır Penceresi */
+        .emoji-picker-wrapper { position: relative; }
+        .emoji-picker { display: none; position: absolute; bottom: 120%; left: 0; background: #0f172a; border: 1px solid var(--accent); padding: 8px; border-radius: 15px; z-index: 100; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+        .emoji-picker.active { display: flex; }
+        .emoji-item { cursor: pointer; font-size: 18px; transition: 0.2s; padding: 2px; }
+        .emoji-item:hover { transform: scale(1.3); }
+
+        /* İçiçe Cevaplar (Replies) */
+        .replies-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-left: 12px; border-left: 2px dashed #475569; }
+        .reply-item { background: rgba(0, 0, 0, 0.25); padding: 10px; border-radius: 10px; font-size: 12px; }
+        .reply-input-box { display: none; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #334155; animation: fadeIn 0.3s; }
+        .reply-input-box.active { display: flex; }
+
+        /* 🕵️‍♂️ LOG PANOSU (Büyütüldü) */
         .log-container { flex: 1; background: #0f172a; border: 2px solid var(--warning); border-radius: 20px; padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
-        .log-list { height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 5px; }
-        .log-item { background: rgba(0,0,0,0.5); border-left: 3px solid var(--warning); padding: 8px 12px; border-radius: 6px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; }
+        .log-list { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px; }
+        .log-item { background: rgba(0,0,0,0.5); border-left: 3px solid var(--warning); padding: 10px 12px; border-radius: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; }
         .log-user { font-weight: 800; color: var(--warning); margin-right: 8px; }
 
         .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
@@ -225,7 +246,10 @@
             <div class="top-panels">
                 <div class="news-container card">
                     <div class="news-header"><h4 style="margin:0; color:var(--accent); display:flex; align-items:center; gap:10px;">📢 HABERLEŞME PANOSU</h4></div>
-                    <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="newsInput" class="glass-input" style="flex:1;" placeholder="Ekip için bir not bırak..." onkeydown="if(event.key==='Enter') addNews()"><button class="btn" style="background:var(--accent); color:#000;" onclick="addNews()">GÖNDER</button></div>
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="newsInput" class="glass-input" style="flex:1;" placeholder="Ekip için bir not bırak..." onkeydown="if(event.key==='Enter') addNews()">
+                        <button class="btn" style="background:var(--accent); color:#000;" onclick="addNews()">GÖNDER</button>
+                    </div>
                     <div id="newsList" class="news-list"></div>
                 </div>
 
@@ -319,7 +343,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // KULLANICI BİLGİLERİ VE FIREBASE ŞİFRE SİSTEMİ
         const users = {
             'ali': { name: 'ALİ', icon: '🏍️' },
             'gullu': { name: 'GÜLLÜ', icon: '🌹' },
@@ -330,12 +353,10 @@
         let currentUser = "";
         let selectedUserKey = "";
 
-        // Şifreleri Firebase'den anlık Çek
         db.ref('kullanici_sifreleri').on('value', snap => {
             if(snap.val()) { userPasswords = { ...userPasswords, ...snap.val() }; }
         });
 
-        // GÖLGE KİLİT (PATRON MODU) DİNLEYİCİSİ
         db.ref('sistem_kilitli').on('value', snap => {
             const isLocked = snap.val();
             if(isLocked && currentUser !== 'ÜMİT' && currentUser !== "") {
@@ -344,15 +365,14 @@
             }
         });
 
-        // İŞLEM LOGLAMASI FONKSİYONU
         function logAction(actionText) {
             if(!currentUser) return;
             const logData = { user: currentUser, action: actionText, time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}) };
             db.ref("islem_loglari").push(logData);
         }
 
-        // LOGLARI EKRANDA GÖSTERME
-        db.ref("islem_loglari").limitToLast(15).on("value", snap => {
+        // LOG LİMİTİ 25'E ÇIKARILDI
+        db.ref("islem_loglari").limitToLast(25).on("value", snap => {
             const l = document.getElementById("logList"); l.innerHTML = "";
             const data = snap.val();
             if(data) {
@@ -362,7 +382,6 @@
             } else { l.innerHTML = `<div style="color: #475569; font-size: 11px; text-align: center; margin-top: 20px;">Henüz işlem yok.</div>`; }
         });
 
-        // KİŞİSEL GİRİŞ SİSTEMİ
         function selectProfile(key) {
             db.ref('sistem_kilitli').once('value').then(snap => {
                 if(snap.val() && key !== 'umit') {
@@ -398,7 +417,6 @@
 
             if(input === correctPass) {
                 if(input === '1234') {
-                    // İlk defa giriyorsa Şifre Belirleme kutusunu aç
                     document.getElementById('passBox').style.display = 'none';
                     document.getElementById('newPassBox').style.display = 'flex';
                     document.getElementById('newPass1').focus();
@@ -419,10 +437,8 @@
             if(p1.length < 4) return alert("Şifre en az 4 haneli olmalıdır!");
             if(p1 !== p2) return alert("Şifreler eşleşmiyor!");
 
-            // Firebase'e yeni şifreyi kaydet
             db.ref('kullanici_sifreleri/' + selectedUserKey).set(p1);
             alert("✅ Şifreniz onaylandı!\n\nİstediğiniz zaman sağ üst köşedeki 'ŞİFRE DEĞİŞTİR' butonuna tıklayarak güncelleyebilirsiniz.");
-            
             executeLogin();
         }
 
@@ -436,40 +452,30 @@
         }
 
         function logout() {
-            currentUser = "";
-            selectedUserKey = "";
+            currentUser = ""; selectedUserKey = "";
             document.getElementById("mainContent").style.display = "none";
             document.getElementById("lockScreen").style.display = "flex";
             cancelLogin();
         }
 
         function openChangePassModal() {
-            document.getElementById('cpOld').value = '';
-            document.getElementById('cpNew1').value = '';
-            document.getElementById('cpNew2').value = '';
+            document.getElementById('cpOld').value = ''; document.getElementById('cpNew1').value = ''; document.getElementById('cpNew2').value = '';
             document.getElementById('changePassModal').style.display = 'flex';
         }
 
         function updatePassAnytime() {
-            const oldP = document.getElementById('cpOld').value;
-            const newP1 = document.getElementById('cpNew1').value;
-            const newP2 = document.getElementById('cpNew2').value;
-
+            const oldP = document.getElementById('cpOld').value; const newP1 = document.getElementById('cpNew1').value; const newP2 = document.getElementById('cpNew2').value;
             if(oldP !== userPasswords[selectedUserKey]) return alert("Mevcut şifrenizi yanlış girdiniz!");
             if(newP1.length < 4) return alert("Yeni şifre en az 4 haneli olmalı!");
             if(newP1 !== newP2) return alert("Yeni şifreler eşleşmiyor!");
-
             db.ref('kullanici_sifreleri/' + selectedUserKey).set(newP1);
             alert("✅ Şifreniz başarıyla değiştirildi.");
             document.getElementById('changePassModal').style.display = 'none';
         }
 
-        // GÖLGE KİLİT TETİKLEYİCİSİ (PROD. BY YAZISINA 3 TIK)
-        let secretClicks = 0;
-        let secretTimer;
+        let secretClicks = 0; let secretTimer;
         document.getElementById('secretTrigger').addEventListener('click', () => {
-            secretClicks++;
-            clearTimeout(secretTimer);
+            secretClicks++; clearTimeout(secretTimer);
             secretTimer = setTimeout(() => { secretClicks = 0; }, 1500);
             
             if(secretClicks >= 3) {
@@ -547,9 +553,136 @@
         function openTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; setTimeout(() => modal.classList.add('show'), 10); }
         function closeTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
-        function loadNews() { db.ref("haberler").on("value", snap => { const l = document.getElementById("newsList"); l.innerHTML = ""; const data = snap.val(); if(data) { Object.entries(data).reverse().forEach(([id, val]) => { l.innerHTML += `<div class="news-item"><div class="news-text">${val.text}</div><div class="news-time">${val.user} - ${val.time}</div><span class="news-delete" onclick="deleteNews('${id}')" style="position: absolute; top: 10px; right: 10px; color: var(--danger); cursor: pointer;">×</span></div>`; }); } }); }
-        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR') }); logAction(`Panoya not bıraktı: "${i.value.substring(0,10)}..."`); i.value = ""; } }
-        function deleteNews(id) { if(confirm("Sil?")) { db.ref("haberler").child(id).remove(); logAction("Panodan bir not sildi."); } }
+        
+        // 💬 YENİ: SOSYAL HABERLEŞME YÜKLEME (REPLIES & REACTIONS EKLENDİ)
+        function loadNews() { 
+            db.ref("haberler").on("value", snap => { 
+                const l = document.getElementById("newsList"); l.innerHTML = ""; 
+                const data = snap.val(); 
+                if(data) { 
+                    Object.entries(data).reverse().forEach(([id, val]) => { 
+                        
+                        // İç İçe Cevapları (Replies) Oluştur
+                        let repliesHtml = '';
+                        if(val.replies) {
+                            repliesHtml = '<div class="replies-container">';
+                            Object.entries(val.replies).forEach(([rId, rVal]) => {
+                                repliesHtml += `<div class="reply-item"><strong style="color:var(--warning);">${rVal.user}:</strong> <span style="color:#e2e8f0;">${rVal.text}</span> <span style="font-size:9px; color:#94a3b8; display:block; margin-top:3px;">${rVal.time}</span></div>`;
+                            });
+                            repliesHtml += '</div>';
+                        }
+
+                        // Emojileri (Reactions) Oluştur
+                        const quickEmojis = ['👍', '👎', '❤️'];
+                        let reactionsHtml = '';
+                        const reactions = val.reactions || {};
+                        
+                        // Sabit emojiler
+                        quickEmojis.forEach(emoji => {
+                            const count = reactions[emoji] ? Object.keys(reactions[emoji]).length : 0;
+                            const hasReacted = (reactions[emoji] && reactions[emoji][currentUser]) ? 'active' : '';
+                            reactionsHtml += `<div class="reaction-btn ${hasReacted}" onclick="toggleReaction('${id}', '${emoji}')">${emoji} ${count > 0 ? count : ''}</div>`;
+                        });
+
+                        // Ekstradan menüden seçilmiş emojiler varsa onları da göster
+                        Object.keys(reactions).forEach(emoji => {
+                            if (!quickEmojis.includes(emoji)) {
+                                const count = Object.keys(reactions[emoji]).length;
+                                const hasReacted = reactions[emoji][currentUser] ? 'active' : '';
+                                reactionsHtml += `<div class="reaction-btn ${hasReacted}" onclick="toggleReaction('${id}', '${emoji}')">${emoji} ${count > 0 ? count : ''}</div>`;
+                            }
+                        });
+
+                        l.innerHTML += `
+                        <div class="news-item">
+                            <div style="display:flex; justify-content:space-between;">
+                                <div class="news-text">${val.text}</div>
+                                <span class="news-delete" onclick="deleteNews('${id}')" style="color: var(--danger); cursor: pointer; font-size:16px;">×</span>
+                            </div>
+                            <div class="news-time">${val.user} • ${val.time}</div>
+                            
+                            ${repliesHtml}
+                            
+                            <div class="news-actions">
+                                ${reactionsHtml}
+                                
+                                <div class="emoji-picker-wrapper">
+                                    <div class="reaction-btn" onclick="toggleEmojiPicker('${id}')" style="border-radius:50%; width:24px; height:24px; justify-content:center; padding:0;">➕</div>
+                                    <div id="emoji-picker-${id}" class="emoji-picker">
+                                        <span class="emoji-item" onclick="toggleReaction('${id}', '😂')">😂</span>
+                                        <span class="emoji-item" onclick="toggleReaction('${id}', '🌸')">🌸</span>
+                                        <span class="emoji-item" onclick="toggleReaction('${id}', '🎉')">🎉</span>
+                                        <span class="emoji-item" onclick="toggleReaction('${id}', '🔥')">🔥</span>
+                                        <span class="emoji-item" onclick="toggleReaction('${id}', '💡')">💡</span>
+                                    </div>
+                                </div>
+
+                                <button class="reply-btn" onclick="toggleReplyBox('${id}')">↩️ Cevapla</button>
+                            </div>
+
+                            <div id="reply-box-${id}" class="reply-input-box">
+                                <input type="text" id="reply-input-${id}" class="glass-input" style="flex:1; padding:8px 12px; font-size:11px;" placeholder="Cevabını yaz..." onkeydown="if(event.key==='Enter') sendReply('${id}')">
+                                <button class="btn" style="background:var(--success); color:white; padding:8px 15px;" onclick="sendReply('${id}')">Gönder</button>
+                            </div>
+                        </div>`; 
+                    }); 
+                } 
+            }); 
+        }
+
+        // 💬 YENİ: HABERLEŞME FONKSİYONLARI
+        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) }); logAction(`Panoya not bıraktı: "${i.value.substring(0,10)}..."`); i.value = ""; } }
+        function deleteNews(id) { if(confirm("Mesajı kalıcı olarak silmek istiyor musun?")) { db.ref("haberler").child(id).remove(); logAction("Panodan bir mesaj sildi."); } }
+
+        function toggleReplyBox(id) {
+            const box = document.getElementById(`reply-box-${id}`);
+            box.classList.toggle('active');
+            if(box.classList.contains('active')) document.getElementById(`reply-input-${id}`).focus();
+        }
+
+        function sendReply(newsId) {
+            const input = document.getElementById(`reply-input-${newsId}`);
+            const text = input.value.trim();
+            if(text) {
+                db.ref(`haberler/${newsId}/replies`).push({
+                    text: text,
+                    user: currentUser,
+                    time: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})
+                });
+                input.value = '';
+                toggleReplyBox(newsId);
+                logAction("Bir mesaja cevap verdi.");
+            }
+        }
+
+        function toggleEmojiPicker(id) {
+            // Açık olan diğer picker'ları kapat
+            document.querySelectorAll('.emoji-picker.active').forEach(p => {
+                if(p.id !== `emoji-picker-${id}`) p.classList.remove('active');
+            });
+            const picker = document.getElementById(`emoji-picker-${id}`);
+            picker.classList.toggle('active');
+        }
+
+        function toggleReaction(newsId, emoji) {
+            if(!currentUser) return;
+            const ref = db.ref(`haberler/${newsId}/reactions/${emoji}/${currentUser}`);
+            ref.once('value', snap => {
+                if(snap.exists()) ref.remove(); // Geri al
+                else ref.set(true); // Ekle
+            });
+            
+            const picker = document.getElementById(`emoji-picker-${newsId}`);
+            if(picker) picker.classList.remove('active');
+        }
+
+        // Tıklama ile Emoji Menülerini Kapatma
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.emoji-picker-wrapper')) {
+                document.querySelectorAll('.emoji-picker.active').forEach(p => p.classList.remove('active'));
+            }
+        });
+
 
         function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const data = snap.val(); let count = 0; staffList = []; if(data) { Object.entries(data).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; const div = document.createElement("div"); div.className = "staff-chip"; div.innerHTML = `<input type="checkbox" value="${item.name}"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; p.appendChild(div); }); } document.getElementById("staffCounter").innerText = count; }); }
         function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); logAction(`Havuz'a kişi ekledi: ${v}`); inp.value = ""; } }
@@ -737,7 +870,7 @@
 
         function moveRow(btn, dir) { saveHistory(); const row = btn.closest('tr'); if(dir===-1 && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); else if(dir===1 && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); }
         function setShift(v, c) { if(activeCell) { saveHistory(); activeCell.innerText = v; activeCell.style.background = v==="" ? "transparent" : c; updateAllStats(); if(v!=="") logAction(`Bir hücreye '${v}' yazdı.`); } document.getElementById("contextMenu").style.display = "none"; }
-      
+        
         function setAdjustableShift() {
             if(!activeCell) return; let label = prompt("Vardiya etiketini girin (Örn: 09:00-15:00):"); if(!label) return;
             let workHours = prompt("Toplam çalışma saati (Sayı girin, Örn: 6):", "7.5"); let nightHours = prompt("Gece çalışma saati (Varsa girin, Örn: 2):", "0");
