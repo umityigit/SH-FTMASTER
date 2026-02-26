@@ -163,7 +163,7 @@
                 <button onclick="window.print()" class="btn-big btn-grn" style="margin:0; flex:1;">YAZDIR</button>
             </div>
             <textarea id="inpExcel" placeholder="Excel'den kopyaladığınız vardiyaları buraya yapıştırın..." style="height:150px; margin-top: 10px;" class="modern-input"></textarea>
-            <div style="margin-top: 5px; font-size: 11px; color: #e67e22; font-weight: bold;">💡 İPUCU: Tabloda oluşturulan hücreleri farenizle sürükleyerek seçebilir, ardından sağ tıklayarak hücreleri birleştirebilirsiniz! Hastane adı ve kod kısımlarına tıklayarak metinleri kendi hastanenize göre düzenleyebilirsiniz.</div>
+            <div style="margin-top: 5px; font-size: 11px; color: #e67e22; font-weight: bold;">💡 İPUCU: Tabloda oluşturulan hücreleri farenizle sürükleyerek seçebilir, ardından sağ tıklayarak hücreleri birleştirebilirsiniz! Metinleri kendi hastanenize göre düzenleyebilirsiniz.</div>
         </div>
     </div>
     <div id="raporAlani"></div>
@@ -227,7 +227,7 @@ function ilkKurulumuYap() {
         "25282186846 - BURCU DERELİOĞLU", "25624852712 - SONGÜL ÖZTÜRK", "26872123876 - HURİYE ELMAS", "27091143096 - KADİR GAMSIZ", 
         "28543103354 - AYŞE BOZKAYA", "29386066998 - SAFİYE DENECİ", "30163049264 - ADEM KÖMÜR", "30623331236 - SADIK MACİT", 
         "30937798466 - ALİ GENÇEL", "37927835576 - HALİL VAR", "40186499618 - DENİZ USLU", "45925910836 - ENES ABDULLAH ALTUN", 
-        "53164244964 - MAKBULE DENK", "58708122418 - MUST MUSTAFA DİK", "61585026564 - FATMA ÇALIŞKAN", "10588692368 - ÜMİT YİĞİT", 
+        "53164244964 - MAKBULE DENK", "58708122418 - MUSTAFA DİK", "61585026564 - FATMA ÇALIŞKAN", "10588692368 - ÜMİT YİĞİT", 
         "21604545568 - NUSRETTİN ÖZSOY", "23665254878 - ÜMMÜ KURU", "26542158924 - HAFİSE DİKMEN", "29056059848 - FATMA IŞIK", 
         "30328031684 - BURAK TURAN", "32827531146 - HATİCE KARAKUŞ", "00000000000 - FATMA KOÇAR", "10546692058 - HAFİZE ÖNAL", 
         "23467244800 - FUNDA POYRAZ", "62074286230 - BETÜL ŞİMŞEK"
@@ -237,15 +237,12 @@ function ilkKurulumuYap() {
 }
 
 function bulutBaglantisiniKur() {
-    // Önce zorunlu geçişin yapılıp yapılmadığını kontrol et
     db.ref("puantaj_v115_zorunlu_gecis").once("value", snap => {
         if(!snap.val()) {
-            // İlk kez v115'e geçiliyor, Ümit abinin verdiği listeyi zorla yaz!
             ilkKurulumuYap();
             db.ref("puantaj_v115_zorunlu_gecis").set(true);
             arayuzCiz(); vardiyaArayuzCiz();
         } else {
-            // Zaten geçiş yapılmış, buluttan anlık çek
             db.ref("puantaj_motoru_ayarlar").on("value", snap => {
                 let data = snap.val();
                 if(data) {
@@ -263,7 +260,6 @@ function bulutBaglantisiniKur() {
     });
 }
 
-// ARTIK VERİLER LOCALSTORAGE DEĞİL DİREKT FIREBASE'E YAZILIYOR
 function veriKaydet() { 
     db.ref("puantaj_motoru_ayarlar").set(appData);
 }
@@ -326,7 +322,12 @@ function arayuzCiz() {
             <div class="personel-row"><input type="text" id="add_${grup.id}" class="modern-input" placeholder="12345678912 - PERSONEL ADI..." onkeypress="if(event.key==='Enter') personelEkle('${grup.id}')"><button onclick="personelEkle('${grup.id}')" class="btn-add">+</button></div>
             <div class="personel-listesi">`;
         if(grup.kisiler) {
-            grup.kisiler.sort((a,b)=>a.localeCompare(b,'tr')).forEach((isim) => {
+            // Alfabetik sıralama sadece isme göre yapılıyor (TC hariç tutularak kıyaslanıyor)
+            grup.kisiler.sort((a,b) => {
+                let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
+                let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
+                return isimA.localeCompare(isimB, 'tr');
+            }).forEach((isim) => {
                 html += `<div class="personel-item"><span>${isim}</span><button onclick="personelSil('${grup.id}', '${isim}')" class="btn-del">X</button></div>`;
             });
         }
@@ -398,9 +399,7 @@ function satirHesapla(td) {
             } else if (type === 'h-fm') {
                 let wFm = wHs > 45 ? (wHs - 45) : 0;
                 c.innerText = wFm > 0 ? Number(wFm.toFixed(2)) : "";
-                tFM += wFm; // AYLIK FM'ye ekle
-                
-                // HAFTA BİTTİĞİ İÇİN SIFIRLA
+                tFM += wFm; 
                 wHs = 0; wHg = 0;
             }
         }
@@ -463,7 +462,6 @@ function raporuOlustur() {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
 
-    // Excel Şablonuna Uygun Sütun Başlıkları
     const HDR = [
         {n:"Çalışma Günü", c:"s-calisma"}, 
         {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, 
@@ -479,7 +477,12 @@ function raporuOlustur() {
     let sayfaHtml = ""; let gArr = Object.values(people).reduce((acc, p) => { acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; }, {});
     
     for(let gAd in gArr) {
-        let list = gArr[gAd].sort((a,b)=>a.n.localeCompare(b.n,'tr'));
+        // Rapor oluştururken de sadece isme göre A'dan Z'ye alfabetik sıralama yapılıyor
+        let list = gArr[gAd].sort((a,b) => {
+            let isimA = a.n.includes("-") ? a.n.split("-")[1].trim() : a.n;
+            let isimB = b.n.includes("-") ? b.n.split("-")[1].trim() : b.n;
+            return isimA.localeCompare(isimB, 'tr');
+        });
         
         let gunSutunSayisi = 0;
         days.forEach((d, idx) => {
@@ -487,7 +490,7 @@ function raporuOlustur() {
             if (d.getDay() === 0 || idx === days.length - 1) gunSutunSayisi += 3;
         });
         
-        let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; // İlk 5 kolon: SNO, TC, AD, SOYAD, DEVREDEN
+        let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
 
         let h = `<div class="sayfa"><table class="veri-tablosu" data-grup="${gAd}">
         <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim"><col class="c-isim"><col class="c-sno">`;
@@ -524,7 +527,6 @@ function raporuOlustur() {
         days.forEach((d, idx)=>{
             let gg = String(d.getDate()).padStart(2, '0');
             let aa = String(d.getMonth() + 1).padStart(2, '0');
-            // Excel'deki yyyy-aa-gg formatı:
             let tamTarih = `${d.getFullYear()}-${aa}-${gg}`;
             
             h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''};"><div class="dikey-tarih">${tamTarih}</div></th>`;
@@ -547,7 +549,6 @@ function raporuOlustur() {
             let ad = p.n;
             let soyad = "";
             
-            // Ad ve Soyad Ayırma İşlemi (Excel'deki gibi iki farklı sütuna bölmek için)
             if (p.n.includes("-")) {
                 let parts = p.n.split("-");
                 tcNo = parts[0].trim();
@@ -604,6 +605,93 @@ function raporuOlustur() {
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
 
+// HÜCRE BİRLEŞTİRME (MERGE) İŞLEMLERİ
+let isSelecting = false; let startCell = null; let selectedCells = [];
+function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
+function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
+
+function clearSelection() { selectedCells.forEach(td => { if(td) td.classList.remove('selected-cell'); }); selectedCells = []; }
+function selectRectangle(start, end) {
+    clearSelection(); let r1 = getRowIdx(start), r2 = getRowIdx(end); let c1 = getColIdx(start), c2 = getColIdx(end);
+    let minR = Math.min(r1, r2), maxR = Math.max(r1, r2); let minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
+    let rows = start.closest('tbody').children;
+    for (let r = minR; r <= maxR; r++) {
+        let tds = rows[r].children;
+        for (let c = minC; c <= maxC; c++) {
+            let td = tds[c]; if (td && td.style.display !== 'none' && !td.hasAttribute('colspan')) { td.classList.add('selected-cell'); selectedCells.push(td); }
+        }
+    }
+}
+document.addEventListener('mousedown', function(e) { if (e.button !== 0 || e.target.closest('#tableContextMenu')) return; if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { isSelecting = true; startCell = e.target; clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } else clearSelection(); });
+document.addEventListener('mouseover', function(e) { if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target); });
+document.addEventListener('mouseup', function() { isSelecting = false; });
+document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { e.preventDefault(); if (!selectedCells.includes(e.target)) { clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } let ctxMenu = document.getElementById('tableContextMenu'); ctxMenu.style.display = 'block'; ctxMenu.style.left = e.pageX + 'px'; ctxMenu.style.top = e.pageY + 'px'; } });
+
+function mergeSelectedCells() {
+    document.getElementById('tableContextMenu').style.display = 'none'; if (selectedCells.length <= 1) return clearSelection();
+    selectedCells.sort((a, b) => { let rDiff = getRowIdx(a) - getRowIdx(b); return rDiff !== 0 ? rDiff : getColIdx(a) - getColIdx(b); });
+    let mainCell = selectedCells[0]; let mergeId = "merge_" + Date.now();
+    let isRowMerge = getRowIdx(selectedCells[0]) === getRowIdx(selectedCells[1]);
+    if (isRowMerge) {
+        let totalColSpan = 0; let mergedText = "";
+        selectedCells.forEach((td, index) => { totalColSpan += parseInt(td.getAttribute('colspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        mainCell.setAttribute('colspan', totalColSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
+    } else {
+        let totalRowSpan = 0; let mergedText = "";
+        selectedCells.forEach((td, index) => { totalRowSpan += parseInt(td.getAttribute('rowspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        mainCell.setAttribute('rowspan', totalRowSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
+    }
+    satirHesapla(mainCell); clearSelection();
+}
+function unmergeSelectedCells() {
+    document.getElementById('tableContextMenu').style.display = 'none';
+    selectedCells.forEach(td => {
+        let mergeId = td.getAttribute('data-merge-id');
+        if (mergeId) {
+            td.removeAttribute('colspan'); td.removeAttribute('rowspan'); td.removeAttribute('data-merge-id');
+            td.closest('tbody').querySelectorAll(`td[data-merged-by="${mergeId}"]`).forEach(hiddenTd => { hiddenTd.style.display = ''; hiddenTd.removeAttribute('data-merged-by'); satirHesapla(hiddenTd); });
+        }
+    });
+    if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
+}
+
+function shiftMasterdanCek() {
+    let basInput = document.getElementById('inpTarihBas').value; let bitInput = document.getElementById('inpTarihBit').value;
+    if(!basInput || !bitInput) return alert("Tarih seçin!");
+    let btn = document.querySelector('button[onclick="shiftMasterdanCek()"]'); let oldText = btn.innerHTML;
+    btn.innerHTML = "⏳ ÇEKİLİYOR..."; btn.style.pointerEvents = "none";
+    let bas = new Date(basInput); let bit = new Date(bitInput);
+
+    db.ref("arsivlenmis_shiftler").once("value").then(snap => {
+        let data = snap.val(); if(!data) return alert("Arşiv yok!");
+        let personelShiftleri = {};
+        Object.values(data).forEach(arsiv => {
+            let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
+            tablolar.forEach(tablo => {
+                let tBas = new Date(tablo.startDate);
+                tablo.data.forEach(satir => {
+                    let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
+                    satir.shifts.forEach((shiftObj, index) => {
+                        let suankiTarih = new Date(tBas); suankiTarih.setDate(tBas.getDate() + index);
+                        if(suankiTarih >= bas && suankiTarih <= bit) {
+                            let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
+                            if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
+                        }
+                    });
+                });
+            });
+        });
+        let days = []; let d = new Date(bas); while(d <= bit) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
+        let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
+        Object.keys(personelShiftleri).forEach(isim => {
+            let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n";
+        });
+        document.getElementById('inpExcel').value = excelStr;
+        btn.innerHTML = "✅ BAŞARILI"; setTimeout(() => { btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; }, 2000);
+        raporuOlustur();
+    });
+}
+
 function exceleSifirKayipsizKopyala() {
     const tablolar = document.querySelectorAll('.veri-tablosu');
     if (tablolar.length === 0) return;
@@ -625,7 +713,6 @@ function exceleSifirKayipsizKopyala() {
         clone.querySelectorAll('script, button').forEach(el => el.remove());
         clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
 
-        // İçerideki "div" kalıntılarını temizleyip dikey yazıları Excel formatına uygun hale getirelim
         clone.querySelectorAll('th, td').forEach(el => {
             let inlineStyle = `border: 0.5pt solid black; text-align: center; vertical-align: middle; `;
             
@@ -635,7 +722,6 @@ function exceleSifirKayipsizKopyala() {
             else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;";
             else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
 
-            // Excel'in tam algılayabilmesi için dikey yazıyı <th> elemanının direkt kendisine uyguluyoruz
             let dikeyDiv = el.querySelector('.dikey-yazi') || el.querySelector('.dikey-tarih');
             if (dikeyDiv) {
                 el.innerHTML = dikeyDiv.innerHTML.replace(/<br\s*\/?>/gi, " ");
@@ -666,3 +752,6 @@ function exceleSifirKayipsizKopyala() {
         alert("Tarayıcı engeli nedeniyle ham veri kopyalandı. Excel'e yapıştırmayı deneyin.");
     }
 }
+</script>
+</body>
+</html>
