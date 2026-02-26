@@ -15,7 +15,7 @@
         .prod-by { margin-top: 15px; font-size: 10px; color: #7f8c8d; font-weight: bold; letter-spacing: 1px; }
 
         /* ANA PANEL */
-        #mainContent { display: none; padding-bottom: 50px; overflow-x: auto; }
+        #mainContent { display: none; padding-bottom: 50px; }
         .panel-container { background: white; padding: 15px; width: 98%; margin: 10px auto; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--blue); }
         .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px; position: relative; }
         
@@ -43,8 +43,7 @@
         .vardiya-del:hover { color:#2c3e50; }
 
         /* TABLO VE ÇIKTI */
-        /* ARKAPLAN TAŞMA SORUNUNU MAX-CONTENT İLE ÇÖZDÜK */
-        .sayfa { background: white; width: max-content; min-width: 100%; min-height: 200mm; margin: 0 auto 20px auto; padding: 20px; page-break-after: always; font-family: 'Arial Narrow', sans-serif; box-sizing: border-box; }
+        .sayfa { background: white; width: 297mm; min-height: 200mm; margin: 0 auto 20px auto; padding: 2mm; page-break-after: always; font-family: 'Arial Narrow', sans-serif; }
         
         table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 7.5px; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
         
@@ -60,7 +59,7 @@
             position: relative;
         }
         
-        .veri-hucre { font-size: 7px; font-weight: bold; height: 28px; }
+        .veri-hucre { font-size: 7px; font-weight: bold; height: 22px; }
 
         td[contenteditable="true"], th[contenteditable="true"] { cursor: text; }
         td[contenteditable="true"]:focus, th[contenteditable="true"]:focus, div[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
@@ -72,7 +71,7 @@
         .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; font-family: 'Roboto', sans-serif; color: #333; }
         .ctx-item:hover { background-color: #f1f3f5; color: var(--blue); }
 
-        col.c-sno { width: 16px; } col.c-tc { width: 55px; } col.c-isim { width: 85px; } col.c-gun { width: 22px; }
+        col.c-sno { width: 16px; } col.c-tc { width: 55px; } col.c-isim { width: 85px; } col.c-gun { width: 18px; }
         th { background: #eee; padding: 2px 1px; }
         .bg-hafta { background-color: #dff0d8 !important; border-left: 1px solid #000; }
         .bg-genel { background-color: #fcf3cf !important; border-left: 1px solid #000; }
@@ -81,6 +80,7 @@
         .hucre-haftasonu { background-color: #f2f2f2 !important; }
         
         .dikey-yazi { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 6px; font-weight: normal; letter-spacing: -0.4px; padding: 2px 0; line-height: 1; }
+        .dikey-tarih { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 6px; font-weight: bold; letter-spacing: -0.2px; padding: 2px 0; line-height: 1.1; color: #111; }
 
         #dynamicGroups { display: flex; gap: 15px; flex-wrap: wrap; width: 100%; }
 
@@ -92,9 +92,9 @@
         #cloudStatus { position: fixed; top: 10px; right: 10px; background: #27ae60; color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; display: none; z-index: 999999; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
         @media print {
-            @page { size: A3 landscape; margin: 2mm; } 
+            @page { size: A4 landscape; margin: 2mm; }
             #loginScreen, .panel-container, #tableContextMenu, #btnExceleKopyala, #cloudStatus { display: none !important; }
-            #mainContent { display: block !important; overflow: visible; }
+            #mainContent { display: block !important; }
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
             .selected-cell { outline: none !important; background-color: inherit !important; } 
         }
@@ -189,10 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let bugun = new Date();
     let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
     let bit = new Date(bugun.getFullYear(), bugun.getMonth() + 1, 14);
-    
-    // Güvenli şekilde inputlara varsayılan tarih ata
-    document.getElementById('inpTarihBas').value = `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
-    document.getElementById('inpTarihBit').value = `${bit.getFullYear()}-${String(bit.getMonth()+1).padStart(2,'0')}-${String(bit.getDate()).padStart(2,'0')}`;
+    document.getElementById('inpTarihBas').value = bas.toISOString().split('T')[0];
+    document.getElementById('inpTarihBit').value = bit.toISOString().split('T')[0];
     
     bulutBaglantisiniKur();
 });
@@ -289,14 +287,7 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// VARDİYA SAATLERİNİ TABLODA ALT ALTA GÖSTERMEK İÇİN EKSİ(-) YERİNE <br> KOYUYOR
-function formatliVardiya(val) { 
-    if(!val) return ""; 
-    val = val.trim(); 
-    if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) return val.replace(/\s*-\s*/, "<br>"); 
-    return val; 
-}
-
+function formatliVardiya(val) { if(!val) return ""; val = val.trim(); if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) return val.replace(/[\s-]+/, "<br>"); return val; }
 function getCleanValue(html) { if(!html) return ""; return html.replace(/<br\s*\/?>/gi, "-").replace(/&nbsp;/g, " ").replace(/<(?:.|\n)*?>/gm, '').trim().toUpperCase(); }
 
 function getVardiyaInfo(val) {
@@ -331,6 +322,7 @@ function arayuzCiz() {
             <div class="personel-row"><input type="text" id="add_${grup.id}" class="modern-input" placeholder="12345678912 - PERSONEL ADI..." onkeypress="if(event.key==='Enter') personelEkle('${grup.id}')"><button onclick="personelEkle('${grup.id}')" class="btn-add">+</button></div>
             <div class="personel-listesi">`;
         if(grup.kisiler) {
+            // Alfabetik sıralama sadece isme göre yapılıyor (TC hariç tutularak kıyaslanıyor)
             grup.kisiler.sort((a,b) => {
                 let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
                 let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
@@ -343,43 +335,9 @@ function arayuzCiz() {
     });
 }
 
-// 📌 YENİ VE MÜKEMMEL TARİH PARÇALAYICI (HATA ENGELLEYİCİ)
-function getSafeDate(val) {
-    if (!val) return new Date();
-    val = val.trim();
-    let p;
-    if (val.includes('-')) p = val.split('-');
-    else if (val.includes('.')) p = val.split('.');
-    else if (val.includes('/')) p = val.split('/');
-    else return new Date(val);
-
-    if (p && p.length === 3) {
-        let y = parseInt(p[0].length === 4 ? p[0] : p[2]);
-        let m = parseInt(p[1]) - 1;
-        let d = parseInt(p[0].length === 4 ? p[2] : p[0]);
-        return new Date(y, m, d);
-    }
-    return new Date(val);
-}
-
-function tarihGuncelle(){ 
-    let bas = getSafeDate(document.getElementById('inpTarihBas').value); 
-    let bit = getSafeDate(document.getElementById('inpTarihBit').value); 
-    let str = `${String(bas.getDate()).padStart(2,'0')}.${String(bas.getMonth()+1).padStart(2,'0')}.${bas.getFullYear()} - ${String(bit.getDate()).padStart(2,'0')}.${String(bit.getMonth()+1).padStart(2,'0')}.${bit.getFullYear()}`;
-    return {bas, bit, str}; 
-}
-
+function tarihGuncelle(){ let bas=new Date(document.getElementById('inpTarihBas').value); let bit=new Date(document.getElementById('inpTarihBit').value); return {bas,bit,str: `${bas.toLocaleDateString('tr-TR')} - ${bit.toLocaleDateString('tr-TR')}`}; }
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
-
-function excelTarih(s){
-    if(!s)return null; 
-    s = s.trim();
-    let m = s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); 
-    if(m) return m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0');
-    let m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-    if(m2) return m2[1]+m2[2].padStart(2,'0')+m2[3].padStart(2,'0');
-    return null;
-}
+function excelTarih(s){if(!s)return null; let m=s.trim().match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); return m?m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0'):null;}
 
 // ANA HESAPLAMA MOTORU
 function satirHesapla(td) {
@@ -466,7 +424,7 @@ function satirHesapla(td) {
 
 function raporuOlustur() {
     const {bas,bit,str} = tarihGuncelle();
-    let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
+    let days=[]; let d=new Date(bas); while(d<=bit){ days.push(new Date(d)); d.setDate(d.getDate()+1); }
     
     let people = {};
     appData.gruplar.forEach(grup => {
@@ -484,16 +442,11 @@ function raporuOlustur() {
         else {
             let shiftName = cols[0].trim().toUpperCase();
             if(shiftName.length > 2) {
-                // TÜRÇE KARAKTER DAYANIKLI GELİŞMİŞ EŞLEŞTİRME
                 let matchedPersonKey = Object.keys(people).find(pKey => {
                     let cleanPKey = pKey.includes("-") ? pKey.split("-")[1].trim() : pKey;
-                    cleanPKey = cleanPKey.replace(/\s\d+$/, '').replace(/\s+/g, ' ').trim(); 
-                    let cleanShiftName = shiftName.replace(/\s\d+$/, '').replace(/\s+/g, ' ').trim();
-                    
-                    let normP = cleanPKey.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
-                    let normS = cleanShiftName.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
-                    
-                    return cleanPKey === cleanShiftName || cleanPKey === shiftName || normP === normS;
+                    cleanPKey = cleanPKey.replace(/\s\d+$/, '').trim(); 
+                    let cleanShiftName = shiftName.replace(/\s\d+$/, '').trim();
+                    return cleanPKey === cleanShiftName || cleanPKey === shiftName;
                 });
                 if(matchedPersonKey) {
                     for(let k in map) {
@@ -505,7 +458,6 @@ function raporuOlustur() {
         }
     });
 
-    // Otomatik Varsayılan Saat Doldurma (Eğer Shift Yoksa)
     Object.values(people).forEach(p => {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
@@ -525,6 +477,7 @@ function raporuOlustur() {
     let sayfaHtml = ""; let gArr = Object.values(people).reduce((acc, p) => { acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; }, {});
     
     for(let gAd in gArr) {
+        // Rapor oluştururken de sadece isme göre A'dan Z'ye alfabetik sıralama yapılıyor
         let list = gArr[gAd].sort((a,b) => {
             let isimA = a.n.includes("-") ? a.n.split("-")[1].trim() : a.n;
             let isimB = b.n.includes("-") ? b.n.split("-")[1].trim() : b.n;
@@ -572,13 +525,11 @@ function raporuOlustur() {
         
         let weekCount = 1;
         days.forEach((d, idx)=>{
-            // RAKAM ÜSTTE, GÜN ALTTA (DİKEY YAZI İPTAL EDİLDİ, DÜZ YAZILDI)
             let gg = String(d.getDate()).padStart(2, '0');
-            let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'short' }).replace('.', '').toUpperCase();
+            let aa = String(d.getMonth() + 1).padStart(2, '0');
+            let tamTarih = `${d.getFullYear()}-${aa}-${gg}`;
             
-            let tamTarih = `<div style="line-height: 1.2; text-align: center;"><strong style="font-size: 12px;">${gg}</strong><br><span style="font-size: 8px;">${gunAdi}</span></div>`;
-            
-            h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; padding: 2px;">${tamTarih}</th>`;
+            h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''};"><div class="dikey-tarih">${tamTarih}</div></th>`;
             
             if(d.getDay()===0 || idx === days.length - 1) {
                 h+=`<th class="bg-hafta"><div class="dikey-yazi">${weekCount}-Haftalık İşe Gelme Günü</div></th>
@@ -704,32 +655,25 @@ function unmergeSelectedCells() {
     if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
 }
 
-// GÜÇLENDİRİLMİŞ SAAT DİLİMİ VE TARİH KORUMALI ÇEKME İŞLEMİ
 function shiftMasterdanCek() {
     let basInput = document.getElementById('inpTarihBas').value; let bitInput = document.getElementById('inpTarihBit').value;
     if(!basInput || !bitInput) return alert("Tarih seçin!");
     let btn = document.querySelector('button[onclick="shiftMasterdanCek()"]'); let oldText = btn.innerHTML;
     btn.innerHTML = "⏳ ÇEKİLİYOR..."; btn.style.pointerEvents = "none";
-    
-    let bas = getSafeDate(basInput); let bit = getSafeDate(bitInput);
+    let bas = new Date(basInput); let bit = new Date(bitInput);
 
     db.ref("arsivlenmis_shiftler").once("value").then(snap => {
-        let data = snap.val(); if(!data) { alert("Buluta kayıtlı arşiv bulunamadı!"); btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; return; }
+        let data = snap.val(); if(!data) return alert("Arşiv yok!");
         let personelShiftleri = {};
         Object.values(data).forEach(arsiv => {
             let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
             tablolar.forEach(tablo => {
-                let tBas = getSafeDate(tablo.startDate);
+                let tBas = new Date(tablo.startDate);
                 tablo.data.forEach(satir => {
                     let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
                     satir.shifts.forEach((shiftObj, index) => {
-                        let suankiTarih = new Date(tBas.getTime()); suankiTarih.setDate(tBas.getDate() + index);
-                        // Saat farkından oluşacak hataları engellemek için saatleri sıfırlıyoruz
-                        suankiTarih.setHours(0,0,0,0);
-                        let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0);
-                        let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
-                        
-                        if(suankiTarih >= basCheck && suankiTarih <= bitCheck) {
+                        let suankiTarih = new Date(tBas); suankiTarih.setDate(tBas.getDate() + index);
+                        if(suankiTarih >= bas && suankiTarih <= bit) {
                             let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
                             if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
                         }
@@ -737,15 +681,11 @@ function shiftMasterdanCek() {
                 });
             });
         });
-        
-        let days = []; let d = new Date(bas.getTime()); d.setHours(0,0,0,0); let bitCheck2 = new Date(bit.getTime()); bitCheck2.setHours(0,0,0,0);
-        while(d <= bitCheck2) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
+        let days = []; let d = new Date(bas); while(d <= bit) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
         let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
-        
         Object.keys(personelShiftleri).forEach(isim => {
             let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n";
         });
-        
         document.getElementById('inpExcel').value = excelStr;
         btn.innerHTML = "✅ BAŞARILI"; setTimeout(() => { btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; }, 2000);
         raporuOlustur();
@@ -782,14 +722,10 @@ function exceleSifirKayipsizKopyala() {
             else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;";
             else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
 
-            let dikeyDiv = el.querySelector('.dikey-yazi');
+            let dikeyDiv = el.querySelector('.dikey-yazi') || el.querySelector('.dikey-tarih');
             if (dikeyDiv) {
-                // Diğer dikey yazılar için Excel rotasyon ayarı (aynı hücre içi atlama stiliyle birlikte)
-                el.innerHTML = dikeyDiv.innerHTML.replace(/<br\s*\/?>/gi, "<br style='mso-data-placement:same-cell;'>");
-                inlineStyle += "mso-rotate: 90; height: 120pt; white-space: normal;";
-            } else {
-                // EXCEL'DE VARDİYA SAATLERİNİN HÜCRE İÇİNDE ALT ALTA DÜŞMESİ İÇİN mso-data-placement KULLANILDI
-                el.innerHTML = el.innerHTML.replace(/<br\s*\/?>/gi, "<br style='mso-data-placement:same-cell;'>");
+                el.innerHTML = dikeyDiv.innerHTML.replace(/<br\s*\/?>/gi, " ");
+                inlineStyle += "mso-rotate: 90; height: 120pt; white-space: nowrap;";
             }
 
             el.setAttribute('style', inlineStyle);
