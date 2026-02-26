@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v117 (15'Lİ SAYFA & TAM DİKEY FORMAT)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v118 (ÇİFT BAŞLIK & TEK SIRA DİK)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -45,7 +45,7 @@
         .sayfa-container { width: 100%; overflow-x: auto; padding-bottom: 20px; text-align: center; }
         .sayfa { background: white; padding: 20px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 20px; text-align: left; page-break-after: always; }
         
-        table { width: 2400px !important; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
+        table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
         
         th, td { 
             border: 1px solid #000; 
@@ -57,25 +57,20 @@
             overflow: visible;
         }
         
-        /* 1 SÜTUNU 2 GİBİ GÖSTEREN VE DİKİNE YAZDIRAN KODLAR */
-        .veri-hucre { height: 75px !important; padding: 0 !important; cursor: text; }
-        
-        .cift-dik { 
-            display: flex; 
-            justify-content: space-evenly; 
-            align-items: center; 
-            width: 100%; 
-            height: 100%; 
-            padding: 0 2px;
-            box-sizing: border-box;
-        }
+        /* DİK YAZI ALANLARI */
+        .veri-hucre { height: 100px !important; padding: 0 !important; cursor: text; }
         
         .dik-yazi {
             writing-mode: vertical-lr; 
             transform: rotate(180deg); /* Aşağıdan yukarı okunması için */
-            font-size: 11px; 
+            font-size: 12px; 
             font-weight: bold;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
         }
 
         td[contenteditable="true"]:focus, th[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
@@ -88,7 +83,7 @@
         col.c-sno { width: 35px; } 
         col.c-tc { width: 100px; } 
         col.c-isim { width: 130px; } 
-        col.c-gun { width: 48px; }
+        col.c-gun { width: 38px; } /* Dikine sığması için sütun genişliği */
 
         .kalin-yatay { font-weight: bold !important; font-size: 12px !important; text-align: center; padding: 5px !important; }
         .isim-yatay { font-weight: bold !important; font-size: 12px !important; text-align: left; padding-left: 5px !important; }
@@ -102,6 +97,7 @@
         .hucre-haftasonu { background-color: #f2f2f2 !important; }
         
         .baslik-dik { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 11px; font-weight: bold; padding: 2px 0; }
+        .baslik-dik-kucuk { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 9px; font-weight: normal; padding: 2px 0; color: #444; }
 
         #dynamicGroups { display: flex; gap: 15px; flex-wrap: wrap; width: 100%; }
 
@@ -305,21 +301,11 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// 1 SÜTUNU 2 DİK YAZIYA BÖLEN FORMAT
+// ARTIK SADECE TEK SIRA, DÜMDÜZ DİK YAZI
 function formatliVardiya(val) { 
     if(!val) return ""; 
     val = val.trim(); 
-    if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) {
-        let parts = val.split("-");
-        return `<div class="cift-dik" data-raw="${val}">
-                    <div class="dik-yazi" style="border-right:1px dashed #ccc; padding-right:2px;">${parts[0].trim()}</div>
-                    <div class="dik-yazi" style="padding-left:2px;">${parts[1].trim()}</div>
-                </div>`;
-    } else {
-        return `<div class="cift-dik" data-raw="${val}">
-                    <div class="dik-yazi" style="font-size:12px;">${val}</div>
-                </div>`;
-    }
+    return `<div class="dik-yazi" data-raw="${val}">${val}</div>`;
 }
 
 function getCleanValue(html) { 
@@ -572,41 +558,43 @@ function raporuOlustur() {
                 <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 10px;">
                     ${str}
                 </td>
-            </tr>
+            </tr>`;
 
-            <tr>
-                <th><div class="baslik-dik">SIRA NO</div></th>
-                <th class="kalin-yatay">T.C. KİMLİK NUMARASI</th>
-                <th class="isim-yatay">PERSONELİN ADI</th>
-                <th class="isim-yatay">PERSONELİN SOYADI</th>
-                <th><div class="baslik-dik">Devreden Çalışma Saati</div></th>`;
+            // İKİ SATIRLI YENİ BAŞLIK YAPISI
+            let tr1 = `<tr>
+                <th rowspan="2"><div class="baslik-dik">SIRA NO</div></th>
+                <th rowspan="2" class="kalin-yatay">T.C. KİMLİK NUMARASI</th>
+                <th rowspan="2" class="isim-yatay">PERSONELİN ADI</th>
+                <th rowspan="2" class="isim-yatay">PERSONELİN SOYADI</th>
+                <th rowspan="2"><div class="baslik-dik">Devreden Çalışma Saati</div></th>`;
             
+            let tr2 = `<tr>`;
+
             let weekCount = 1;
             days.forEach((d, idx)=>{
-                // YENİ FORMAT: DİKEY VE ÇİFT SÜTUNLU TAM TARİH / GÜN ADI
                 let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
                 let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
                 
-                let tamTarih = `
-                    <div class="cift-dik" style="height: 120px;">
-                        <div class="dik-yazi">${tamTarihStr}</div>
-                        <div class="dik-yazi" style="font-weight:normal;">${gunAdi}</div>
-                    </div>`;
+                let bgStyle = (d.getDay()===0||d.getDay()===6) ? 'background:#eee;' : '';
                 
-                h+=`<th class="tarih-baslik-hucre" data-tarih="${tamTarihStr}" data-gun="${gunAdi}" style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; padding: 2px;">${tamTarih}</th>`;
+                // ÜST SATIR (TARİH)
+                tr1 += `<th style="${bgStyle} padding: 2px;" data-tarih="${tamTarihStr}"><div class="baslik-dik">${tamTarihStr}</div></th>`;
+                // ALT SATIR (GÜN)
+                tr2 += `<th style="${bgStyle} padding: 2px;" data-gun="${gunAdi}"><div class="baslik-dik-kucuk">${gunAdi}</div></th>`;
                 
                 if(d.getDay()===0 || idx === days.length - 1) {
-                    h+=`<th class="bg-hafta"><div class="baslik-dik">${weekCount}-Haftalık İşe Gelme Günü</div></th>
-                        <th class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Toplamı</div></th>
-                        <th class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Fazla Mesai</div></th>`;
+                    tr1 += `<th rowspan="2" class="bg-hafta"><div class="baslik-dik">${weekCount}-Haftalık İşe Gelme Günü</div></th>
+                            <th rowspan="2" class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Toplamı</div></th>
+                            <th rowspan="2" class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Fazla Mesai</div></th>`;
                     weekCount++;
                 }
             });
 
-            HDR.forEach(b => { h += `<th class="bg-genel"><div class="baslik-dik">${b.n}</div></th>`; });
-            h += `<th class="bg-gece"><div class="baslik-dik">Gece Fazla Mesai Toplamı (Saat Sayısı)</div></th><th class="bg-gece"><div class="baslik-dik">Toplam Gece Çalışması (Saat Sayısı)</div></th></tr>
-            </thead>
-            <tbody>`;
+            HDR.forEach(b => { tr1 += `<th rowspan="2" class="bg-genel"><div class="baslik-dik">${b.n}</div></th>`; });
+            tr1 += `<th rowspan="2" class="bg-gece"><div class="baslik-dik">Gece Fazla Mesai Toplamı (Saat)</div></th><th rowspan="2" class="bg-gece"><div class="baslik-dik">Toplam Gece Çalışması (Saat)</div></th></tr>`;
+            tr2 += `</tr>`;
+
+            h += tr1 + tr2 + `</thead><tbody>`;
 
             list.forEach((p, index)=>{
                 let tcNo = ""; let ad = p.n; let soyad = "";
@@ -751,7 +739,6 @@ function exceleSifirKayipsizIndir() {
         <style>
             table { border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 11px; }
             td, th { border: 0.5pt solid black; text-align: center; vertical-align: middle; }
-            br { mso-data-placement: same-cell; }
         </style>
         </head>
     <body>`;
@@ -764,14 +751,12 @@ function exceleSifirKayipsizIndir() {
         clone.querySelectorAll('th, td').forEach(el => {
             let inlineStyle = `border: 0.5pt solid black; vertical-align: middle; `;
             
-            // Arka plan renkleri
             if (el.classList.contains('bg-hafta')) inlineStyle += "background-color: #dff0d8;";
             else if (el.classList.contains('bg-genel')) inlineStyle += "background-color: #fcf3cf;";
             else if (el.classList.contains('bg-gece')) inlineStyle += "background-color: #e8daef;";
             else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;";
             else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
 
-            // Yatay/Dikey Ayarları
             if (el.classList.contains('kalin-yatay')) {
                 inlineStyle += "font-weight: bold; font-size: 12px; text-align: center;";
             } else if (el.classList.contains('isim-yatay')) {
@@ -780,23 +765,21 @@ function exceleSifirKayipsizIndir() {
                 inlineStyle += "text-align: center;";
             }
 
-            // Yeni Tarih Formatının Excel'e Dönüşümü
-            if (el.classList.contains('tarih-baslik-hucre')) {
-                let rawTarih = el.getAttribute('data-tarih');
-                let rawGun = el.getAttribute('data-gun');
-                el.innerHTML = rawTarih + "<br style='mso-data-placement:same-cell;'>" + rawGun;
-                inlineStyle += "mso-rotate: 90; height: 100pt; white-space: normal; font-weight: bold;";
+            // Başlıklar Excel'de dikey olsun
+            if (el.hasAttribute('data-tarih')) {
+                el.innerHTML = el.getAttribute('data-tarih');
+                inlineStyle += "mso-rotate: 90; height: 75pt; white-space: nowrap; font-weight: bold;";
+            }
+            else if (el.hasAttribute('data-gun')) {
+                el.innerHTML = el.getAttribute('data-gun');
+                inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: normal; font-size: 9px;";
             }
             else {
                 let raw = el.getAttribute('data-raw') || el.innerText;
-                if (el.classList.contains('veri-hucre') && raw.includes("-") && raw.match(/\d{2}:\d{2}/)) {
-                    let parts = raw.split("-");
-                    el.innerHTML = parts[0] + "<br style='mso-data-placement:same-cell;'>" + parts[1];
-                    inlineStyle += "mso-rotate: 90; height: 75pt; white-space: normal; font-weight: bold;";
-                } 
-                else if (el.classList.contains('veri-hucre') && raw) {
+                // Veri hücreleri dikey ve tek satır
+                if (el.classList.contains('veri-hucre') && raw) {
                     el.innerHTML = raw;
-                    inlineStyle += "mso-rotate: 90; height: 75pt; white-space: nowrap; font-weight: bold;";
+                    inlineStyle += "mso-rotate: 90; height: 90pt; white-space: nowrap; font-weight: bold;";
                 }
                 else {
                     let dikeyBaslik = el.querySelector('.baslik-dik');
@@ -818,7 +801,7 @@ function exceleSifirKayipsizIndir() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Hastane_Puantaj_Resmi_Format.xls';
+    a.download = 'Hastane_Puantaj_Resmi_Format_Son.xls';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
