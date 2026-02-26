@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v119 (CANLI HESAP & TEK SIRA DİK)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v120 (KOMPAKT & TAM EKRAN YAZDIRMA)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -51,20 +51,20 @@
             border: 1px solid #000; 
             text-align: center; 
             vertical-align: middle; 
-            padding: 2px; 
+            padding: 1px; /* DARALTILDI */
             line-height: 1.1; 
             word-break: break-word;
             overflow: visible;
         }
         
-        /* DİK YAZI ALANLARI */
-        .veri-hucre { height: 100px !important; padding: 0 !important; cursor: text; transition: all 0.2s;}
+        /* DİK YAZI ALANLARI - MAKSİMUM DARALTILDI */
+        .veri-hucre { height: 75px !important; padding: 0 !important; cursor: text; transition: all 0.2s;}
         .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; }
         
         .dik-yazi {
             writing-mode: vertical-lr; 
             transform: rotate(180deg); 
-            font-size: 12px; 
+            font-size: 11px; /* DARALTILDI */
             font-weight: bold;
             white-space: nowrap;
             display: flex;
@@ -72,7 +72,7 @@
             justify-content: center;
             height: 100%;
             width: 100%;
-            pointer-events: none; /* Mouse ile tıklamayı kolaylaştırır */
+            pointer-events: none;
         }
 
         .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
@@ -86,10 +86,10 @@
         col.c-isim { width: 130px; } 
         col.c-gun { width: 38px; } 
 
-        .kalin-yatay { font-weight: bold !important; font-size: 12px !important; text-align: center; padding: 5px !important; }
-        .isim-yatay { font-weight: bold !important; font-size: 12px !important; text-align: left; padding-left: 5px !important; }
+        .kalin-yatay { font-weight: bold !important; font-size: 11px !important; text-align: center; padding: 2px !important; }
+        .isim-yatay { font-weight: bold !important; font-size: 11px !important; text-align: left; padding-left: 3px !important; }
 
-        th { background: #eee; padding: 4px; font-size: 10px; }
+        th { background: #eee; padding: 2px; font-size: 10px; }
         
         .bg-hafta { background-color: #dff0d8 !important; border-left: 2px solid #000; }
         .bg-genel { background-color: #fcf3cf !important; border-left: 2px solid #000; }
@@ -107,11 +107,15 @@
 
         #cloudStatus { position: fixed; top: 10px; right: 10px; background: #27ae60; color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; display: none; z-index: 999999; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
+        /* === YAZDIRMA (PRINT) ÖZEL AYARLARI === */
         @media print {
-            @page { size: A3 landscape; margin: 2mm; } 
+            @page { size: A4 landscape; margin: 5mm; } 
+            /* TABLOYU A4 GENİŞLİĞİNE ZORLA SIĞDIRMA ZOOM'U */
+            body { zoom: 48%; margin: 0; padding: 0; background: white; } 
+            
             #loginScreen, .panel-container, #tableContextMenu, #btnExceleKopyala, #cloudStatus { display: none !important; }
             #mainContent { display: block !important; overflow: visible; }
-            .sayfa-container { overflow: visible; }
+            .sayfa-container { overflow: visible; width: 100%; }
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
             .selected-cell { outline: none !important; background-color: inherit !important; } 
         }
@@ -302,25 +306,20 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// =========================================================================
-// YENİ FORMATLAMA VE HESAPLAMA MANTIĞI (SORUNSUZ DÜZENLEME İÇİN)
-// =========================================================================
-
-// Herhangi bir hücrediki HTML kalıntılarını temizleyip saf metni çıkarır
+// Hücrediki HTML kalıntılarını temizleyip saf metni çıkarır
 function getCleanValue(text) { 
     if(!text) return ""; 
-    // Boşlukları ve yeni satırları tireye çevirir (08:00 20:00 -> 08:00-20:00)
     return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
 }
 
-// Kullanıcı hücreye TIKLADIĞINDA: Süslü div kaldırılır, düz metin olur (Rahatça yazsın diye)
+// Tıklayınca kutu silinir, sadece düz metin kalır (Rahat düzenleme için)
 function temizleFormat(td) {
     let metin = td.innerText || td.textContent || "";
     metin = metin.trim();
-    td.innerHTML = metin; // Kutu silinir, sadece yazı kalır
+    td.innerHTML = metin; 
 }
 
-// Kullanıcı hücreden ÇIKTIĞINDA: Yazdığı yazı tekrar süslü dik formata girer
+// Boşluğa tıklayınca yazı tekrar hastane dikey formatına döner
 function uygulaFormat(td) {
     let metin = getCleanValue(td.innerText || td.textContent);
     if (metin !== "") {
@@ -328,17 +327,14 @@ function uygulaFormat(td) {
     } else {
         td.innerHTML = "";
     }
-    satirHesapla(td); // Garanti olsun diye tekrar hesaplat
+    satirHesapla(td); 
 }
 
-// Sadece tablo ilk oluşurken çalışır
 function formatliVardiya(val) { 
     if(!val) return ""; 
     val = val.trim(); 
     return `<div class="dik-yazi">${val}</div>`;
 }
-
-// =========================================================================
 
 function getVardiyaInfo(val) {
     if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""};
@@ -418,13 +414,12 @@ function excelTarih(s){
     return null;
 }
 
-// CANLI HESAPLAMA MOTORU (HER HARF YAZILDIĞINDA ANINDA ÇALIŞIR)
+// CANLI HESAPLAMA MOTORU
 function satirHesapla(td) {
     if (!td) return;
     const tr = td.closest('tr');
     if (!tr) return;
 
-    // YAZIYI GÜVENLİ ŞEKİLDE ALIR (Kutunun İçinden veya Düz Metinden)
     const rawVal = getCleanValue(td.innerText || td.textContent);
     const info = getVardiyaInfo(rawVal);
     
@@ -489,9 +484,6 @@ function satirHesapla(td) {
     update('.s-calisma', tAg); update('.s-yol', tAg + n_rtc); update('.s-rapor', n_r);
     update('.s-izin', n_i); update('.s-ht', n_ht); update('.s-rt', n_rt);
     update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
-    
-    // NOT: BURADA FORMATLAMA YAPMIYORUZ Kİ KULLANICI YAZI YAZARKEN İMLECİ KAÇMASIN.
-    // FORMATLAMA İŞLEMİNİ ONBLUR (uygulaFormat) FONKSİYONUNA DEVRETTİK.
 }
 
 function raporuOlustur() {
@@ -557,7 +549,8 @@ function raporuOlustur() {
         
         let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
 
-        let chunkSize = 15;
+        // KİŞİ SAYISI 15'DEN 25'E ÇIKARILDI (DARALAN YAPI SAYESİNDE)
+        let chunkSize = 25;
         let globalIndex = 1;
         
         for (let i = 0; i < fullList.length; i += chunkSize) {
@@ -574,15 +567,15 @@ function raporuOlustur() {
             h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
             
             <tr>
-                <td colspan="${toplamSutun}" style="border: none !important; padding: 15px 0; text-align: left; font-size: 14px; font-weight: bold;">
+                <td colspan="${toplamSutun}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold;">
                     ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ DÖŞEMEALTI DEVLET HASTANESİ SÜREKLİ İŞÇİ PERSONEL PUANTAJ BİLDİRİMİ
                 </td>
             </tr>
             <tr>
-                <td colspan="5" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 10px;">
+                <td colspan="5" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px;">
                     BİRİM ADI    :   TEMİZLİK
                 </td>
-                <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 10px;">
+                <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px;">
                     ${str}
                 </td>
             </tr>`;
@@ -600,11 +593,10 @@ function raporuOlustur() {
             days.forEach((d, idx)=>{
                 let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
                 let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
-                
                 let bgStyle = (d.getDay()===0||d.getDay()===6) ? 'background:#eee;' : '';
                 
-                tr1 += `<th style="${bgStyle} padding: 2px;" data-tarih="${tamTarihStr}"><div class="baslik-dik">${tamTarihStr}</div></th>`;
-                tr2 += `<th style="${bgStyle} padding: 2px;" data-gun="${gunAdi}"><div class="baslik-dik-kucuk">${gunAdi}</div></th>`;
+                tr1 += `<th style="${bgStyle} padding: 1px;" data-tarih="${tamTarihStr}"><div class="baslik-dik">${tamTarihStr}</div></th>`;
+                tr2 += `<th style="${bgStyle} padding: 1px;" data-gun="${gunAdi}"><div class="baslik-dik-kucuk">${gunAdi}</div></th>`;
                 
                 if(d.getDay()===0 || idx === days.length - 1) {
                     tr1 += `<th rowspan="2" class="bg-hafta"><div class="baslik-dik">${weekCount}-Haftalık İşe Gelme Günü</div></th>
@@ -639,7 +631,6 @@ function raporuOlustur() {
                     let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
                     if(info.tip==='izin') bg='hucre-izin';
                     
-                    // ONFOCUS VE ONBLUR İLE KLAVYE/HESAP DOSTU SİSTEM EKLENDİ
                     h+=`<td contenteditable="true" class="veri-hucre ${bg}" onfocus="temizleFormat(this)" onblur="uygulaFormat(this)" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
                     
                     if(d.getDay()===0 || idx === days.length - 1){
@@ -654,13 +645,13 @@ function raporuOlustur() {
 
             h+=`</tbody>
             <tfoot>
-                <tr><td colspan="${toplamSutun}" style="border: none; text-align: left; padding-top: 5px;"><div style="font-size: 10px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır.</div></td></tr>
-                <tr><td colspan="${toplamSutun}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 5px 0;">AÇIKLAMALAR</td></tr>
-                <tr><td colspan="${toplamSutun}" style="border: 1px solid #000; text-align: left; font-size: 10px; padding: 6px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
+                <tr><td colspan="${toplamSutun}" style="border: none; text-align: left; padding-top: 5px;"><div style="font-size: 9px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır.</div></td></tr>
+                <tr><td colspan="${toplamSutun}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 2px 0;">AÇIKLAMALAR</td></tr>
+                <tr><td colspan="${toplamSutun}" style="border: 1px solid #000; text-align: left; font-size: 10px; padding: 4px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
                 <tr>
-                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 12px; padding-top: 30px;" contenteditable="true"><strong>Düzenleyen</strong><br>TEMİZLİK Birim Sorumlusu<br><br><br>...................</td>
-                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 12px; padding-top: 30px;" contenteditable="true"><strong>Kontrol Eden</strong><br>İDARİ VE MALİ İŞLER Müdür Yardımcısı<br><br><br>...................</td>
-                    <td colspan="${toplamSutun - 2*Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 12px; padding-top: 30px;" contenteditable="true"><strong>Onaylayan</strong><br>İDARİ VE MALİ İŞLER Müdürü<br><br><br>...................</td>
+                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Düzenleyen</strong><br>TEMİZLİK Birim Sorumlusu<br><br><br>...................</td>
+                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Kontrol Eden</strong><br>İDARİ VE MALİ İŞLER Müdür Yardımcısı<br><br><br>...................</td>
+                    <td colspan="${toplamSutun - 2*Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Onaylayan</strong><br>İDARİ VE MALİ İŞLER Müdürü<br><br><br>...................</td>
                 </tr>
             </tfoot>
             </table></div>`;
@@ -783,36 +774,35 @@ function exceleSifirKayipsizIndir() {
             else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
 
             if (el.classList.contains('kalin-yatay')) {
-                inlineStyle += "font-weight: bold; font-size: 12px; text-align: center;";
+                inlineStyle += "font-weight: bold; font-size: 11px; text-align: center;";
             } else if (el.classList.contains('isim-yatay')) {
-                inlineStyle += "font-weight: bold; font-size: 12px; text-align: left;";
+                inlineStyle += "font-weight: bold; font-size: 11px; text-align: left;";
             } else {
                 inlineStyle += "text-align: center;";
             }
 
             if (el.hasAttribute('data-tarih')) {
                 el.innerHTML = el.getAttribute('data-tarih');
-                inlineStyle += "mso-rotate: 90; height: 75pt; white-space: nowrap; font-weight: bold;";
+                inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: bold;";
             }
             else if (el.hasAttribute('data-gun')) {
                 el.innerHTML = el.getAttribute('data-gun');
-                inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: normal; font-size: 9px;";
+                inlineStyle += "mso-rotate: 90; height: 45pt; white-space: nowrap; font-weight: normal; font-size: 9px;";
             }
             else {
-                // Temizlenmiş hücre verisi
                 let raw = el.innerText || el.textContent || "";
                 raw = raw.trim();
                 
                 if (el.classList.contains('veri-hucre') && raw) {
                     raw = raw.replace(/\s+/g, '-').replace(/-+/g, '-');
                     el.innerHTML = raw;
-                    inlineStyle += "mso-rotate: 90; height: 90pt; white-space: nowrap; font-weight: bold;";
+                    inlineStyle += "mso-rotate: 90; height: 65pt; white-space: nowrap; font-weight: bold;";
                 }
                 else {
                     let dikeyBaslik = el.querySelector('.baslik-dik');
                     if (dikeyBaslik) {
                         el.innerHTML = dikeyBaslik.innerHTML;
-                        inlineStyle += "mso-rotate: 90; height: 130pt; white-space: normal;";
+                        inlineStyle += "mso-rotate: 90; height: 110pt; white-space: normal;";
                     }
                 }
             }
@@ -828,7 +818,7 @@ function exceleSifirKayipsizIndir() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Hastane_Puantaj_Resmi_Format_Son_v2.xls';
+    a.download = 'Hastane_Puantaj_Resmi_Kompakt_Son.xls';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
