@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0061)file:///C:/Users/%C3%BCmit/Desktop/BO%C5%9EPUANTAJMOTORU.html -->
+<html lang="tr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v116 (TAM EXCEL FORMATI)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ</title>
+    <link href="./TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ_files/css2" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
         body { margin: 0; background: #eef2f5; font-family: 'Roboto', sans-serif; }
@@ -36,102 +36,84 @@
         .btn-big:active { transform: translateY(3px); box-shadow: none; }
         .btn-org { background: var(--orange); } .btn-grn { background: var(--green); } .btn-blu { background: var(--blue); }
 
+        /* VARDİYA CHIPLERİ */
         .vardiya-chip { display:flex; align-items:center; background:#2ecc71; color:white; padding:6px 10px; border-radius:5px; font-size:11px; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
         .vardiya-chip.izin { background:#e74c3c; }
         .vardiya-del { margin-left:10px; cursor:pointer; font-size:12px; transition:0.2s;}
         .vardiya-del:hover { color:#2c3e50; }
 
-        /* TABLO ALANI */
-        .sayfa-container { width: 100%; overflow-x: auto; padding-bottom: 20px; text-align: center; }
-        .sayfa { background: white; padding: 20px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 20px; text-align: left; }
+        /* TABLO VE ÇIKTI */
+        .sayfa { background: white; width: 297mm; min-height: 200mm; margin: 0 auto 20px auto; padding: 2mm; page-break-after: always; font-family: 'Arial Narrow', sans-serif; }
         
-        table { width: 2300px !important; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 7.5px; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
         
         th, td { 
             border: 1px solid #000; 
             text-align: center; 
             vertical-align: middle; 
-            padding: 2px; 
+            padding: 0px; 
             line-height: 1.1; 
-            word-break: break-word;
-            overflow: visible; /* TAŞAN YAZILARI GİZLEME */
+            white-space: normal; 
+            word-break: break-all; 
+            overflow: hidden;
+            position: relative;
         }
         
-        /* 1 SÜTUNU 2 GİBİ GÖSTEREN VE DİKİNE YAZDIRAN KODLAR */
-        .veri-hucre { height: 75px !important; padding: 0 !important; cursor: text; }
-        
-        .cift-dik { 
-            display: flex; 
-            justify-content: space-evenly; 
-            align-items: center; 
-            width: 100%; 
-            height: 100%; 
-            padding: 0 2px;
-            box-sizing: border-box;
-        }
-        
-        .dik-yazi {
-            writing-mode: vertical-lr; 
-            transform: rotate(180deg); /* Aşağıdan yukarı okunması için */
-            font-size: 10px; 
-            font-weight: bold;
-            white-space: nowrap;
-        }
+        .veri-hucre { font-size: 7px; font-weight: bold; height: 22px; }
 
-        td[contenteditable="true"]:focus, th[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
+        td[contenteditable="true"] { cursor: text; }
+        td[contenteditable="true"]:focus, div[contenteditable="true"]:focus { background: #fff9c4 !important; outline: 1px solid orange; }
+
+        /* SEÇİLMİŞ HÜCRE STİLİ */
         .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
         
+        /* SAĞ TIK MENÜSÜ EFEKTLERİ */
         .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; font-family: 'Roboto', sans-serif; color: #333; }
         .ctx-item:hover { background-color: #f1f3f5; color: var(--blue); }
 
-        col.c-sno { width: 35px; } col.c-tc { width: 90px; } col.c-isim { width: 120px; } col.c-gun { width: 45px; }
-        th { background: #eee; padding: 4px; font-size: 10px; }
-        
-        .bg-hafta { background-color: #dff0d8 !important; border-left: 2px solid #000; }
-        .bg-genel { background-color: #fcf3cf !important; border-left: 2px solid #000; }
-        .bg-gece { background-color: #e8daef !important; border-left: 2px solid #000; }
+        col.c-sno { width: 16px; } col.c-tc { width: 55px; } col.c-isim { width: 85px; } col.c-gun { width: 18px; }
+        th { background: #eee; padding: 2px 1px; }
+        .bg-hafta { background-color: #dff0d8 !important; border-left: 1px solid #000; }
+        .bg-genel { background-color: #fcf3cf !important; border-left: 1px solid #000; }
+        .bg-gece { background-color: #e8daef !important; border-left: 1px solid #000; }
         .hucre-izin { background-color: #fadbd8 !important; color: #c0392b; font-weight: bold; }
         .hucre-haftasonu { background-color: #f2f2f2 !important; }
         
-        .baslik-dik { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 10px; font-weight: bold; padding: 2px 0; }
+        .dikey-yazi { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 6px; font-weight: normal; letter-spacing: -0.4px; padding: 2px 0; line-height: 1; }
+        .dikey-tarih { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 6px; font-weight: bold; letter-spacing: -0.2px; padding: 2px 0; line-height: 1.1; color: #111; }
 
         #dynamicGroups { display: flex; gap: 15px; flex-wrap: wrap; width: 100%; }
 
+        /* EXCEL BUTONU TASARIMI */
         #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #27ae60; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
         #btnExceleKopyala:hover { background: #219653; transform: scale(1.05); }
 
-        #cloudStatus { position: fixed; top: 10px; right: 10px; background: #27ae60; color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; display: none; z-index: 999999; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-
         @media print {
-            @page { size: A3 landscape; margin: 2mm; } 
-            #loginScreen, .panel-container, #tableContextMenu, #btnExceleKopyala, #cloudStatus { display: none !important; }
-            #mainContent { display: block !important; overflow: visible; }
-            .sayfa-container { overflow: visible; }
+            @page { size: A4 landscape; margin: 2mm; }
+            #loginScreen, .panel-container, #tableContextMenu, #btnExceleKopyala { display: none !important; }
+            #mainContent { display: block !important; }
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
             .selected-cell { outline: none !important; background-color: inherit !important; } 
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-<div id="cloudStatus">☁️ BULUT SENKRONİZE</div>
-
-<div id="loginScreen">
+<div id="loginScreen" style="display: none;">
     <div id="loginBox">
-        <div style="font-size:40px;">☁️</div>
-        <h2>TEMİZLİK BİRİMİ PUANTAJ <br><span style="font-size:12px; color:#e67e22;">(BULUT BAĞLANTILI)</span></h2>
+        <div style="font-size:40px;">🔒</div>
+        <h2>TEMİZLİK BİRİMİ PUANTAJ</h2>
         <input type="password" id="passInput" placeholder="Şifre: 1234" style="width:100%; padding:10px; text-align:center;">
         <button onclick="sifreKontrol()" style="background:var(--blue); width:100%; padding:12px; margin-top:10px;">GİRİŞ YAP</button>
         <div class="prod-by">PROD.BY. UMIT ABI 2026</div>
     </div>
 </div>
 
-<div id="mainContent">
+<div id="mainContent" style="display: block;">
     <div class="panel-container" style="border-top-color: var(--orange);">
         <div style="width:100%; padding-bottom:5px; border-bottom:2px solid #eee; margin-bottom:10px;">
             <h3 style="border:none; padding:0; display:inline-block; color:var(--orange);">VARDİYA YÖNETİMİ (Ayarlar)</h3>
+            <span style="font-size:10px; color:#666; margin-left:10px;">Excel'de olan veya elle gireceğiniz vardiyaların çalışma saatlerini buradan belirleyin.</span>
         </div>
         <div style="width:100%; display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
             <div style="flex:2; min-width: 150px;">
@@ -157,11 +139,26 @@
                 <button onclick="vardiyaEkle()" class="btn-big btn-grn" style="margin:0; padding:8px 20px;">EKLE</button>
             </div>
         </div>
-        <div id="vardiyaListesi" style="width:100%; display:flex; gap:8px; flex-wrap:wrap; margin-top:15px;"></div>
+        <div id="vardiyaListesi" style="width:100%; display:flex; gap:8px; flex-wrap:wrap; margin-top:15px;"><div class="vardiya-chip calisma"><span>08:00-18:00 (9s / G:0s)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;08:00-18:00&#39;)">✖</span></div><div class="vardiya-chip calisma"><span>08:00-20:00 (11s / G:0s)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;08:00-20:00&#39;)">✖</span></div><div class="vardiya-chip calisma"><span>08:00-16:00 (7.5s / G:0s)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;08:00-16:00&#39;)">✖</span></div><div class="vardiya-chip calisma"><span>20:00-08:00 (11s / G:11s)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;20:00-08:00&#39;)">✖</span></div><div class="vardiya-chip calisma"><span>16:00-24:00 (7.5s / G:4s)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;16:00-24:00&#39;)">✖</span></div><div class="vardiya-chip calisma"><span>24:00-08:00 (7.5s / G:6s)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;24:00-08:00&#39;)">✖</span></div><div class="vardiya-chip izin"><span>HT (İzin)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;HT&#39;)">✖</span></div><div class="vardiya-chip izin"><span>Yİ (İzin)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;Yİ&#39;)">✖</span></div><div class="vardiya-chip izin"><span>R (İzin)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;R&#39;)">✖</span></div><div class="vardiya-chip izin"><span>İ (İzin)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;İ&#39;)">✖</span></div><div class="vardiya-chip izin"><span>Nİ (İzin)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;Nİ&#39;)">✖</span></div><div class="vardiya-chip izin"><span>RT (İzin)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;RT&#39;)">✖</span></div><div class="vardiya-chip calisma"><span>RTÇ (9s / G:0s)</span><span class="vardiya-del" onclick="vardiyaSil(&#39;RTÇ&#39;)">✖</span></div></div>
     </div>
 
     <div class="panel-container">
-        <div id="dynamicGroups"></div>
+        <div id="dynamicGroups">
+        <div class="panel-col">
+            <button class="btn-del-group" onclick="grupSil(&#39;g_1&#39;)" title="Grubu Sil">X</button>
+            <h3 contenteditable="true" onblur="grupAdiGuncelle(&#39;g_1&#39;, this.innerText)">DÖŞEMEALTI DEVLET HASTANESİ</h3>
+            <div class="personel-row"><input type="text" id="add_g_1" class="modern-input" placeholder="Personel Adı..." onkeypress="if(event.key===&#39;Enter&#39;) personelEkle(&#39;g_1&#39;)"><button onclick="personelEkle(&#39;g_1&#39;)" class="btn-add">+</button></div>
+            <div class="personel-listesi"><div class="personel-item"><span>ADEM KÖMÜR</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ADEM KÖMÜR&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ALİ GENÇEL</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ALİ GENÇEL&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>AYŞE BOZKAYA</span><button onclick="personelSil(&#39;g_1&#39;, &#39;AYŞE BOZKAYA&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>BETÜL ŞİMŞEK</span><button onclick="personelSil(&#39;g_1&#39;, &#39;BETÜL ŞİMŞEK&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>BURCU DERELİOĞLU</span><button onclick="personelSil(&#39;g_1&#39;, &#39;BURCU DERELİOĞLU&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>DENİZ USLU</span><button onclick="personelSil(&#39;g_1&#39;, &#39;DENİZ USLU&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ENES ABDULLAH ALTUN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ENES ABDULLAH ALTUN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>FATMA ÇALIŞKAN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;FATMA ÇALIŞKAN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>GÜLBAHAR ÜNVER</span><button onclick="personelSil(&#39;g_1&#39;, &#39;GÜLBAHAR ÜNVER&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>GÜLLÜ TOSUN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;GÜLLÜ TOSUN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>HALİL VAR</span><button onclick="personelSil(&#39;g_1&#39;, &#39;HALİL VAR&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>HATİCE YILDIRIM</span><button onclick="personelSil(&#39;g_1&#39;, &#39;HATİCE YILDIRIM&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>HURİYE ELMAS</span><button onclick="personelSil(&#39;g_1&#39;, &#39;HURİYE ELMAS&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>İRFAN CAN DEMİR</span><button onclick="personelSil(&#39;g_1&#39;, &#39;İRFAN CAN DEMİR&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>KADİR GAMSIZ</span><button onclick="personelSil(&#39;g_1&#39;, &#39;KADİR GAMSIZ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>MAKBULE DENK</span><button onclick="personelSil(&#39;g_1&#39;, &#39;MAKBULE DENK&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>MEHMET OĞUZ</span><button onclick="personelSil(&#39;g_1&#39;, &#39;MEHMET OĞUZ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>MERVE ÖZ</span><button onclick="personelSil(&#39;g_1&#39;, &#39;MERVE ÖZ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>MUSTAFA DİK</span><button onclick="personelSil(&#39;g_1&#39;, &#39;MUSTAFA DİK&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>NAZMİYE DURAN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;NAZMİYE DURAN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>NEJLA NİLİ</span><button onclick="personelSil(&#39;g_1&#39;, &#39;NEJLA NİLİ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ORHAN KAHRAMAN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ORHAN KAHRAMAN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ÖZLEM DURSUN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ÖZLEM DURSUN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>SADIK MACİT</span><button onclick="personelSil(&#39;g_1&#39;, &#39;SADIK MACİT&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>SAFİYE DENECİ</span><button onclick="personelSil(&#39;g_1&#39;, &#39;SAFİYE DENECİ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>SEDA YILMAZ</span><button onclick="personelSil(&#39;g_1&#39;, &#39;SEDA YILMAZ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>SONGÜL DİLEK</span><button onclick="personelSil(&#39;g_1&#39;, &#39;SONGÜL DİLEK&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>SONGÜL ERDOĞAN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;SONGÜL ERDOĞAN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>SONGÜL ÖZTÜRK</span><button onclick="personelSil(&#39;g_1&#39;, &#39;SONGÜL ÖZTÜRK&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ŞAHABETTİN ORHAN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ŞAHABETTİN ORHAN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>TAYYİP DOĞAN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;TAYYİP DOĞAN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>YASEMİN KARAKUŞ</span><button onclick="personelSil(&#39;g_1&#39;, &#39;YASEMİN KARAKUŞ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ZELİHA ERSOY</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ZELİHA ERSOY&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ZEYNEP BOZAN</span><button onclick="personelSil(&#39;g_1&#39;, &#39;ZEYNEP BOZAN&#39;)" class="btn-del">X</button></div></div></div>
+        <div class="panel-col">
+            <button class="btn-del-group" onclick="grupSil(&#39;g_1771960208804&#39;)" title="Grubu Sil">X</button>
+            <h3 contenteditable="true" onblur="grupAdiGuncelle(&#39;g_1771960208804&#39;, this.innerText)">ATATÜRK DEVLET HASTANESİ</h3>
+            <div class="personel-row"><input type="text" id="add_g_1771960208804" class="modern-input" placeholder="Personel Adı..." onkeypress="if(event.key===&#39;Enter&#39;) personelEkle(&#39;g_1771960208804&#39;)"><button onclick="personelEkle(&#39;g_1771960208804&#39;)" class="btn-add">+</button></div>
+            <div class="personel-listesi"><div class="personel-item"><span>BURAK TURAN</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;BURAK TURAN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>FATMA IŞIK</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;FATMA IŞIK&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>FATMA KOÇAR</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;FATMA KOÇAR&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>HAFİSE DİKMEN</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;HAFİSE DİKMEN&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>HATİCE KARAKUŞ</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;HATİCE KARAKUŞ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>NUSRETTİN ÖZSOY</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;NUSRETTİN ÖZSOY&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ÜMİT YİĞİT</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;ÜMİT YİĞİT&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>ÜMMÜ KURU</span><button onclick="personelSil(&#39;g_1771960208804&#39;, &#39;ÜMMÜ KURU&#39;)" class="btn-del">X</button></div></div></div>
+        <div class="panel-col">
+            <button class="btn-del-group" onclick="grupSil(&#39;g_1771960210748&#39;)" title="Grubu Sil">X</button>
+            <h3 contenteditable="true" onblur="grupAdiGuncelle(&#39;g_1771960210748&#39;, this.innerText)">EĞİTİM ARAŞTIRMA HASTANESİ</h3>
+            <div class="personel-row"><input type="text" id="add_g_1771960210748" class="modern-input" placeholder="Personel Adı..." onkeypress="if(event.key===&#39;Enter&#39;) personelEkle(&#39;g_1771960210748&#39;)"><button onclick="personelEkle(&#39;g_1771960210748&#39;)" class="btn-add">+</button></div>
+            <div class="personel-listesi"><div class="personel-item"><span>BETÜL ŞİMŞEK</span><button onclick="personelSil(&#39;g_1771960210748&#39;, &#39;BETÜL ŞİMŞEK&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>FUNDA POYRAZ</span><button onclick="personelSil(&#39;g_1771960210748&#39;, &#39;FUNDA POYRAZ&#39;)" class="btn-del">X</button></div><div class="personel-item"><span>HAFİZE ÖNAL</span><button onclick="personelSil(&#39;g_1771960210748&#39;, &#39;HAFİZE ÖNAL&#39;)" class="btn-del">X</button></div></div></div></div>
         <div class="panel-col" style="flex:1; min-width: 250px; justify-content: center; align-items: center; border: 2px dashed #ccc; border-radius: 10px; padding: 20px;">
             <button onclick="yeniGrupEkle()" class="btn-big btn-blu">+ YENİ GRUP EKLE</button>
         </div>
@@ -169,20 +166,17 @@
             <div style="display:flex; gap:10px;">
                 <input type="date" id="inpTarihBas" class="modern-input" title="Başlangıç Tarihi">
                 <input type="date" id="inpTarihBit" class="modern-input" title="Bitiş Tarihi">
-                <button onclick="shiftMasterdanCek()" class="btn-big" style="background:#8b5cf6; margin:0; flex:2; color:white;">🔄 SHİFTMASTER'DAN ÇEK</button>
-                <button onclick="raporuOlustur()" class="btn-big btn-org" style="margin:0; flex:2;">MANUEL OLUŞTUR</button>
+                <button onclick="raporuOlustur()" class="btn-big btn-org" style="margin:0; flex:2;">PUANTAJ OLUŞTUR</button>
                 <button onclick="window.print()" class="btn-big btn-grn" style="margin:0; flex:1;">YAZDIR</button>
             </div>
-            <textarea id="inpExcel" placeholder="Excel'den kopyaladığınız verileri (örneğin 15.2.2026-14.3.2026 TEMİZLİK tablosunu) buraya yapıştırın..." style="height:100px; margin-top: 10px;" class="modern-input"></textarea>
+            <textarea id="inpExcel" placeholder="Excel&#39;den kopyaladığınız vardiyaları buraya yapıştırın..." style="height:150px; margin-top: 10px;" class="modern-input"></textarea>
+            <div style="margin-top: 5px; font-size: 11px; color: #e67e22; font-weight: bold;">💡 İPUCU: Tabloda oluşturulan hücreleri farenizle sürükleyerek seçebilir, ardından sağ tıklayarak hücreleri birleştirebilirsiniz! Hastane adı ve kod kısımlarına tıklayarak metinleri kendi hastanenize göre düzenleyebilirsiniz.</div>
         </div>
     </div>
-    
-    <div class="sayfa-container">
-        <div id="raporAlani"></div>
-    </div>
+    <div id="raporAlani"></div>
 </div>
 
-<button id="btnExceleKopyala" onclick="exceleSifirKayipsizIndir()">📥 EXCEL DOSYASI İNDİR</button>
+<button id="btnExceleKopyala" onclick="exceleSifirKayipsizKopyala()">📋 EXCEL'E KOPYALA</button>
 
 <div id="tableContextMenu" style="display:none; position:absolute; background:white; border:1px solid #ced4da; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:99999; border-radius:5px; overflow:hidden;">
     <div class="ctx-item" onclick="mergeSelectedCells()">🔗 Seçili Hücreleri Birleştir</div>
@@ -191,21 +185,18 @@
 </div>
 
 <script>
-const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
-firebase.initializeApp(firebaseConfig); const db = firebase.database();
-
 document.addEventListener('DOMContentLoaded', function() {
     let passInput = document.getElementById('passInput');
     if (passInput) passInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sifreKontrol(); });
     
+    // Geçerli ayı otomatik seçmek için
     let bugun = new Date();
     let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
     let bit = new Date(bugun.getFullYear(), bugun.getMonth() + 1, 14);
+    document.getElementById('inpTarihBas').value = bas.toISOString().split('T')[0];
+    document.getElementById('inpTarihBit').value = bit.toISOString().split('T')[0];
     
-    document.getElementById('inpTarihBas').value = `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
-    document.getElementById('inpTarihBit').value = `${bit.getFullYear()}-${String(bit.getMonth()+1).padStart(2,'0')}-${String(bit.getDate()).padStart(2,'0')}`;
-    
-    bulutBaglantisiniKur();
+    veriYukle();
 });
 
 const DEFAULT_VARDIYALAR = { 
@@ -218,74 +209,54 @@ const DEFAULT_VARDIYALAR = {
 let appData = { gruplar: [], vardiyalar: null };
 
 function sifreKontrol() {
+    // Şifreyi burada 1234 yaptık
     if(document.getElementById('passInput').value.trim() === "1234") {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
     } else alert("HATALI ŞİFRE!");
 }
 
-function showCloudStatus() {
-    const status = document.getElementById('cloudStatus');
-    status.style.display = 'block';
-    setTimeout(() => { status.style.display = 'none'; }, 2000);
-}
-
-function ilkKurulumuYap() {
-    appData = { gruplar: [], vardiyalar: DEFAULT_VARDIYALAR };
+function veriYukle() {
+    // Tarayıcıdaki eski boş listeyi unutup bu yeni listeyi yüklemesi için anahtarı değiştirdik
+    let kayit = localStorage.getItem("guvenlik_puantaj_genel_liste");
+    if (kayit) appData = JSON.parse(kayit);
+    if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
+    
+    // GÖNDERDİĞİN LİSTE BURADA:
     const genelListe = [
-        "10006543166 - NEJLA NİLİ", "10580422338 - TAYYİP DOĞAN", "11620640910 - ZELİHA ERSOY", "12547486254 - MEHMET OĞUZ DÖĞÜN", 
-        "13097253044 - ORHAN KAHRAMAN", "14671540086 - GÜLBAHAR ÜNVER", "15097363778 - MERVE ÖZ", "15958477590 - NAZMİYE DURAN", 
-        "16015509254 - SONGÜL ERDOĞAN", "16709091126 - GÜLLÜ TOSUN", "16900491572 - SONGÜL DİLEK", "19589057206 - SEDA YILMAZ", 
-        "19741371508 - ÖZLEM DURSUN", "21283980216 - ŞAHABETTİN ORHAN", "22918496584 - HATİCE YILDIRIM", "24475058656 - ZEYNEP BOZAN", 
-        "25282186846 - BURCU DERELİOĞLU", "25624852712 - SONGÜL ÖZTÜRK", "26872123876 - HURİYE ELMAS", "27091143096 - KADİR GAMSIZ", 
-        "28543103354 - AYŞE BOZKAYA", "29386066998 - SAFİYE DENECİ", "30163049264 - ADEM KÖMÜR", "30623331236 - SADIK MACİT", 
-        "30937798466 - ALİ GENÇEL", "37927835576 - HALİL VAR", "40186499618 - DENİZ USLU", "45925910836 - ENES ABDULLAH ALTUN", 
-        "53164244964 - MAKBULE DENK", "58708122418 - MUSTAFA DİK", "61585026564 - FATMA ÇALIŞKAN", "10588692368 - ÜMİT YİĞİT", 
-        "21604545568 - NUSRETTİN ÖZSOY", "23665254878 - ÜMMÜ KURU", "26542158924 - HAFİSE DİKMEN", "29056059848 - FATMA IŞIK", 
-        "30328031684 - BURAK TURAN", "32827531146 - HATİCE KARAKUŞ", "00000000000 - FATMA KOÇAR", "10546692058 - HAFİZE ÖNAL", 
-        "23467244800 - FUNDA POYRAZ", "62074286230 - BETÜL ŞİMŞEK"
+        "ORHAN KAHRAMAN", "HAFİSE DİKMEN", "ZELİHA ERSOY", "TAYYİP DOĞAN", "ŞAHABETTİN ORHAN", 
+        "KADİR GAMSIZ", "MEHMET OĞUZ", "MAKBULE DENK", "GÜLBAHAR ÜNVER", "NAZMİYE DURAN", 
+        "SONGÜL ERDOĞAN", "ÖZLEM DURSUN", "YASEMİN KARAKUŞ", "BURCU DERELİOĞLU", "HALİL VAR", 
+        "ZEYNEP BOZAN", "DENİZ USLU", "NUSRETTİN ÖZSOY", "SONGÜL DİLEK", "FATMA KOÇAR", 
+        "BURAK TURAN", "FATMA ÇALIŞKAN", "FATMA IŞIK", "SADIK MACİT", "MUSTAFA DİK", 
+        "ÜMMÜ KURU", "SAFİYE DENECİ", "NEJLA NİLİ", "HAFİZE ÖNAL", "MERVE ÖZ", 
+        "HATİCE YILDIRIM", "FUNDA POYRAZ", "BETÜL ŞİMŞEK", "İRFAN CAN DEMİR", "AYŞE BOZKAYA", 
+        "HATİCE KARAKUŞ", "SONGÜL ÖZTÜRK", "ENES ABDULLAH ALTUN", "HURİYE ELMAS", 
+        "SEDA YILMAZ", "ADEM KÖMÜR"
     ];
-    appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL (GENEL LİSTE)", kisiler: genelListe }];
-    veriKaydet(); 
+
+    // Eğer sistemde kayıtlı bir grup yoksa, doğrudan genel listeyi oluştur
+    if (!appData.gruplar || appData.gruplar.length === 0) {
+        appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL (GENEL LİSTE)", kisiler: genelListe }];
+    }
+    
+    veriKaydet(); arayuzCiz(); vardiyaArayuzCiz();
 }
 
-function bulutBaglantisiniKur() {
-    db.ref("puantaj_v115_zorunlu_gecis").once("value", snap => {
-        if(!snap.val()) {
-            ilkKurulumuYap();
-            db.ref("puantaj_v115_zorunlu_gecis").set(true);
-            arayuzCiz(); vardiyaArayuzCiz();
-        } else {
-            db.ref("puantaj_motoru_ayarlar").on("value", snap => {
-                let data = snap.val();
-                if(data) {
-                    appData = data;
-                    if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
-                    if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL", kisiler: [] }];
-                    arayuzCiz();
-                    vardiyaArayuzCiz();
-                    showCloudStatus();
-                } else {
-                    ilkKurulumuYap();
-                }
-            });
-        }
-    });
-}
-
-function veriKaydet() { db.ref("puantaj_motoru_ayarlar").set(appData); }
+function veriKaydet() { localStorage.setItem("guvenlik_puantaj_genel_liste", JSON.stringify(appData)); }
 
 function vardiyaEkle() {
     let kod = document.getElementById("vAd").value.trim().toUpperCase();
     let t = parseFloat(document.getElementById("vSaat").value) || 0;
     let g = parseFloat(document.getElementById("vGece").value) || 0;
     let tip = document.getElementById("vTip").value;
-    if(!kod) return alert("Vardiya adı boş olamaz!");
+    if(!kod) return alert("Vardiya adı/kodu boş olamaz!");
     appData.vardiyalar[kod] = { t: t, g: g, tip: tip };
-    veriKaydet(); 
+    veriKaydet(); vardiyaArayuzCiz();
+    document.getElementById("vAd").value = ""; document.getElementById("vSaat").value = ""; document.getElementById("vGece").value = "";
 }
 
-function vardiyaSil(kod) { if(confirm(kod + " silinsin mi?")) { delete appData.vardiyalar[kod]; veriKaydet(); } }
+function vardiyaSil(kod) { if(confirm(kod + " vardiyasını silmek istediğinize emin misiniz?")) { delete appData.vardiyalar[kod]; veriKaydet(); vardiyaArayuzCiz(); } }
 
 function vardiyaArayuzCiz() {
     const root = document.getElementById("vardiyaListesi"); root.innerHTML = "";
@@ -297,198 +268,122 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// =========================================================================
-// SİHİRLİ GÖRÜNTÜ FONKSİYONU: 1 SÜTUNU 2 DİK YAZIYA BÖLER (Hesaplamayı Bozmaz)
-// =========================================================================
-function formatliVardiya(val) { 
-    if(!val) return ""; 
-    val = val.trim(); 
-    if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) {
-        let parts = val.split("-");
-        return `<div class="cift-dik" data-raw="${val}">
-                    <div class="dik-yazi" style="border-right:1px dashed #ccc; padding-right:2px;">${parts[0].trim()}</div>
-                    <div class="dik-yazi" style="padding-left:2px;">${parts[1].trim()}</div>
-                </div>`;
-    } else {
-        return `<div class="cift-dik" data-raw="${val}">
-                    <div class="dik-yazi" style="font-size:12px;">${val}</div>
-                </div>`;
-    }
-}
-
-// Hesaplama motoru ekrandaki şekilli HTML'e kanmasın diye orijinal veriyi çeker
-function getCleanValue(html) { 
-    if(!html) return ""; 
-    let m = html.match(/data-raw="([^"]+)"/);
-    if (m) return m[1];
-    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
-}
-// =========================================================================
+function formatliVardiya(val) { if(!val) return ""; val = val.trim(); if(val.match(/\d{2}:\d{2}.*\d{2}:\d{2}/)) return val.replace(/[\s-]+/, "<br>"); return val; }
+function getCleanValue(html) { return html.replace(/<br\s*\/?>/gi, "-").replace("&nbsp;", " ").trim().toUpperCase(); }
 
 function getVardiyaInfo(val) {
     if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""};
     let cleanVal = val.replace(/<br\s*\/?>/gi, "-").trim().toUpperCase(); 
-    if (appData.vardiyalar && appData.vardiyalar[cleanVal]) return { ...appData.vardiyalar[cleanVal], val: cleanVal };
+    if (appData.vardiyalar[cleanVal]) return { ...appData.vardiyalar[cleanVal], val: cleanVal };
     let valWithHyphen = cleanVal.replace(/[\s\n\r]+/g, "-");
-    if (appData.vardiyalar && appData.vardiyalar[valWithHyphen]) return { ...appData.vardiyalar[valWithHyphen], val: valWithHyphen };
+    if (appData.vardiyalar[valWithHyphen]) return { ...appData.vardiyalar[valWithHyphen], val: valWithHyphen };
     return {t:0, g:0, tip:"bilinmeyen", val: cleanVal};
 }
 
-function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ GRUP", kisiler: [] }); veriKaydet(); }
-function grupSil(id) { if (confirm("Grup silinsin mi?")) { appData.gruplar = appData.gruplar.filter(g => g.id !== id); veriKaydet(); } }
+function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ GRUP", kisiler: [] }); veriKaydet(); arayuzCiz(); }
+function grupSil(id) { if (confirm("Grup silinsin mi?")) { appData.gruplar = appData.gruplar.filter(g => g.id !== id); veriKaydet(); arayuzCiz(); } }
 function grupAdiGuncelle(id, ad) { let g = appData.gruplar.find(g => g.id === id); if (g) { g.ad = ad.trim() || "İSİMSİZ GRUP"; veriKaydet(); } }
 
 function personelEkle(grupId) {
     let input = document.getElementById("add_" + grupId); let isim = input.value.trim().toUpperCase();
     let grup = appData.gruplar.find(g => g.id === grupId);
-    if(!grup.kisiler) grup.kisiler = [];
-    if (isim && grup && !grup.kisiler.includes(isim)) { grup.kisiler.push(isim); veriKaydet(); }
+    if (isim && grup && !grup.kisiler.includes(isim)) { grup.kisiler.push(isim); veriKaydet(); arayuzCiz(); }
     input.value = "";
 }
-function personelSil(gId, isim) { if (confirm("Silinsin mi?")) { let g = appData.gruplar.find(g => g.id === gId); g.kisiler = g.kisiler.filter(k => k !== isim); veriKaydet(); } }
+function personelSil(gId, isim) { if (confirm("Silinsin mi?")) { let g = appData.gruplar.find(g => g.id === gId); g.kisiler = g.kisiler.filter(k => k !== isim); veriKaydet(); arayuzCiz(); } }
 
 function arayuzCiz() {
     const container = document.getElementById("dynamicGroups"); container.innerHTML = "";
     appData.gruplar.forEach(grup => {
         let html = `
         <div class="panel-col">
-            <button class="btn-del-group" onclick="grupSil('${grup.id}')">X</button>
+            <button class="btn-del-group" onclick="grupSil('${grup.id}')" title="Grubu Sil">X</button>
             <h3 contenteditable="true" onblur="grupAdiGuncelle('${grup.id}', this.innerText)">${grup.ad}</h3>
-            <div class="personel-row"><input type="text" id="add_${grup.id}" class="modern-input" placeholder="12345678912 - PERSONEL ADI..." onkeypress="if(event.key==='Enter') personelEkle('${grup.id}')"><button onclick="personelEkle('${grup.id}')" class="btn-add">+</button></div>
+            <div class="personel-row"><input type="text" id="add_${grup.id}" class="modern-input" placeholder="Personel Adı..." onkeypress="if(event.key==='Enter') personelEkle('${grup.id}')"><button onclick="personelEkle('${grup.id}')" class="btn-add">+</button></div>
             <div class="personel-listesi">`;
-        if(grup.kisiler) {
-            grup.kisiler.sort((a,b) => {
-                let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
-                let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
-                return isimA.localeCompare(isimB, 'tr');
-            }).forEach((isim) => {
-                html += `<div class="personel-item"><span>${isim}</span><button onclick="personelSil('${grup.id}', '${isim}')" class="btn-del">X</button></div>`;
-            });
-        }
+        grup.kisiler.sort((a,b)=>a.localeCompare(b,'tr')).forEach((isim) => {
+            html += `<div class="personel-item"><span>${isim}</span><button onclick="personelSil('${grup.id}', '${isim}')" class="btn-del">X</button></div>`;
+        });
         container.innerHTML += html + `</div></div>`;
     });
 }
 
-function getSafeDate(val) {
-    if (!val) return new Date();
-    val = val.trim();
-    let p;
-    if (val.includes('-')) p = val.split('-');
-    else if (val.includes('.')) p = val.split('.');
-    else if (val.includes('/')) p = val.split('/');
-    else return new Date(val);
-    if (p && p.length === 3) {
-        let y = parseInt(p[0].length === 4 ? p[0] : p[2]);
-        let m = parseInt(p[1]) - 1;
-        let d = parseInt(p[0].length === 4 ? p[2] : p[0]);
-        return new Date(y, m, d);
-    }
-    return new Date(val);
-}
-
-function tarihGuncelle(){ 
-    let bas = getSafeDate(document.getElementById('inpTarihBas').value); 
-    let bit = getSafeDate(document.getElementById('inpTarihBit').value); 
-    let str = `${String(bas.getDate()).padStart(2,'0')}.${String(bas.getMonth()+1).padStart(2,'0')}.${bas.getFullYear()} - ${String(bit.getDate()).padStart(2,'0')}.${String(bit.getMonth()+1).padStart(2,'0')}.${bit.getFullYear()}`;
-    return {bas, bit, str}; 
-}
+function tarihGuncelle(){ let bas=new Date(document.getElementById('inpTarihBas').value); let bit=new Date(document.getElementById('inpTarihBit').value); return {bas,bit,str: `${bas.toLocaleDateString('tr-TR')} - ${bit.toLocaleDateString('tr-TR')}`}; }
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
-function excelTarih(s){
-    if(!s)return null; 
-    s = s.trim();
-    let m = s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); 
-    if(m) return m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0');
-    let m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-    if(m2) return m2[1]+m2[2].padStart(2,'0')+m2[3].padStart(2,'0');
-    return null;
-}
+function excelTarih(s){if(!s)return null; let m=s.trim().match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); return m?m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0'):null;}
 
-// ANA HESAPLAMA MOTORU (ELLENMEDİ, GÖRÜNTÜYÜ YENİLER)
 function satirHesapla(td) {
-    if (!td) return;
-    const tr = td.closest('tr');
-    if (!tr) return;
+    let tr = td.parentElement, cells = tr.querySelectorAll('.veri-hucre:not([style*="display: none"])');
+    let rawVal = getCleanValue(td.innerHTML);
+    let hs=0, hg=0, hi=0;
+    let ag=0, as=0, n_rt=0, n_ht=0, n_r=0, n_i=0, n_rtc=0, n_htc=0, age=0, totalFM=0;
 
-    const rawVal = getCleanValue(td.innerHTML);
-    const info = getVardiyaInfo(rawVal);
-    
-    const manuelSaat = parseFloat(rawVal.replace(",", "."));
-    const aktifSaat = (info && info.t > 0) ? info.t : (!isNaN(manuelSaat) ? manuelSaat : 0);
+    cells.forEach((c) => {
+        if(c.hasAttribute('data-merged-by')) return; 
+        
+        let val = getCleanValue(c.innerHTML); 
+        let info = getVardiyaInfo(val);
+        let realVal = info.val;
+        let isIzin = (info.tip === "izin");
 
-    td.classList.remove('hucre-izin');
-    if (aktifSaat === 0 && rawVal !== "" && rawVal !== "0") {
-        td.classList.add('hucre-izin');
-    }
+        if(realVal === "RT") n_rt++;
+        else if(realVal === "HT") n_ht++;
+        else if(realVal === "R") n_r++;
+        else if(isIzin && !["RT","HT","R"].includes(realVal)) n_i++;
 
-    let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0, tFM = 0;
-    let wHs = 0, wHg = 0;
-
-    const allCells = Array.from(tr.children);
-    allCells.forEach(c => {
-        if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
-
-        if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
-            const v = getCleanValue(c.innerHTML);
-            if (v === "" || v === "0") return;
-
-            const inf = getVardiyaInfo(v);
-            const mS = parseFloat(v.replace(",", "."));
-            const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
-
-            tAg++; 
-            if (v === "RT") n_rt++;
-            else if (v === "HT" && s === 0) n_ht++;
-            else if (v === "R") n_r++;
-            else if (inf && inf.tip === "izin") n_i++;
-
-            if (s > 0) {
-                wHs += s;
-                wHg++;
-                tAge += (inf.g || 0);
-                if (v === "RTÇ") n_rtc++;
-                if (c.classList.contains('hucre-haftasonu')) n_htc++;
-            }
+        if(info.t > 0) {
+            ag += 1;
+            as += info.t;
+            age += info.g;
+            hs += info.t;
+            hg += info.g;
+            if(realVal === "RTÇ") n_rtc++;
         }
 
-        if (c.classList.contains('bg-hafta')) {
-            const type = c.getAttribute('data-type');
-            if (type === 'h-gun') {
-                c.innerText = wHg > 0 ? wHg : "";
-            } else if (type === 'h-saat') {
-                c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "";
-            } else if (type === 'h-fm') {
-                let wFm = wHs > 45 ? (wHs - 45) : 0;
-                c.innerText = wFm > 0 ? Number(wFm.toFixed(2)) : "";
-                tFM += wFm; 
-                wHs = 0; wHg = 0;
+        if(c.classList.contains("hucre-haftasonu") && info.t > 0) n_htc++;
+
+        if(c.nextElementSibling && c.nextElementSibling.classList.contains('bg-hafta')) {
+            let n = c.nextElementSibling;
+            if(n) { 
+                n.innerText = hs||""; 
+                n = n.nextElementSibling; 
+                while(n && n.style.display === 'none') n = n.nextElementSibling;
+                n.innerText = hg||""; 
+                n = n.nextElementSibling; 
+                while(n && n.style.display === 'none') n = n.nextElementSibling;
+                n.innerText = hi||""; 
             }
+            totalFM += Math.max(0, hs - 45);
+            hs=0; hg=0; hi=0;
         }
     });
 
-    const update = (cls, v) => {
-        const el = tr.querySelector(cls);
-        if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2));
-    };
+    totalFM += Math.max(0, hs - 45);
 
-    update('.s-calisma', tAg); update('.s-yol', tAg + n_rtc); update('.s-rapor', n_r);
-    update('.s-izin', n_i); update('.s-ht', n_ht); update('.s-rt', n_rt);
-    update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
-    
-    // Görüntüyü bozmadan geri bas
-    if (rawVal !== "") {
-        td.innerHTML = formatliVardiya(rawVal);
+    if(tr.querySelector('.s-calisma')) {
+        tr.querySelector('.s-calisma').innerText = ag + n_rt + n_ht + n_i + n_r;
+        tr.querySelector('.s-yol').innerText = ag + n_rtc;
+        tr.querySelector('.s-rapor').innerText = n_r || "0";
+        tr.querySelector('.s-izin').innerText = n_i || "0";
+        tr.querySelector('.s-ht').innerText = n_ht || "0";
+        tr.querySelector('.s-rt').innerText = n_rt || "0";
+        tr.querySelector('.s-rtc').innerText = n_rtc || "0";
+        tr.querySelector('.s-htc').innerText = n_htc * 9 || "0";
+        tr.querySelector('.s-fm').innerText = totalFM || "0";
+        tr.querySelector('.s-gece').innerText = age || "0";
+        tr.querySelector('.s-tgece').innerText = age || "0";
     }
+    
+    td.innerHTML = formatliVardiya(rawVal);
 }
 
 function raporuOlustur() {
     const {bas,bit,str} = tarihGuncelle();
-    let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
+    let days=[]; let d=new Date(bas); while(d<=bit){ days.push(new Date(d)); d.setDate(d.getDate()+1); }
     
     let people = {};
     appData.gruplar.forEach(grup => {
-        if(grup.kisiler) {
-            grup.kisiler.forEach(n => { people[n] = { n: n, gId: grup.id, gAd: grup.ad, data: {} }; });
-        }
+        grup.kisiler.forEach(n => { people[n] = { n: n, gId: grup.id, gAd: grup.ad, data: {} }; });
     });
 
     const raw = document.getElementById('inpExcel').value.split('\n').filter(r=>r.trim());
@@ -498,302 +393,395 @@ function raporuOlustur() {
         cols.forEach((c,i)=>{ let k=excelTarih(c); if(k){tmp[k]=i; isHead=true;} });
         if(isHead) map=tmp;
         else {
-            // Excel'den direkt yapıştırıldığında SIRA, TC, AD, SOYAD sütunlarını toplayıp ismi garantili bulma:
-            let textToSearch = cols.slice(0, 5).join(" ").toUpperCase();
-            let matchedPersonKey = Object.keys(people).find(pKey => {
-                let cleanPKey = pKey.includes("-") ? pKey.split("-")[1].trim() : pKey;
-                cleanPKey = cleanPKey.replace(/\s\d+$/, '').replace(/\s+/g, ' ').trim(); 
-                let normP = cleanPKey.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
-                let normText = textToSearch.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
-                return normText.includes(normP);
-            });
-            if(matchedPersonKey) {
+            let name = cols[0].trim().toUpperCase();
+            if(name.length>2 && people[name]) {
                 for(let k in map) {
                     let v = (cols[map[k]]||"").trim();
-                    if(v) people[matchedPersonKey].data[k] = v;
+                    if(v) people[name].data[k] = v;
                 }
             }
         }
     });
 
-    // VARSAYILAN DEĞER DOLDURMA (TABLONUN BOŞ KALMAMASI İÇİN)
     Object.values(people).forEach(p => {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
 
-    const HDR = [
-        {n:"Çalışma Günü", c:"s-calisma"}, {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, {n:"Raporlu Gün Sayısı", c:"s-rapor"}, 
-        {n:"İzinli Olduğu Gün Sayısı", c:"s-izin"}, {n:"Hafta Tatili Toplamı(HT)", c:"s-ht"}, {n:"Resmi Tatil(Tam Gün)(RT)", c:"s-rt"}, 
-        {n:"Resmi Tatil Çalışması(RTÇ)", c:"s-rtc"}, {n:"Gündüz Fazla Mesai Toplamı", c:"s-fm"}, {n:"İŞ SAĞLIĞI VE GÜVENLİĞİ (YOL)", c:"s-isg"}
-    ];
+    const HDR = [{n:"ÇALIŞMA GÜNÜ", c:"s-calisma"}, {n:"İ.GELME G.(YOL)", c:"s-yol"}, {n:"RAPOR", c:"s-rapor"}, {n:"İZİN", c:"s-izin"}, {n:"HT", c:"s-ht"}, {n:"RT", c:"s-rt"}, {n:"RTÇ", c:"s-rtc"}, {n:"HT ÇALIŞMA", c:"s-htc"}, {n:"F.MESAİ SAAT", c:"s-fm"}];
     
     let sayfaHtml = ""; let gArr = Object.values(people).reduce((acc, p) => { acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; }, {});
     
     for(let gAd in gArr) {
-        let list = gArr[gAd].sort((a,b) => {
-            let isimA = a.n.includes("-") ? a.n.split("-")[1].trim() : a.n;
-            let isimB = b.n.includes("-") ? b.n.split("-")[1].trim() : b.n;
-            return isimA.localeCompare(isimB, 'tr');
-        });
-        
-        let gunSutunSayisi = 0;
-        days.forEach((d, idx) => {
-            gunSutunSayisi++;
-            if (d.getDay() === 0 || idx === days.length - 1) gunSutunSayisi += 3;
-        });
-        
-        let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
-
+        let list = gArr[gAd].sort((a,b)=>a.n.localeCompare(b.n,'tr'));
         let h = `<div class="sayfa"><table class="veri-tablosu" data-grup="${gAd}">
-        <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim"><col class="c-isim"><col class="c-sno">`;
-        
-        days.forEach((d, idx)=>{ 
-            h+=`<col class="c-gun">`; 
-            if(d.getDay()===0 || idx === days.length - 1) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; 
-        });
+        <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim">`;
+        days.forEach(d=>{ h+=`<col class="c-gun">`; if(d.getDay()===0) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
         HDR.forEach(()=>h+=`<col class="c-gun">`);
         h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
-        
         <tr>
-            <td colspan="${toplamSutun}" style="border: none !important; padding: 15px 0; text-align: left; font-size: 14px; font-weight: bold;">
-                ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ DÖŞEMEALTI DEVLET HASTANESİ SÜREKLİ İŞÇİ PERSONEL PUANTAJ BİLDİRİMİ
+            <td colspan="4" style="border: none !important; text-align: left;"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/T.C._Sa%C4%9Fl%C4%B1k_Bakanl%C4%B1%C4%9F%C4%B1_Logo.png" style="height: 40px; margin-top:5px; margin-left: 10px;"></td>
+            <td colspan="${days.length + Math.floor(days.length/7)*3 + HDR.length - 1}" style="border: none !important; text-align: center; vertical-align: middle;">
+                <div contenteditable="true" style="font-weight: bold; font-size: 14px; letter-spacing: 1px; margin-bottom: 2px;">.................... HASTANESİ BAŞHEKİMLİĞİ</div>
+                <div style="font-size: 10px; font-weight: bold;">GÜVENLİK BİRİMİ / SÜREKLİ İŞÇİ NÖBET LİSTESİ VE PUANTAJ CETVELİ (${str})</div>
+            </td>
+            <td colspan="3" style="border: none !important; text-align: right; font-size: 10px; font-family: 'Times New Roman', serif; padding-bottom: 10px;" contenteditable="true">
+                Kodu: ............. &nbsp;&nbsp;|&nbsp;&nbsp; Yayın Tarihi: .../.../....... &nbsp;&nbsp;|&nbsp;&nbsp; Revizyon Tarihi: 0 &nbsp;&nbsp;|&nbsp;&nbsp; Revizyon No: 0 &nbsp;&nbsp;|&nbsp;&nbsp; Sayfa No/Sayısı: 1/1
             </td>
         </tr>
-        <tr>
-            <td colspan="5" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 10px;">
-                BİRİM ADI    :   TEMİZLİK
-            </td>
-            <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 10px;">
-                ${str}
-            </td>
-        </tr>
-
-        <tr>
-            <th><div class="baslik-dik">SIRA NO</div></th>
-            <th><div class="baslik-dik">T.C. KİMLİK NUMARASI</div></th>
-            <th>PERSONELİN ADI</th>
-            <th>PERSONELİN SOYADI</th>
-            <th><div class="baslik-dik">Devreden Çalışma Saati</div></th>`;
+        <tr><th>S.NO</th><th>TC KİMLİK NO</th><th style="border:none;">ADI SOYADI</th>`;
         
-        let weekCount = 1;
-        days.forEach((d, idx)=>{
-            // RAKAM ÜSTTE, GÜN ALTTA
+        days.forEach(d=>{
             let gg = String(d.getDate()).padStart(2, '0');
-            let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'short' }).replace('.', '').toUpperCase();
-            let tamTarih = `<div style="line-height: 1.1; text-align: center;"><strong style="font-size: 14px;">${gg}</strong><br><span style="font-size: 9px;">${gunAdi}</span></div>`;
-            
-            h+=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; padding: 2px;">${tamTarih}</th>`;
-            
-            if(d.getDay()===0 || idx === days.length - 1) {
-                h+=`<th class="bg-hafta"><div class="baslik-dik">${weekCount}-Haftalık İşe Gelme Günü</div></th>
-                    <th class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Toplamı</div></th>
-                    <th class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Fazla Mesai</div></th>`;
-                weekCount++;
-            }
+            let aa = String(d.getMonth() + 1).padStart(2, '0');
+            let yyyy = d.getFullYear();
+            let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
+            let tamTarih = `${gg}/${aa}/${yyyy}<br><span style="font-weight:normal; font-size:5.5px">${gunAdi}</span>`;
+            let s=`<th style="${(d.getDay()===0||d.getDay()===6)?'background:#eee':''}; border-top:none;"><div class="dikey-tarih">${tamTarih}</div></th>`;
+            if(d.getDay()===0) s+=`<th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.SAAT</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi">H.GÜN</div></th><th class="bg-hafta" style="border-top:none"><div class="dikey-yazi" style="color:red">H.İZİN</div></th>`;
+            h+=s;
         });
 
-        HDR.forEach(b => { h += `<th class="bg-genel"><div class="baslik-dik">${b.n}</div></th>`; });
-        h += `<th class="bg-gece"><div class="baslik-dik">Gece Fazla Mesai Toplamı (Saat Sayısı)</div></th><th class="bg-gece"><div class="baslik-dik">Toplam Gece Çalışması (Saat Sayısı)</div></th></tr>
+        HDR.forEach(b => { h += `<th class="bg-genel" style="border-top:none"><div class="dikey-yazi">${b.n}</div></th>`; });
+        h += `<th class="bg-gece" style="border-top:none"><div class="dikey-yazi">GECE SAAT</div></th><th class="bg-gece" style="border-top:none; border-right:none"><div class="dikey-yazi">TOPLAM GECE</div></th></tr>
         </thead>
         <tbody>`;
 
         list.forEach((p, index)=>{
-            let tcNo = ""; let ad = p.n; let soyad = "";
-            if (p.n.includes("-")) {
-                let parts = p.n.split("-"); tcNo = parts[0].trim(); let tamIsim = parts[1].trim(); let isimParcalari = tamIsim.split(" ");
-                if(isimParcalari.length > 1) { soyad = isimParcalari.pop(); ad = isimParcalari.join(" "); } else { ad = tamIsim; }
-            }
-            h+=`<tr>
-                <td contenteditable="true">${index + 1}</td>
-                <td contenteditable="true">${tcNo}</td>
-                <td class="isim-hucre" style="text-align:left; padding-left:3px;" contenteditable="true">${ad}</td>
-                <td class="isim-hucre" style="text-align:left; padding-left:3px;" contenteditable="true">${soyad}</td>
-                <td contenteditable="true">0</td>`;
-            
-            days.forEach((d, idx)=>{
-                let v = p.data[getKey(d)] || ""; 
-                let info = getVardiyaInfo(v); 
-                let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
-                if(info.tip==='izin') bg='hucre-izin';
-                
-                h+=`<td contenteditable="true" data-raw="${v}" class="veri-hucre ${bg}" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
-                
-                if(d.getDay()===0 || idx === days.length - 1){
-                    h+=`<th class="bg-hafta veri-hucre" style="font-size:12px;" data-type="h-gun"></th>
-                        <th class="bg-hafta veri-hucre" style="font-size:12px;" data-type="h-saat"></th>
-                        <th class="bg-hafta veri-hucre" style="color:red; font-size:12px;" data-type="h-fm"></th>`;
+            h+=`<tr><td contenteditable="true">${index + 1}</td><td contenteditable="true"></td><td class="isim-hucre" style="border-left:none; text-align:left; padding-left:3px;" contenteditable="true">${p.n}</td>`;
+            let hs=0, hg=0, hi=0;
+            let ag=0, as=0, n_rt=0, n_ht=0, n_r=0, n_i=0, n_rtc=0, n_htc=0, age=0, totalFM=0;
+
+            days.forEach(d=>{
+                let info = getVardiyaInfo(p.data[getKey(d)]);
+                let v = info.val;
+                let isIzin = (info.tip === "izin");
+
+                if(v === "RT") n_rt++; else if(v === "HT") n_ht++; else if(v === "R") n_r++; else if(isIzin && !["RT","HT","R"].includes(v)) n_i++;
+                if(info.t > 0) { ag++; as+=info.t; age+=info.g; hs+=info.t; hg+=info.g; if(v==="RTÇ") n_rtc++; }
+                let isHS = (d.getDay()===0||d.getDay()===6);
+                if(isHS && info.t > 0) n_htc++;
+
+                let bg=isHS?'hucre-haftasonu':''; if(isIzin) bg='hucre-izin';
+                h+=`<td contenteditable="true" class="veri-hucre ${bg}" onblur="satirHesapla(this)">${formatliVardiya(v)}</td>`;
+                if(d.getDay()===0){
+                    totalFM += Math.max(0, hs - 45);
+                    h+=`<th class="bg-hafta veri-hucre">${hs||""}</th><th class="bg-hafta veri-hucre">${hg||""}</th><th class="bg-hafta veri-hucre" style="color:red">${hi||""}</th>`;
+                    hs=0; hg=0; hi=0;
                 }
             });
-            HDR.forEach(b => { h += `<th class="bg-genel ${b.c}" style="font-size:12px;" ${b.c === 's-isg' ? 'contenteditable="true"' : ''}>0</th>`; });
-            h += `<th class="bg-gece s-gecefm" style="font-size:12px;">0</th><th class="bg-gece s-gece" style="font-size:12px;">0</th></tr>`;
+
+            totalFM += Math.max(0, hs - 45);
+
+            h+=`<th class="bg-genel s-calisma">${ag+n_rt+n_ht+n_i+n_r}</th><th class="bg-genel s-yol">${ag+n_rtc}</th><th class="bg-genel s-rapor">${n_r||"0"}</th>
+            <th class="bg-genel s-izin">${n_i||"0"}</th><th class="bg-genel s-ht">${n_ht||"0"}</th><th class="bg-genel s-rt">${n_rt||"0"}</th>
+            <th class="bg-genel s-rtc">${n_rtc||"0"}</th><th class="bg-genel s-htc">${n_htc*9||"0"}</th><th class="bg-genel s-fm">${totalFM||"0"}</th>
+            <th class="bg-gece s-gece">${age||"0"}</th><th class="bg-gece s-tgece" style="border-right:none">${age||"0"}</th></tr>`;
         });
+
+        let colCount = 3 + days.length + Math.floor(days.length/7)*3 + HDR.length + 2;
 
         h+=`</tbody>
         <tfoot>
-            <tr><td colspan="${toplamSutun}" style="border: none; text-align: left; padding-top: 5px;"><div style="font-size: 8px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır.</div></td></tr>
-            <tr><td colspan="${toplamSutun}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 5px 0;">AÇIKLAMALAR</td></tr>
-            <tr><td colspan="${toplamSutun}" style="border: 1px solid #000; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
             <tr>
-                <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Düzenleyen</strong><br>TEMİZLİK Birim Sorumlusu<br><br><br>...................</td>
-                <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Kontrol Eden</strong><br>İDARİ VE MALİ İŞLER Müdür Yardımcısı<br><br><br>...................</td>
-                <td colspan="${toplamSutun - 2*Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true"><strong>Onaylayan</strong><br>İDARİ VE MALİ İŞLER Müdürü<br><br><br>...................</td>
+                <td colspan="${colCount}" style="border: none !important; text-align: left; padding-top: 5px;">
+                    <div style="font-size: 8px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır. Ayrıca "Gündüz Fazla Mesai Toplamı" ve "Gece Fazla Mesai Toplamı" SÜTUNUNA MANUEL OLARAK İŞLENMİŞTİR</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="${colCount}" style="border: none !important; text-align: center; font-weight: bold; font-size: 11px; padding: 5px 0;">
+                    AÇIKLAMALAR
+                </td>
+            </tr>
+            <tr>
+                <td colspan="${colCount}" style="border: 1px solid #000 !important; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true">
+                    <strong>1-</strong> (Buraya hastanenize özel açıklamalarınızı, yol parası alacak personelleri vb. yazabilirsiniz...)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="${colCount}" style="border: 1px solid #000 !important; text-align: left; font-size: 9px; padding: 4px;" contenteditable="true">
+                    <strong>2-</strong> 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="${Math.floor(colCount/2)}" style="border: 1px solid #000 !important; border-right: none !important; text-align: left; font-size: 7px; padding: 4px; vertical-align: top;">
+                    <div contenteditable="true" style="margin-bottom:2px;">1-Devreden Çalışma Saati; Bir önceki ayın son artık haftasından kalan çalışma saatidir.</div>
+                    <div contenteditable="true">2-Hafta Toplamı; Çalışma saatine dahil olan mesailerin saat toplamıdır.</div>
+                </td>
+                <td colspan="${Math.ceil(colCount/2)}" style="border: 1px solid #000 !important; border-left: none !important; text-align: left; font-size: 7px; padding: 4px; vertical-align: top;">
+                    <div contenteditable="true" style="margin-bottom:2px;">9-Hafta Tatili Toplamı; Hafta sonu(HT) gün toplamı girilir.</div>
+                    <div contenteditable="true">10-Resmi Tatil(Tam Gün)(RT); Resmi Tatilde tam gün çalışan personellerin, çalışma saati girilir.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="${Math.floor(colCount/3)}" style="border: none !important; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true">
+                    <strong>Düzenleyen</strong><br>TEMİZLİK Birim Sorumlusu<br><br><br>...................
+                </td>
+                <td colspan="${Math.floor(colCount/3)}" style="border: none !important; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true">
+                    <strong>Kontrol Eden</strong><br>İdari ve Mali İşler Müdür Yardımcısı<br><br><br>...................
+                </td>
+                <td colspan="${colCount - 2*Math.floor(colCount/3)}" style="border: none !important; text-align: center; font-size: 11px; padding-top: 25px;" contenteditable="true">
+                    <strong>Onaylayan</strong><br>İdari ve Mali İşler Müdürü<br><br><br>...................
+                </td>
             </tr>
         </tfoot>
         </table></div>`;
         sayfaHtml+=h;
     }
     document.getElementById('raporAlani').innerHTML = sayfaHtml;
-    document.querySelectorAll('.veri-hucre').forEach(td => satirHesapla(td));
+    document.getElementById('inpExcel').value="";
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
 
-let isSelecting = false; let startCell = null; let selectedCells = [];
+// ------------------------------------
+// HÜCRE BİRLEŞTİRME (MERGE) İŞLEMLERİ
+// ------------------------------------
+let isSelecting = false;
+let startCell = null;
+let selectedCells = [];
+
 function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
-function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
-function clearSelection() { selectedCells.forEach(td => { if(td) td.classList.remove('selected-cell'); }); selectedCells = []; }
-function selectRectangle(start, end) {
-    clearSelection(); let r1 = getRowIdx(start), r2 = getRowIdx(end); let c1 = getColIdx(start), c2 = getColIdx(end);
-    let minR = Math.min(r1, r2), maxR = Math.max(r1, r2); let minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
-    let rows = start.closest('tbody').children;
-    for (let r = minR; r <= maxR; r++) { let tds = rows[r].children; for (let c = minC; c <= maxC; c++) { let td = tds[c]; if (td && td.style.display !== 'none' && !td.hasAttribute('colspan')) { td.classList.add('selected-cell'); selectedCells.push(td); } } }
+function getColIdx(td) {
+    let tr = td.parentNode;
+    let idx = 0;
+    for (let i = 0; i < tr.children.length; i++) {
+        if (tr.children[i] === td) return idx;
+        idx += parseInt(tr.children[i].getAttribute('colspan') || 1);
+    }
+    return idx;
 }
-document.addEventListener('mousedown', function(e) { if (e.button !== 0 || e.target.closest('#tableContextMenu')) return; if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { isSelecting = true; startCell = e.target; clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } else clearSelection(); });
-document.addEventListener('mouseover', function(e) { if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target); });
+function getCellAt(tr, targetColIdx) {
+    let idx = 0;
+    for (let i = 0; i < tr.children.length; i++) {
+        let cell = tr.children[i];
+        if (idx === targetColIdx) return cell;
+        idx += parseInt(cell.getAttribute('colspan') || 1);
+    }
+    return null;
+}
+
+function clearSelection() {
+    selectedCells.forEach(td => {
+        if(td) td.classList.remove('selected-cell');
+    });
+    selectedCells = [];
+}
+
+function selectRectangle(start, end) {
+    clearSelection();
+    let r1 = getRowIdx(start), r2 = getRowIdx(end);
+    let c1 = getColIdx(start), c2 = getColIdx(end);
+    let minR = Math.min(r1, r2), maxR = Math.max(r1, r2);
+    let minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
+
+    let tbody = start.closest('tbody');
+    let rows = tbody.children;
+
+    for (let r = minR; r <= maxR; r++) {
+        let tr = rows[r];
+        let tds = tr.children;
+        for (let c = minC; c <= maxC; c++) {
+            let td = tds[c];
+            if (td && td.style.display !== 'none' && !td.hasAttribute('colspan')) {
+                td.classList.add('selected-cell');
+                selectedCells.push(td);
+            }
+        }
+    }
+}
+
+document.addEventListener('mousedown', function(e) {
+    if (e.button !== 0) return; 
+    if (e.target.closest('#tableContextMenu')) return;
+
+    if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) {
+        isSelecting = true;
+        startCell = e.target;
+        clearSelection();
+        e.target.classList.add('selected-cell');
+        selectedCells.push(e.target);
+    } else clearSelection();
+});
+
+document.addEventListener('mouseover', function(e) {
+    if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target);
+});
 document.addEventListener('mouseup', function() { isSelecting = false; });
-document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { e.preventDefault(); if (!selectedCells.includes(e.target)) { clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } let ctxMenu = document.getElementById('tableContextMenu'); ctxMenu.style.display = 'block'; ctxMenu.style.left = e.pageX + 'px'; ctxMenu.style.top = e.pageY + 'px'; } });
+
+document.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) {
+        e.preventDefault();
+        if (!selectedCells.includes(e.target)) {
+            clearSelection();
+            e.target.classList.add('selected-cell');
+            selectedCells.push(e.target);
+        }
+        let ctxMenu = document.getElementById('tableContextMenu');
+        ctxMenu.style.display = 'block';
+        ctxMenu.style.left = e.pageX + 'px';
+        ctxMenu.style.top = e.pageY + 'px';
+    }
+});
 
 function mergeSelectedCells() {
-    document.getElementById('tableContextMenu').style.display = 'none'; if (selectedCells.length <= 1) return clearSelection();
-    selectedCells.sort((a, b) => { let rDiff = getRowIdx(a) - getRowIdx(b); return rDiff !== 0 ? rDiff : getColIdx(a) - getColIdx(b); });
-    let mainCell = selectedCells[0]; let mergeId = "merge_" + Date.now();
+    document.getElementById('tableContextMenu').style.display = 'none';
+    if (selectedCells.length <= 1) return clearSelection();
+
+    selectedCells.sort((a, b) => {
+        let rDiff = getRowIdx(a) - getRowIdx(b);
+        return rDiff !== 0 ? rDiff : getColIdx(a) - getColIdx(b);
+    });
+
+    let mainCell = selectedCells[0];
+    mergeCounter++;
+    let mergeId = "merge_" + mergeCounter;
+    
     let isRowMerge = getRowIdx(selectedCells[0]) === getRowIdx(selectedCells[1]);
+
     if (isRowMerge) {
-        let totalColSpan = 0; let mergedText = "";
-        selectedCells.forEach((td, index) => { totalColSpan += parseInt(td.getAttribute('colspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
-        mainCell.setAttribute('colspan', totalColSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
-    } else {
-        let totalRowSpan = 0; let mergedText = "";
-        selectedCells.forEach((td, index) => { totalRowSpan += parseInt(td.getAttribute('rowspan') || 1); if(getCleanValue(td.innerHTML) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
-        mainCell.setAttribute('rowspan', totalRowSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
+        let totalColSpan = 0;
+        let mergedText = "";
+        selectedCells.forEach((td, index) => {
+            totalColSpan += parseInt(td.getAttribute('colspan') || 1);
+            let val = getCleanValue(td.innerHTML);
+            if(val !== "" && mergedText === "") mergedText = td.innerHTML; 
+            
+            if (index > 0) {
+                td.style.display = 'none';
+                td.setAttribute('data-merged-by', mergeId);
+                td.innerHTML = ""; 
+            }
+        });
+        mainCell.setAttribute('colspan', totalColSpan);
+        mainCell.setAttribute('data-merge-id', mergeId);
+        mainCell.innerHTML = mergedText;
+    } 
+    else {
+        let totalRowSpan = 0;
+        let mergedText = "";
+        selectedCells.forEach((td, index) => {
+            totalRowSpan += parseInt(td.getAttribute('rowspan') || 1);
+            let val = getCleanValue(td.innerHTML);
+            if(val !== "" && mergedText === "") mergedText = td.innerHTML; 
+
+            if (index > 0) {
+                td.style.display = 'none';
+                td.setAttribute('data-merged-by', mergeId);
+                td.innerHTML = ""; 
+            }
+        });
+        mainCell.setAttribute('rowspan', totalRowSpan);
+        mainCell.setAttribute('data-merge-id', mergeId);
+        mainCell.innerHTML = mergedText;
     }
-    satirHesapla(mainCell); clearSelection();
+
+    satirHesapla(mainCell); 
+    clearSelection();
 }
+
+let mergeCounter = 0;
+
 function unmergeSelectedCells() {
     document.getElementById('tableContextMenu').style.display = 'none';
+    
     selectedCells.forEach(td => {
-        let mergeId = td.getAttribute('data-merge-id');
-        if (mergeId) {
-            td.removeAttribute('colspan'); td.removeAttribute('rowspan'); td.removeAttribute('data-merge-id');
-            td.closest('tbody').querySelectorAll(`td[data-merged-by="${mergeId}"]`).forEach(hiddenTd => { hiddenTd.style.display = ''; hiddenTd.removeAttribute('data-merged-by'); satirHesapla(hiddenTd); });
+        if (td.hasAttribute('colspan') || td.hasAttribute('rowspan')) {
+            let mergeId = td.getAttribute('data-merge-id');
+            if (mergeId) {
+                td.removeAttribute('colspan');
+                td.removeAttribute('rowspan');
+                td.removeAttribute('data-merge-id');
+                
+                let tbody = td.closest('tbody');
+                let hiddenCells = tbody.querySelectorAll(`td[data-merged-by="${mergeId}"]`);
+                
+                hiddenCells.forEach(hiddenTd => {
+                    hiddenTd.style.display = '';
+                    hiddenTd.removeAttribute('data-merged-by');
+                    satirHesapla(hiddenTd);
+                });
+            }
         }
     });
-    if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
+    
+    if(selectedCells.length > 0) satirHesapla(selectedCells[0]);
+    clearSelection();
 }
 
-function shiftMasterdanCek() {
-    let basInput = document.getElementById('inpTarihBas').value; let bitInput = document.getElementById('inpTarihBit').value;
-    if(!basInput || !bitInput) return alert("Tarih seçin!");
-    let btn = document.querySelector('button[onclick="shiftMasterdanCek()"]'); let oldText = btn.innerHTML;
-    btn.innerHTML = "⏳ ÇEKİLİYOR..."; btn.style.pointerEvents = "none";
-    let bas = getSafeDate(basInput); let bit = getSafeDate(bitInput);
+window.onclick = function(e) { if (!e.target.closest('#tableContextMenu')) document.getElementById('tableContextMenu').style.display = 'none'; };
 
-    db.ref("arsivlenmis_shiftler").once("value").then(snap => {
-        let data = snap.val(); if(!data) { alert("Buluta kayıtlı arşiv bulunamadı!"); btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; return; }
-        let personelShiftleri = {};
-        Object.values(data).forEach(arsiv => {
-            let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
-            tablolar.forEach(tablo => {
-                let tBas = getSafeDate(tablo.startDate);
-                tablo.data.forEach(satir => {
-                    let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
-                    satir.shifts.forEach((shiftObj, index) => {
-                        let suankiTarih = new Date(tBas.getTime()); suankiTarih.setDate(tBas.getDate() + index);
-                        suankiTarih.setHours(0,0,0,0); let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0); let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
-                        if(suankiTarih >= basCheck && suankiTarih <= bitCheck) {
-                            let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
-                            if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
-                        }
-                    });
-                });
-            });
-        });
-        
-        let days = []; let d = new Date(bas.getTime()); d.setHours(0,0,0,0); let bitCheck2 = new Date(bit.getTime()); bitCheck2.setHours(0,0,0,0);
-        while(d <= bitCheck2) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
-        let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
-        Object.keys(personelShiftleri).forEach(isim => { let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n"; });
-        document.getElementById('inpExcel').value = excelStr;
-        btn.innerHTML = "✅ BAŞARILI"; setTimeout(() => { btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; }, 2000);
-        raporuOlustur();
-    });
-}
-
-function exceleSifirKayipsizIndir() {
+// ------------------------------------
+// EXCEL'E KOPYALAMA SİSTEMİ (SIFIR KAYIP)
+// ------------------------------------
+function exceleSifirKayipsizKopyala() {
     const tablolar = document.querySelectorAll('.veri-tablosu');
-    if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
+    if (tablolar.length === 0) return alert("Kopyalanacak tablo yok!");
 
     let combinedHtml = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
     <head>
         <meta charset="utf-8">
         <style>
-            table { border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 11px; }
-            td, th { border: 0.5pt solid black; text-align: center; vertical-align: middle; }
-            br { mso-data-placement: same-cell; }
+            table { border-collapse: collapse; font-family: 'Arial Narrow', sans-serif; }
+            th, td { border: 0.5pt solid black; text-align: center; vertical-align: middle; white-space: normal; }
+            .dikey-yazi, .dikey-tarih { mso-rotate: 90; height: 80px; }
+            .bg-hafta { background-color: #dff0d8; }
+            .bg-genel { background-color: #fcf3cf; }
+            .bg-gece { background-color: #e8daef; }
         </style>
-        </head>
+    </head>
     <body>`;
 
     tablolar.forEach(tablo => {
         let clone = tablo.cloneNode(true);
-        clone.querySelectorAll('script, button').forEach(el => el.remove());
-        clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
-
-        clone.querySelectorAll('th, td').forEach(el => {
-            let inlineStyle = `border: 0.5pt solid black; text-align: center; vertical-align: middle; `;
-            if (el.classList.contains('bg-hafta')) inlineStyle += "background-color: #dff0d8;";
-            else if (el.classList.contains('bg-genel')) inlineStyle += "background-color: #fcf3cf;";
-            else if (el.classList.contains('bg-gece')) inlineStyle += "background-color: #e8daef;";
-            else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;";
-            else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
-
-            let raw = el.getAttribute('data-raw') || el.innerText;
-            
-            // Eğer vardiya ise Excel'de de dikine yazması için mso-rotate kodu
-            if (el.classList.contains('veri-hucre') && raw.includes("-") && raw.match(/\d{2}:\d{2}/)) {
-                let parts = raw.split("-");
-                el.innerHTML = parts[0] + "<br style='mso-data-placement:same-cell;'>" + parts[1];
-                inlineStyle += "mso-rotate: 90; height: 70pt; white-space: normal; font-weight: bold;";
-            } 
-            else if (el.classList.contains('veri-hucre') && raw) {
-                el.innerHTML = raw;
-                inlineStyle += "mso-rotate: 90; height: 70pt; white-space: nowrap; font-weight: bold;";
-            }
-            else {
-                let dikeyBaslik = el.querySelector('.baslik-dik');
-                if (dikeyBaslik) {
-                    el.innerHTML = dikeyBaslik.innerHTML;
-                    inlineStyle += "mso-rotate: 90; height: 120pt; white-space: normal;";
-                }
-            }
-            el.setAttribute('style', inlineStyle);
+        
+        let hiddenCells = clone.querySelectorAll('td[style*="display: none"]');
+        hiddenCells.forEach(cell => {
+            if(cell.parentNode) cell.parentNode.removeChild(cell);
         });
 
-        combinedHtml += clone.outerHTML + "<br><br>"; 
+        // Mavi seçim renklerini temizleme
+        let selected = clone.querySelectorAll('.selected-cell');
+        selected.forEach(c => c.classList.remove('selected-cell'));
+
+        combinedHtml += clone.outerHTML + "<br><br><br>"; 
     });
 
     combinedHtml += "</body></html>";
 
-    const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Hastane_Puantaj_Formati.xls';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const blob = new Blob([combinedHtml], { type: 'text/html' });
+    try {
+        const data = [new ClipboardItem({ 'text/html': blob })];
+        navigator.clipboard.write(data).then(() => {
+            alert("✅ Tüm sayfa Excel uyumlu panoya kopyalandı!\n\nŞimdi Excel'i açıp CTRL+V ile yapıştırın.");
+        }).catch(err => kopyalamaYedekYontemi(combinedHtml));
+    } catch (e) {
+        kopyalamaYedekYontemi(combinedHtml);
+    }
+}
+
+function kopyalamaYedekYontemi(htmlStr) {
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlStr;
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    document.body.appendChild(tempDiv);
+    
+    let range = document.createRange();
+    range.selectNodeContents(tempDiv);
+    let sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    
+    try {
+        document.execCommand('copy');
+        alert("✅ Tüm sayfa Excel uyumlu panoya kopyalandı!\n\nŞimdi Excel'i açıp CTRL+V ile yapıştırın.");
+    } catch (err) {
+        alert("Kopyalama başarısız oldu. Tarayıcınız desteklemiyor olabilir.");
+    }
+    
+    document.body.removeChild(tempDiv);
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
