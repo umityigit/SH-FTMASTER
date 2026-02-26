@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v127 (DİNAMİK BUTONLAR & HIZLI EKLE/SİL)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v128 (SHİFTMASTER SAĞ TIK MENÜSÜ EKLENDİ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -20,7 +20,7 @@
         .hero-label { font-weight: bold; font-size: 14px; color: var(--blue); margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center;}
         .hero-input { font-size: 18px; padding: 12px 20px; border: 2px solid #bdc3c7; border-radius: 8px; width: 200px; text-align: center; font-weight: bold; color: var(--primary); transition: 0.3s; }
         
-        /* KİŞİ BUTONLARI VE KART TASARIMI (YENİ) */
+        /* KİŞİ BUTONLARI VE KART TASARIMI */
         .personel-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 15px; }
         .personel-card { position: relative; display: inline-block; }
         
@@ -72,9 +72,16 @@
         .veri-hucre { height: 75px !important; padding: 0 !important; cursor: text; transition: all 0.2s;}
         .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; }
         .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
+        
+        /* SEÇİM VE SAĞ TIK MENÜSÜ EFEKTLERİ */
         .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
-        .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; font-family: 'Roboto', sans-serif; color: #333; }
-        .ctx-item:hover { background-color: #f1f3f5; color: var(--blue); }
+        
+        #tableContextMenu { font-family: 'Roboto', sans-serif; min-width: 160px; }
+        .ctx-header { background: #f8f9fa; padding: 8px 10px; font-size: 11px; font-weight: bold; color: #7f8c8d; text-align: center; border-bottom: 2px solid #3498db; text-transform: uppercase; letter-spacing: 1px;}
+        .ctx-item { padding: 10px 15px; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; color: #333; display: flex; align-items: center; gap: 8px; }
+        .ctx-item:hover { background-color: #e3f2fd; color: var(--blue); padding-left: 20px; }
+        .ctx-item.danger { color: var(--red); }
+        .ctx-item.danger:hover { background-color: #fdedec; color: #c0392b; }
 
         col.c-sno { width: 35px; } col.c-tc { width: 100px; } col.c-isim { width: 130px; } col.c-gun { width: 38px; } 
         .kalin-yatay { font-weight: bold !important; font-size: 11px !important; text-align: center; padding: 2px !important; }
@@ -115,7 +122,7 @@
     
     <div class="hero-search">
         <h1 class="hero-title">📋 HIZLI PUANTAJ PANELİ</h1>
-        <p class="hero-desc">İşlem yapmak istediğiniz personelin üzerine tıklayın veya alt kısımdan tam döküm alın.<br><em>Yeni personel eklemek için listenin sonundaki <b>👤+ EKLE</b> butonunu, silmek için ismin köşesindeki <b>🗑️ Çöp Tenekesi</b>ni kullanabilirsiniz.</em></p>
+        <p class="hero-desc">İşlem yapmak istediğiniz personelin üzerine tıklayın veya alt kısımdan tam döküm alın.<br><em>Ekranda oluşan tablodaki günleri fare ile seçip, <b>Sağ Tıklayarak (ShiftMaster Menüsü)</b> anında vardiya atayabilirsiniz.</em></p>
         
         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
             <div class="hero-input-group">
@@ -187,9 +194,14 @@
 
 <button id="btnExceleKopyala" onclick="exceleSifirKayipsizIndir()">📥 EXCEL DOSYASI İNDİR</button>
 
-<div id="tableContextMenu" style="display:none; position:absolute; background:white; border:1px solid #ced4da; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:99999; border-radius:5px; overflow:hidden;">
+<div id="tableContextMenu" style="display:none; position:absolute; background:white; border:1px solid #ced4da; box-shadow:0 10px 25px rgba(0,0,0,0.2); z-index:99999; border-radius:8px; overflow:hidden;">
+    <div class="ctx-header">SHIFTMASTER MENÜSÜ</div>
+    <div id="ctxDinamikVardiyalar" style="max-height: 250px; overflow-y: auto;">
+        </div>
+    <div style="border-bottom: 2px solid #eee;"></div>
+    <div class="ctx-item danger" onclick="seciliHucreleriTemizle()">🧹 Seçili Hücreleri Temizle</div>
+    <div style="border-bottom: 2px solid #eee;"></div>
     <div class="ctx-item" onclick="mergeSelectedCells()">🔗 Seçili Hücreleri Birleştir</div>
-    <div style="border-bottom: 1px solid #eee;"></div>
     <div class="ctx-item" onclick="unmergeSelectedCells()">✂️ Hücre Birleştirmesini Ayır</div>
 </div>
 
@@ -284,7 +296,6 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// ==== YENİ: ANA EKRANA SİLME VE EKLEME BUTONLARIYLA LİSTEYİ DİZEN FONKSİYON ====
 function anaEkranaButonlariCiz() {
     const container = document.getElementById("personelButonAlani");
     container.innerHTML = "";
@@ -293,14 +304,13 @@ function anaEkranaButonlariCiz() {
         let html = `<div style="width: 100%;"><div class="grup-baslik">🏢 ${grup.ad} PERSONEL LİSTESİ</div><div class="personel-grid">`;
         
         if(grup.kisiler && grup.kisiler.length > 0) {
-            // Kişileri alfabetik sıralayıp kart yap
             grup.kisiler.sort((a,b) => {
                 let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
                 let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
                 return isimA.localeCompare(isimB, 'tr');
             }).forEach((isimTam) => {
                 let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
-                let guvenliIsimTam = isimTam.replace(/'/g, "\\'"); // JS Hatasını önlemek için tırnak koruması
+                let guvenliIsimTam = isimTam.replace(/'/g, "\\'"); 
                 
                 html += `
                 <div class="personel-card">
@@ -310,7 +320,6 @@ function anaEkranaButonlariCiz() {
             });
         }
         
-        // GRUBUN SONUNA 'YENİ KİŞİ EKLE' BUTONU KOY
         html += `
             <div class="personel-card">
                 <button class="btn-kisi btn-yeni-kisi" title="Bu Gruba Yeni Kişi Ekle" onclick="anaEkrandanPersonelEkle('${grup.id}')">👤+ EKLE</button>
@@ -322,15 +331,12 @@ function anaEkranaButonlariCiz() {
     });
 }
 
-// ==== YENİ: ANA EKRANDAN HIZLI EKLEME VE SİLME İŞLEMLERİ ====
 function anaEkrandanPersonelEkle(grupId) {
     let isim = prompt("Lütfen eklenecek personelin T.C. Kimlik numarasını ve Adını girin.\n(Örn: 12345678912 - AHMET YILMAZ)\nEğer TC'sini bilmiyorsanız sadece adını da yazabilirsiniz.");
-    
     if(isim && isim.trim() !== "") {
         isim = isim.trim().toUpperCase('tr');
         let grup = appData.gruplar.find(g => g.id === grupId);
         if(!grup.kisiler) grup.kisiler = [];
-        
         if(!grup.kisiler.includes(isim)) {
             grup.kisiler.push(isim);
             veriKaydet(); 
@@ -342,14 +348,12 @@ function anaEkrandanPersonelEkle(grupId) {
 
 function anaEkrandanPersonelSil(grupId, isimTam) {
     let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
-    
     if(confirm(`⚠️ DİKKAT!\n\n${sadeceIsim} isimli personeli listeden silmek istediğinize emin misiniz?`)) {
         let grup = appData.gruplar.find(g => g.id === grupId);
         grup.kisiler = grup.kisiler.filter(k => k !== isimTam);
         veriKaydet();
     }
 }
-// ==========================================================
 
 function getCleanValue(text) { 
     if(!text) return ""; 
@@ -776,6 +780,7 @@ function raporuOlustur(filtreIsim) {
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
 
+// ==== YENİ: SHIFTMASTER SAĞ TIK MENÜSÜ & TOPLU SEÇİM MANTIĞI ====
 let isSelecting = false; let startCell = null; let selectedCells = [];
 function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
 function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
@@ -789,7 +794,66 @@ function selectRectangle(start, end) {
 document.addEventListener('mousedown', function(e) { if (e.button !== 0 || e.target.closest('#tableContextMenu')) return; if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { isSelecting = true; startCell = e.target; clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } else clearSelection(); });
 document.addEventListener('mouseover', function(e) { if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target); });
 document.addEventListener('mouseup', function() { isSelecting = false; });
-document.addEventListener('contextmenu', function(e) { if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { e.preventDefault(); if (!selectedCells.includes(e.target)) { clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } let ctxMenu = document.getElementById('tableContextMenu'); ctxMenu.style.display = 'block'; ctxMenu.style.left = e.pageX + 'px'; ctxMenu.style.top = e.pageY + 'px'; } });
+
+// SAĞ TIKLANDIĞINDA MENÜYÜ AÇ VE VARDİYALARI DİZ
+document.addEventListener('contextmenu', function(e) { 
+    if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { 
+        e.preventDefault(); 
+        if (!selectedCells.includes(e.target)) { 
+            clearSelection(); 
+            e.target.classList.add('selected-cell'); 
+            selectedCells.push(e.target); 
+        } 
+        
+        // Vardiyaları menüye otomatik diz
+        let ctxMenuDiv = document.getElementById('ctxDinamikVardiyalar');
+        ctxMenuDiv.innerHTML = '';
+        if(appData.vardiyalar) {
+            for(let v in appData.vardiyalar) {
+                let info = appData.vardiyalar[v];
+                let icon = info.tip === 'izin' ? '🔴' : '🟢';
+                ctxMenuDiv.innerHTML += `<div class="ctx-item" onclick="seciliHucrelereVardiyaYaz('${v}')">${icon} ${v}</div>`;
+            }
+        }
+
+        let ctxMenu = document.getElementById('tableContextMenu'); 
+        ctxMenu.style.display = 'block'; 
+        ctxMenu.style.left = e.pageX + 'px'; 
+        ctxMenu.style.top = e.pageY + 'px'; 
+    } 
+});
+
+// Menü dışına tıklanınca gizle
+document.addEventListener('click', function(e) {
+    if(!e.target.closest('#tableContextMenu')) {
+        document.getElementById('tableContextMenu').style.display = 'none';
+    }
+});
+
+// YENİ: SEÇİLİ HÜCRELERE TEK TUŞLA VARDİYA BAS VE HESAPLA
+function seciliHucrelereVardiyaYaz(vardiyaKodu) {
+    document.getElementById('tableContextMenu').style.display = 'none';
+    selectedCells.forEach(td => {
+        if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
+            td.innerHTML = formatliVardiya(vardiyaKodu);
+            satirHesapla(td);
+        }
+    });
+    clearSelection();
+}
+
+// YENİ: SEÇİLİ HÜCRELERİ TEK TUŞLA TEMİZLE VE HESAPLA
+function seciliHucreleriTemizle() {
+    document.getElementById('tableContextMenu').style.display = 'none';
+    selectedCells.forEach(td => {
+        if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
+            td.innerHTML = '';
+            td.classList.remove('hucre-izin');
+            satirHesapla(td);
+        }
+    });
+    clearSelection();
+}
 
 function mergeSelectedCells() {
     document.getElementById('tableContextMenu').style.display = 'none'; if (selectedCells.length <= 1) return clearSelection();
