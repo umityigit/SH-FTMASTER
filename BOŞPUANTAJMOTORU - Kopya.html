@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v120 (KOMPAKT & TAM EKRAN YAZDIRMA)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v121 (RESMİ KURUM YAZICI FORMATI)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -51,20 +51,20 @@
             border: 1px solid #000; 
             text-align: center; 
             vertical-align: middle; 
-            padding: 1px; /* DARALTILDI */
+            padding: 1px; 
             line-height: 1.1; 
             word-break: break-word;
             overflow: visible;
         }
         
-        /* DİK YAZI ALANLARI - MAKSİMUM DARALTILDI */
+        /* DİK YAZI ALANLARI */
         .veri-hucre { height: 75px !important; padding: 0 !important; cursor: text; transition: all 0.2s;}
         .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; }
         
         .dik-yazi {
             writing-mode: vertical-lr; 
             transform: rotate(180deg); 
-            font-size: 11px; /* DARALTILDI */
+            font-size: 11px;
             font-weight: bold;
             white-space: nowrap;
             display: flex;
@@ -80,7 +80,7 @@
         .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; font-family: 'Roboto', sans-serif; color: #333; }
         .ctx-item:hover { background-color: #f1f3f5; color: var(--blue); }
 
-        /* YATAY, KALIN VE GENİŞ OLACAK ALANLAR */
+        /* YATAY VE GENİŞ OLACAK ALANLAR */
         col.c-sno { width: 35px; } 
         col.c-tc { width: 100px; } 
         col.c-isim { width: 130px; } 
@@ -107,16 +107,21 @@
 
         #cloudStatus { position: fixed; top: 10px; right: 10px; background: #27ae60; color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; display: none; z-index: 999999; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
-        /* === YAZDIRMA (PRINT) ÖZEL AYARLARI === */
+        /* === YAZICI İÇİN ÖZEL SİHİRLİ KODLAR === */
         @media print {
             @page { size: A4 landscape; margin: 5mm; } 
-            /* TABLOYU A4 GENİŞLİĞİNE ZORLA SIĞDIRMA ZOOM'U */
-            body { zoom: 48%; margin: 0; padding: 0; background: white; } 
+            body { zoom: 50%; margin: 0; padding: 0; background: white; } 
             
             #loginScreen, .panel-container, #tableContextMenu, #btnExceleKopyala, #cloudStatus { display: none !important; }
             #mainContent { display: block !important; overflow: visible; }
             .sayfa-container { overflow: visible; width: 100%; }
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
+            
+            /* İMZALARIN HER SAYFANIN ALTINA ZORLA BASTIRILMASI */
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            tr { page-break-inside: avoid; }
+            
             .selected-cell { outline: none !important; background-color: inherit !important; } 
         }
     </style>
@@ -180,7 +185,7 @@
                 <input type="date" id="inpTarihBit" class="modern-input" title="Bitiş Tarihi">
                 <button onclick="shiftMasterdanCek()" class="btn-big" style="background:#8b5cf6; margin:0; flex:2; color:white;">🔄 SHİFTMASTER'DAN ÇEK</button>
                 <button onclick="raporuOlustur()" class="btn-big btn-org" style="margin:0; flex:2;">MANUEL OLUŞTUR</button>
-                <button onclick="window.print()" class="btn-big btn-grn" style="margin:0; flex:1;">YAZDIR</button>
+                <button onclick="window.print()" class="btn-big btn-grn" style="margin:0; flex:1;">YAZDIR (İmzalar Alta)</button>
             </div>
             <textarea id="inpExcel" placeholder="Excel'den kopyaladığınız verileri buraya yapıştırın..." style="height:100px; margin-top: 10px;" class="modern-input"></textarea>
         </div>
@@ -306,20 +311,17 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// Hücrediki HTML kalıntılarını temizleyip saf metni çıkarır
 function getCleanValue(text) { 
     if(!text) return ""; 
     return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
 }
 
-// Tıklayınca kutu silinir, sadece düz metin kalır (Rahat düzenleme için)
 function temizleFormat(td) {
     let metin = td.innerText || td.textContent || "";
     metin = metin.trim();
     td.innerHTML = metin; 
 }
 
-// Boşluğa tıklayınca yazı tekrar hastane dikey formatına döner
 function uygulaFormat(td) {
     let metin = getCleanValue(td.innerText || td.textContent);
     if (metin !== "") {
@@ -414,7 +416,6 @@ function excelTarih(s){
     return null;
 }
 
-// CANLI HESAPLAMA MOTORU
 function satirHesapla(td) {
     if (!td) return;
     const tr = td.closest('tr');
@@ -549,8 +550,8 @@ function raporuOlustur() {
         
         let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
 
-        // KİŞİ SAYISI 15'DEN 25'E ÇIKARILDI (DARALAN YAPI SAYESİNDE)
-        let chunkSize = 25;
+        // YAZICI VE İMZA UYUMU İÇİN SAYI 18'E SABİTLENDİ
+        let chunkSize = 18;
         let globalIndex = 1;
         
         for (let i = 0; i < fullList.length; i += chunkSize) {
