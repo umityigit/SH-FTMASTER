@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v125 (DEV ARAMA MOTORU SÜRÜMÜ)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v126 (GÜVENLİ BUTON PANELİ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -11,29 +11,32 @@
 
         #mainContent { display: block; padding-bottom: 50px; }
         
-        /* === DEVASA ARAMA EKRANI (MUTEMET ODAKLI) === */
-        .hero-search { background: white; padding: 40px 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; margin: 20px auto; width: 95%; max-width: 1000px; border-top: 8px solid var(--blue); }
-        .hero-title { color: var(--primary); margin-top: 0; font-size: 28px; text-transform: uppercase; }
-        .hero-desc { color: #7f8c8d; font-size: 16px; margin-bottom: 30px; }
+        /* === YENİ NESİL BUTONLU ANA EKRAN === */
+        .hero-search { background: white; padding: 30px 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; margin: 20px auto; width: 95%; max-width: 1200px; border-top: 8px solid var(--orange); }
+        .hero-title { color: var(--primary); margin-top: 0; font-size: 26px; text-transform: uppercase; }
+        .hero-desc { color: #7f8c8d; font-size: 15px; margin-bottom: 20px; }
         
         .hero-input-group { display: inline-block; text-align: left; margin: 10px 15px; }
-        .hero-label { font-weight: bold; font-size: 18px; color: var(--blue); margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center;}
+        .hero-label { font-weight: bold; font-size: 14px; color: var(--blue); margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center;}
+        .hero-input { font-size: 18px; padding: 12px 20px; border: 2px solid #bdc3c7; border-radius: 8px; width: 200px; text-align: center; font-weight: bold; color: var(--primary); transition: 0.3s; }
         
-        .hero-input { font-size: 24px; padding: 15px 20px; border: 3px solid #bdc3c7; border-radius: 10px; width: 100%; box-sizing: border-box; text-align: center; font-weight: bold; color: var(--primary); transition: 0.3s; }
-        .hero-input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 15px rgba(230, 126, 34, 0.3); }
+        /* KİŞİ BUTONLARI */
+        .personel-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
+        .btn-kisi { background: white; border: 2px solid #bdc3c7; color: var(--primary); padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+        .btn-kisi:hover { background: var(--blue); border-color: var(--blue); color: white; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(41, 128, 185, 0.3); }
+        .btn-kisi:active { transform: translateY(0); }
         
-        .hero-btn { font-size: 26px; padding: 25px 50px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4); width: 100%; max-width: 600px; }
-        .hero-btn:hover { background: #219653; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(39, 174, 96, 0.5); }
-        .hero-btn:active { transform: translateY(2px); box-shadow: 0 5px 10px rgba(39, 174, 96, 0.4); }
+        .grup-baslik { width: 100%; text-align: center; font-size: 16px; color: var(--orange); font-weight: bold; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px dashed #eee; padding-bottom: 5px; }
 
-        .print-btn { font-size: 18px; padding: 15px 40px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; }
-        .print-btn:hover { background: #1a252f; }
+        .btn-tam-dokum { font-size: 18px; padding: 20px 40px; background: var(--green); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 35px; transition: 0.3s; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4); width: 100%; max-width: 500px; display: block; margin-left: auto; margin-right: auto; }
+        .btn-tam-dokum:hover { background: #219653; transform: scale(1.02); }
 
+        .print-btn { font-size: 14px; padding: 12px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+        
         /* GİZLİ AYARLAR PANELİ */
         details summary::-webkit-details-marker { display:none; }
         .settings-panel { background: white; padding: 15px; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; border: 1px solid #ddd; margin-top: 10px;}
         
-        /* STANDART PANEL CSS */
         .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px; position: relative; }
         h3 { margin: 0; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 5px; color: var(--primary); text-transform: uppercase; cursor: text;}
         .personel-row { display: flex; gap: 5px; margin-bottom: 5px; }
@@ -80,18 +83,13 @@
         #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #27ae60; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
         #btnExceleKopyala:hover { background: #219653; transform: scale(1.05); }
 
-        /* === YAZICI İÇİN GİZLEME KODLARI === */
         @media print {
             @page { size: A4 landscape; margin: 5mm; } 
             body { zoom: 50%; margin: 0; padding: 0; background: white; } 
-            
-            /* ARAMA MOTORU VE AYARLAR YAZICIDA ÇIKMASIN! */
             .hero-search, details, #tableContextMenu, #btnExceleKopyala { display: none !important; }
-            
             #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
             .sayfa-container { overflow: visible; width: 100%; padding:0;}
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
-            
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; }
@@ -106,35 +104,32 @@
 <div id="mainContent">
     
     <div class="hero-search">
-        <h1 class="hero-title">🔎 HIZLI PUANTAJ SORGULAMA</h1>
-        <p class="hero-desc">Tarih aralığını belirleyin, aranacak personelin adını girin ve butona basın. <br>Sistem gerisini otomatik halleder.</p>
+        <h1 class="hero-title">📋 HIZLI PUANTAJ PANELİ</h1>
+        <p class="hero-desc">İşlem yapmak istediğiniz personelin üzerine tıklayın veya alt kısımdan tam döküm alın.</p>
         
         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
             <div class="hero-input-group">
                 <label class="hero-label">BAŞLANGIÇ</label>
-                <input type="date" id="inpTarihBas" class="hero-input" style="width: 250px;">
+                <input type="date" id="inpTarihBas" class="hero-input">
             </div>
             <div class="hero-input-group">
                 <label class="hero-label">BİTİŞ</label>
-                <input type="date" id="inpTarihBit" class="hero-input" style="width: 250px;">
+                <input type="date" id="inpTarihBit" class="hero-input">
             </div>
         </div>
 
-        <div class="hero-input-group" style="display: block; text-align: center; margin-top: 20px;">
-            <label class="hero-label" style="color: var(--orange); font-size: 20px;">PERSONEL ADI (VEYA T.C.)</label>
-            <input type="text" id="araInput" class="hero-input" style="max-width: 800px; border-color: var(--orange); font-size: 32px; padding: 20px;" placeholder="Örn: ÜMİT YİĞİT (Boş bırakırsan herkesi getirir)" onkeypress="if(event.key==='Enter') tamOtomatikAra()">
-        </div>
+        <div id="personelButonAlani" class="personel-grid"></div>
 
-        <button id="btnDevAra" onclick="tamOtomatikAra()" class="hero-btn">🚀 PUANTAJI GÖR</button>
+        <button id="btnTamDokum" onclick="veriyiCekVeOlustur('')" class="btn-tam-dokum">📄 TÜM LİSTENİN TAM DÖKÜMÜNÜ AL</button>
         
         <div>
-            <button onclick="window.print()" class="print-btn">🖨️ YAZDIR</button>
+            <button onclick="window.print()" class="print-btn">🖨️ HAZIRLANAN RAPORU YAZDIR</button>
         </div>
     </div>
 
-    <details style="margin: 20px auto; width: 95%; max-width: 1000px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+    <details style="margin: 20px auto; width: 95%; max-width: 1200px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
         <summary style="padding: 15px; font-weight: bold; font-size: 14px; color: #7f8c8d; cursor: pointer; border-left: 5px solid #bdc3c7; border-radius: 10px; outline: none;">
-            ⚙️ GELİŞMİŞ AYARLAR (Vardiya Kodları ve Gruplar - Görüntülemek için tıklayın)
+            ⚙️ GELİŞMİŞ AYARLAR (Yönetici Paneli - Tıklayın)
         </summary>
         <div class="settings-panel">
             <div style="width:100%; padding-bottom:5px; border-bottom:2px solid #eee; margin-bottom:10px;">
@@ -227,7 +222,7 @@ function ilkKurulumuYap() {
         "30328031684 - BURAK TURAN", "32827531146 - HATİCE KARAKUŞ", "00000000000 - FATMA KOÇAR", "10546692058 - HAFİZE ÖNAL", 
         "23467244800 - FUNDA POYRAZ", "62074286230 - BETÜL ŞİMŞEK"
     ];
-    appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL", kisiler: genelListe }];
+    appData.gruplar = [{ id: "g_1", ad: "DÖŞEMEALTI DEVLET HASTANESİ", kisiler: genelListe }];
     veriKaydet(); 
 }
 
@@ -243,9 +238,10 @@ function bulutBaglantisiniKur() {
                 if(data) {
                     appData = data;
                     if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
-                    if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL", kisiler: [] }];
+                    if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "HASTANE PERSONELİ", kisiler: [] }];
                     arayuzCiz();
                     vardiyaArayuzCiz();
+                    anaEkranaButonlariCiz(); // YENİ: AYARLARDAN GELEN LİSTEYİ ANA EKRANA DİZER
                 } else {
                     ilkKurulumuYap();
                 }
@@ -276,6 +272,32 @@ function vardiyaArayuzCiz() {
         let desc = info.tip === 'calisma' ? `(${info.t}s / G:${info.g}s)` : '(İzin)';
         root.innerHTML += `<div class="vardiya-chip ${cClass}"><span>${v} ${desc}</span><span class="vardiya-del" onclick="vardiyaSil('${v}')">✖</span></div>`;
     }
+}
+
+// ==== YENİ: ANA EKRANA PERSONEL BUTONLARINI ÇİZEN FONKSİYON ====
+function anaEkranaButonlariCiz() {
+    const container = document.getElementById("personelButonAlani");
+    container.innerHTML = "";
+    
+    appData.gruplar.forEach(grup => {
+        if(grup.kisiler && grup.kisiler.length > 0) {
+            let html = `<div style="width: 100%;"><div class="grup-baslik">🏢 ${grup.ad} PERSONEL LİSTESİ</div><div class="personel-grid">`;
+            
+            // Kişileri alfabetik sıralayıp buton yap
+            grup.kisiler.sort((a,b) => {
+                let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
+                let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
+                return isimA.localeCompare(isimB, 'tr');
+            }).forEach((isimTam) => {
+                // Sadece adı soyadı al (TC'yi gizle)
+                let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
+                html += `<button class="btn-kisi" onclick="veriyiCekVeOlustur('${sadeceIsim}')">👤 ${sadeceIsim}</button>`;
+            });
+            
+            html += `</div></div>`;
+            container.innerHTML += html;
+        }
+    });
 }
 
 function getCleanValue(text) { 
@@ -314,7 +336,7 @@ function getVardiyaInfo(val) {
     return {t:0, g:0, tip:"bilinmeyen", val: cleanVal};
 }
 
-function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ GRUP ADI", kisiler: [] }); veriKaydet(); }
+function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ BİRİM / HASTANE", kisiler: [] }); veriKaydet(); }
 function grupSil(id) { if (confirm("Grup silinsin mi?")) { appData.gruplar = appData.gruplar.filter(g => g.id !== id); veriKaydet(); } }
 function grupAdiGuncelle(id, ad) { let g = appData.gruplar.find(g => g.id === id); if (g) { g.ad = ad.trim() || "İSİMSİZ GRUP"; veriKaydet(); } }
 
@@ -454,16 +476,14 @@ function satirHesapla(td) {
     update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
 }
 
-// ==== YENİ: TAM OTOMATİK DEV BUTON SİSTEMİ ====
-function tamOtomatikAra() {
+// ==== YENİ: İSİM ALARAK ÇALIŞAN MERKEZİ MOTOR ====
+function veriyiCekVeOlustur(arananIsim) {
     let basInput = document.getElementById('inpTarihBas').value; 
     let bitInput = document.getElementById('inpTarihBit').value;
     if(!basInput || !bitInput) return alert("Lütfen Başlangıç ve Bitiş Tarihi seçin!");
 
-    let btn = document.getElementById("btnDevAra");
-    btn.innerHTML = "⏳ BULUTTAN ÇEKİLİYOR... LÜTFEN BEKLEYİN";
-    btn.style.background = "var(--orange)";
-    btn.style.pointerEvents = "none";
+    // Tüm ekranı hafif beklemeye alalım görsel olarak
+    document.body.style.cursor = "wait";
     
     let bas = getSafeDate(basInput); 
     let bit = getSafeDate(bitInput);
@@ -472,9 +492,7 @@ function tamOtomatikAra() {
         let data = snap.val(); 
         if(!data) { 
             alert("Buluta kayıtlı arşiv bulunamadı!"); 
-            btn.innerHTML = "🚀 BULUTTAN ÇEK VE OLUŞTUR"; 
-            btn.style.background = "var(--green)";
-            btn.style.pointerEvents = "auto"; 
+            document.body.style.cursor = "default";
             return; 
         }
         
@@ -503,30 +521,20 @@ function tamOtomatikAra() {
         let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
         Object.keys(personelShiftleri).forEach(isim => { let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n"; });
         
-        // Gizli Excel kutusuna veriyi bas
         document.getElementById('inpExcel').value = excelStr;
         
-        btn.innerHTML = "✅ VERİ ÇEKİLDİ! TABLO HAZIRLANIYOR..."; 
-        
-        setTimeout(() => { 
-            raporuOlustur();
-            btn.innerHTML = "🚀 BULUTTAN ÇEK VE OLUŞTUR"; 
-            btn.style.background = "var(--green)";
-            btn.style.pointerEvents = "auto"; 
-            
-            // Tablo oluştuktan sonra otomatik olarak sayfayı aşağı, tablonun olduğu yere kaydır
-            document.getElementById("raporScrollNoktasi").scrollIntoView({behavior: "smooth"});
-            
-        }, 800);
+        raporuOlustur(arananIsim);
+        document.body.style.cursor = "default";
+        document.getElementById("raporScrollNoktasi").scrollIntoView({behavior: "smooth"});
     });
 }
 
-function raporuOlustur() {
+function raporuOlustur(filtreIsim) {
     const {bas,bit,str} = tarihGuncelle();
     let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
     
-    // Arama kutusundaki değeri çek
-    let arananKisi = document.getElementById("araInput").value.trim().toUpperCase('tr');
+    // Filtre olarak gelen ismi büyük harf yap (eğer varsa)
+    let arananKisi = filtreIsim ? filtreIsim.toUpperCase('tr') : "";
     
     let people = {};
     appData.gruplar.forEach(grup => {
@@ -571,7 +579,7 @@ function raporuOlustur() {
     
     let sayfaHtml = ""; 
     
-    // SADECE ARANAN KİŞİYİ LİSTEDE TUT
+    // BUTONDAN GELEN İSMİ (VEYA BOŞSA HERKESİ) FİLTRELE
     let gArr = Object.values(people).reduce((acc, p) => { 
         let tamAd = p.n.toUpperCase('tr');
         
@@ -589,7 +597,7 @@ function raporuOlustur() {
     }, {});
     
     if(Object.keys(gArr).length === 0) {
-        document.getElementById('raporAlani').innerHTML = `<h3 style="color:var(--red); font-size: 24px; padding: 50px; background: white; border-radius: 10px; margin-top:30px;">"${document.getElementById("araInput").value}" isminde bir personel bulunamadı! Lütfen ismi kontrol edin.</h3>`;
+        document.getElementById('raporAlani').innerHTML = `<h3 style="color:var(--red); font-size: 20px; padding: 30px; background: white; border-radius: 10px; margin-top:20px;">Sistemde veri bulunamadı.</h3>`;
         document.getElementById('btnExceleKopyala').style.display = "none";
         return;
     }
@@ -840,7 +848,7 @@ function exceleSifirKayipsizIndir() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Puantaj_Raporu_Dev_Arama.xls';
+    a.download = 'Hastane_Puantaj_Listesi.xls';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -849,4 +857,3 @@ function exceleSifirKayipsizIndir() {
 </script>
 </body>
 </html>
-
