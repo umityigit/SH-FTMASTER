@@ -699,21 +699,76 @@ function shiftMasterdanCek() {
 }
 
 function exceleSifirKayipsizKopyala() {
-    const tablolar = document.querySelectorAll('.veri-tablosu'); if (tablolar.length === 0) return;
-    let combinedHtml = `<html><head><meta charset="utf-8"><style>table { border-collapse: collapse; } th, td { border: 0.5pt solid black; text-align: center; }</style></head><body>`;
+    const tablolar = document.querySelectorAll('.veri-tablosu');
+    if (tablolar.length === 0) return;
+
+    // Excel'in tanıyacağı temel stil tanımları
+    let combinedHtml = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            table { border-collapse: collapse; font-family: 'Arial Narrow', sans-serif; }
+            td, th { border: 0.5pt solid black; text-align: center; vertical-align: middle; }
+            .bg-hafta { background-color: #dff0d8 !important; }
+            .bg-genel { background-color: #fcf3cf !important; }
+            .bg-gece { background-color: #e8daef !important; }
+            .hucre-izin { background-color: #fadbd8 !important; color: #c0392b; }
+            .hucre-haftasonu { background-color: #f2f2f2 !important; }
+            /* Excel için dikey yazı simülasyonu */
+            .mso-vertical { mso-rotate: 90; white-space: normal; height: 100pt; }
+        </style>
+    </head>
+    <body>`;
+
     tablolar.forEach(tablo => {
         let clone = tablo.cloneNode(true);
-        clone.querySelectorAll('td[style*="display: none"]').forEach(c => c.remove());
-        clone.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
+
+        // Gereksiz öğeleri temizle
+        clone.querySelectorAll('script, button').forEach(el => el.remove());
+        
+        // Gizli (birleştirilmiş) hücreleri temizle
+        clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
+
+        // Stilleri Inline (Hücre içine) göm - Excel en iyi böyle anlar
+        clone.querySelectorAll('th, td').forEach(el => {
+            const styles = window.getComputedStyle(el);
+            let inlineStyle = `border: 0.5pt solid black; text-align: center; vertical-align: middle; `;
+            
+            // Arka plan renklerini aktar
+            if (el.classList.contains('bg-hafta')) inlineStyle += "background-color: #dff0d8;";
+            else if (el.classList.contains('bg-genel')) inlineStyle += "background-color: #fcf3cf;";
+            else if (el.classList.contains('bg-gece')) inlineStyle += "background-color: #e8daef;";
+            else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;";
+            else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
+
+            // Dikey başlıklar için Excel özel komutu
+            if (el.querySelector('.dikey-yazi') || el.querySelector('.dikey-tarih')) {
+                inlineStyle += "mso-rotate: 90; height: 120pt;";
+            }
+
+            el.setAttribute('style', inlineStyle);
+        });
+
         combinedHtml += clone.outerHTML + "<br><br>"; 
     });
+
     combinedHtml += "</body></html>";
+
     const blob = new Blob([combinedHtml], { type: 'text/html' });
     try {
         const data = [new ClipboardItem({ 'text/html': blob })];
-        navigator.clipboard.write(data).then(() => alert("✅ Kopyalandı! Excel'e yapıştırın."));
-    } catch (e) { alert("Tarayıcı hatası!"); }
+        navigator.clipboard.write(data).then(() => {
+            alert("✅ Birebir format kopyalandı!\n\nŞimdi boş bir Excel açın ve sağ tıklayıp 'Yapıştır' (veya Ctrl+V) deyin.");
+        });
+    } catch (e) { 
+        // Eski tarayıcılar için fallback
+        const textArea = document.createElement("textarea");
+        textArea.value = combinedHtml;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert("Tarayıcı kısıtlaması nedeniyle ham veri kopyalandı. Excel'e yapıştırmayı deneyin.");
+    }
 }
-</script>
-</body>
-</html>
