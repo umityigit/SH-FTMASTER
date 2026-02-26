@@ -3,88 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v124 (NOKTA ATIŞI PERSONEL ARAMA)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v125 (DEV ARAMA MOTORU SÜRÜMÜ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
         body { margin: 0; background: #eef2f5; font-family: 'Roboto', sans-serif; }
 
-        /* ANA PANEL (ŞİFRE KALKTI) */
         #mainContent { display: block; padding-bottom: 50px; }
-        .panel-container { background: white; padding: 15px; width: 98%; margin: 10px auto; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--blue); }
-        .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px; position: relative; }
         
-        h3 { margin: 0; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 5px; color: var(--primary); text-transform: uppercase; cursor: text; transition: 0.2s;}
-        h3:hover { background: #f0f8ff; }
-        h3:focus { outline: 2px solid var(--blue); background: #fff; }
+        /* === DEVASA ARAMA EKRANI (MUTEMET ODAKLI) === */
+        .hero-search { background: white; padding: 40px 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; margin: 20px auto; width: 95%; max-width: 1000px; border-top: 8px solid var(--blue); }
+        .hero-title { color: var(--primary); margin-top: 0; font-size: 28px; text-transform: uppercase; }
+        .hero-desc { color: #7f8c8d; font-size: 16px; margin-bottom: 30px; }
+        
+        .hero-input-group { display: inline-block; text-align: left; margin: 10px 15px; }
+        .hero-label { font-weight: bold; font-size: 18px; color: var(--blue); margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center;}
+        
+        .hero-input { font-size: 24px; padding: 15px 20px; border: 3px solid #bdc3c7; border-radius: 10px; width: 100%; box-sizing: border-box; text-align: center; font-weight: bold; color: var(--primary); transition: 0.3s; }
+        .hero-input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 15px rgba(230, 126, 34, 0.3); }
+        
+        .hero-btn { font-size: 26px; padding: 25px 50px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4); width: 100%; max-width: 600px; }
+        .hero-btn:hover { background: #219653; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(39, 174, 96, 0.5); }
+        .hero-btn:active { transform: translateY(2px); box-shadow: 0 5px 10px rgba(39, 174, 96, 0.4); }
 
+        .print-btn { font-size: 18px; padding: 15px 40px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .print-btn:hover { background: #1a252f; }
+
+        /* GİZLİ AYARLAR PANELİ */
+        details summary::-webkit-details-marker { display:none; }
+        .settings-panel { background: white; padding: 15px; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; border: 1px solid #ddd; margin-top: 10px;}
+        
+        /* STANDART PANEL CSS */
+        .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+        h3 { margin: 0; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 5px; color: var(--primary); text-transform: uppercase; cursor: text;}
         .personel-row { display: flex; gap: 5px; margin-bottom: 5px; }
         .modern-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; box-sizing: border-box;}
-        .modern-input:focus { outline: 2px solid var(--blue); }
         .personel-listesi { height: 180px; overflow-y: auto; border: 1px solid #ddd; background: #fff; padding: 5px; border-radius: 5px; }
         .personel-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-bottom: 1px solid #f0f0f0; font-size: 11px; }
-        
         button { cursor: pointer; border: none; border-radius: 5px; font-weight: bold; color: white; transition: 0.2s; }
         .btn-add { background: var(--green); padding: 5px 10px; }
         .btn-del { background: var(--red); padding: 2px 6px; font-size: 10px; }
         .btn-del-group { position: absolute; right: 0; top: 0; background: var(--red); padding: 2px 8px; font-size: 10px; }
-        .btn-big { width: 100%; padding: 15px; font-size: 14px; margin-top: 5px; text-transform: uppercase; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
-        .btn-big:active { transform: translateY(3px); box-shadow: none; }
+        .btn-big { width: 100%; padding: 15px; font-size: 14px; margin-top: 5px; text-transform: uppercase; }
         .btn-org { background: var(--orange); } .btn-grn { background: var(--green); } .btn-blu { background: var(--blue); }
-
-        .vardiya-chip { display:flex; align-items:center; background:#2ecc71; color:white; padding:6px 10px; border-radius:5px; font-size:11px; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+        .vardiya-chip { display:flex; align-items:center; background:#2ecc71; color:white; padding:6px 10px; border-radius:5px; font-size:11px; font-weight:bold; margin-bottom:5px;}
         .vardiya-chip.izin { background:#e74c3c; }
-        .vardiya-del { margin-left:10px; cursor:pointer; font-size:12px; transition:0.2s;}
-        .vardiya-del:hover { color:#2c3e50; }
+        .vardiya-del { margin-left:10px; cursor:pointer; font-size:12px;}
 
         /* TABLO ALANI */
         .sayfa-container { width: 100%; overflow-x: auto; padding-bottom: 20px; text-align: center; }
         .sayfa { background: white; padding: 20px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 20px; text-align: left; page-break-after: always; transition: all 0.3s;}
-        
         table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
+        th, td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 1px; line-height: 1.1; word-break: break-word; overflow: visible; }
         
-        th, td { 
-            border: 1px solid #000; 
-            text-align: center; 
-            vertical-align: middle; 
-            padding: 1px; 
-            line-height: 1.1; 
-            word-break: break-word;
-            overflow: visible;
-        }
-        
-        /* DİK YAZI ALANLARI */
         .veri-hucre { height: 75px !important; padding: 0 !important; cursor: text; transition: all 0.2s;}
         .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; }
-        
-        .dik-yazi {
-            writing-mode: vertical-lr; 
-            transform: rotate(180deg); 
-            font-size: 11px;
-            font-weight: bold;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            width: 100%;
-            pointer-events: none;
-        }
-
+        .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
         .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
-        
         .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; font-family: 'Roboto', sans-serif; color: #333; }
         .ctx-item:hover { background-color: #f1f3f5; color: var(--blue); }
 
-        /* YATAY VE GENİŞ OLACAK ALANLAR */
-        col.c-sno { width: 35px; } 
-        col.c-tc { width: 100px; } 
-        col.c-isim { width: 130px; } 
-        col.c-gun { width: 38px; } 
-
+        col.c-sno { width: 35px; } col.c-tc { width: 100px; } col.c-isim { width: 130px; } col.c-gun { width: 38px; } 
         .kalin-yatay { font-weight: bold !important; font-size: 11px !important; text-align: center; padding: 2px !important; }
         .isim-yatay { font-weight: bold !important; font-size: 11px !important; text-align: left; padding-left: 3px !important; }
-
         th { background: #eee; padding: 2px; font-size: 10px; }
         
         .bg-hafta { background-color: #dff0d8 !important; border-left: 2px solid #000; }
@@ -96,19 +77,17 @@
         .baslik-dik { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 11px; font-weight: bold; padding: 2px 0; }
         .baslik-dik-kucuk { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 9px; font-weight: normal; padding: 2px 0; color: #444; }
 
-        #dynamicGroups { display: flex; gap: 15px; flex-wrap: wrap; width: 100%; }
-
         #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #27ae60; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
         #btnExceleKopyala:hover { background: #219653; transform: scale(1.05); }
 
-        #cloudStatus { position: fixed; top: 10px; right: 10px; background: #27ae60; color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; display: none; z-index: 999999; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-
-        /* === YAZICI İÇİN ÖZEL SİHİRLİ KODLAR === */
+        /* === YAZICI İÇİN GİZLEME KODLARI === */
         @media print {
             @page { size: A4 landscape; margin: 5mm; } 
             body { zoom: 50%; margin: 0; padding: 0; background: white; } 
             
-            .panel-container, #tableContextMenu, #btnExceleKopyala, #cloudStatus { display: none !important; }
+            /* ARAMA MOTORU VE AYARLAR YAZICIDA ÇIKMASIN! */
+            .hero-search, details, #tableContextMenu, #btnExceleKopyala { display: none !important; }
+            
             #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
             .sayfa-container { overflow: visible; width: 100%; padding:0;}
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
@@ -116,7 +95,6 @@
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; }
-            
             .selected-cell { outline: none !important; background-color: inherit !important; } 
         }
     </style>
@@ -125,75 +103,79 @@
 </head>
 <body>
 
-<div id="cloudStatus">☁️ BULUT SENKRONİZE</div>
-
 <div id="mainContent">
-    <div class="panel-container" style="border-top-color: var(--orange);">
-        <div style="width:100%; padding-bottom:5px; border-bottom:2px solid #eee; margin-bottom:10px;">
-            <h3 style="border:none; padding:0; display:inline-block; color:var(--orange);">VARDİYA YÖNETİMİ (Ayarlar)</h3>
-        </div>
-        <div style="width:100%; display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-            <div style="flex:2; min-width: 150px;">
-                <label style="font-size:10px; font-weight:bold;">Vardiya Adı / Kodu</label>
-                <input type="text" id="vAd" class="modern-input" placeholder="Örn: 08:00-20:00 veya Nİ">
-            </div>
-            <div style="flex:1; min-width: 80px;">
-                <label style="font-size:10px; font-weight:bold;">Toplam Saat</label>
-                <input type="number" id="vSaat" class="modern-input" placeholder="Örn: 11" step="0.5">
-            </div>
-            <div style="flex:1; min-width: 80px;">
-                <label style="font-size:10px; font-weight:bold;">Gece Saati</label>
-                <input type="number" id="vGece" class="modern-input" placeholder="Örn: 0" step="0.5">
-            </div>
-            <div style="flex:1.5; min-width: 120px;">
-                <label style="font-size:10px; font-weight:bold;">Tür (Çalışma/İzin)</label>
-                <select id="vTip" class="modern-input">
-                    <option value="calisma">Çalışma / Mesai</option>
-                    <option value="izin">İzin / İstirahat</option>
-                </select>
-            </div>
-            <div>
-                <button onclick="vardiyaEkle()" class="btn-big btn-grn" style="margin:0; padding:8px 20px;">EKLE</button>
-            </div>
-        </div>
-        <div id="vardiyaListesi" style="width:100%; display:flex; gap:8px; flex-wrap:wrap; margin-top:15px;"></div>
-    </div>
-
-    <div class="panel-container">
-        <div id="dynamicGroups"></div>
-        <div class="panel-col" style="flex:1; min-width: 250px; justify-content: center; align-items: center; border: 2px dashed #ccc; border-radius: 10px; padding: 20px;">
-            <button onclick="yeniGrupEkle()" class="btn-big btn-blu">+ YENİ GRUP EKLE</button>
-        </div>
-        <div class="panel-col" style="flex:100%; border-top: 1px solid #eee; padding-top: 15px; margin-top: 5px;">
-            <div style="display:flex; gap:10px; align-items: stretch; flex-wrap: wrap;">
-                <div style="flex:1; display:flex; flex-direction:column;">
-                    <label style="font-size:10px; font-weight:bold; color:var(--primary);">Başlangıç</label>
-                    <input type="date" id="inpTarihBas" class="modern-input" title="Başlangıç Tarihi">
-                </div>
-                <div style="flex:1; display:flex; flex-direction:column;">
-                    <label style="font-size:10px; font-weight:bold; color:var(--primary);">Bitiş</label>
-                    <input type="date" id="inpTarihBit" class="modern-input" title="Bitiş Tarihi">
-                </div>
-                
-                <div style="flex:2; display:flex; flex-direction:column;">
-                    <label style="font-size:10px; font-weight:bold; color:var(--blue);">Tek Kişi Getir (Arama)</label>
-                    <div style="display:flex; gap:5px;">
-                        <input type="text" id="araInput" class="modern-input" placeholder="Örn: AHMET (Boş bırakırsan herkesi getirir)" style="border: 2px solid var(--blue); font-weight:bold;">
-                        <button onclick="tekPersonelAra()" class="btn-big btn-blu" style="margin:0; padding: 0 15px; height: 100%;">🔍 ARA</button>
-                    </div>
-                </div>
-
-                <div style="flex:3; display:flex; gap:5px; align-items: flex-end;">
-                    <button onclick="shiftMasterdanCek()" class="btn-big" style="background:#8b5cf6; margin:0; flex:1.5; color:white;">🔄 BULUTTAN ÇEK</button>
-                    <button onclick="raporuOlustur()" class="btn-big btn-org" style="margin:0; flex:1.5;">GENEL OLUŞTUR</button>
-                    <button onclick="window.print()" class="btn-big btn-grn" style="margin:0; flex:1;">YAZDIR</button>
-                </div>
-            </div>
-            <textarea id="inpExcel" placeholder="Excel'den kopyaladığınız verileri buraya yapıştırın..." style="height:100px; margin-top: 10px;" class="modern-input"></textarea>
-        </div>
-    </div>
     
-    <div class="sayfa-container">
+    <div class="hero-search">
+        <h1 class="hero-title">🔎 HIZLI PUANTAJ SORGULAMA</h1>
+        <p class="hero-desc">Tarih aralığını belirleyin, aranacak personelin adını girin ve butona basın. <br>Sistem gerisini otomatik halleder.</p>
+        
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+            <div class="hero-input-group">
+                <label class="hero-label">BAŞLANGIÇ</label>
+                <input type="date" id="inpTarihBas" class="hero-input" style="width: 250px;">
+            </div>
+            <div class="hero-input-group">
+                <label class="hero-label">BİTİŞ</label>
+                <input type="date" id="inpTarihBit" class="hero-input" style="width: 250px;">
+            </div>
+        </div>
+
+        <div class="hero-input-group" style="display: block; text-align: center; margin-top: 20px;">
+            <label class="hero-label" style="color: var(--orange); font-size: 20px;">PERSONEL ADI (VEYA T.C.)</label>
+            <input type="text" id="araInput" class="hero-input" style="max-width: 800px; border-color: var(--orange); font-size: 32px; padding: 20px;" placeholder="Örn: AHMET (Boş bırakırsan herkesi getirir)" onkeypress="if(event.key==='Enter') tamOtomatikAra()">
+        </div>
+
+        <button id="btnDevAra" onclick="tamOtomatikAra()" class="hero-btn">🚀 BULUTTAN ÇEK VE OLUŞTUR</button>
+        
+        <div>
+            <button onclick="window.print()" class="print-btn">🖨️ YAZDIR</button>
+        </div>
+    </div>
+
+    <details style="margin: 20px auto; width: 95%; max-width: 1000px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        <summary style="padding: 15px; font-weight: bold; font-size: 14px; color: #7f8c8d; cursor: pointer; border-left: 5px solid #bdc3c7; border-radius: 10px; outline: none;">
+            ⚙️ GELİŞMİŞ AYARLAR (Vardiya Kodları ve Gruplar - Görüntülemek için tıklayın)
+        </summary>
+        <div class="settings-panel">
+            <div style="width:100%; padding-bottom:5px; border-bottom:2px solid #eee; margin-bottom:10px;">
+                <h3 style="border:none; padding:0; display:inline-block; color:var(--orange);">VARDİYA YÖNETİMİ</h3>
+            </div>
+            <div style="width:100%; display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                <div style="flex:2; min-width: 150px;">
+                    <label style="font-size:10px; font-weight:bold;">Vardiya Adı / Kodu</label>
+                    <input type="text" id="vAd" class="modern-input" placeholder="Örn: 08:00-20:00 veya Nİ">
+                </div>
+                <div style="flex:1; min-width: 80px;">
+                    <label style="font-size:10px; font-weight:bold;">Toplam Saat</label>
+                    <input type="number" id="vSaat" class="modern-input" placeholder="Örn: 11" step="0.5">
+                </div>
+                <div style="flex:1; min-width: 80px;">
+                    <label style="font-size:10px; font-weight:bold;">Gece Saati</label>
+                    <input type="number" id="vGece" class="modern-input" placeholder="Örn: 0" step="0.5">
+                </div>
+                <div style="flex:1.5; min-width: 120px;">
+                    <label style="font-size:10px; font-weight:bold;">Tür</label>
+                    <select id="vTip" class="modern-input">
+                        <option value="calisma">Çalışma / Mesai</option>
+                        <option value="izin">İzin / İstirahat</option>
+                    </select>
+                </div>
+                <div>
+                    <button onclick="vardiyaEkle()" class="btn-big btn-grn" style="margin:0; padding:8px 20px;">EKLE</button>
+                </div>
+            </div>
+            <div id="vardiyaListesi" style="width:100%; display:flex; gap:8px; flex-wrap:wrap; margin-top:5px;"></div>
+            
+            <div id="dynamicGroups" style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%; margin-top: 15px; border-top: 2px solid #eee; padding-top: 15px;"></div>
+            <div class="panel-col" style="flex:1; min-width: 250px; justify-content: center; align-items: center; border: 2px dashed #ccc; border-radius: 10px; padding: 20px;">
+                <button onclick="yeniGrupEkle()" class="btn-big btn-blu">+ YENİ GRUP EKLE</button>
+            </div>
+            
+            <textarea id="inpExcel" style="display:none;"></textarea>
+        </div>
+    </details>
+
+    <div class="sayfa-container" id="raporScrollNoktasi">
         <div id="raporAlani"></div>
     </div>
 </div>
@@ -230,12 +212,6 @@ const DEFAULT_VARDIYALAR = {
 
 let appData = { gruplar: [], vardiyalar: null };
 
-function showCloudStatus() {
-    const status = document.getElementById('cloudStatus');
-    status.style.display = 'block';
-    setTimeout(() => { status.style.display = 'none'; }, 2000);
-}
-
 function ilkKurulumuYap() {
     appData = { gruplar: [], vardiyalar: DEFAULT_VARDIYALAR };
     const genelListe = [
@@ -270,7 +246,6 @@ function bulutBaglantisiniKur() {
                     if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "TÜM PERSONEL", kisiler: [] }];
                     arayuzCiz();
                     vardiyaArayuzCiz();
-                    showCloudStatus();
                 } else {
                     ilkKurulumuYap();
                 }
@@ -479,22 +454,78 @@ function satirHesapla(td) {
     update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
 }
 
-// ==== YENİ: ARA BUTONUNA BASILDIĞINDA ÇALIŞACAK ÖZEL FONKSİYON ====
-function tekPersonelAra() {
-    let aranan = document.getElementById("araInput").value.trim();
-    if(!aranan) {
-        alert("Lütfen aramak istediğiniz kişinin adını yazın!");
-        return;
-    }
-    // Sadece adı olanı filtreleyerek raporu çizer
-    raporuOlustur();
+// ==== YENİ: TAM OTOMATİK DEV BUTON SİSTEMİ ====
+function tamOtomatikAra() {
+    let basInput = document.getElementById('inpTarihBas').value; 
+    let bitInput = document.getElementById('inpTarihBit').value;
+    if(!basInput || !bitInput) return alert("Lütfen Başlangıç ve Bitiş Tarihi seçin!");
+
+    let btn = document.getElementById("btnDevAra");
+    btn.innerHTML = "⏳ BULUTTAN ÇEKİLİYOR... LÜTFEN BEKLEYİN";
+    btn.style.background = "var(--orange)";
+    btn.style.pointerEvents = "none";
+    
+    let bas = getSafeDate(basInput); 
+    let bit = getSafeDate(bitInput);
+
+    db.ref("arsivlenmis_shiftler").once("value").then(snap => {
+        let data = snap.val(); 
+        if(!data) { 
+            alert("Buluta kayıtlı arşiv bulunamadı!"); 
+            btn.innerHTML = "🚀 BULUTTAN ÇEK VE OLUŞTUR"; 
+            btn.style.background = "var(--green)";
+            btn.style.pointerEvents = "auto"; 
+            return; 
+        }
+        
+        let personelShiftleri = {};
+        Object.values(data).forEach(arsiv => {
+            let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
+            tablolar.forEach(tablo => {
+                let tBas = getSafeDate(tablo.startDate);
+                tablo.data.forEach(satir => {
+                    let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
+                    satir.shifts.forEach((shiftObj, index) => {
+                        let suankiTarih = new Date(tBas.getTime()); suankiTarih.setDate(tBas.getDate() + index);
+                        suankiTarih.setHours(0,0,0,0); let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0); let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
+                        if(suankiTarih >= basCheck && suankiTarih <= bitCheck) {
+                            let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
+                            if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
+                        }
+                    });
+                });
+            });
+        });
+        
+        let days = []; let d = new Date(bas.getTime()); d.setHours(0,0,0,0); let bitCheck2 = new Date(bit.getTime()); bitCheck2.setHours(0,0,0,0);
+        while(d <= bitCheck2) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
+        
+        let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
+        Object.keys(personelShiftleri).forEach(isim => { let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n"; });
+        
+        // Gizli Excel kutusuna veriyi bas
+        document.getElementById('inpExcel').value = excelStr;
+        
+        btn.innerHTML = "✅ VERİ ÇEKİLDİ! TABLO HAZIRLANIYOR..."; 
+        
+        setTimeout(() => { 
+            raporuOlustur();
+            btn.innerHTML = "🚀 BULUTTAN ÇEK VE OLUŞTUR"; 
+            btn.style.background = "var(--green)";
+            btn.style.pointerEvents = "auto"; 
+            
+            // Tablo oluştuktan sonra otomatik olarak sayfayı aşağı, tablonun olduğu yere kaydır
+            document.getElementById("raporScrollNoktasi").scrollIntoView({behavior: "smooth"});
+            
+        }, 800);
+    });
 }
 
 function raporuOlustur() {
     const {bas,bit,str} = tarihGuncelle();
     let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
     
-    // ARAMA KUTUSUNDAKİ DEĞERİ AL
+    // Arama kutusundaki değeri çek
     let arananKisi = document.getElementById("araInput").value.trim().toUpperCase('tr');
     
     let people = {};
@@ -540,11 +571,10 @@ function raporuOlustur() {
     
     let sayfaHtml = ""; 
     
-    // YENİ: KİŞİ FİLTRELEME SİSTEMİ (TABLOYU ÇİZMEDEN ÖNCE ELER)
+    // SADECE ARANAN KİŞİYİ LİSTEDE TUT
     let gArr = Object.values(people).reduce((acc, p) => { 
         let tamAd = p.n.toUpperCase('tr');
         
-        // Eğer arama kutusu doluysa ve kişinin adında geçmiyorsa, onu hiç listeye alma!
         if (arananKisi !== "") {
             let normalizeAd = tamAd.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
             let normalizeAranan = arananKisi.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
@@ -558,9 +588,8 @@ function raporuOlustur() {
         return acc; 
     }, {});
     
-    // Eğer kimse bulunamadıysa uyarı ver
     if(Object.keys(gArr).length === 0) {
-        document.getElementById('raporAlani').innerHTML = `<h3 style="color:red; margin-top:30px;">"${document.getElementById("araInput").value}" isminde bir personel bulunamadı!</h3>`;
+        document.getElementById('raporAlani').innerHTML = `<h3 style="color:var(--red); font-size: 24px; padding: 50px; background: white; border-radius: 10px; margin-top:30px;">"${document.getElementById("araInput").value}" isminde bir personel bulunamadı! Lütfen ismi kontrol edin.</h3>`;
         document.getElementById('btnExceleKopyala').style.display = "none";
         return;
     }
@@ -735,44 +764,6 @@ function unmergeSelectedCells() {
     if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
 }
 
-function shiftMasterdanCek() {
-    let basInput = document.getElementById('inpTarihBas').value; let bitInput = document.getElementById('inpTarihBit').value;
-    if(!basInput || !bitInput) return alert("Tarih seçin!");
-    let btn = document.querySelector('button[onclick="shiftMasterdanCek()"]'); let oldText = btn.innerHTML;
-    btn.innerHTML = "⏳ ÇEKİLİYOR..."; btn.style.pointerEvents = "none";
-    let bas = getSafeDate(basInput); let bit = getSafeDate(bitInput);
-
-    db.ref("arsivlenmis_shiftler").once("value").then(snap => {
-        let data = snap.val(); if(!data) { alert("Buluta kayıtlı arşiv bulunamadı!"); btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; return; }
-        let personelShiftleri = {};
-        Object.values(data).forEach(arsiv => {
-            let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
-            tablolar.forEach(tablo => {
-                let tBas = getSafeDate(tablo.startDate);
-                tablo.data.forEach(satir => {
-                    let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
-                    satir.shifts.forEach((shiftObj, index) => {
-                        let suankiTarih = new Date(tBas.getTime()); suankiTarih.setDate(tBas.getDate() + index);
-                        suankiTarih.setHours(0,0,0,0); let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0); let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
-                        if(suankiTarih >= basCheck && suankiTarih <= bitCheck) {
-                            let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
-                            if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
-                        }
-                    });
-                });
-            });
-        });
-        
-        let days = []; let d = new Date(bas.getTime()); d.setHours(0,0,0,0); let bitCheck2 = new Date(bit.getTime()); bitCheck2.setHours(0,0,0,0);
-        while(d <= bitCheck2) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
-        let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
-        Object.keys(personelShiftleri).forEach(isim => { let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n"; });
-        document.getElementById('inpExcel').value = excelStr;
-        btn.innerHTML = "✅ BAŞARILI"; setTimeout(() => { btn.innerHTML = oldText; btn.style.pointerEvents = "auto"; }, 2000);
-        raporuOlustur();
-    });
-}
-
 function exceleSifirKayipsizIndir() {
     const tablolar = document.querySelectorAll('.veri-tablosu');
     if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
@@ -789,6 +780,8 @@ function exceleSifirKayipsizIndir() {
     <body>`;
 
     tablolar.forEach(tablo => {
+        if(tablo.closest('.sayfa').style.display === 'none') return;
+
         let clone = tablo.cloneNode(true);
         clone.querySelectorAll('script, button').forEach(el => el.remove());
         clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
@@ -847,7 +840,7 @@ function exceleSifirKayipsizIndir() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Puantaj_Raporu_Tek_Personel.xls';
+    a.download = 'Puantaj_Raporu_Dev_Arama.xls';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
