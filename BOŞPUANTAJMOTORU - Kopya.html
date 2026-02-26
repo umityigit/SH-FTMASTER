@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v128 (SHİFTMASTER SAĞ TIK MENÜSÜ EKLENDİ)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v129 (CTRL+Z & SHIFTMASTER ÇİFT YÖNLÜ SENKRON)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -20,7 +20,6 @@
         .hero-label { font-weight: bold; font-size: 14px; color: var(--blue); margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center;}
         .hero-input { font-size: 18px; padding: 12px 20px; border: 2px solid #bdc3c7; border-radius: 8px; width: 200px; text-align: center; font-weight: bold; color: var(--primary); transition: 0.3s; }
         
-        /* KİŞİ BUTONLARI VE KART TASARIMI */
         .personel-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 15px; }
         .personel-card { position: relative; display: inline-block; }
         
@@ -28,11 +27,9 @@
         .btn-kisi:hover { background: var(--blue); border-color: var(--blue); color: white; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(41, 128, 185, 0.3); }
         .btn-kisi:active { transform: translateY(0); }
         
-        /* ÇÖP TENEKESİ ROZETİ */
         .btn-sil-badge { position: absolute; top: -8px; right: -8px; background: var(--red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; z-index: 10; opacity: 0.6; }
         .btn-sil-badge:hover { transform: scale(1.3); opacity: 1; }
         
-        /* YENİ KİŞİ EKLE BUTONU */
         .btn-yeni-kisi { background: #f8f9fa; border: 2px dashed var(--green); color: var(--green); }
         .btn-yeni-kisi:hover { background: var(--green); border-color: var(--green); color: white; }
 
@@ -43,7 +40,6 @@
 
         .print-btn { font-size: 14px; padding: 12px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; }
         
-        /* GİZLİ AYARLAR PANELİ */
         details summary::-webkit-details-marker { display:none; }
         .settings-panel { background: white; padding: 15px; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; border: 1px solid #ddd; margin-top: 10px;}
         
@@ -63,17 +59,17 @@
         .vardiya-chip.izin { background:#e74c3c; }
         .vardiya-del { margin-left:10px; cursor:pointer; font-size:12px;}
 
-        /* TABLO ALANI */
         .sayfa-container { width: 100%; overflow-x: auto; padding-bottom: 20px; text-align: center; }
         .sayfa { background: white; padding: 20px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 20px; text-align: left; page-break-after: always; transition: all 0.3s;}
         table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
         th, td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 1px; line-height: 1.1; word-break: break-word; overflow: visible; }
         
-        .veri-hucre { height: 75px !important; padding: 0 !important; cursor: text; transition: all 0.2s;}
-        .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; }
+        /* ÖZEL KURSÖR (İMLEÇ) BURADA! */
+        .veri-hucre { height: 75px !important; padding: 0 !important; cursor: crosshair !important; transition: all 0.2s;}
+        .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; cursor: text !important;}
+        
         .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
         
-        /* SEÇİM VE SAĞ TIK MENÜSÜ EFEKTLERİ */
         .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
         
         #tableContextMenu { font-family: 'Roboto', sans-serif; min-width: 160px; }
@@ -100,10 +96,26 @@
         #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #27ae60; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
         #btnExceleKopyala:hover { background: #219653; transform: scale(1.05); }
 
+        /* === YENİ: YUVARLAK YEŞİL KAYDET BUTONU === */
+        #btnSaveToCloud { 
+            position: fixed; bottom: 20px; left: 20px; background: #27ae60; color: white; border: none; 
+            width: 60px; height: 60px; border-radius: 50%; font-size: 24px; 
+            display: flex; justify-content: center; align-items: center; 
+            box-shadow: 0 4px 15px rgba(39,174,96,0.5); cursor: pointer; z-index: 100000; 
+            display: none; transition: 0.3s; animation: pulseGreen 2s infinite; 
+        }
+        #btnSaveToCloud:hover { transform: scale(1.1); }
+        #btnSaveToCloud::after { 
+            content: "KAYDET (Ctrl+S)"; position: absolute; bottom: -25px; left: -15px; width: 90px;
+            font-size: 10px; font-weight: bold; color: #27ae60; background: white; 
+            padding: 3px 5px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); text-align: center;
+        }
+        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(39, 174, 96, 0); } 100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); } }
+
         @media print {
             @page { size: A4 landscape; margin: 5mm; } 
             body { zoom: 50%; margin: 0; padding: 0; background: white; } 
-            .hero-search, details, #tableContextMenu, #btnExceleKopyala { display: none !important; }
+            .hero-search, details, #tableContextMenu, #btnExceleKopyala, #btnSaveToCloud { display: none !important; }
             #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
             .sayfa-container { overflow: visible; width: 100%; padding:0;}
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
@@ -119,10 +131,9 @@
 <body>
 
 <div id="mainContent">
-    
     <div class="hero-search">
         <h1 class="hero-title">📋 HIZLI PUANTAJ PANELİ</h1>
-        <p class="hero-desc">İşlem yapmak istediğiniz personelin üzerine tıklayın veya alt kısımdan tam döküm alın.<br><em>Ekranda oluşan tablodaki günleri fare ile seçip, <b>Sağ Tıklayarak (ShiftMaster Menüsü)</b> anında vardiya atayabilirsiniz.</em></p>
+        <p class="hero-desc">İşlem yapmak istediğiniz personelin üzerine tıklayın veya alt kısımdan tam döküm alın.<br><em>Ekranda oluşan tablodaki günleri fare ile seçip, <b>Sağ Tıklayarak (ShiftMaster Menüsü)</b> anında vardiya atayabilirsiniz. <br>Hata yaparsanız <b>CTRL+Z</b> ile geri alabilir, değişiklikleri <b>CTRL+S</b> ile ShiftMaster'a kalıcı kaydedebilirsiniz.</em></p>
         
         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
             <div class="hero-input-group">
@@ -182,7 +193,6 @@
             <div class="panel-col" style="flex:1; min-width: 250px; justify-content: center; align-items: center; border: 2px dashed #ccc; border-radius: 10px; padding: 20px;">
                 <button onclick="yeniGrupEkle()" class="btn-big btn-blu">+ YENİ GRUP EKLE</button>
             </div>
-            
             <textarea id="inpExcel" style="display:none;"></textarea>
         </div>
     </details>
@@ -194,10 +204,11 @@
 
 <button id="btnExceleKopyala" onclick="exceleSifirKayipsizIndir()">📥 EXCEL DOSYASI İNDİR</button>
 
+<button id="btnSaveToCloud" onclick="bulutaKalıcıKaydet()" title="Değişiklikleri ShiftMaster'a Kaydet">💾</button>
+
 <div id="tableContextMenu" style="display:none; position:absolute; background:white; border:1px solid #ced4da; box-shadow:0 10px 25px rgba(0,0,0,0.2); z-index:99999; border-radius:8px; overflow:hidden;">
     <div class="ctx-header">SHIFTMASTER MENÜSÜ</div>
-    <div id="ctxDinamikVardiyalar" style="max-height: 250px; overflow-y: auto;">
-        </div>
+    <div id="ctxDinamikVardiyalar" style="max-height: 250px; overflow-y: auto;"></div>
     <div style="border-bottom: 2px solid #eee;"></div>
     <div class="ctx-item danger" onclick="seciliHucreleriTemizle()">🧹 Seçili Hücreleri Temizle</div>
     <div style="border-bottom: 2px solid #eee;"></div>
@@ -208,6 +219,92 @@
 <script>
 const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
+
+// === YENİ: ÇİFT YÖNLÜ SENKRON VE GEÇMİŞ DEĞİŞKENLERİ ===
+window.firebaseCellPaths = {}; // Her bir hücrenin ShiftMaster'daki tam adresini tutar
+let historyStack = []; // CTRL+Z için geçmişi tutar
+let hasUnsavedChanges = false; // Değişiklik yapıldı mı?
+
+function checkUnsaved() {
+    hasUnsavedChanges = true;
+    document.getElementById('btnSaveToCloud').style.display = 'flex';
+}
+function resetUnsaved() {
+    hasUnsavedChanges = false;
+    document.getElementById('btnSaveToCloud').style.display = 'none';
+}
+function pushToHistory(changesArray) {
+    historyStack.push(changesArray);
+    if(historyStack.length > 50) historyStack.shift(); 
+    checkUnsaved();
+}
+
+// CTRL+Z ve CTRL+S Tuş Kombinasyonları
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (historyStack.length > 0) {
+            let lastChanges = historyStack.pop();
+            lastChanges.forEach(ch => {
+                ch.td.innerHTML = ch.oldVal;
+                satirHesapla(ch.td);
+            });
+            // Geri alma bir değişikliktir, kaydet butonu kalsın
+            checkUnsaved();
+        }
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        if (hasUnsavedChanges) {
+            bulutaKalıcıKaydet();
+        }
+    }
+});
+
+// SHIFTMASTER'A GERİ KAYDETME MOTORU
+function bulutaKalıcıKaydet() {
+    if(!confirm("⚠️ DİKKAT!\n\nYaptığınız tüm değişiklikler doğrudan SHIFTMASTER veritabanına kalıcı olarak kaydedilecek.\n\nEmin misiniz?")) return;
+
+    let btn = document.getElementById('btnSaveToCloud');
+    btn.innerHTML = "⏳";
+    btn.style.pointerEvents = "none";
+
+    let updates = {};
+    document.querySelectorAll('td.veri-hucre').forEach(td => {
+        let isim = td.getAttribute('data-smisim');
+        let tarih = td.getAttribute('data-tarih');
+        
+        if(isim && tarih && window.firebaseCellPaths) {
+            let path = window.firebaseCellPaths[`${isim}_${tarih}`];
+            if(path) {
+                let text = getCleanValue(td.innerText);
+                updates[path] = text;
+            }
+        }
+    });
+
+    if(Object.keys(updates).length === 0) {
+        alert("Bulut bağlantılı bir veri bulunamadı! Sadece ShiftMaster'dan çekilen veriler buluta geri yazılabilir.");
+        btn.innerHTML = "💾";
+        btn.style.pointerEvents = "auto";
+        return;
+    }
+
+    db.ref().update(updates).then(() => {
+        btn.innerHTML = "✅";
+        btn.style.background = "#2ecc71";
+        setTimeout(() => {
+            resetUnsaved();
+            btn.innerHTML = "💾";
+            btn.style.background = "#27ae60";
+            btn.style.pointerEvents = "auto";
+        }, 2000);
+    }).catch(err => {
+        alert("Kaydetme hatası: " + err);
+        btn.innerHTML = "💾";
+        btn.style.pointerEvents = "auto";
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     let bugun = new Date();
@@ -332,7 +429,7 @@ function anaEkranaButonlariCiz() {
 }
 
 function anaEkrandanPersonelEkle(grupId) {
-    let isim = prompt("Lütfen eklenecek personelin T.C. Kimlik numarasını ve Adını girin.\n(Örn: 12345678912 - AHMET YILMAZ)\nEğer TC'sini bilmiyorsanız sadece adını da yazabilirsiniz.");
+    let isim = prompt("Lütfen eklenecek personelin T.C. Kimlik numarasını ve Adını girin.\n(Örn: 12345678912 - AHMET YILMAZ)");
     if(isim && isim.trim() !== "") {
         isim = isim.trim().toUpperCase('tr');
         let grup = appData.gruplar.find(g => g.id === grupId);
@@ -358,6 +455,19 @@ function anaEkrandanPersonelSil(grupId, isimTam) {
 function getCleanValue(text) { 
     if(!text) return ""; 
     return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
+}
+
+// === HÜCREYE MANUEL MÜDAHALE (UNDO DESTEKLİ) ===
+function hucreOdaklan(td) {
+    td._oldVal = td.innerHTML;
+    temizleFormat(td);
+}
+function hucreCik(td) {
+    let beforeVal = td._oldVal;
+    uygulaFormat(td);
+    if(td.innerHTML !== beforeVal) {
+        pushToHistory([{ td: td, oldVal: beforeVal, newVal: td.innerHTML }]);
+    }
 }
 
 function temizleFormat(td) {
@@ -537,6 +647,9 @@ function veriyiCekVeOlustur(arananIsim) {
     if(!basInput || !bitInput) return alert("Lütfen Başlangıç ve Bitiş Tarihi seçin!");
 
     document.body.style.cursor = "wait";
+    window.firebaseCellPaths = {}; // Haritayı sıfırla
+    historyStack = []; // Yeni oluşturmada geçmişi sıfırla
+    resetUnsaved(); 
     
     let bas = getSafeDate(basInput); 
     let bit = getSafeDate(bitInput);
@@ -550,18 +663,32 @@ function veriyiCekVeOlustur(arananIsim) {
         }
         
         let personelShiftleri = {};
-        Object.values(data).forEach(arsiv => {
+        Object.keys(data).forEach(arsivKey => {
+            let arsiv = data[arsivKey];
             let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
-            tablolar.forEach(tablo => {
+            
+            tablolar.forEach((tablo, tIdx) => {
                 let tBas = getSafeDate(tablo.startDate);
-                tablo.data.forEach(satir => {
-                    let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
+                tablo.data.forEach((satir, sIdx) => {
+                    let isim = satir.name.trim().toUpperCase(); 
+                    if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
+                    
                     satir.shifts.forEach((shiftObj, index) => {
-                        let suankiTarih = new Date(tBas.getTime()); suankiTarih.setDate(tBas.getDate() + index);
-                        suankiTarih.setHours(0,0,0,0); let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0); let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
+                        let suankiTarih = new Date(tBas.getTime()); 
+                        suankiTarih.setDate(tBas.getDate() + index);
+                        suankiTarih.setHours(0,0,0,0); 
+                        let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0); 
+                        let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
+                        
                         if(suankiTarih >= basCheck && suankiTarih <= bitCheck) {
                             let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
                             if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
+                            
+                            // YENİ: Firebase Path'i haritaya kaydet
+                            let path = arsiv.tables
+                                ? `arsivlenmis_shiftler/${arsivKey}/tables/${tIdx}/data/${sIdx}/shifts/${index}/text`
+                                : `arsivlenmis_shiftler/${arsivKey}/data/${sIdx}/shifts/${index}/text`;
+                            window.firebaseCellPaths[`${isim}_${tStr}`] = path;
                         }
                     });
                 });
@@ -591,7 +718,7 @@ function raporuOlustur(filtreIsim) {
     let people = {};
     appData.gruplar.forEach(grup => {
         if(grup.kisiler) {
-            grup.kisiler.forEach(n => { people[n] = { n: n, gId: grup.id, gAd: grup.ad, data: {} }; });
+            grup.kisiler.forEach(n => { people[n] = { n: n, gId: grup.id, gAd: grup.ad, data: {}, smName: "" }; });
         }
     });
 
@@ -602,7 +729,9 @@ function raporuOlustur(filtreIsim) {
         cols.forEach((c,i)=>{ let k=excelTarih(c); if(k){tmp[k]=i; isHead=true;} });
         if(isHead) map=tmp;
         else {
+            let smNameExact = cols[0].trim().toUpperCase(); // SHIFTMASTER'DAKİ EXACT İSİM
             let textToSearch = cols.slice(0, 5).join(" ").toUpperCase();
+            
             let matchedPersonKey = Object.keys(people).find(pKey => {
                 let cleanPKey = pKey.includes("-") ? pKey.split("-")[1].trim() : pKey;
                 cleanPKey = cleanPKey.replace(/\s\d+$/, '').replace(/\s+/g, ' ').trim(); 
@@ -610,7 +739,9 @@ function raporuOlustur(filtreIsim) {
                 let normText = textToSearch.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
                 return normText.includes(normP);
             });
+            
             if(matchedPersonKey) {
+                people[matchedPersonKey].smName = smNameExact; // Doğru eşleştirmek için kaydet
                 for(let k in map) {
                     let v = (cols[map[k]]||"").trim();
                     if(v) people[matchedPersonKey].data[k] = v;
@@ -743,12 +874,14 @@ function raporuOlustur(filtreIsim) {
                     <td class="kalin-yatay" contenteditable="true">0</td>`;
                 
                 days.forEach((d, idx)=>{
+                    let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
                     let v = p.data[getKey(d)] || ""; 
                     let info = getVardiyaInfo(v); 
                     let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
                     if(info.tip==='izin') bg='hucre-izin';
                     
-                    h+=`<td contenteditable="true" class="veri-hucre ${bg}" onfocus="temizleFormat(this)" onblur="uygulaFormat(this)" oninput="satirHesapla(this)">${formatliVardiya(v)}</td>`;
+                    // data-smisim DİREKT SHIFTMASTER İSMİNİ TUTUYOR!
+                    h+=`<td contenteditable="true" class="veri-hucre ${bg}" data-smisim="${p.smName}" data-tarih="${tamTarihStr}" onfocus="hucreOdaklan(this)" onblur="hucreCik(this)">${formatliVardiya(v)}</td>`;
                     
                     if(d.getDay()===0 || idx === days.length - 1){
                         h+=`<th class="bg-hafta veri-hucre kalin-yatay" data-type="h-gun"></th>
@@ -780,7 +913,7 @@ function raporuOlustur(filtreIsim) {
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
 
-// ==== YENİ: SHIFTMASTER SAĞ TIK MENÜSÜ & TOPLU SEÇİM MANTIĞI ====
+// ==== SHIFTMASTER SAĞ TIK MENÜSÜ & TOPLU SEÇİM ====
 let isSelecting = false; let startCell = null; let selectedCells = [];
 function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
 function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
@@ -795,7 +928,6 @@ document.addEventListener('mousedown', function(e) { if (e.button !== 0 || e.tar
 document.addEventListener('mouseover', function(e) { if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target); });
 document.addEventListener('mouseup', function() { isSelecting = false; });
 
-// SAĞ TIKLANDIĞINDA MENÜYÜ AÇ VE VARDİYALARI DİZ
 document.addEventListener('contextmenu', function(e) { 
     if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { 
         e.preventDefault(); 
@@ -805,7 +937,6 @@ document.addEventListener('contextmenu', function(e) {
             selectedCells.push(e.target); 
         } 
         
-        // Vardiyaları menüye otomatik diz
         let ctxMenuDiv = document.getElementById('ctxDinamikVardiyalar');
         ctxMenuDiv.innerHTML = '';
         if(appData.vardiyalar) {
@@ -823,35 +954,40 @@ document.addEventListener('contextmenu', function(e) {
     } 
 });
 
-// Menü dışına tıklanınca gizle
 document.addEventListener('click', function(e) {
     if(!e.target.closest('#tableContextMenu')) {
         document.getElementById('tableContextMenu').style.display = 'none';
     }
 });
 
-// YENİ: SEÇİLİ HÜCRELERE TEK TUŞLA VARDİYA BAS VE HESAPLA
 function seciliHucrelereVardiyaYaz(vardiyaKodu) {
     document.getElementById('tableContextMenu').style.display = 'none';
+    let batch = [];
     selectedCells.forEach(td => {
         if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
+            batch.push({ td: td, oldVal: td.innerHTML });
             td.innerHTML = formatliVardiya(vardiyaKodu);
             satirHesapla(td);
+            batch[batch.length-1].newVal = td.innerHTML;
         }
     });
+    if(batch.length > 0) pushToHistory(batch);
     clearSelection();
 }
 
-// YENİ: SEÇİLİ HÜCRELERİ TEK TUŞLA TEMİZLE VE HESAPLA
 function seciliHucreleriTemizle() {
     document.getElementById('tableContextMenu').style.display = 'none';
+    let batch = [];
     selectedCells.forEach(td => {
         if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
+            batch.push({ td: td, oldVal: td.innerHTML });
             td.innerHTML = '';
             td.classList.remove('hucre-izin');
             satirHesapla(td);
+            batch[batch.length-1].newVal = td.innerHTML;
         }
     });
+    if(batch.length > 0) pushToHistory(batch);
     clearSelection();
 }
 
