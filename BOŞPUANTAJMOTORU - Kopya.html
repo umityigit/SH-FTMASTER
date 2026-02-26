@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v123 (ŞİFRESİZ MUTEMET SÜRÜMÜ & HIZLI ARAMA)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v124 (NOKTA ATIŞI PERSONEL ARAMA)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
         body { margin: 0; background: #eef2f5; font-family: 'Roboto', sans-serif; }
 
-        /* ANA PANEL (ŞİFRE KALKTIĞI İÇİN DİREKT AÇIK) */
+        /* ANA PANEL (ŞİFRE KALKTI) */
         #mainContent { display: block; padding-bottom: 50px; }
         .panel-container { background: white; padding: 15px; width: 98%; margin: 10px auto; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--blue); }
         .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px; position: relative; }
@@ -113,7 +113,6 @@
             .sayfa-container { overflow: visible; width: 100%; padding:0;}
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
             
-            /* İMZALARIN HER SAYFANIN ALTINA ZORLA BASTIRILMASI */
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; }
@@ -166,15 +165,29 @@
             <button onclick="yeniGrupEkle()" class="btn-big btn-blu">+ YENİ GRUP EKLE</button>
         </div>
         <div class="panel-col" style="flex:100%; border-top: 1px solid #eee; padding-top: 15px; margin-top: 5px;">
-            <div style="display:flex; gap:10px;">
-                <input type="date" id="inpTarihBas" class="modern-input" title="Başlangıç Tarihi">
-                <input type="date" id="inpTarihBit" class="modern-input" title="Bitiş Tarihi">
+            <div style="display:flex; gap:10px; align-items: stretch; flex-wrap: wrap;">
+                <div style="flex:1; display:flex; flex-direction:column;">
+                    <label style="font-size:10px; font-weight:bold; color:var(--primary);">Başlangıç</label>
+                    <input type="date" id="inpTarihBas" class="modern-input" title="Başlangıç Tarihi">
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column;">
+                    <label style="font-size:10px; font-weight:bold; color:var(--primary);">Bitiş</label>
+                    <input type="date" id="inpTarihBit" class="modern-input" title="Bitiş Tarihi">
+                </div>
                 
-                <input type="text" id="araInput" class="modern-input" placeholder="🔍 Tabloda Personel Ara..." style="flex:1.5; font-weight:bold; color:var(--blue); border: 2px solid var(--blue);" onkeyup="tablodaPersonelAra()">
+                <div style="flex:2; display:flex; flex-direction:column;">
+                    <label style="font-size:10px; font-weight:bold; color:var(--blue);">Tek Kişi Getir (Arama)</label>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="araInput" class="modern-input" placeholder="Örn: AHMET (Boş bırakırsan herkesi getirir)" style="border: 2px solid var(--blue); font-weight:bold;">
+                        <button onclick="tekPersonelAra()" class="btn-big btn-blu" style="margin:0; padding: 0 15px; height: 100%;">🔍 ARA</button>
+                    </div>
+                </div>
 
-                <button onclick="shiftMasterdanCek()" class="btn-big" style="background:#8b5cf6; margin:0; flex:1.5; color:white;">🔄 BULUTTAN ÇEK</button>
-                <button onclick="raporuOlustur()" class="btn-big btn-org" style="margin:0; flex:1.5;">MANUEL OLUŞTUR</button>
-                <button onclick="window.print()" class="btn-big btn-grn" style="margin:0; flex:1;">YAZDIR</button>
+                <div style="flex:3; display:flex; gap:5px; align-items: flex-end;">
+                    <button onclick="shiftMasterdanCek()" class="btn-big" style="background:#8b5cf6; margin:0; flex:1.5; color:white;">🔄 BULUTTAN ÇEK</button>
+                    <button onclick="raporuOlustur()" class="btn-big btn-org" style="margin:0; flex:1.5;">GENEL OLUŞTUR</button>
+                    <button onclick="window.print()" class="btn-big btn-grn" style="margin:0; flex:1;">YAZDIR</button>
+                </div>
             </div>
             <textarea id="inpExcel" placeholder="Excel'den kopyaladığınız verileri buraya yapıştırın..." style="height:100px; margin-top: 10px;" class="modern-input"></textarea>
         </div>
@@ -205,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('inpTarihBas').value = `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
     document.getElementById('inpTarihBit').value = `${bit.getFullYear()}-${String(bit.getMonth()+1).padStart(2,'0')}-${String(bit.getDate()).padStart(2,'0')}`;
     
-    // ŞİFRE EKRANI KALKTI, SİSTEM DİREKT BULUTA BAĞLANIP EKRANI ÇİZİYOR
     bulutBaglantisiniKur();
 });
 
@@ -467,48 +479,23 @@ function satirHesapla(td) {
     update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
 }
 
-// === MUTEMETLER İÇİN ÖZEL CANLI ARAMA MOTORU ===
-function tablodaPersonelAra() {
-    let input = document.getElementById("araInput").value.toUpperCase('tr');
-    let tablolar = document.querySelectorAll('.veri-tablosu');
-    
-    if(tablolar.length === 0) return;
-
-    tablolar.forEach(tablo => {
-        let rows = tablo.querySelectorAll('tbody tr');
-        let tabloGosterilecekMi = false;
-        
-        rows.forEach(row => {
-            let isimCell = row.children[2];
-            let soyadCell = row.children[3];
-            
-            if (isimCell && soyadCell) {
-                let tamAd = (isimCell.innerText + " " + soyadCell.innerText).toUpperCase('tr');
-                if (tamAd.includes(input)) {
-                    row.style.display = ""; // Eşleşeni göster
-                    tabloGosterilecekMi = true;
-                } else {
-                    row.style.display = "none"; // Eşleşmeyeni gizle
-                }
-            }
-        });
-        
-        // Eğer tablonun (sayfanın) içinde aranan kişi hiç yoksa, o A4 sayfasını tamamen gizle
-        let sayfaDiv = tablo.closest('.sayfa');
-        if(sayfaDiv) {
-            if(tabloGosterilecekMi) {
-                sayfaDiv.style.display = "inline-block";
-            } else {
-                sayfaDiv.style.display = "none";
-            }
-        }
-    });
+// ==== YENİ: ARA BUTONUNA BASILDIĞINDA ÇALIŞACAK ÖZEL FONKSİYON ====
+function tekPersonelAra() {
+    let aranan = document.getElementById("araInput").value.trim();
+    if(!aranan) {
+        alert("Lütfen aramak istediğiniz kişinin adını yazın!");
+        return;
+    }
+    // Sadece adı olanı filtreleyerek raporu çizer
+    raporuOlustur();
 }
-// ================================================
 
 function raporuOlustur() {
     const {bas,bit,str} = tarihGuncelle();
     let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
+    
+    // ARAMA KUTUSUNDAKİ DEĞERİ AL
+    let arananKisi = document.getElementById("araInput").value.trim().toUpperCase('tr');
     
     let people = {};
     appData.gruplar.forEach(grup => {
@@ -552,8 +539,32 @@ function raporuOlustur() {
     ];
     
     let sayfaHtml = ""; 
-    let gArr = Object.values(people).reduce((acc, p) => { acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; }, {});
     
+    // YENİ: KİŞİ FİLTRELEME SİSTEMİ (TABLOYU ÇİZMEDEN ÖNCE ELER)
+    let gArr = Object.values(people).reduce((acc, p) => { 
+        let tamAd = p.n.toUpperCase('tr');
+        
+        // Eğer arama kutusu doluysa ve kişinin adında geçmiyorsa, onu hiç listeye alma!
+        if (arananKisi !== "") {
+            let normalizeAd = tamAd.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+            let normalizeAranan = arananKisi.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+            if(!normalizeAd.includes(normalizeAranan)) {
+                return acc; 
+            }
+        }
+
+        acc[p.gAd] = acc[p.gAd]||[]; 
+        acc[p.gAd].push(p); 
+        return acc; 
+    }, {});
+    
+    // Eğer kimse bulunamadıysa uyarı ver
+    if(Object.keys(gArr).length === 0) {
+        document.getElementById('raporAlani').innerHTML = `<h3 style="color:red; margin-top:30px;">"${document.getElementById("araInput").value}" isminde bir personel bulunamadı!</h3>`;
+        document.getElementById('btnExceleKopyala').style.display = "none";
+        return;
+    }
+
     for(let gAd in gArr) {
         let fullList = gArr[gAd].sort((a,b) => {
             let isimA = a.n.includes("-") ? a.n.split("-")[1].trim() : a.n;
@@ -568,7 +579,6 @@ function raporuOlustur() {
         });
         
         let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
-
         let chunkSize = 16;
         let globalIndex = 1;
         
@@ -680,9 +690,6 @@ function raporuOlustur() {
     document.getElementById('raporAlani').innerHTML = sayfaHtml;
     document.querySelectorAll('.veri-hucre').forEach(td => satirHesapla(td));
     document.getElementById('btnExceleKopyala').style.display = "block";
-    
-    // Rapor oluştuktan sonra eğer arama kutusunda yazı varsa filtreyi hemen uygula
-    tablodaPersonelAra();
 }
 
 let isSelecting = false; let startCell = null; let selectedCells = [];
@@ -782,9 +789,6 @@ function exceleSifirKayipsizIndir() {
     <body>`;
 
     tablolar.forEach(tablo => {
-        // Arama yapıldığında gizlenmiş olan sayfaları Excel'e basma
-        if(tablo.closest('.sayfa').style.display === 'none') return;
-
         let clone = tablo.cloneNode(true);
         clone.querySelectorAll('script, button').forEach(el => el.remove());
         clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
@@ -843,7 +847,7 @@ function exceleSifirKayipsizIndir() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Puantaj_Raporu_Mutemet_Gorunumu.xls';
+    a.download = 'Puantaj_Raporu_Tek_Personel.xls';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
