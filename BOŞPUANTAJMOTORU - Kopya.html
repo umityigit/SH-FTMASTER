@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v126 (GÜVENLİ BUTON PANELİ)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v127 (DİNAMİK BUTONLAR & HIZLI EKLE/SİL)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -20,12 +20,22 @@
         .hero-label { font-weight: bold; font-size: 14px; color: var(--blue); margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center;}
         .hero-input { font-size: 18px; padding: 12px 20px; border: 2px solid #bdc3c7; border-radius: 8px; width: 200px; text-align: center; font-weight: bold; color: var(--primary); transition: 0.3s; }
         
-        /* KİŞİ BUTONLARI */
-        .personel-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
+        /* KİŞİ BUTONLARI VE KART TASARIMI (YENİ) */
+        .personel-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 15px; }
+        .personel-card { position: relative; display: inline-block; }
+        
         .btn-kisi { background: white; border: 2px solid #bdc3c7; color: var(--primary); padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
         .btn-kisi:hover { background: var(--blue); border-color: var(--blue); color: white; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(41, 128, 185, 0.3); }
         .btn-kisi:active { transform: translateY(0); }
         
+        /* ÇÖP TENEKESİ ROZETİ */
+        .btn-sil-badge { position: absolute; top: -8px; right: -8px; background: var(--red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; z-index: 10; opacity: 0.6; }
+        .btn-sil-badge:hover { transform: scale(1.3); opacity: 1; }
+        
+        /* YENİ KİŞİ EKLE BUTONU */
+        .btn-yeni-kisi { background: #f8f9fa; border: 2px dashed var(--green); color: var(--green); }
+        .btn-yeni-kisi:hover { background: var(--green); border-color: var(--green); color: white; }
+
         .grup-baslik { width: 100%; text-align: center; font-size: 16px; color: var(--orange); font-weight: bold; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px dashed #eee; padding-bottom: 5px; }
 
         .btn-tam-dokum { font-size: 18px; padding: 20px 40px; background: var(--green); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 35px; transition: 0.3s; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4); width: 100%; max-width: 500px; display: block; margin-left: auto; margin-right: auto; }
@@ -105,7 +115,7 @@
     
     <div class="hero-search">
         <h1 class="hero-title">📋 HIZLI PUANTAJ PANELİ</h1>
-        <p class="hero-desc">İşlem yapmak istediğiniz personelin üzerine tıklayın veya alt kısımdan tam döküm alın.</p>
+        <p class="hero-desc">İşlem yapmak istediğiniz personelin üzerine tıklayın veya alt kısımdan tam döküm alın.<br><em>Yeni personel eklemek için listenin sonundaki <b>👤+ EKLE</b> butonunu, silmek için ismin köşesindeki <b>🗑️ Çöp Tenekesi</b>ni kullanabilirsiniz.</em></p>
         
         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
             <div class="hero-input-group">
@@ -241,7 +251,7 @@ function bulutBaglantisiniKur() {
                     if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "HASTANE PERSONELİ", kisiler: [] }];
                     arayuzCiz();
                     vardiyaArayuzCiz();
-                    anaEkranaButonlariCiz(); // YENİ: AYARLARDAN GELEN LİSTEYİ ANA EKRANA DİZER
+                    anaEkranaButonlariCiz(); 
                 } else {
                     ilkKurulumuYap();
                 }
@@ -274,31 +284,72 @@ function vardiyaArayuzCiz() {
     }
 }
 
-// ==== YENİ: ANA EKRANA PERSONEL BUTONLARINI ÇİZEN FONKSİYON ====
+// ==== YENİ: ANA EKRANA SİLME VE EKLEME BUTONLARIYLA LİSTEYİ DİZEN FONKSİYON ====
 function anaEkranaButonlariCiz() {
     const container = document.getElementById("personelButonAlani");
     container.innerHTML = "";
     
     appData.gruplar.forEach(grup => {
+        let html = `<div style="width: 100%;"><div class="grup-baslik">🏢 ${grup.ad} PERSONEL LİSTESİ</div><div class="personel-grid">`;
+        
         if(grup.kisiler && grup.kisiler.length > 0) {
-            let html = `<div style="width: 100%;"><div class="grup-baslik">🏢 ${grup.ad} PERSONEL LİSTESİ</div><div class="personel-grid">`;
-            
-            // Kişileri alfabetik sıralayıp buton yap
+            // Kişileri alfabetik sıralayıp kart yap
             grup.kisiler.sort((a,b) => {
                 let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
                 let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
                 return isimA.localeCompare(isimB, 'tr');
             }).forEach((isimTam) => {
-                // Sadece adı soyadı al (TC'yi gizle)
                 let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
-                html += `<button class="btn-kisi" onclick="veriyiCekVeOlustur('${sadeceIsim}')">👤 ${sadeceIsim}</button>`;
+                let guvenliIsimTam = isimTam.replace(/'/g, "\\'"); // JS Hatasını önlemek için tırnak koruması
+                
+                html += `
+                <div class="personel-card">
+                    <button class="btn-kisi" onclick="veriyiCekVeOlustur('${sadeceIsim}')">👤 ${sadeceIsim}</button>
+                    <button class="btn-sil-badge" title="Bu Personeli Listeden Sil" onclick="anaEkrandanPersonelSil('${grup.id}', '${guvenliIsimTam}')">🗑️</button>
+                </div>`;
             });
-            
-            html += `</div></div>`;
-            container.innerHTML += html;
         }
+        
+        // GRUBUN SONUNA 'YENİ KİŞİ EKLE' BUTONU KOY
+        html += `
+            <div class="personel-card">
+                <button class="btn-kisi btn-yeni-kisi" title="Bu Gruba Yeni Kişi Ekle" onclick="anaEkrandanPersonelEkle('${grup.id}')">👤+ EKLE</button>
+            </div>
+        `;
+        
+        html += `</div></div>`;
+        container.innerHTML += html;
     });
 }
+
+// ==== YENİ: ANA EKRANDAN HIZLI EKLEME VE SİLME İŞLEMLERİ ====
+function anaEkrandanPersonelEkle(grupId) {
+    let isim = prompt("Lütfen eklenecek personelin T.C. Kimlik numarasını ve Adını girin.\n(Örn: 12345678912 - AHMET YILMAZ)\nEğer TC'sini bilmiyorsanız sadece adını da yazabilirsiniz.");
+    
+    if(isim && isim.trim() !== "") {
+        isim = isim.trim().toUpperCase('tr');
+        let grup = appData.gruplar.find(g => g.id === grupId);
+        if(!grup.kisiler) grup.kisiler = [];
+        
+        if(!grup.kisiler.includes(isim)) {
+            grup.kisiler.push(isim);
+            veriKaydet(); 
+        } else {
+            alert("Bu personel zaten listede ekli!");
+        }
+    }
+}
+
+function anaEkrandanPersonelSil(grupId, isimTam) {
+    let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
+    
+    if(confirm(`⚠️ DİKKAT!\n\n${sadeceIsim} isimli personeli listeden silmek istediğinize emin misiniz?`)) {
+        let grup = appData.gruplar.find(g => g.id === grupId);
+        grup.kisiler = grup.kisiler.filter(k => k !== isimTam);
+        veriKaydet();
+    }
+}
+// ==========================================================
 
 function getCleanValue(text) { 
     if(!text) return ""; 
@@ -476,13 +527,11 @@ function satirHesapla(td) {
     update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
 }
 
-// ==== YENİ: İSİM ALARAK ÇALIŞAN MERKEZİ MOTOR ====
 function veriyiCekVeOlustur(arananIsim) {
     let basInput = document.getElementById('inpTarihBas').value; 
     let bitInput = document.getElementById('inpTarihBit').value;
     if(!basInput || !bitInput) return alert("Lütfen Başlangıç ve Bitiş Tarihi seçin!");
 
-    // Tüm ekranı hafif beklemeye alalım görsel olarak
     document.body.style.cursor = "wait";
     
     let bas = getSafeDate(basInput); 
@@ -533,7 +582,6 @@ function raporuOlustur(filtreIsim) {
     const {bas,bit,str} = tarihGuncelle();
     let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
     
-    // Filtre olarak gelen ismi büyük harf yap (eğer varsa)
     let arananKisi = filtreIsim ? filtreIsim.toUpperCase('tr') : "";
     
     let people = {};
@@ -579,7 +627,6 @@ function raporuOlustur(filtreIsim) {
     
     let sayfaHtml = ""; 
     
-    // BUTONDAN GELEN İSMİ (VEYA BOŞSA HERKESİ) FİLTRELE
     let gArr = Object.values(people).reduce((acc, p) => { 
         let tamAd = p.n.toUpperCase('tr');
         
