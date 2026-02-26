@@ -43,6 +43,7 @@
         .vardiya-del:hover { color:#2c3e50; }
 
         /* TABLO VE ÇIKTI */
+        /* ARKAPLAN TAŞMA SORUNUNU MAX-CONTENT İLE ÇÖZDÜK */
         .sayfa { background: white; width: max-content; min-width: 100%; min-height: 200mm; margin: 0 auto 20px auto; padding: 20px; page-break-after: always; font-family: 'Arial Narrow', sans-serif; box-sizing: border-box; }
         
         table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 7.5px; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
@@ -79,7 +80,6 @@
         .hucre-izin { background-color: #fadbd8 !important; color: #c0392b; font-weight: bold; }
         .hucre-haftasonu { background-color: #f2f2f2 !important; }
         
-        /* Üst Bilgiler için dikey yazı sınıfı (Tarihler buradan çıkarıldı) */
         .dikey-yazi { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 6px; font-weight: normal; letter-spacing: -0.4px; padding: 2px 0; line-height: 1; }
 
         #dynamicGroups { display: flex; gap: 15px; flex-wrap: wrap; width: 100%; }
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
     let bit = new Date(bugun.getFullYear(), bugun.getMonth() + 1, 14);
     
-    // GÜVENLİ TARİH ATAMASI
+    // Güvenli şekilde inputlara varsayılan tarih ata
     document.getElementById('inpTarihBas').value = `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
     document.getElementById('inpTarihBit').value = `${bit.getFullYear()}-${String(bit.getMonth()+1).padStart(2,'0')}-${String(bit.getDate()).padStart(2,'0')}`;
     
@@ -343,11 +343,23 @@ function arayuzCiz() {
     });
 }
 
-// GÜVENLİ TARİH FONKSİYONU - SAAT DİLİMİ KAYMASINI ENGELLER
+// 📌 YENİ VE MÜKEMMEL TARİH PARÇALAYICI (HATA ENGELLEYİCİ)
 function getSafeDate(val) {
-    if(!val) return new Date();
-    let p = val.split('-');
-    return new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+    if (!val) return new Date();
+    val = val.trim();
+    let p;
+    if (val.includes('-')) p = val.split('-');
+    else if (val.includes('.')) p = val.split('.');
+    else if (val.includes('/')) p = val.split('/');
+    else return new Date(val);
+
+    if (p && p.length === 3) {
+        let y = parseInt(p[0].length === 4 ? p[0] : p[2]);
+        let m = parseInt(p[1]) - 1;
+        let d = parseInt(p[0].length === 4 ? p[2] : p[0]);
+        return new Date(y, m, d);
+    }
+    return new Date(val);
 }
 
 function tarihGuncelle(){ 
@@ -358,7 +370,16 @@ function tarihGuncelle(){
 }
 
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
-function excelTarih(s){if(!s)return null; let m=s.trim().match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); return m?m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0'):null;}
+
+function excelTarih(s){
+    if(!s)return null; 
+    s = s.trim();
+    let m = s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); 
+    if(m) return m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0');
+    let m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if(m2) return m2[1]+m2[2].padStart(2,'0')+m2[3].padStart(2,'0');
+    return null;
+}
 
 // ANA HESAPLAMA MOTORU
 function satirHesapla(td) {
@@ -484,6 +505,7 @@ function raporuOlustur() {
         }
     });
 
+    // Otomatik Varsayılan Saat Doldurma (Eğer Shift Yoksa)
     Object.values(people).forEach(p => {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
@@ -697,7 +719,7 @@ function shiftMasterdanCek() {
         Object.values(data).forEach(arsiv => {
             let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
             tablolar.forEach(tablo => {
-                let tBas = new Date(tablo.startDate);
+                let tBas = getSafeDate(tablo.startDate);
                 tablo.data.forEach(satir => {
                     let isim = satir.name.trim().toUpperCase(); if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
                     satir.shifts.forEach((shiftObj, index) => {
