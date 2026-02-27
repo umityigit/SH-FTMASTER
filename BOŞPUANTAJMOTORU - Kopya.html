@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v131 (CTRL+Z & SHIFTMASTER ÇİFT YÖNLÜ SENKRON)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v133 (TAM SENKRON & YAPIŞKAN TABLO)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -11,7 +11,7 @@
 
         #mainContent { display: block; padding-bottom: 50px; }
         
-        /* === YENİ NESİL BUTONLU ANA EKRAN === */
+        /* === ANA EKRAN === */
         .hero-search { background: white; padding: 30px 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; margin: 20px auto; width: 95%; max-width: 1200px; border-top: 8px solid var(--orange); }
         .hero-title { color: var(--primary); margin-top: 0; font-size: 26px; text-transform: uppercase; }
         .hero-desc { color: #7f8c8d; font-size: 15px; margin-bottom: 20px; }
@@ -25,26 +25,20 @@
         
         .btn-kisi { background: white; border: 2px solid #bdc3c7; color: var(--primary); padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
         .btn-kisi:hover { background: var(--blue); border-color: var(--blue); color: white; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(41, 128, 185, 0.3); }
-        .btn-kisi:active { transform: translateY(0); }
-        
         .btn-sil-badge { position: absolute; top: -8px; right: -8px; background: var(--red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; z-index: 10; opacity: 0.6; }
         .btn-sil-badge:hover { transform: scale(1.3); opacity: 1; }
-        
         .btn-yeni-kisi { background: #f8f9fa; border: 2px dashed var(--green); color: var(--green); }
         .btn-yeni-kisi:hover { background: var(--green); border-color: var(--green); color: white; }
 
         .grup-baslik { width: 100%; text-align: center; font-size: 16px; color: var(--orange); font-weight: bold; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px dashed #eee; padding-bottom: 5px; }
-
         .btn-tam-dokum { font-size: 18px; padding: 20px 40px; background: var(--green); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 35px; transition: 0.3s; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4); width: 100%; max-width: 500px; display: block; margin-left: auto; margin-right: auto; }
         .btn-tam-dokum:hover { background: #219653; transform: scale(1.02); }
-
         .print-btn { font-size: 14px; padding: 12px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; }
         
         details summary::-webkit-details-marker { display:none; }
         .settings-panel { background: white; padding: 15px; border-radius: 10px; display: flex; gap: 15px; flex-wrap: wrap; border: 1px solid #ddd; margin-top: 10px;}
-        
         .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px; position: relative; }
-        h3 { margin: 0; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 5px; color: var(--primary); text-transform: uppercase; cursor: text;}
+        h3 { margin: 0; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 5px; color: var(--primary); text-transform: uppercase; }
         .personel-row { display: flex; gap: 5px; margin-bottom: 5px; }
         .modern-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; box-sizing: border-box;}
         .personel-listesi { height: 180px; overflow-y: auto; border: 1px solid #ddd; background: #fff; padding: 5px; border-radius: 5px; }
@@ -59,18 +53,39 @@
         .vardiya-chip.izin { background:#e74c3c; }
         .vardiya-del { margin-left:10px; cursor:pointer; font-size:12px;}
 
-        .sayfa-container { width: 100%; overflow-x: auto; padding-bottom: 20px; text-align: center; }
-        .sayfa { background: white; padding: 20px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 20px; text-align: left; page-break-after: always; transition: all 0.3s;}
-        table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; border: 1px solid #000; margin: 0; padding: 0; user-select: none; }
-        th, td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 1px; line-height: 1.1; word-break: break-word; overflow: visible; }
+        /* === YAPIŞKAN (STICKY) TABLO ALANI === */
+        .sayfa-container { 
+            width: 98%; 
+            max-height: 75vh; /* DİKEY KAYDIRMA İÇİN */
+            overflow: auto; 
+            margin: 20px auto; 
+            background: white; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+        }
         
-        /* ÖZEL KURSÖR (İMLEÇ) BURADA! */
+        table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; margin: 0; padding: 0; user-select: none; }
+        th, td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 1px; line-height: 1.1; word-break: break-word; overflow: visible; background: white;}
+        
+        /* TEPEDEKİ TARİHLERİ SABİTLEME */
+        thead { position: sticky; top: 0; z-index: 30; }
+        thead th, thead td { background: #eee; box-shadow: inset 0 0 0 1px #000; /* Kenarlıkların kaybolmaması için */ }
+        
+        /* SOLDAKİ İSİMLERİ SABİTLEME */
+        .stick-1 { position: sticky; left: 0px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        .stick-2 { position: sticky; left: 35px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        .stick-3 { position: sticky; left: 135px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        .stick-4 { position: sticky; left: 265px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        
+        /* KÖŞE KESİŞİMİ (HEM ÜST HEM SOL) */
+        thead .stick-1, thead .stick-2, thead .stick-3, thead .stick-4 { z-index: 40; background: #ddd; }
+
         .veri-hucre { height: 75px !important; padding: 0 !important; cursor: crosshair !important; transition: all 0.2s;}
-        .veri-hucre:focus { background: #fff9c4 !important; outline: 2px solid #e67e22; font-size: 14px; font-weight: bold; cursor: text !important;}
+        .veri-hucre:focus { background: #fff9c4 !important; outline: 3px solid #e67e22; z-index: 5; font-size: 14px; font-weight: bold; cursor: text !important;}
         
         .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
-        
-        .selected-cell { background-color: #d0ebff !important; outline: 2px solid #1c7ed6 !important; z-index: 10; }
+        .selected-cell { background-color: #d0ebff !important; box-shadow: inset 0 0 0 2px #1c7ed6 !important; z-index: 5; }
         
         #tableContextMenu { font-family: 'Roboto', sans-serif; min-width: 160px; }
         .ctx-header { background: #f8f9fa; padding: 8px 10px; font-size: 11px; font-weight: bold; color: #7f8c8d; text-align: center; border-bottom: 2px solid #3498db; text-transform: uppercase; letter-spacing: 1px;}
@@ -96,7 +111,7 @@
         #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #27ae60; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
         #btnExceleKopyala:hover { background: #219653; transform: scale(1.05); }
 
-        /* === YENİ: YUVARLAK YEŞİL KAYDET BUTONU === */
+        /* YUVARLAK YEŞİL KAYDET BUTONU */
         #btnSaveToCloud { 
             position: fixed; bottom: 20px; left: 20px; background: #27ae60; color: white; border: none; 
             width: 60px; height: 60px; border-radius: 50%; font-size: 24px; 
@@ -117,12 +132,16 @@
             body { zoom: 50%; margin: 0; padding: 0; background: white; } 
             .hero-search, details, #tableContextMenu, #btnExceleKopyala, #btnSaveToCloud { display: none !important; }
             #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
-            .sayfa-container { overflow: visible; width: 100%; padding:0;}
+            
+            /* YAZDIRIRKEN YAPIŞKANLIKLARI İPTAL ET */
+            .sayfa-container { overflow: visible !important; width: 100%; padding:0; max-height: none !important; border: none; box-shadow: none;}
+            thead, .stick-1, .stick-2, .stick-3, .stick-4 { position: static !important; box-shadow: none !important; }
+            
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; }
-            .selected-cell { outline: none !important; background-color: inherit !important; } 
+            .selected-cell { box-shadow: none !important; outline: none !important; background-color: inherit !important; } 
         }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -220,54 +239,33 @@
 const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-// === YENİ: ÇİFT YÖNLÜ SENKRON VE GEÇMİŞ DEĞİŞKENLERİ ===
-window.firebaseCellPaths = {}; // Her bir hücrenin ShiftMaster'daki tam adresini tutar
-let historyStack = []; // CTRL+Z için geçmişi tutar
-let hasUnsavedChanges = false; // Değişiklik yapıldı mı?
+// === ÇİFT YÖNLÜ SENKRON DEĞİŞKENLERİ ===
+window.firebaseCellPaths = {}; // Hücrelerin ShiftMaster adres haritası
+let historyStack = []; 
+let hasUnsavedChanges = false; 
 
-function checkUnsaved() {
-    hasUnsavedChanges = true;
-    document.getElementById('btnSaveToCloud').style.display = 'flex';
-}
-function resetUnsaved() {
-    hasUnsavedChanges = false;
-    document.getElementById('btnSaveToCloud').style.display = 'none';
-}
-function pushToHistory(changesArray) {
-    historyStack.push(changesArray);
-    if(historyStack.length > 50) historyStack.shift(); 
-    checkUnsaved();
-}
+function checkUnsaved() { hasUnsavedChanges = true; document.getElementById('btnSaveToCloud').style.display = 'flex'; }
+function resetUnsaved() { hasUnsavedChanges = false; document.getElementById('btnSaveToCloud').style.display = 'none'; }
+function pushToHistory(changesArray) { historyStack.push(changesArray); if(historyStack.length > 50) historyStack.shift(); checkUnsaved(); }
 
-// CTRL+Z ve CTRL+S Tuş Kombinasyonları
 document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key.toLowerCase() === 'z') {
         e.preventDefault();
         if (historyStack.length > 0) {
             let lastChanges = historyStack.pop();
-            lastChanges.forEach(ch => {
-                ch.td.innerHTML = ch.oldVal;
-                satirHesapla(ch.td);
-            });
-            // Geri alma bir değişikliktir, kaydet butonu kalsın
+            lastChanges.forEach(ch => { ch.td.innerHTML = ch.oldVal; satirHesapla(ch.td); });
             checkUnsaved();
         }
     }
-    if (e.ctrlKey && e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        if (hasUnsavedChanges) {
-            bulutaKalıcıKaydet();
-        }
-    }
+    if (e.ctrlKey && e.key.toLowerCase() === 's') { e.preventDefault(); if (hasUnsavedChanges) bulutaKalıcıKaydet(); }
 });
 
-// SHIFTMASTER'A GERİ KAYDETME MOTORU
+// === YARIM KAYDETME SORUNUNU ÇÖZEN GELİŞMİŞ KAYIT MOTORU ===
 function bulutaKalıcıKaydet() {
-    if(!confirm("⚠️ DİKKAT!\n\nYaptığınız tüm değişiklikler doğrudan SHIFTMASTER veritabanına kalıcı olarak kaydedilecek.\n\nEmin misiniz?")) return;
+    if(!confirm("⚠️ DİKKAT!\n\nYaptığınız değişiklikler SHIFTMASTER veritabanına kalıcı olarak işlenecek.\nEmin misiniz?")) return;
 
     let btn = document.getElementById('btnSaveToCloud');
-    btn.innerHTML = "⏳";
-    btn.style.pointerEvents = "none";
+    btn.innerHTML = "⏳"; btn.style.pointerEvents = "none";
 
     let updates = {};
     document.querySelectorAll('td.veri-hucre').forEach(td => {
@@ -277,33 +275,22 @@ function bulutaKalıcıKaydet() {
         if(isim && tarih && window.firebaseCellPaths) {
             let path = window.firebaseCellPaths[`${isim}_${tarih}`];
             if(path) {
-                let text = getCleanValue(td.innerText);
+                let text = getCleanValue(td.innerText || td.textContent);
                 updates[path] = text;
             }
         }
     });
 
     if(Object.keys(updates).length === 0) {
-        alert("Bulut bağlantılı bir veri bulunamadı! Sadece ShiftMaster'dan çekilen veriler buluta geri yazılabilir.");
-        btn.innerHTML = "💾";
-        btn.style.pointerEvents = "auto";
+        alert("Bulut bağlantılı bir veri bulunamadı!");
+        btn.innerHTML = "💾"; btn.style.pointerEvents = "auto";
         return;
     }
 
     db.ref().update(updates).then(() => {
-        btn.innerHTML = "✅";
-        btn.style.background = "#2ecc71";
-        setTimeout(() => {
-            resetUnsaved();
-            btn.innerHTML = "💾";
-            btn.style.background = "#27ae60";
-            btn.style.pointerEvents = "auto";
-        }, 2000);
-    }).catch(err => {
-        alert("Kaydetme hatası: " + err);
-        btn.innerHTML = "💾";
-        btn.style.pointerEvents = "auto";
-    });
+        btn.innerHTML = "✅"; btn.style.background = "#2ecc71";
+        setTimeout(() => { resetUnsaved(); btn.innerHTML = "💾"; btn.style.background = "#27ae60"; btn.style.pointerEvents = "auto"; }, 2000);
+    }).catch(err => { alert("Hata: " + err); btn.innerHTML = "💾"; btn.style.pointerEvents = "auto"; });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -348,8 +335,7 @@ function ilkKurulumuYap() {
 function bulutBaglantisiniKur() {
     db.ref("puantaj_v115_zorunlu_gecis").once("value", snap => {
         if(!snap.val()) {
-            ilkKurulumuYap();
-            db.ref("puantaj_v115_zorunlu_gecis").set(true);
+            ilkKurulumuYap(); db.ref("puantaj_v115_zorunlu_gecis").set(true);
             arayuzCiz(); vardiyaArayuzCiz();
         } else {
             db.ref("puantaj_motoru_ayarlar").on("value", snap => {
@@ -358,12 +344,8 @@ function bulutBaglantisiniKur() {
                     appData = data;
                     if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
                     if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "HASTANE PERSONELİ", kisiler: [] }];
-                    arayuzCiz();
-                    vardiyaArayuzCiz();
-                    anaEkranaButonlariCiz(); 
-                } else {
-                    ilkKurulumuYap();
-                }
+                    arayuzCiz(); vardiyaArayuzCiz(); anaEkranaButonlariCiz(); 
+                } else { ilkKurulumuYap(); }
             });
         }
     });
@@ -380,7 +362,6 @@ function vardiyaEkle() {
     appData.vardiyalar[kod] = { t: t, g: g, tip: tip };
     veriKaydet(); 
 }
-
 function vardiyaSil(kod) { if(confirm(kod + " silinsin mi?")) { delete appData.vardiyalar[kod]; veriKaydet(); } }
 
 function vardiyaArayuzCiz() {
@@ -394,12 +375,9 @@ function vardiyaArayuzCiz() {
 }
 
 function anaEkranaButonlariCiz() {
-    const container = document.getElementById("personelButonAlani");
-    container.innerHTML = "";
-    
+    const container = document.getElementById("personelButonAlani"); container.innerHTML = "";
     appData.gruplar.forEach(grup => {
         let html = `<div style="width: 100%;"><div class="grup-baslik">🏢 ${grup.ad} PERSONEL LİSTESİ</div><div class="personel-grid">`;
-        
         if(grup.kisiler && grup.kisiler.length > 0) {
             grup.kisiler.sort((a,b) => {
                 let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
@@ -408,22 +386,10 @@ function anaEkranaButonlariCiz() {
             }).forEach((isimTam) => {
                 let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
                 let guvenliIsimTam = isimTam.replace(/'/g, "\\'"); 
-                
-                html += `
-                <div class="personel-card">
-                    <button class="btn-kisi" onclick="veriyiCekVeOlustur('${sadeceIsim}')">👤 ${sadeceIsim}</button>
-                    <button class="btn-sil-badge" title="Bu Personeli Listeden Sil" onclick="anaEkrandanPersonelSil('${grup.id}', '${guvenliIsimTam}')">🗑️</button>
-                </div>`;
+                html += `<div class="personel-card"><button class="btn-kisi" onclick="veriyiCekVeOlustur('${sadeceIsim}')">👤 ${sadeceIsim}</button><button class="btn-sil-badge" title="Sil" onclick="anaEkrandanPersonelSil('${grup.id}', '${guvenliIsimTam}')">🗑️</button></div>`;
             });
         }
-        
-        html += `
-            <div class="personel-card">
-                <button class="btn-kisi btn-yeni-kisi" title="Bu Gruba Yeni Kişi Ekle" onclick="anaEkrandanPersonelEkle('${grup.id}')">👤+ EKLE</button>
-            </div>
-        `;
-        
-        html += `</div></div>`;
+        html += `<div class="personel-card"><button class="btn-kisi btn-yeni-kisi" onclick="anaEkrandanPersonelEkle('${grup.id}')">👤+ EKLE</button></div></div></div>`;
         container.innerHTML += html;
     });
 }
@@ -431,25 +397,14 @@ function anaEkranaButonlariCiz() {
 function anaEkrandanPersonelEkle(grupId) {
     let isim = prompt("Lütfen eklenecek personelin T.C. Kimlik numarasını ve Adını girin.\n(Örn: 12345678912 - AHMET YILMAZ)");
     if(isim && isim.trim() !== "") {
-        isim = isim.trim().toUpperCase('tr');
-        let grup = appData.gruplar.find(g => g.id === grupId);
+        isim = isim.trim().toUpperCase('tr'); let grup = appData.gruplar.find(g => g.id === grupId);
         if(!grup.kisiler) grup.kisiler = [];
-        if(!grup.kisiler.includes(isim)) {
-            grup.kisiler.push(isim);
-            veriKaydet(); 
-        } else {
-            alert("Bu personel zaten listede ekli!");
-        }
+        if(!grup.kisiler.includes(isim)) { grup.kisiler.push(isim); veriKaydet(); } else { alert("Bu personel zaten var!"); }
     }
 }
-
 function anaEkrandanPersonelSil(grupId, isimTam) {
     let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
-    if(confirm(`⚠️ DİKKAT!\n\n${sadeceIsim} isimli personeli listeden silmek istediğinize emin misiniz?`)) {
-        let grup = appData.gruplar.find(g => g.id === grupId);
-        grup.kisiler = grup.kisiler.filter(k => k !== isimTam);
-        veriKaydet();
-    }
+    if(confirm(`⚠️ DİKKAT!\n\n${sadeceIsim} personeli silinsin mi?`)) { let grup = appData.gruplar.find(g => g.id === grupId); grup.kisiler = grup.kisiler.filter(k => k !== isimTam); veriKaydet(); }
 }
 
 function getCleanValue(text) { 
@@ -457,41 +412,11 @@ function getCleanValue(text) {
     return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
 }
 
-// === HÜCREYE MANUEL MÜDAHALE (UNDO DESTEKLİ) ===
-function hucreOdaklan(td) {
-    td._oldVal = td.innerHTML;
-    temizleFormat(td);
-}
-function hucreCik(td) {
-    let beforeVal = td._oldVal;
-    uygulaFormat(td);
-    if(td.innerHTML !== beforeVal) {
-        pushToHistory([{ td: td, oldVal: beforeVal, newVal: td.innerHTML }]);
-    }
-}
-
-function temizleFormat(td) {
-    let metin = td.innerText || td.textContent || "";
-    metin = metin.trim();
-    td.innerHTML = metin; 
-}
-
-function uygulaFormat(td) {
-    let metin = getCleanValue(td.innerText || td.textContent);
-    if (metin !== "") {
-        td.innerHTML = `<div class="dik-yazi">${metin}</div>`;
-    } else {
-        td.innerHTML = "";
-    }
-    satirHesapla(td); 
-}
-
-function formatliVardiya(val) { 
-    if(!val) return ""; 
-    val = val.trim(); 
-    return `<div class="dik-yazi">${val}</div>`;
-}
-
+function hucreOdaklan(td) { td._oldVal = td.innerHTML; temizleFormat(td); }
+function hucreCik(td) { let beforeVal = td._oldVal; uygulaFormat(td); if(td.innerHTML !== beforeVal) { pushToHistory([{ td: td, oldVal: beforeVal, newVal: td.innerHTML }]); } }
+function temizleFormat(td) { let metin = td.innerText || td.textContent || ""; td.innerHTML = metin.trim(); }
+function uygulaFormat(td) { let metin = getCleanValue(td.innerText || td.textContent); if (metin !== "") { td.innerHTML = `<div class="dik-yazi">${metin}</div>`; } else { td.innerHTML = ""; } satirHesapla(td); }
+function formatliVardiya(val) { if(!val) return ""; return `<div class="dik-yazi">${val.trim()}</div>`; }
 function getVardiyaInfo(val) {
     if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""};
     let cleanVal = val.replace(/<br\s*\/?>/gi, "-").trim().toUpperCase(); 
@@ -501,192 +426,112 @@ function getVardiyaInfo(val) {
     return {t:0, g:0, tip:"bilinmeyen", val: cleanVal};
 }
 
-function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ BİRİM / HASTANE", kisiler: [] }); veriKaydet(); }
+function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ BİRİM", kisiler: [] }); veriKaydet(); }
 function grupSil(id) { if (confirm("Grup silinsin mi?")) { appData.gruplar = appData.gruplar.filter(g => g.id !== id); veriKaydet(); } }
 function grupAdiGuncelle(id, ad) { let g = appData.gruplar.find(g => g.id === id); if (g) { g.ad = ad.trim() || "İSİMSİZ GRUP"; veriKaydet(); } }
-
-function personelEkle(grupId) {
-    let input = document.getElementById("add_" + grupId); let isim = input.value.trim().toUpperCase();
-    let grup = appData.gruplar.find(g => g.id === grupId);
-    if(!grup.kisiler) grup.kisiler = [];
-    if (isim && grup && !grup.kisiler.includes(isim)) { grup.kisiler.push(isim); veriKaydet(); }
-    input.value = "";
-}
+function personelEkle(grupId) { let input = document.getElementById("add_" + grupId); let isim = input.value.trim().toUpperCase(); let grup = appData.gruplar.find(g => g.id === grupId); if(!grup.kisiler) grup.kisiler = []; if (isim && grup && !grup.kisiler.includes(isim)) { grup.kisiler.push(isim); veriKaydet(); } input.value = ""; }
 function personelSil(gId, isim) { if (confirm("Silinsin mi?")) { let g = appData.gruplar.find(g => g.id === gId); g.kisiler = g.kisiler.filter(k => k !== isim); veriKaydet(); } }
 
 function arayuzCiz() {
     const container = document.getElementById("dynamicGroups"); container.innerHTML = "";
     appData.gruplar.forEach(grup => {
-        let html = `
-        <div class="panel-col">
-            <button class="btn-del-group" onclick="grupSil('${grup.id}')">X</button>
-            <h3 contenteditable="true" onblur="grupAdiGuncelle('${grup.id}', this.innerText)">${grup.ad}</h3>
-            <div class="personel-row"><input type="text" id="add_${grup.id}" class="modern-input" placeholder="12345678912 - PERSONEL ADI..." onkeypress="if(event.key==='Enter') personelEkle('${grup.id}')"><button onclick="personelEkle('${grup.id}')" class="btn-add">+</button></div>
-            <div class="personel-listesi">`;
-        if(grup.kisiler) {
-            grup.kisiler.sort((a,b) => {
-                let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
-                let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
-                return isimA.localeCompare(isimB, 'tr');
-            }).forEach((isim) => {
-                html += `<div class="personel-item"><span>${isim}</span><button onclick="personelSil('${grup.id}', '${isim}')" class="btn-del">X</button></div>`;
-            });
-        }
+        let html = `<div class="panel-col"><button class="btn-del-group" onclick="grupSil('${grup.id}')">X</button><h3 contenteditable="true" onblur="grupAdiGuncelle('${grup.id}', this.innerText)">${grup.ad}</h3><div class="personel-row"><input type="text" id="add_${grup.id}" class="modern-input" placeholder="12345678912 - PERSONEL ADI..." onkeypress="if(event.key==='Enter') personelEkle('${grup.id}')"><button onclick="personelEkle('${grup.id}')" class="btn-add">+</button></div><div class="personel-listesi">`;
+        if(grup.kisiler) { grup.kisiler.sort().forEach((isim) => { html += `<div class="personel-item"><span>${isim}</span><button onclick="personelSil('${grup.id}', '${isim}')" class="btn-del">X</button></div>`; }); }
         container.innerHTML += html + `</div></div>`;
     });
 }
 
 function getSafeDate(val) {
-    if (!val) return new Date();
-    val = val.trim();
-    let p;
-    if (val.includes('-')) p = val.split('-');
-    else if (val.includes('.')) p = val.split('.');
-    else if (val.includes('/')) p = val.split('/');
-    else return new Date(val);
-    if (p && p.length === 3) {
-        let y = parseInt(p[0].length === 4 ? p[0] : p[2]);
-        let m = parseInt(p[1]) - 1;
-        let d = parseInt(p[0].length === 4 ? p[2] : p[0]);
-        return new Date(y, m, d);
-    }
+    if (!val) return new Date(); val = val.trim(); let p;
+    if (val.includes('-')) p = val.split('-'); else if (val.includes('.')) p = val.split('.'); else if (val.includes('/')) p = val.split('/'); else return new Date(val);
+    if (p && p.length === 3) { let y = parseInt(p[0].length === 4 ? p[0] : p[2]); let m = parseInt(p[1]) - 1; let d = parseInt(p[0].length === 4 ? p[2] : p[0]); return new Date(y, m, d); }
     return new Date(val);
 }
 
 function tarihGuncelle(){ 
-    let bas = getSafeDate(document.getElementById('inpTarihBas').value); 
-    let bit = getSafeDate(document.getElementById('inpTarihBit').value); 
+    let bas = getSafeDate(document.getElementById('inpTarihBas').value); let bit = getSafeDate(document.getElementById('inpTarihBit').value); 
     let str = `${String(bas.getDate()).padStart(2,'0')}.${String(bas.getMonth()+1).padStart(2,'0')}.${bas.getFullYear()} - ${String(bit.getDate()).padStart(2,'0')}.${String(bit.getMonth()+1).padStart(2,'0')}.${bit.getFullYear()}`;
     return {bas, bit, str}; 
 }
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
-function excelTarih(s){
-    if(!s)return null; 
-    s = s.trim();
-    let m = s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); 
-    if(m) return m[3]+m[2].padStart(2,'0')+m[1].padStart(2,'0');
-    let m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-    if(m2) return m2[1]+m2[2].padStart(2,'0')+m2[3].padStart(2,'0');
-    return null;
-}
 
-// ==== YENİDEN YAZILAN KUSURSUZ GÜN HESAPLAMA MANTIĞI ====
+// ==== GÜN HESAPLAMA MANTIĞI ====
 function satirHesapla(td) {
-    if (!td) return;
-    const tr = td.closest('tr');
-    if (!tr) return;
-
+    if (!td) return; const tr = td.closest('tr'); if (!tr) return;
     let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0, tFM = 0;
-    let wHs = 0, wHg = 0;
-    let tGun = 0; // Toplam Puantaj Gün Sayısı (Sabit Kalacak)
+    let wHs = 0, wHg = 0; let tGun = 0; 
 
-    const allCells = Array.from(tr.children);
-    allCells.forEach(c => {
+    Array.from(tr.children).forEach(c => {
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
-
-        // Geçerli bir tarih sütunundaysak (Hafta toplamı falan değilse)
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
-            tGun++; // Her geçerli gün hücresi, periyodun toplam gününü bulmak için sayılır (Örn: 28, 30, 31).
-
+            tGun++; 
             const v = getCleanValue(c.innerText || c.textContent);
             if (v === "" || v === "0") return;
-
-            const inf = getVardiyaInfo(v);
-            const mS = parseFloat(v.replace(",", "."));
-            const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
-
-            // Rengi temizle
+            const inf = getVardiyaInfo(v); const mS = parseFloat(v.replace(",", ".")); const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
             c.classList.remove('hucre-izin');
 
-            // Eğer s > 0 ise kişi o gün FİİLEN ÇALIŞMIŞ (İşe Gelmiş) demektir.
-            if (s > 0) {
-                tAg++; // İşe fiilen gelme sayısı (Yol) artar.
-                wHg++;
-                wHs += s;
-                tAge += (inf.g || 0);
-                if (v === "RTÇ") n_rtc++;
-                if (c.classList.contains('hucre-haftasonu')) n_htc++;
-            } else {
-                // Saat içermeyen bir şey girilmiş, izin/rapor vs olabilir. 
-                // İşe gelme günü (tAg) ARTMAZ.
-                if (v === "RT") n_rt++;
-                else if (v === "HT") n_ht++;
+            if (s > 0) { tAg++; wHg++; wHs += s; tAge += (inf.g || 0); if (v === "RTÇ") n_rtc++; if (c.classList.contains('hucre-haftasonu')) n_htc++; } 
+            else {
+                if (v === "RT") n_rt++; else if (v === "HT") n_ht++;
                 else if (v === "R" || v === "RAPOR") { n_r++; c.classList.add('hucre-izin'); }
                 else if (v === "Yİ" || v === "İ" || v === "Nİ" || (inf && inf.tip === "izin")) { n_i++; c.classList.add('hucre-izin'); }
-                else if (v !== "" && v !== "0") {
-                    // Bilinmeyen bir harf yazılmış ama çalışma değil
-                    c.classList.add('hucre-izin');
-                }
+                else if (v !== "" && v !== "0") { c.classList.add('hucre-izin'); }
             }
         }
-
         if (c.classList.contains('bg-hafta')) {
             const type = c.getAttribute('data-type');
-            if (type === 'h-gun') {
-                c.innerText = wHg > 0 ? wHg : "";
-            } else if (type === 'h-saat') {
-                c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "";
-            } else if (type === 'h-fm') {
-                let wFm = wHs > 45 ? (wHs - 45) : 0;
-                c.innerText = wFm > 0 ? Number(wFm.toFixed(2)) : "";
-                tFM += wFm; 
-                wHs = 0; wHg = 0;
-            }
+            if (type === 'h-gun') { c.innerText = wHg > 0 ? wHg : ""; } 
+            else if (type === 'h-saat') { c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : ""; } 
+            else if (type === 'h-fm') { let wFm = wHs > 45 ? (wHs - 45) : 0; c.innerText = wFm > 0 ? Number(wFm.toFixed(2)) : ""; tFM += wFm; wHs = 0; wHg = 0; }
         }
     });
 
-    const update = (cls, v) => {
-        const el = tr.querySelector(cls);
-        if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2));
-    };
-
-    update('.s-calisma', tGun); // <--- DEĞİŞİKLİK BURADA: Artık toplam periyot gününü (örn: 28) sabit gösterir.
-    update('.s-yol', tAg);      // <--- İşe gelme günü (Yol hakkı) sadece fiilen gelinen, çalışma olan günleri sayar.
-    update('.s-rapor', n_r);
-    update('.s-izin', n_i); 
-    update('.s-ht', n_ht); 
-    update('.s-rt', n_rt);
-    update('.s-rtc', n_rtc); 
-    update('.s-fm', tFM); 
-    update('.s-gecefm', 0); 
-    update('.s-gece', tAge);
+    const update = (cls, v) => { const el = tr.querySelector(cls); if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2)); };
+    update('.s-calisma', tGun); update('.s-yol', tAg); update('.s-rapor', n_r); update('.s-izin', n_i); update('.s-ht', n_ht); update('.s-rt', n_rt); update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
 }
 
+// === İŞTE YARIM KAYDETMEYİ ÇÖZEN YENİ VERİ ÇEKME MOTORU ===
 function veriyiCekVeOlustur(arananIsim) {
-    let basInput = document.getElementById('inpTarihBas').value; 
-    let bitInput = document.getElementById('inpTarihBit').value;
+    let basInput = document.getElementById('inpTarihBas').value; let bitInput = document.getElementById('inpTarihBit').value;
     if(!basInput || !bitInput) return alert("Lütfen Başlangıç ve Bitiş Tarihi seçin!");
 
     document.body.style.cursor = "wait";
-    window.firebaseCellPaths = {}; // Haritayı sıfırla
-    historyStack = []; // Yeni oluşturmada geçmişi sıfırla
-    resetUnsaved(); 
+    window.firebaseCellPaths = {}; // Adres haritasını sıfırla
+    historyStack = []; resetUnsaved(); 
     
-    let bas = getSafeDate(basInput); 
-    let bit = getSafeDate(bitInput);
+    let bas = getSafeDate(basInput); let bit = getSafeDate(bitInput);
 
     db.ref("arsivlenmis_shiftler").once("value").then(snap => {
         let data = snap.val(); 
-        if(!data) { 
-            alert("Buluta kayıtlı arşiv bulunamadı!"); 
-            document.body.style.cursor = "default";
-            return; 
-        }
+        if(!data) { alert("Buluta kayıtlı arşiv bulunamadı!"); document.body.style.cursor = "default"; return; }
         
         let personelShiftleri = {};
+        
         Object.keys(data).forEach(arsivKey => {
             let arsiv = data[arsivKey];
             let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
             
+            let genelBaslangic = getSafeDate(arsiv.startDate || (tablolar[0] && tablolar[0].startDate));
+            let gunOffset = 0; // İkinci tablonun tarih sapmasını tutan değişken
+            
             tablolar.forEach((tablo, tIdx) => {
-                let tBas = getSafeDate(tablo.startDate);
+                let currentTableStart = tablo.startDate ? getSafeDate(tablo.startDate) : null;
+                // Eğer tablo kendi başlangıç tarihine sahip değilse, bir önceki tabloların toplam gününü ekle (YARIM KAYDETME ÇÖZÜMÜ)
+                if(!currentTableStart) {
+                    currentTableStart = new Date(genelBaslangic.getTime());
+                    currentTableStart.setDate(currentTableStart.getDate() + gunOffset);
+                }
+                
+                let daysInThisTable = 0;
+
                 tablo.data.forEach((satir, sIdx) => {
                     let isim = satir.name.trim().toUpperCase(); 
                     if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
+                    if(satir.shifts.length > daysInThisTable) daysInThisTable = satir.shifts.length;
                     
                     satir.shifts.forEach((shiftObj, index) => {
-                        let suankiTarih = new Date(tBas.getTime()); 
-                        suankiTarih.setDate(tBas.getDate() + index);
+                        let suankiTarih = new Date(currentTableStart.getTime()); 
+                        suankiTarih.setDate(currentTableStart.getDate() + index);
                         suankiTarih.setHours(0,0,0,0); 
                         let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0); 
                         let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
@@ -695,7 +540,7 @@ function veriyiCekVeOlustur(arananIsim) {
                             let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
                             if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
                             
-                            // YENİ: Firebase Path'i haritaya kaydet
+                            // HÜCRE ADRESİNİ HARİTAYA KAYDET
                             let path = arsiv.tables
                                 ? `arsivlenmis_shiftler/${arsivKey}/tables/${tIdx}/data/${sIdx}/shifts/${index}/text`
                                 : `arsivlenmis_shiftler/${arsivKey}/data/${sIdx}/shifts/${index}/text`;
@@ -703,67 +548,45 @@ function veriyiCekVeOlustur(arananIsim) {
                         }
                     });
                 });
+                gunOffset += daysInThisTable; // Sonraki tablo için ofseti büyüt
             });
         });
         
+        // Excel kopyalama için arka plan hazırlığı
         let days = []; let d = new Date(bas.getTime()); d.setHours(0,0,0,0); let bitCheck2 = new Date(bit.getTime()); bitCheck2.setHours(0,0,0,0);
         while(d <= bitCheck2) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
-        
         let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
         Object.keys(personelShiftleri).forEach(isim => { let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n"; });
-        
         document.getElementById('inpExcel').value = excelStr;
         
-        raporuOlustur(arananIsim);
+        raporuOlustur(arananIsim, personelShiftleri);
         document.body.style.cursor = "default";
         document.getElementById("raporScrollNoktasi").scrollIntoView({behavior: "smooth"});
     });
 }
 
-function raporuOlustur(filtreIsim) {
+function raporuOlustur(filtreIsim, pShiftleri) {
     const {bas,bit,str} = tarihGuncelle();
     let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
-    
     let arananKisi = filtreIsim ? filtreIsim.toUpperCase('tr') : "";
     
     let people = {};
     appData.gruplar.forEach(grup => {
         if(grup.kisiler) {
-            grup.kisiler.forEach(n => { people[n] = { n: n, gId: grup.id, gAd: grup.ad, data: {}, smName: "" }; });
-        }
-    });
-
-    const raw = document.getElementById('inpExcel').value.split('\n').filter(r=>r.trim());
-    let map = {};
-    raw.forEach(row => {
-        let cols = row.split('\t'); let isHead=false, tmp={};
-        cols.forEach((c,i)=>{ let k=excelTarih(c); if(k){tmp[k]=i; isHead=true;} });
-        if(isHead) map=tmp;
-        else {
-            let smNameExact = cols[0].trim().toUpperCase(); // SHIFTMASTER'DAKİ EXACT İSİM
-            let textToSearch = cols.slice(0, 5).join(" ").toUpperCase();
-            
-            let matchedPersonKey = Object.keys(people).find(pKey => {
-                let cleanPKey = pKey.includes("-") ? pKey.split("-")[1].trim() : pKey;
-                cleanPKey = cleanPKey.replace(/\s\d+$/, '').replace(/\s+/g, ' ').trim(); 
-                let normP = cleanPKey.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
-                let normText = textToSearch.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
-                return normText.includes(normP);
+            grup.kisiler.forEach(n => { 
+                let exactName = ""; let parts = n.includes("-") ? n.split("-")[1].trim() : n;
+                // ShiftMaster tam ismini eşleştir
+                Object.keys(pShiftleri).forEach(sm => {
+                    let normSM = sm.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+                    let normP = parts.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+                    if (normSM.includes(normP)) exactName = sm;
+                });
+                people[n] = { n: n, gId: grup.id, gAd: grup.ad, data: exactName ? pShiftleri[exactName] : {}, smName: exactName }; 
             });
-            
-            if(matchedPersonKey) {
-                people[matchedPersonKey].smName = smNameExact; // Doğru eşleştirmek için kaydet
-                for(let k in map) {
-                    let v = (cols[map[k]]||"").trim();
-                    if(v) people[matchedPersonKey].data[k] = v;
-                }
-            }
         }
     });
 
-    Object.values(people).forEach(p => {
-        days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
-    });
+    Object.values(people).forEach(p => { days.forEach(day => { let k = getKey(day); let tStr = `${String(day.getDate()).padStart(2,'0')}.${String(day.getMonth()+1).padStart(2,'0')}.${day.getFullYear()}`; if(!p.data[tStr]) p.data[tStr] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; }); });
 
     const HDR = [
         {n:"Çalışma Günü", c:"s-calisma"}, {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, {n:"Raporlu Gün Sayısı", c:"s-rapor"}, 
@@ -772,27 +595,19 @@ function raporuOlustur(filtreIsim) {
     ];
     
     let sayfaHtml = ""; 
-    
     let gArr = Object.values(people).reduce((acc, p) => { 
         let tamAd = p.n.toUpperCase('tr');
-        
         if (arananKisi !== "") {
             let normalizeAd = tamAd.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
             let normalizeAranan = arananKisi.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
-            if(!normalizeAd.includes(normalizeAranan)) {
-                return acc; 
-            }
+            if(!normalizeAd.includes(normalizeAranan)) return acc; 
         }
-
-        acc[p.gAd] = acc[p.gAd]||[]; 
-        acc[p.gAd].push(p); 
-        return acc; 
+        acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; 
     }, {});
     
     if(Object.keys(gArr).length === 0) {
         document.getElementById('raporAlani').innerHTML = `<h3 style="color:var(--red); font-size: 20px; padding: 30px; background: white; border-radius: 10px; margin-top:20px;">Sistemde veri bulunamadı.</h3>`;
-        document.getElementById('btnExceleKopyala').style.display = "none";
-        return;
+        document.getElementById('btnExceleKopyala').style.display = "none"; return;
     }
 
     for(let gAd in gArr) {
@@ -803,14 +618,10 @@ function raporuOlustur(filtreIsim) {
         });
         
         let gunSutunSayisi = 0;
-        days.forEach((d, idx) => {
-            gunSutunSayisi++;
-            if (d.getDay() === 0 || idx === days.length - 1) gunSutunSayisi += 3;
-        });
+        days.forEach((d, idx) => { gunSutunSayisi++; if (d.getDay() === 0 || idx === days.length - 1) gunSutunSayisi += 3; });
         
         let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; 
-        let chunkSize = 16;
-        let globalIndex = 1;
+        let chunkSize = 16; let globalIndex = 1;
         
         for (let i = 0; i < fullList.length; i += chunkSize) {
             let list = fullList.slice(i, i + chunkSize);
@@ -818,32 +629,31 @@ function raporuOlustur(filtreIsim) {
             let h = `<div class="sayfa"><table class="veri-tablosu" data-grup="${gAd}">
             <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim"><col class="c-isim"><col class="c-sno">`;
             
-            days.forEach((d, idx)=>{ 
-                h+=`<col class="c-gun">`; 
-                if(d.getDay()===0 || idx === days.length - 1) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; 
-            });
-            HDR.forEach(()=>h+=`<col class="c-gun">`);
-            h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
+            days.forEach((d, idx)=>{ h+=`<col class="c-gun">`; if(d.getDay()===0 || idx === days.length - 1) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
+            HDR.forEach(()=>h+=`<col class="c-gun">`); h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
             
             <tr>
-                <td colspan="${toplamSutun}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold;">
-                    ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ ${gAd.toUpperCase()} SÜREKLİ İŞÇİ PERSONEL PUANTAJ BİLDİRİMİ
+                <td colspan="5" class="stick-1" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white; z-index:40;">
+                    ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ
+                </td>
+                <td colspan="${toplamSutun - 5}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white;">
+                    ${gAd.toUpperCase()} SÜREKLİ İŞÇİ PERSONEL PUANTAJ BİLDİRİMİ
                 </td>
             </tr>
             <tr>
-                <td colspan="5" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px;">
+                <td colspan="5" class="stick-1" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px; background: white; z-index:40;">
                     BİRİM ADI    :   TEMİZLİK
                 </td>
-                <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px;">
+                <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px; background: white;">
                     ${str}
                 </td>
             </tr>`;
 
             let tr1 = `<tr>
-                <th rowspan="2"><div class="baslik-dik">SIRA NO</div></th>
-                <th rowspan="2" class="kalin-yatay">T.C. KİMLİK NUMARASI</th>
-                <th rowspan="2" class="isim-yatay">PERSONELİN ADI</th>
-                <th rowspan="2" class="isim-yatay">PERSONELİN SOYADI</th>
+                <th rowspan="2" class="stick-1"><div class="baslik-dik">SIRA NO</div></th>
+                <th rowspan="2" class="kalin-yatay stick-2">T.C. KİMLİK NUMARASI</th>
+                <th rowspan="2" class="isim-yatay stick-3">PERSONELİN ADI</th>
+                <th rowspan="2" class="isim-yatay stick-4">PERSONELİN SOYADI</th>
                 <th rowspan="2"><div class="baslik-dik">Devreden Çalışma Saati</div></th>`;
             
             let tr2 = `<tr>`;
@@ -852,7 +662,7 @@ function raporuOlustur(filtreIsim) {
             days.forEach((d, idx)=>{
                 let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
                 let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
-                let bgStyle = (d.getDay()===0||d.getDay()===6) ? 'background:#eee;' : '';
+                let bgStyle = (d.getDay()===0||d.getDay()===6) ? 'background:#e0e0e0;' : '';
                 
                 tr1 += `<th style="${bgStyle} padding: 1px;" data-tarih="${tamTarihStr}"><div class="baslik-dik">${tamTarihStr}</div></th>`;
                 tr2 += `<th style="${bgStyle} padding: 1px;" data-gun="${gunAdi}"><div class="baslik-dik-kucuk">${gunAdi}</div></th>`;
@@ -878,15 +688,15 @@ function raporuOlustur(filtreIsim) {
                     if(isimParcalari.length > 1) { soyad = isimParcalari.pop(); ad = isimParcalari.join(" "); } else { ad = tamIsim; }
                 }
                 h+=`<tr>
-                    <td class="kalin-yatay" contenteditable="true">${globalIndex++}</td>
-                    <td class="kalin-yatay" contenteditable="true">${tcNo}</td>
-                    <td class="isim-yatay" contenteditable="true">${ad}</td>
-                    <td class="isim-yatay" contenteditable="true">${soyad}</td>
+                    <td class="kalin-yatay stick-1" contenteditable="true">${globalIndex++}</td>
+                    <td class="kalin-yatay stick-2" contenteditable="true">${tcNo}</td>
+                    <td class="isim-yatay stick-3" contenteditable="true">${ad}</td>
+                    <td class="isim-yatay stick-4" contenteditable="true">${soyad}</td>
                     <td class="kalin-yatay" contenteditable="true">0</td>`;
                 
                 days.forEach((d, idx)=>{
                     let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
-                    let v = p.data[getKey(d)] || ""; 
+                    let v = p.data[tamTarihStr] || ""; 
                     let info = getVardiyaInfo(v); 
                     let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
                     if(info.tip==='izin') bg='hucre-izin';
@@ -923,7 +733,7 @@ function raporuOlustur(filtreIsim) {
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
 
-// ==== SHIFTMASTER SAĞ TIK MENÜSÜ & TOPLU SEÇİM ====
+// ==== SAĞ TIK MENÜSÜ & TOPLU SEÇİM ====
 let isSelecting = false; let startCell = null; let selectedCells = [];
 function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
 function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
@@ -941,71 +751,44 @@ document.addEventListener('mouseup', function() { isSelecting = false; });
 document.addEventListener('contextmenu', function(e) { 
     if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { 
         e.preventDefault(); 
-        if (!selectedCells.includes(e.target)) { 
-            clearSelection(); 
-            e.target.classList.add('selected-cell'); 
-            selectedCells.push(e.target); 
-        } 
+        if (!selectedCells.includes(e.target)) { clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } 
         
-        let ctxMenuDiv = document.getElementById('ctxDinamikVardiyalar');
-        ctxMenuDiv.innerHTML = '';
+        let ctxMenuDiv = document.getElementById('ctxDinamikVardiyalar'); ctxMenuDiv.innerHTML = '';
         if(appData.vardiyalar) {
             for(let v in appData.vardiyalar) {
-                let info = appData.vardiyalar[v];
-                let icon = info.tip === 'izin' ? '🔴' : '🟢';
+                let info = appData.vardiyalar[v]; let icon = info.tip === 'izin' ? '🔴' : '🟢';
                 ctxMenuDiv.innerHTML += `<div class="ctx-item" onclick="seciliHucrelereVardiyaYaz('${v}')">${icon} ${v}</div>`;
             }
         }
-
         let ctxMenu = document.getElementById('tableContextMenu'); 
-        ctxMenu.style.display = 'block'; 
-        ctxMenu.style.left = e.pageX + 'px'; 
-        ctxMenu.style.top = e.pageY + 'px'; 
+        ctxMenu.style.display = 'block'; ctxMenu.style.left = e.pageX + 'px'; ctxMenu.style.top = e.pageY + 'px'; 
     } 
 });
-
-document.addEventListener('click', function(e) {
-    if(!e.target.closest('#tableContextMenu')) {
-        document.getElementById('tableContextMenu').style.display = 'none';
-    }
-});
+document.addEventListener('click', function(e) { if(!e.target.closest('#tableContextMenu')) document.getElementById('tableContextMenu').style.display = 'none'; });
 
 function seciliHucrelereVardiyaYaz(vardiyaKodu) {
-    document.getElementById('tableContextMenu').style.display = 'none';
-    let batch = [];
+    document.getElementById('tableContextMenu').style.display = 'none'; let batch = [];
     selectedCells.forEach(td => {
         if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
-            batch.push({ td: td, oldVal: td.innerHTML });
-            td.innerHTML = formatliVardiya(vardiyaKodu);
-            satirHesapla(td);
-            batch[batch.length-1].newVal = td.innerHTML;
+            batch.push({ td: td, oldVal: td.innerHTML }); td.innerHTML = formatliVardiya(vardiyaKodu); satirHesapla(td); batch[batch.length-1].newVal = td.innerHTML;
         }
     });
-    if(batch.length > 0) pushToHistory(batch);
-    clearSelection();
+    if(batch.length > 0) pushToHistory(batch); clearSelection();
 }
-
 function seciliHucreleriTemizle() {
-    document.getElementById('tableContextMenu').style.display = 'none';
-    let batch = [];
+    document.getElementById('tableContextMenu').style.display = 'none'; let batch = [];
     selectedCells.forEach(td => {
         if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
-            batch.push({ td: td, oldVal: td.innerHTML });
-            td.innerHTML = '';
-            td.classList.remove('hucre-izin');
-            satirHesapla(td);
-            batch[batch.length-1].newVal = td.innerHTML;
+            batch.push({ td: td, oldVal: td.innerHTML }); td.innerHTML = ''; td.classList.remove('hucre-izin'); satirHesapla(td); batch[batch.length-1].newVal = td.innerHTML;
         }
     });
-    if(batch.length > 0) pushToHistory(batch);
-    clearSelection();
+    if(batch.length > 0) pushToHistory(batch); clearSelection();
 }
 
 function mergeSelectedCells() {
     document.getElementById('tableContextMenu').style.display = 'none'; if (selectedCells.length <= 1) return clearSelection();
     selectedCells.sort((a, b) => { let rDiff = getRowIdx(a) - getRowIdx(b); return rDiff !== 0 ? rDiff : getColIdx(a) - getColIdx(b); });
-    let mainCell = selectedCells[0]; let mergeId = "merge_" + Date.now();
-    let isRowMerge = getRowIdx(selectedCells[0]) === getRowIdx(selectedCells[1]);
+    let mainCell = selectedCells[0]; let mergeId = "merge_" + Date.now(); let isRowMerge = getRowIdx(selectedCells[0]) === getRowIdx(selectedCells[1]);
     if (isRowMerge) {
         let totalColSpan = 0; let mergedText = "";
         selectedCells.forEach((td, index) => { totalColSpan += parseInt(td.getAttribute('colspan') || 1); if(getCleanValue(td.innerText || td.textContent) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
@@ -1030,86 +813,31 @@ function unmergeSelectedCells() {
 }
 
 function exceleSifirKayipsizIndir() {
-    const tablolar = document.querySelectorAll('.veri-tablosu');
-    if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
-
-    let combinedHtml = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-        <meta charset="utf-8">
-        <style>
-            table { border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 11px; }
-            td, th { border: 0.5pt solid black; text-align: center; vertical-align: middle; }
-        </style>
-        </head>
-    <body>`;
-
+    const tablolar = document.querySelectorAll('.veri-tablosu'); if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
+    let combinedHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table { border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 11px; } td, th { border: 0.5pt solid black; text-align: center; vertical-align: middle; }</style></head><body>`;
     tablolar.forEach(tablo => {
         if(tablo.closest('.sayfa').style.display === 'none') return;
-
         let clone = tablo.cloneNode(true);
-        clone.querySelectorAll('script, button').forEach(el => el.remove());
-        clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
-
+        clone.querySelectorAll('script, button').forEach(el => el.remove()); clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
         clone.querySelectorAll('th, td').forEach(el => {
             let inlineStyle = `border: 0.5pt solid black; vertical-align: middle; `;
+            if (el.classList.contains('bg-hafta')) inlineStyle += "background-color: #dff0d8;"; else if (el.classList.contains('bg-genel')) inlineStyle += "background-color: #fcf3cf;"; else if (el.classList.contains('bg-gece')) inlineStyle += "background-color: #e8daef;"; else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;"; else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
+            if (el.classList.contains('kalin-yatay')) inlineStyle += "font-weight: bold; font-size: 11px; text-align: center;"; else if (el.classList.contains('isim-yatay')) inlineStyle += "font-weight: bold; font-size: 11px; text-align: left;"; else inlineStyle += "text-align: center;";
             
-            if (el.classList.contains('bg-hafta')) inlineStyle += "background-color: #dff0d8;";
-            else if (el.classList.contains('bg-genel')) inlineStyle += "background-color: #fcf3cf;";
-            else if (el.classList.contains('bg-gece')) inlineStyle += "background-color: #e8daef;";
-            else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;";
-            else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
-
-            if (el.classList.contains('kalin-yatay')) {
-                inlineStyle += "font-weight: bold; font-size: 11px; text-align: center;";
-            } else if (el.classList.contains('isim-yatay')) {
-                inlineStyle += "font-weight: bold; font-size: 11px; text-align: left;";
-            } else {
-                inlineStyle += "text-align: center;";
-            }
-
-            if (el.hasAttribute('data-tarih') && el.tagName === 'TH') {
-                el.innerHTML = el.getAttribute('data-tarih');
-                inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: bold;";
-            }
-            else if (el.hasAttribute('data-gun')) {
-                el.innerHTML = el.getAttribute('data-gun');
-                inlineStyle += "mso-rotate: 90; height: 45pt; white-space: nowrap; font-weight: normal; font-size: 9px;";
-            }
+            if (el.hasAttribute('data-tarih') && el.tagName === 'TH') { el.innerHTML = el.getAttribute('data-tarih'); inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: bold;"; }
+            else if (el.hasAttribute('data-gun')) { el.innerHTML = el.getAttribute('data-gun'); inlineStyle += "mso-rotate: 90; height: 45pt; white-space: nowrap; font-weight: normal; font-size: 9px;"; }
             else {
-                let raw = el.innerText || el.textContent || "";
-                raw = raw.trim();
-                
-                if (el.classList.contains('veri-hucre') && raw) {
-                    raw = raw.replace(/\s+/g, '-').replace(/-+/g, '-');
-                    el.innerHTML = raw;
-                    inlineStyle += "mso-rotate: 90; height: 65pt; white-space: nowrap; font-weight: bold;";
-                }
-                else {
-                    let dikeyBaslik = el.querySelector('.baslik-dik');
-                    if (dikeyBaslik) {
-                        el.innerHTML = dikeyBaslik.innerHTML;
-                        inlineStyle += "mso-rotate: 90; height: 110pt; white-space: normal;";
-                    }
-                }
+                let raw = el.innerText || el.textContent || ""; raw = raw.trim();
+                if (el.classList.contains('veri-hucre') && raw) { raw = raw.replace(/\s+/g, '-').replace(/-+/g, '-'); el.innerHTML = raw; inlineStyle += "mso-rotate: 90; height: 65pt; white-space: nowrap; font-weight: bold;"; }
+                else { let dikeyBaslik = el.querySelector('.baslik-dik'); if (dikeyBaslik) { el.innerHTML = dikeyBaslik.innerHTML; inlineStyle += "mso-rotate: 90; height: 110pt; white-space: normal;"; } }
             }
             el.setAttribute('style', inlineStyle);
         });
-
         combinedHtml += clone.outerHTML + "<br><br><br>"; 
     });
-
     combinedHtml += "</body></html>";
-
     const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Hastane_Puantaj_Listesi.xls';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Hastane_Puantaj_Listesi.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 </script>
 </body>
