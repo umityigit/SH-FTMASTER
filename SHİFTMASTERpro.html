@@ -371,7 +371,6 @@
             db.ref("islem_loglari").push(logData);
         }
 
-        // LOG LİMİTİ 25'E ÇIKARILDI
         db.ref("islem_loglari").limitToLast(25).on("value", snap => {
             const l = document.getElementById("logList"); l.innerHTML = "";
             const data = snap.val();
@@ -494,40 +493,39 @@
             }
         });
 
+        // ✨ TAM ÇEVRİMDIŞI (OFFLINE-FIRST) KALKANI - V2 ✨
+        (function() {
+            if (!window.firebase || !firebase.database) return;
+            const dummyRef = firebase.database().ref(); const dbProto = Object.getPrototypeOf(dummyRef);
+            function getPath(ref) { return ref.toString().replace(ref.root.toString(), '') || 'ana_dizin'; }
 
-// ✨ TAM ÇEVRİMDIŞI (OFFLINE-FIRST) KALKANI - V2 ✨
-            (function() {
-                if (!window.firebase || !firebase.database) return;
-                const dummyRef = firebase.database().ref(); const dbProto = Object.getPrototypeOf(dummyRef);
-                function getPath(ref) { return ref.toString().replace(ref.root.toString(), '') || 'ana_dizin'; }
+            const origOn = dbProto.on;
+            dbProto.on = function(eventType, callback, cancelCallback, context) {
+                if (eventType === 'value') {
+                    const safePath = getPath(this); const cachedData = localStorage.getItem('sm_v2_' + safePath);
+                    if (cachedData) { try { const parsed = JSON.parse(cachedData); const fakeSnap = { val: () => parsed, exists: () => parsed !== null, key: this.key }; setTimeout(() => { if (typeof callback === 'function') callback(fakeSnap); }, 10); } catch (e) {} }
+                    const wrappedCallback = function(snap) { if (snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val())); if (typeof callback === 'function') callback(snap); };
+                    return origOn.call(this, eventType, wrappedCallback, cancelCallback, context);
+                } return origOn.call(this, eventType, callback, cancelCallback, context);
+            };
 
-                const origOn = dbProto.on;
-                dbProto.on = function(eventType, callback, cancelCallback, context) {
-                    if (eventType === 'value') {
-                        const safePath = getPath(this); const cachedData = localStorage.getItem('sm_v2_' + safePath);
-                        if (cachedData) { try { const parsed = JSON.parse(cachedData); const fakeSnap = { val: () => parsed, exists: () => parsed !== null, key: this.key }; setTimeout(() => { if (typeof callback === 'function') callback(fakeSnap); }, 10); } catch (e) {} }
-                        const wrappedCallback = function(snap) { if (snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val())); if (typeof callback === 'function') callback(snap); };
-                        return origOn.call(this, eventType, wrappedCallback, cancelCallback, context);
-                    } return origOn.call(this, eventType, callback, cancelCallback, context);
-                };
+            const origOnce = dbProto.once;
+            dbProto.once = function(eventType, callback, failureCallback, context) {
+                const safePath = getPath(this);
+                if (eventType === 'value' && !navigator.onLine) {
+                    const cachedData = localStorage.getItem('sm_v2_' + safePath);
+                    if (cachedData) { try { const parsed = JSON.parse(cachedData); const fakeSnap = { val: () => parsed, exists: () => parsed !== null, key: this.key }; if (typeof callback === 'function') callback(fakeSnap); return Promise.resolve(fakeSnap); } catch (e) {} }
+                }
+                return origOnce.call(this, eventType, callback, failureCallback, context).then(snap => { if (eventType === 'value' && snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val())); return snap; });
+            };
 
-                const origOnce = dbProto.once;
-                dbProto.once = function(eventType, callback, failureCallback, context) {
-                    const safePath = getPath(this);
-                    if (eventType === 'value' && !navigator.onLine) {
-                        const cachedData = localStorage.getItem('sm_v2_' + safePath);
-                        if (cachedData) { try { const parsed = JSON.parse(cachedData); const fakeSnap = { val: () => parsed, exists: () => parsed !== null, key: this.key }; if (typeof callback === 'function') callback(fakeSnap); return Promise.resolve(fakeSnap); } catch (e) {} }
-                    }
-                    return origOnce.call(this, eventType, callback, failureCallback, context).then(snap => { if (eventType === 'value' && snap) localStorage.setItem('sm_v2_' + safePath, JSON.stringify(snap.val())); return snap; });
-                };
+            const origSet = dbProto.set; dbProto.set = function(value, onComplete) { const safePath = getPath(this); localStorage.setItem('sm_v2_' + safePath, JSON.stringify(value)); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'set', path: safePath, data: value }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origSet.call(this, value, onComplete); };
+            const origUpdate = dbProto.update; dbProto.update = function(value, onComplete) { const safePath = getPath(this); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'update', path: safePath, data: value }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origUpdate.call(this, value, onComplete); };
+            const origRemove = dbProto.remove; dbProto.remove = function(onComplete) { const safePath = getPath(this); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'remove', path: safePath }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origRemove.call(this, onComplete); };
 
-                const origSet = dbProto.set; dbProto.set = function(value, onComplete) { const safePath = getPath(this); localStorage.setItem('sm_v2_' + safePath, JSON.stringify(value)); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'set', path: safePath, data: value }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origSet.call(this, value, onComplete); };
-                const origUpdate = dbProto.update; dbProto.update = function(value, onComplete) { const safePath = getPath(this); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'update', path: safePath, data: value }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origUpdate.call(this, value, onComplete); };
-                const origRemove = dbProto.remove; dbProto.remove = function(onComplete) { const safePath = getPath(this); if (!navigator.onLine) { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); queue.push({ type: 'remove', path: safePath }); localStorage.setItem('sm_queue', JSON.stringify(queue)); if (typeof onComplete === 'function') onComplete(null); return Promise.resolve(); } return origRemove.call(this, onComplete); };
-
-                function kuyruguBosalt() { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); if (queue.length > 0) { queue.forEach(item => { if (item.type === 'set') firebase.database().ref(item.path).set(item.data); else if (item.type === 'update') firebase.database().ref(item.path).update(item.data); else if (item.type === 'remove') firebase.database().ref(item.path).remove(); }); localStorage.removeItem('sm_queue'); } }
-                window.addEventListener('online', kuyruguBosalt); setTimeout(() => { if (navigator.onLine) kuyruguBosalt(); }, 1500);
-            })();
+            function kuyruguBosalt() { let queue = JSON.parse(localStorage.getItem('sm_queue') || '[]'); if (queue.length > 0) { queue.forEach(item => { if (item.type === 'set') firebase.database().ref(item.path).set(item.data); else if (item.type === 'update') firebase.database().ref(item.path).update(item.data); else if (item.type === 'remove') firebase.database().ref(item.path).remove(); }); localStorage.removeItem('sm_queue'); } }
+            window.addEventListener('online', kuyruguBosalt); setTimeout(() => { if (navigator.onLine) kuyruguBosalt(); }, 1500);
+        })();
 
         let activeCell = null, staffList = [], history = [];
         let currentTargetTable = null; 
@@ -554,15 +552,12 @@
         function closeTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
         
-        // 💬 YENİ: SOSYAL HABERLEŞME YÜKLEME (REPLIES & REACTIONS EKLENDİ)
         function loadNews() { 
             db.ref("haberler").on("value", snap => { 
                 const l = document.getElementById("newsList"); l.innerHTML = ""; 
                 const data = snap.val(); 
                 if(data) { 
                     Object.entries(data).reverse().forEach(([id, val]) => { 
-                        
-                        // İç İçe Cevapları (Replies) Oluştur
                         let repliesHtml = '';
                         if(val.replies) {
                             repliesHtml = '<div class="replies-container">';
@@ -572,19 +567,16 @@
                             repliesHtml += '</div>';
                         }
 
-                        // Emojileri (Reactions) Oluştur
                         const quickEmojis = ['👍', '👎', '❤️'];
                         let reactionsHtml = '';
                         const reactions = val.reactions || {};
                         
-                        // Sabit emojiler
                         quickEmojis.forEach(emoji => {
                             const count = reactions[emoji] ? Object.keys(reactions[emoji]).length : 0;
                             const hasReacted = (reactions[emoji] && reactions[emoji][currentUser]) ? 'active' : '';
                             reactionsHtml += `<div class="reaction-btn ${hasReacted}" onclick="toggleReaction('${id}', '${emoji}')">${emoji} ${count > 0 ? count : ''}</div>`;
                         });
 
-                        // Ekstradan menüden seçilmiş emojiler varsa onları da göster
                         Object.keys(reactions).forEach(emoji => {
                             if (!quickEmojis.includes(emoji)) {
                                 const count = Object.keys(reactions[emoji]).length;
@@ -630,7 +622,6 @@
             }); 
         }
 
-        // 💬 YENİ: HABERLEŞME FONKSİYONLARI
         function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) }); logAction(`Panoya not bıraktı: "${i.value.substring(0,10)}..."`); i.value = ""; } }
         function deleteNews(id) { if(confirm("Mesajı kalıcı olarak silmek istiyor musun?")) { db.ref("haberler").child(id).remove(); logAction("Panodan bir mesaj sildi."); } }
 
@@ -656,7 +647,6 @@
         }
 
         function toggleEmojiPicker(id) {
-            // Açık olan diğer picker'ları kapat
             document.querySelectorAll('.emoji-picker.active').forEach(p => {
                 if(p.id !== `emoji-picker-${id}`) p.classList.remove('active');
             });
@@ -668,15 +658,14 @@
             if(!currentUser) return;
             const ref = db.ref(`haberler/${newsId}/reactions/${emoji}/${currentUser}`);
             ref.once('value', snap => {
-                if(snap.exists()) ref.remove(); // Geri al
-                else ref.set(true); // Ekle
+                if(snap.exists()) ref.remove(); 
+                else ref.set(true); 
             });
             
             const picker = document.getElementById(`emoji-picker-${newsId}`);
             if(picker) picker.classList.remove('active');
         }
 
-        // Tıklama ile Emoji Menülerini Kapatma
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.emoji-picker-wrapper')) {
                 document.querySelectorAll('.emoji-picker.active').forEach(p => p.classList.remove('active'));
@@ -775,13 +764,23 @@
         function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let current = wrapper.getAttribute("data-tablename"); let pName = prompt("Bu alt tablonun adı ne olsun?", current); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; } }
         function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
 
+        /* KOPYALAMA İÇİN YENİ TEMİZ TEXT ÇEKİCİ (Sorunu Kökten Çözer) */
+        function getCleanCellText(cell) { 
+            if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
+            if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
+            if (cell.querySelector('.stat-sub')) return cell.textContent.replace(/\n/g, " | "); 
+            let text = (cell.textContent || "").replace(/\n/g, " ").trim(); 
+            if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; 
+            return text; 
+        }
+
         function copyTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
             if(cbs.length === 0) return alert("Kopyalanacak satırları seçiniz!");
             let html = "<table border='1'><thead><tr>"; let tsv = "";
-            table.querySelectorAll('thead th').forEach(th => { if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return; let text = getCleanCellText(th); html += `<th style="background-color: #1e293b; color: #38bdf8;">${text}</th>`; tsv += text + "\t"; });
+            table.querySelectorAll('thead th').forEach(th => { if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return; let text = getCleanCellText(th); html += `<th>${text}</th>`; tsv += text + "\t"; });
             html += "</tr></thead><tbody>"; tsv += "\n";
-            cbs.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; let bg = getCellColor(td); let text = getCleanCellText(td); html += `<td style="background-color: ${bg}; color: white;">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; });
+            cbs.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; let text = getCleanCellText(td); html += `<td>${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; });
             html += "</tbody></table>";
             navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { let oldText = btn.innerHTML; btn.innerHTML = "✅ KOPYALANDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#0ea5e9"; }, 2000); });
         }
@@ -792,9 +791,26 @@
             const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked');
             try { const text = await navigator.clipboard.readText(); if(!text) return; saveHistory();
                 const rows = cleanExcelRows(text); const startDt = new Date(wrapper.getAttribute("data-startdt")); const colCount = parseInt(wrapper.getAttribute("data-colcount")); let tbody = wrapper.querySelector('tbody'); let existingNames = Array.from(tbody.querySelectorAll('.editable-name')).map(el => el.innerText.trim());
+                
+                if(rows.length === 1 && rows[0].split('\t').length === 1 && cbs.length > 0) {
+                    let val = rows[0].trim();
+                    cbs.forEach(cb => { 
+                        const tr = cb.closest('tr');
+                        tr.querySelectorAll('.shift-cell').forEach(td => {
+                            let oldPin = td.getAttribute("data-pin"); 
+                            td.innerText = val; 
+                            if(oldPin) td.setAttribute("data-pin", oldPin); 
+                            let r = shiftRules[val] || keyMatchesVal(val); 
+                            td.style.background = r ? r.color : "transparent";
+                        });
+                    });
+                    updateAllStats(); logAction("Tabloya veri yapıştırdı."); let oldText = btn.innerHTML; btn.innerHTML = "✅ YAPIŞTIRILDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#a855f7"; }, 2000);
+                    return;
+                }
+                
                 if(cbs.length > 0) {
                     let rowIndex = 0;
-                    cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") td.querySelector('.editable-name').innerText = val; else if(td.classList.contains('shift-cell')) { td.innerText = val; const r = shiftRules[val] || Object.values(shiftRules).find(rule => keyMatchesVal(val, rule)); td.style.background = r ? r.color : "transparent"; } } colIndex++; }); rowIndex++; });
+                    cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") td.querySelector('.editable-name').innerText = val; else if(td.classList.contains('shift-cell')) { let oldPin = td.getAttribute("data-pin"); td.innerText = val; if(oldPin) td.setAttribute("data-pin", oldPin); const r = shiftRules[val] || keyMatchesVal(val); td.style.background = r ? r.color : "transparent"; } } colIndex++; }); rowIndex++; });
                 } else {
                     if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } 
                     rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { return { text: s ? s.trim() : "", bg: "transparent" } }); const newRowHtml = createRowHtml(name, colCount, startDt, shifts); tbody.insertAdjacentHTML('beforeend', newRowHtml); });
@@ -804,7 +820,7 @@
 
         function exportTableToExcel(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); let html = "<table border='1'>"; let tsv = "";
-            table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; let bg = getCellColor(cell); let text = getCleanCellText(cell); html += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>";
+            table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; let text = getCleanCellText(cell); html += `<td>${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>";
             navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { alert("Tablo Puantaj Sistemine uygun formatta kopyalandı! 📤"); logAction("Tabloyu Excel'e (Puantaja) kopyaladı."); });
         }
 
@@ -840,7 +856,7 @@
         function importFromExcel() { 
             saveHistory(); const raw = document.getElementById("excelInput").value; if(!raw) return alert("Veri yapıştırılmadı!"); 
             const rows = cleanExcelRows(raw); 
-            const parsed = rows.map(row => { const p = row.split("\t"); return { name: p[0] ? p[0].trim() : "İSİM GİRİNİZ...", shifts: p.slice(1).map(s => { let text = s ? s.trim() : ""; let r = shiftRules[text] || Object.values(shiftRules).find(rule => keyMatchesVal(text, rule)); let bg = r ? r.color : "transparent"; return { text: text, bg: bg }; })}; }); 
+            const parsed = rows.map(row => { const p = row.split("\t"); return { name: p[0] ? p[0].trim() : "İSİM GİRİNİZ...", shifts: p.slice(1).map(s => { let text = s ? s.trim() : ""; let r = shiftRules[text] || keyMatchesVal(text); let bg = r ? r.color : "transparent"; return { text: text, bg: bg }; })}; }); 
             if(currentTargetTable) {
                 const startDt = new Date(currentTargetTable.getAttribute("data-startdt")); const colCount = parseInt(currentTargetTable.getAttribute("data-colcount")); let tbody = currentTargetTable.querySelector('tbody'); let existingNames = Array.from(tbody.querySelectorAll('.editable-name')).map(el => el.innerText.trim());
                 if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } 
@@ -850,9 +866,7 @@
         }
 
         function toggleAllRows(cb) { const table = cb.closest('table'); table.querySelectorAll('.row-checkbox').forEach(c => { if(c !== cb) c.checked = cb.checked; }); }
-        function getCleanCellText(cell) { if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').innerText.trim(); if (cell.querySelector('.stat-sub')) return cell.innerText.replace(/\n/g, " | "); let text = cell.innerText.replace(/\n/g, " ").trim(); if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; return text; }
-        function getCellColor(cell) { let bg = cell.style.background || cell.style.backgroundColor || 'transparent'; if (bg.includes('transparent') || bg === '') bg = cell.tagName === 'TH' ? '#1e293b' : '#0f172a'; return bg; }
-        function keyMatchesVal(val, rule) { for(let k in shiftRules) { if(k.replace(/\s/g,'') === val.replace(/\s/g,'') || (val !== "" && k.includes(val))) return shiftRules[k]; } return null; }
+        function keyMatchesVal(val) { for(let k in shiftRules) { if(k.replace(/\s/g,'') === val.replace(/\s/g,'') || (val !== "" && k.includes(val))) return shiftRules[k]; } return null; }
 
         function updateAllStats() {
             document.querySelectorAll("table tbody tr").forEach(row => {
@@ -929,7 +943,17 @@
             const selected = document.querySelectorAll('.selected-cell');
             if(selected.length > 0) { 
                 e.preventDefault(); let html = "<table border='1'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
-                selected.forEach(cell => { if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; const cellRow = cell.closest('tr'); if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; } let bg = getCellColor(cell); let text = getCleanCellText(cell); trHtml += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text); });
+                selected.forEach(cell => { 
+                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; 
+                    const cellRow = cell.closest('tr'); 
+                    if(currentRow !== cellRow) { 
+                        if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } 
+                        currentRow = cellRow; trHtml = "<tr>"; 
+                    } 
+                    let text = getCleanCellText(cell); 
+                    trHtml += `<td>${text}</td>`; 
+                    rowData.push(text); 
+                });
                 if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } html += "</table>";
                 e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv);
             }
@@ -940,9 +964,26 @@
             if(document.activeElement && (document.activeElement.classList.contains('shift-cell') || document.activeElement.classList.contains('editable-name')) && selectedCells.length <= 1) { const pastedData = (e.clipboardData || window.clipboardData).getData('text'); if(!pastedData.includes('\t') && !pastedData.includes('\n')) return; }
             if(targetCell && (targetCell.classList.contains('shift-cell') || targetCell.closest('td'))) {
                 e.preventDefault(); saveHistory(); const pastedData = (e.clipboardData || window.clipboardData).getData('text');
-                const rows = cleanExcelRows(pastedData); const table = targetCell.closest('table'); const tableRows = Array.from(table.querySelectorAll('tr')); const startRowIdx = tableRows.indexOf(targetCell.closest('tr')); 
+                const rows = cleanExcelRows(pastedData); 
+                
+                if (rows.length === 1 && rows[0].split('\t').length === 1 && selectedCells.length > 1) {
+                    let val = rows[0].trim();
+                    selectedCells.forEach(cell => {
+                        if(cell.classList.contains('shift-cell')) {
+                            let oldPin = cell.getAttribute("data-pin"); 
+                            cell.innerText = val; 
+                            if(oldPin) cell.setAttribute("data-pin", oldPin); 
+                            let r = shiftRules[val] || keyMatchesVal(val); 
+                            cell.style.background = r ? r.color : "transparent";
+                        }
+                    });
+                    updateAllStats(); logAction("Çoklu hücreye veri yapıştırdı.");
+                    return;
+                }
+
+                const table = targetCell.closest('table'); const tableRows = Array.from(table.querySelectorAll('tr')); const startRowIdx = tableRows.indexOf(targetCell.closest('tr')); 
                 let validCellsInStartRow = Array.from(targetCell.closest('tr').querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); let startValidColIdx = validCellsInStartRow.indexOf(targetCell); if(startValidColIdx === -1) startValidColIdx = 0;
-                for(let i = 0; i < rows.length; i++) { const cols = rows[i].split('\t'); const targetTr = tableRows[startRowIdx + i]; if(!targetTr) break; let validCells = Array.from(targetTr.querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); for(let j = 0; j < cols.length; j++) { const cell = validCells[startValidColIdx + j]; if(!cell) break; let val = cols[j].trim(); if(cell.querySelector('.editable-name')) cell.querySelector('.editable-name').innerText = val; else if(cell.classList.contains('shift-cell')) { let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); let r = shiftRules[val]; cell.style.background = r ? r.color : "transparent"; } } } updateAllStats(); logAction("Tablo içine veri yapıştırdı.");
+                for(let i = 0; i < rows.length; i++) { const cols = rows[i].split('\t'); const targetTr = tableRows[startRowIdx + i]; if(!targetTr) break; let validCells = Array.from(targetTr.querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); for(let j = 0; j < cols.length; j++) { const cell = validCells[startValidColIdx + j]; if(!cell) break; let val = cols[j].trim(); if(cell.querySelector('.editable-name')) cell.querySelector('.editable-name').innerText = val; else if(cell.classList.contains('shift-cell')) { let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); let r = shiftRules[val] || keyMatchesVal(val); cell.style.background = r ? r.color : "transparent"; } } } updateAllStats(); logAction("Tablo içine veri yapıştırdı.");
             }
         });
 
