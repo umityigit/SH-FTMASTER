@@ -3,571 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sınav Platformu - Gelişmiş Modül</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <title>J.A.R.V.I.S. V2 - Premium Sürüm</title>
     <style>
+        /* Yeni Klas Renk Paleti: Koyu Gri ve Kehribar (Amber) */
         :root {
-            /* Profesyonel Koyu Tema Renk Paleti */
-            --bg-body: #0f172a;        /* Derin Arka Plan */
-            --bg-surface: #1e293b;     /* Kart Arka Planı */
-            --bg-surface-hover: #334155;
-            --primary: #3b82f6;        /* Profesyonel Mavi */
-            --primary-hover: #2563eb;
-            --accent-purple: #8b5cf6;
-            --accent-pink: #ec4899;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg-main: #121212;
+            --bg-card: #2d2d2d;
+            --primary: #f59e0b; /* Kehribar/Altın Sarısı */
+            --primary-hover: #d97706;
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --border: #334155;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-            --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.2), 0 4px 6px -4px rgba(0,0,0,0.1);
+            --border-color: #404040;
+            --radius: 12px;
         }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 24px;
-            overflow-x: hidden;
-            /* Hafif teknolojik, temiz arka plan gradyanı */
-            background-image: radial-gradient(circle at top right, #1e293b, #0f172a 70%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center;
         }
-
-        /* Özel Scrollbar */
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-body); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-        /* Eski uzay nesneleri (JS hata vermesin diye gizlendi) */
-        #universe, .sci-fi-grid, .planet { display: none !important; }
-
-        /* ANA KONTEYNER - TAM EKRAN FERAHLIĞI */
-        .container {
-            width: 100%;
-            max-width: 1600px; /* Tam ekrana yakın genişlik */
-            min-height: 92vh;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
+        .app-container {
+            width: 100%; max-width: 1200px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
         }
-
-        .container.shift-left { transform: translateX(-200px); }
-
-        /* HEADER */
-        header {
-            padding: 24px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(30, 41, 59, 0.8);
-            border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-            z-index: 10;
+        h1 { color: var(--primary); text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-top: 0; }
+        
+        /* Kolaylaştırılmış Büyük Butonlar */
+        .btn {
+            background: var(--bg-card); color: var(--text-light);
+            border: 2px solid var(--primary); padding: 15px 20px;
+            border-radius: 8px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .btn:hover { background: var(--primary); color: #000; }
+        .btn-action { background: var(--success); border-color: var(--success); color: #fff;}
+        .btn-action:hover { background: #059669; color: #fff; }
+        .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff;}
+        .btn-danger:hover { background: #dc2626; color: #fff; }
 
-        h1 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        h1::before {
-            content: '';
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        #stats {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            background: var(--bg-body);
-            padding: 8px 16px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
+        .panel-header { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center;}
+        
+        /* Bariz Dosya Yükleme Alanı */
+        .upload-area {
+            background: #1a1a1a; border: 2px dashed var(--primary);
+            padding: 25px; border-radius: var(--radius); text-align: center;
+            margin-bottom: 30px;
         }
         
-        #score { color: var(--success); font-weight: 800; font-size: 1.3rem; margin-left: 5px; }
-
-        .header-actions { display: flex; gap: 12px; }
-
-        /* EKRAN GEÇİŞLERİ */
-        .screen {
-            padding: 40px;
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .screen.active { display: flex; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* BUTONLAR */
-        button {
-            padding: 14px 24px;
-            border-radius: var(--radius-sm);
-            border: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
         
-        .btn-primary { 
-            background: var(--primary); 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        .btn-primary:hover { 
-            background: var(--primary-hover); 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-sec { 
-            background: var(--bg-surface-hover); 
-            color: var(--text-main); 
-            border: 1px solid var(--border); 
-        }
-        .btn-sec:hover { 
-            background: #475569; 
-            border-color: #64748b;
-            transform: translateY(-2px); 
-        }
-
-        .btn-danger { 
-            background: var(--danger); 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-        .btn-danger:hover { 
-            background: #dc2626; 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-        }
-
-        /* YEPYENİ ŞIK / SEÇENEK TASARIMI (BÜYÜME EFEKTİ) */
-        .q-box {
-            background: var(--bg-body);
-            padding: 32px;
-            border-radius: var(--radius-lg);
-            font-size: 1.4rem;
-            font-weight: 500;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            border: 1px solid var(--border);
-            border-left: 6px solid var(--primary);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        #q-opts { display: flex; flex-direction: column; gap: 16px; }
-
+        /* Soru Alanı ve Büyüme Efekti */
+        .q-card { background: #1a1a1a; padding: 25px; border-radius: var(--radius); margin-bottom: 20px; font-size: 1.3rem; line-height: 1.5; border-left: 5px solid var(--primary); }
         .opt-btn {
-            width: 100%;
-            padding: 22px 28px;
-            background: var(--bg-surface-hover);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            text-align: left;
-            border-radius: var(--radius-md);
-            font-size: 1.15rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
+            display: block; width: 100%; text-align: left; background: #333;
+            border: 1px solid #555; padding: 18px 25px; border-radius: 8px;
+            margin-bottom: 12px; font-size: 1.15rem; color: #fff;
+            cursor: pointer; transition: 0.2s;
         }
+        .opt-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); transform: scale(1.02) translateX(10px); }
+        .opt-btn.correct { background: var(--success); color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--danger); color: white; border-color: var(--danger); }
 
-        /* İstediğin Okuma Rahatlığı Sağlayan Büyüme Olayı */
-        .opt-btn:hover:not(:disabled) {
-            transform: scale(1.02) translateX(10px);
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
-            z-index: 10;
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .lesson-card {
+            background: #1a1a1a; border: 1px solid var(--border-color);
+            padding: 25px 20px; border-radius: var(--radius); text-align: center;
+            cursor: pointer; transition: 0.3s; position: relative;
         }
-
-        .opt-btn.selected { 
-            background: rgba(59, 130, 246, 0.15); 
-            border-color: var(--primary); 
-            color: var(--primary); 
-            border-left: 8px solid var(--primary);
-        }
+        .lesson-card:hover { border-color: var(--primary); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.2); transform: translateY(-5px); }
+        .lesson-title { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+        .del-btn { position: absolute; top: 10px; right: 10px; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; border:none; background:none; }
+        .del-btn:hover { color: var(--danger); }
         
-        .opt-btn.correct { 
-            background: rgba(16, 185, 129, 0.15) !important; 
-            border-color: var(--success) !important; 
-            color: var(--success); 
-            border-left: 8px solid var(--success) !important;
-        }
-        
-        .opt-btn.wrong { 
-            background: rgba(239, 68, 68, 0.15); 
-            border-color: var(--danger); 
-            color: var(--danger); 
-            border-left: 8px solid var(--danger);
-        }
-
-        /* JS Hata Vermesin Diye Temizlenmiş Efekt Sınıfları */
-        .fall-down { opacity: 0.3; transform: scale(0.95); pointer-events: none; transition: all 0.3s ease; }
-        .dynamite { background: var(--warning) !important; color: #000 !important; border-color: transparent !important; animation: warningPulse 1s infinite; }
-        .particle { display: none !important; }
-
-        @keyframes warningPulse {
-            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-        }
-
-        /* MENÜ VE GİRİŞ PORTELİ */
-        .tools-panel {
-            display: flex;
-            gap: 16px;
-            background: var(--bg-body);
-            padding: 24px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 32px;
-        }
-
-        .menu-btn {
-            background: var(--bg-body);
-            padding: 32px 24px;
-            border-radius: var(--radius-md);
-            text-align: center;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-            background: var(--bg-surface-hover);
-        }
-
-        .menu-btn.random { border-color: var(--accent-pink); }
-        .menu-btn.random:hover { background: rgba(236, 72, 153, 0.1); }
-        .menu-btn.banko { border-color: var(--warning); }
-        .menu-btn.banko:hover { background: rgba(245, 158, 11, 0.1); }
-
-        .del-lesson {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            color: var(--text-muted);
-            font-size: 1.4rem;
-            transition: 0.2s;
-            background: none;
-            border: none;
-            padding: 0;
-        }
-        .del-lesson:hover { color: var(--danger); transform: scale(1.2); }
-
-        /* FORM ELEMANLARI */
-        textarea, input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 16px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            background: var(--bg-body);
-            color: var(--text-main);
-            font-size: 1rem;
-            transition: all 0.2s;
-            outline: none;
-        }
-        
-        textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-
-        .input-section {
-            margin-top: 40px;
-            border-top: 1px solid var(--border);
-            padding-top: 32px;
-        }
-
-        #preview-box {
-            margin-top: 16px;
-            padding: 20px;
-            background: var(--bg-body);
-            border: 1px dashed var(--primary);
-            border-radius: var(--radius-sm);
-            display: none;
-        }
-
-        #preview-list {
-            margin-top: 12px;
-            padding-left: 20px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
-
-        /* MODAL */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 50;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-box {
-            background: var(--bg-surface);
-            padding: 40px;
-            border-radius: var(--radius-lg);
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            border: 1px solid var(--border);
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            margin-bottom: 16px;
-            color: var(--text-main);
-            font-weight: 700;
-        }
-
-        /* DUPE KARTLARI */
-        .dupe-card {
-            background: var(--bg-body);
-            padding: 24px;
-            border-radius: var(--radius-md);
-            margin-bottom: 16px;
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--accent-purple);
-        }
-        .dupe-badge {
-            background: var(--bg-surface);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin-right: 8px;
-            display: inline-block;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            font-weight: 500;
-        }
-
-        /* NOTLAR ÇEKMECESİ */
-        .notes-drawer {
-            position: fixed;
-            right: 0; top: 0;
-            width: 400px;
-            height: 100vh;
-            background: var(--bg-surface);
-            border-left: 1px solid var(--border);
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-            z-index: 1000;
-            transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex;
-            flex-direction: column;
-            padding: 32px;
-        }
-        .notes-drawer.open { transform: translateX(0); }
-
-        .note-card {
-            background: var(--bg-body);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--accent-purple);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            word-break: break-word;
-            font-size: 0.95rem;
-            transition: 0.2s;
-        }
-        .note-card:hover {
-            border-color: var(--accent-purple);
-            background: rgba(139, 92, 246, 0.05);
-        }
-        
-        .controls {
-            display: flex;
-            gap: 16px;
-            margin-top: 32px;
-            flex-wrap: wrap;
-        }
-        .hidden { display: none !important; }
+        textarea, input[type="text"] { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid var(--border-color); color: #fff; border-radius: 8px; margin-bottom: 15px; font-size: 16px; box-sizing: border-box;}
+        textarea:focus, input[type="text"]:focus { outline: none; border-color: var(--primary); }
     </style>
 </head>
 <body>
-
-<div class="universe" id="universe">
-    <div class="planet mars"></div><div class="planet venus"></div><div class="planet jupiter"></div>
-</div>
-<div class="sci-fi-grid"></div>
-
-<div class="container" id="main-container">
-    <header>
-        <h1 id="title">Sınav Platformu</h1>
-        <div id="stats" class="hidden">Skor: <span id="score">0</span></div>
-        <div class="header-actions">
-            <button class="btn-sec" onclick="app.toggleNotes()" style="border-color:var(--accent-purple); color:var(--accent-purple);">📝 Notlar</button>
-            <button class="btn-sec" onclick="app.home()">≡ Panel</button>
-        </div>
-    </header>
-
-    <div id="scr-menu" class="screen active">
-        <div class="tools-panel">
-            <button class="btn-sec" style="flex:1" onclick="app.downloadBackup()">💾 Yedeği İndir</button>
-            <button class="btn-primary" style="flex:1; background: var(--success);" onclick="document.getElementById('factory-file').click()">⚙️ Sisteme Göm</button>
-            <button class="btn-primary" style="flex:2; background: var(--accent-purple);" onclick="app.findDuplicates()">🔍 Banko Radarı</button>
-            <input type="file" id="factory-file" accept=".json" style="display:none;" onchange="app.embedFactoryData(event)">
-        </div>
-
-        <div class="menu-grid" id="menu-list"></div>
+<div class="app-container">
+    <h1>J.A.R.V.I.S. V2 ⚡ Premium Arayüz</h1>
+    
+    <div id="screen-main" class="screen active">
         
-        <div class="input-section">
-            <h3 style="color:var(--text-muted); text-transform: uppercase; font-size:0.95rem; margin-bottom: 16px; letter-spacing: 1px;">Veri Giriş Porteli</h3>
-            <textarea id="import-text" rows="6" placeholder="Kopyaladığınız ham veriyi buraya yapıştırın..."></textarea>
-            
-            <div id="preview-box">
-                <strong id="preview-msg" style="color: var(--warning);">Analiz bekleniyor...</strong>
-                <ul id="preview-list"></ul>
-            </div>
-
-            <div style="margin-top: 16px; display: flex; gap: 16px; flex-wrap: wrap;">
-                <input type="text" id="import-subject" placeholder="DERS / MODÜL ADI GİRİNİZ" style="flex:2; font-weight:600; text-transform:uppercase;">
-                <button class="btn-sec" onclick="app.preview()" style="flex:1;">👁️ Önizle</button>
-                <button class="btn-primary" onclick="app.saveImport()" style="flex:1;">💾 Kaydet</button>
-                <button class="btn-danger" onclick="app.reset()" style="flex:1;">⚠️ Format</button>
-            </div>
+        <div class="upload-area">
+            <h3 style="margin-top:0; color: var(--text-muted); margin-bottom: 15px;">📂 JSON YEDEĞİ YÜKLE</h3>
+            <input type="file" id="file-upload" accept=".json" style="max-width: 100%; font-size:16px; color:var(--primary);" onchange="app.loadJSON(event)">
+            <p style="font-size: 1rem; color: var(--success); font-weight:bold; margin-top:10px;" id="upload-msg"></p>
         </div>
+
+        <div class="panel-header">
+            <button class="btn" onclick="app.downloadJSON()">💾 Cihaza Yedek İndir</button>
+            <button class="btn btn-action" onclick="app.showAddScreen()">➕ Yeni Soru Ekle (Yazıyla)</button>
+        </div>
+
+        <h2 style="border-bottom: 1px solid #404040; padding-bottom: 10px;">📚 Kayıtlı Modüller</h2>
+        <div id="module-list" class="menu-grid">
+            </div>
     </div>
 
-    <div id="scr-quiz" class="screen">
-        <div class="q-box" id="q-text"></div>
+    <div id="screen-add" class="screen">
+        <button class="btn" style="margin-bottom: 20px;" onclick="app.showScreen('screen-main')">⬅ Ana Panele Dön</button>
+        <h2 style="color:var(--primary);">📝 Yeni Veri Girişi</h2>
+        <input type="text" id="new-module-name" placeholder="Ders / Modül Adı Yazınız (Örn: Tıbbi Arşiv)">
+        <textarea id="new-module-data" rows="8" placeholder="Kopyaladığınız ham soruları buraya yapıştırın..."></textarea>
+        <button class="btn btn-action" style="width: 100%; padding: 20px; font-size:18px;" onclick="app.saveNewData()">💾 Soruları Sisteme Kaydet</button>
+    </div>
+
+    <div id="screen-exam" class="screen">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <button class="btn" onclick="app.showScreen('screen-main')">⬅ Sınavdan Çık</button>
+            <span style="font-size: 1.2rem; font-weight: bold; color: var(--success); background:#1a1a1a; padding:10px 20px; border-radius:8px;">Doğru: <span id="score">0</span></span>
+        </div>
+        
+        <div id="q-text" class="q-card">Soru buraya gelecek...</div>
         <div id="q-opts"></div>
         
-        <div class="controls" id="normal-controls">
-            <button class="btn-sec" style="flex:1" onclick="app.prev()">⬅ Önceki</button>
-            <button class="btn-primary" style="flex:2" onclick="app.check(true)">Cevabı Kilitle</button>
-            <button class="btn-sec" style="flex:1" onclick="app.next()">Sonraki ➡</button>
-            <button class="btn-danger" style="flex:100%; margin-top: 8px;" onclick="app.finishExam()">🛑 Sınavı Bitir</button>
-        </div>
-
-        <div class="controls hidden" id="end-controls">
-            <button class="btn-sec" style="flex:1" onclick="app.home()">≡ Ana Panel</button>
-            <button class="btn-primary" style="flex:2" onclick="app.retake()">🔄 Sınavı Tekrarla</button>
+        <div style="margin-top: 30px; display: flex; gap: 15px;">
+            <button class="btn" style="flex:1;" onclick="app.prevQ()">⬅ Önceki</button>
+            <button class="btn btn-action" style="flex:2; font-size:18px;" onclick="app.lockAnswer()">Cevabı Kilitle</button>
+            <button class="btn" style="flex:1;" onclick="app.nextQ()">Sonraki ➡</button>
         </div>
     </div>
 
-    <div id="scr-dupes" class="screen">
-        <h2 style="color: var(--accent-purple); margin-bottom: 8px;">📌 Banko İstihbarat Raporu</h2>
-        <p style="color: var(--text-muted); margin-bottom: 24px;">Sistemde birden fazla kez tespit edilen kritik öneme sahip sorular listelenmektedir.</p>
-        <div id="dupes-list" style="overflow-y:auto; flex:1; padding-right: 10px;"></div>
-        <div class="controls"><button class="btn-sec" style="width: 100%;" onclick="app.home()">⬅ Çıkış</button></div>
-    </div>
-
-    <div id="modal-setup" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-title" id="modal-exam-name">Modül Ayarları</div>
-            <p style="color:var(--text-muted); margin-bottom: 20px;">Sınav kapasitesini belirleyin:</p>
-            
-            <div style="display:flex; justify-content:center; gap:12px; margin-bottom:20px;">
-                <button class="btn-sec" onclick="document.getElementById('q-limit').value=10">10 Soru</button>
-                <button class="btn-sec" onclick="document.getElementById('q-limit').value=20">20 Soru</button>
-                <button class="btn-sec" onclick="document.getElementById('q-limit').value=50">50 Soru</button>
-            </div>
-            
-            <input type="number" id="q-limit" value="20" min="1" style="text-align: center; font-size: 1.2rem; font-weight: bold;">
-            <div style="margin-top: 12px; color:var(--text-muted); font-size: 0.9rem;">
-                Toplam Soru Havuzu: <span id="modal-total-q" style="color:var(--primary); font-weight:bold;">0</span>
-            </div>
-            
-            <div style="margin-top: 32px; display: flex; gap: 16px;">
-                <button class="btn-sec" onclick="app.closeSetup()">İptal</button>
-                <button class="btn-primary" onclick="app.startExamFromModal()" style="flex:1;">🚀 Sınavı Başlat</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="notes-drawer" class="notes-drawer">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:16px; margin-bottom:24px;">
-        <h3 style="margin:0; color:var(--accent-purple); font-size:1.2rem;">📌 Çalışma Notları</h3>
-        <span onclick="app.toggleNotes()" style="cursor:pointer; color:var(--danger); font-size:2rem; line-height:1;">&times;</span>
-    </div>
-    <div id="notes-list" style="flex:1; overflow-y:auto; padding-right:8px;"></div>
-    <div style="margin-top:24px;">
-        <input type="text" id="note-input" placeholder="Not yazıp ENTER'a basın..." onkeypress="app.addNote(event)">
-    </div>
 </div>
 
 <script>
-    
-    // ORİJİNAL "SINAVMOTORU.html" DOSYANIN EN ALTINDA BULUNAN 
-    // "const app = { ... " İLE BAŞLAYAN TÜM KODU BURAYA YAPIŞTIR.
-    // Hiçbir fonksiyon kaybı yaşamayacaksın.
+    const app = {
+        db: JSON.parse(localStorage.getItem('jarvis_v2_db')) || {},
+        currentModule: null,
+        questions: [],
+        qIndex: 0,
+        score: 0,
 
+        init() { this.renderModules(); },
+
+        save() { localStorage.setItem('jarvis_v2_db', JSON.stringify(this.db)); this.renderModules(); },
+
+        showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        },
+
+        showAddScreen() { this.showScreen('screen-add'); },
+
+        renderModules() {
+            const list = document.getElementById('module-list');
+            list.innerHTML = '';
+            const keys = Object.keys(this.db);
+            if (keys.length === 0) {
+                list.innerHTML = '<p style="color:var(--text-muted); font-size:1.1rem; grid-column: 1 / -1; text-align:center;">Sistemde kayıtlı modül bulunamadı. Lütfen yukarıdan JSON yedeği yükleyin veya yeni soru ekleyin.</p>';
+                return;
+            }
+            keys.forEach(mod => {
+                const div = document.createElement('div');
+                div.className = 'lesson-card';
+                div.innerHTML = `
+                    <button class="del-btn" title="Sil" onclick="app.deleteMod(event, '${mod}')">✖</button>
+                    <div class="lesson-title">${mod}</div>
+                    <div style="margin-top:10px; color:var(--text-muted);">${this.db[mod].length} Soru</div>
+                `;
+                div.onclick = (e) => {
+                    if(e.target.className !== 'del-btn') this.startExam(mod);
+                };
+                list.appendChild(div);
+            });
+        },
+
+        deleteMod(e, modName) {
+            e.stopPropagation();
+            if(confirm(`"${modName}" modülünü tamamen silmek istediğinize emin misiniz?`)) {
+                delete this.db[modName];
+                this.save();
+            }
+        },
+
+        loadJSON(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    this.db = { ...this.db, ...data };
+                    this.save();
+                    document.getElementById('upload-msg').innerText = "✅ YEDEK BAŞARIYLA YÜKLENDİ!";
+                    setTimeout(() => document.getElementById('upload-msg').innerText = "", 4000);
+                    e.target.value = "";
+                } catch (err) {
+                    alert("❌ Hata! Yüklediğiniz dosya geçerli bir sınav yedeği (JSON) değil.");
+                }
+            };
+            reader.readAsText(file);
+        },
+
+        downloadJSON() {
+            const blob = new Blob([JSON.stringify(this.db)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `JARVIS_V2_Yedek.json`;
+            a.click();
+        },
+
+        saveNewData() {
+            const name = document.getElementById('new-module-name').value.trim();
+            const raw = document.getElementById('new-module-data').value;
+            if (!name || !raw) return alert("Hata: İsim ve soru alanı boş olamaz!");
+
+            const temp = [];
+            const lines = raw.split('\n').filter(l => l.trim() !== "");
+            let currentQ = null;
+
+            lines.forEach(line => {
+                if(line.match(/^\d+[\.\)]/)) {
+                    if(currentQ) temp.push(currentQ);
+                    currentQ = { q: line.replace(/^\d+[\.\)]\s*/, ""), opts: [], ans: 0 };
+                } else if(line.match(/^[A-E][\.\)]/i)) {
+                    if(currentQ) currentQ.opts.push(line.replace(/^[A-E][\.\)]\s*/i, ""));
+                } else if(line.toLowerCase().includes("cevap:")) {
+                    const letter = line.split(":")[1].trim().toUpperCase();
+                    if(currentQ) currentQ.ans = letter.charCodeAt(0) - 65;
+                }
+            });
+            if(currentQ) temp.push(currentQ);
+
+            if (temp.length > 0) {
+                if(!this.db[name]) this.db[name] = [];
+                this.db[name].push(...temp);
+                this.save();
+                document.getElementById('new-module-name').value = "";
+                document.getElementById('new-module-data').value = "";
+                alert("✅ Başarılı! Sisteme " + temp.length + " adet soru eklendi.");
+                this.showScreen('screen-main');
+            } else {
+                alert("❌ Hata: Soru anlaşılamadı. Ham verinin formatını kontrol edin.");
+            }
+        },
+
+        startExam(modName) {
+            this.currentModule = modName;
+            this.questions = [...this.db[modName]].sort(() => Math.random() - 0.5);
+            this.qIndex = 0;
+            this.score = 0;
+            this.showScreen('screen-exam');
+            this.renderQ();
+        },
+
+        renderQ() {
+            if(this.questions.length === 0) return;
+            const q = this.questions[this.qIndex];
+            document.getElementById('q-text').innerText = `${this.qIndex + 1}. ${q.q}`;
+            const optsBox = document.getElementById('q-opts');
+            optsBox.innerHTML = '';
+            q.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => this.checkAns(i);
+                optsBox.appendChild(btn);
+            });
+            document.getElementById('score').innerText = this.score;
+        },
+
+        checkAns(idx) {
+            const q = this.questions[this.qIndex];
+            const btns = document.querySelectorAll('.opt-btn');
+            if (idx === true) return alert("Lütfen önce bir şık seçin!");
+            
+            if (idx === q.ans) {
+                btns[idx].classList.add('correct');
+                this.score++;
+            } else {
+                btns[idx].classList.add('wrong');
+                if(btns[q.ans]) btns[q.ans].classList.add('correct');
+            }
+            document.getElementById('score').innerText = this.score;
+            btns.forEach(b => b.disabled = true);
+            setTimeout(() => this.nextQ(), 1200);
+        },
+
+        nextQ() {
+            if (this.qIndex < this.questions.length - 1) {
+                this.qIndex++; this.renderQ();
+            } else {
+                alert(`🏁 Sınav Bitti! Toplam Doğru Sayınız: ${this.score}`);
+                this.showScreen('screen-main');
+            }
+        },
+        prevQ() { if (this.qIndex > 0) { this.qIndex--; this.renderQ(); } },
+        lockAnswer() { this.checkAns(true); }
+    };
+
+    window.onload = () => app.init();
 </script>
 </body>
 </html>
+
