@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v129 (CTRL+Z & SHIFTMASTER ÇİFT YÖNLÜ SENKRON)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v130 (CTRL+Z & SHIFTMASTER ÇİFT YÖNLÜ SENKRON)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -570,21 +570,11 @@ function excelTarih(s){
     return null;
 }
 
+// ==== YENİDEN YAZILAN KUSURSUZ HESAPLAMA MANTIĞI ====
 function satirHesapla(td) {
     if (!td) return;
     const tr = td.closest('tr');
     if (!tr) return;
-
-    const rawVal = getCleanValue(td.innerText || td.textContent);
-    const info = getVardiyaInfo(rawVal);
-    
-    const manuelSaat = parseFloat(rawVal.replace(",", "."));
-    const aktifSaat = (info && info.t > 0) ? info.t : (!isNaN(manuelSaat) ? manuelSaat : 0);
-
-    td.classList.remove('hucre-izin');
-    if (aktifSaat === 0 && rawVal !== "" && rawVal !== "0") {
-        td.classList.add('hucre-izin');
-    }
 
     let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0, tFM = 0;
     let wHs = 0, wHg = 0;
@@ -601,18 +591,28 @@ function satirHesapla(td) {
             const mS = parseFloat(v.replace(",", "."));
             const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
 
-            tAg++; 
-            if (v === "RT") n_rt++;
-            else if (v === "HT" && s === 0) n_ht++;
-            else if (v === "R") n_r++;
-            else if (inf && inf.tip === "izin") n_i++;
+            // Rengi temizle
+            c.classList.remove('hucre-izin');
 
+            // Eğer s > 0 ise kişi o gün FİİLEN ÇALIŞMIŞ (İşe Gelmiş) demektir.
             if (s > 0) {
-                wHs += s;
+                tAg++; // Çalışma/İşe Gelme gününü artır
                 wHg++;
+                wHs += s;
                 tAge += (inf.g || 0);
                 if (v === "RTÇ") n_rtc++;
                 if (c.classList.contains('hucre-haftasonu')) n_htc++;
+            } else {
+                // Saat içermeyen bir şey girilmiş, izin/rapor vs olabilir. 
+                // Çalışma gününe DÂHİL EDİLMEZ. Rapor, Yİ gibi ise renk kırmızısı yapılır.
+                if (v === "RT") n_rt++;
+                else if (v === "HT") n_ht++;
+                else if (v === "R" || v === "RAPOR") { n_r++; c.classList.add('hucre-izin'); }
+                else if (v === "Yİ" || v === "İ" || v === "Nİ" || (inf && inf.tip === "izin")) { n_i++; c.classList.add('hucre-izin'); }
+                else if (v !== "" && v !== "0") {
+                    // Bilinmeyen bir harf yazılmış ama çalışma değil
+                    c.classList.add('hucre-izin');
+                }
             }
         }
 
@@ -636,9 +636,16 @@ function satirHesapla(td) {
         if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2));
     };
 
-    update('.s-calisma', tAg); update('.s-yol', tAg + n_rtc); update('.s-rapor', n_r);
-    update('.s-izin', n_i); update('.s-ht', n_ht); update('.s-rt', n_rt);
-    update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
+    update('.s-calisma', tAg); 
+    update('.s-yol', tAg); // Yol hakkı doğrudan fiilen geldiği gündür
+    update('.s-rapor', n_r);
+    update('.s-izin', n_i); 
+    update('.s-ht', n_ht); 
+    update('.s-rt', n_rt);
+    update('.s-rtc', n_rtc); 
+    update('.s-fm', tFM); 
+    update('.s-gecefm', 0); 
+    update('.s-gece', tAge);
 }
 
 function veriyiCekVeOlustur(arananIsim) {
@@ -754,10 +761,11 @@ function raporuOlustur(filtreIsim) {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
 
+    // === SÜTUN YERLERİ BURADA DEĞİŞTİRİLDİ ===
     const HDR = [
         {n:"Çalışma Günü", c:"s-calisma"}, {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, {n:"Raporlu Gün Sayısı", c:"s-rapor"}, 
         {n:"İzinli Olduğu Gün Sayısı", c:"s-izin"}, {n:"Hafta Tatili Toplamı(HT)", c:"s-ht"}, {n:"Resmi Tatil(Tam Gün)(RT)", c:"s-rt"}, 
-        {n:"Resmi Tatil Çalışması(RTÇ)", c:"s-rtc"}, {n:"Gündüz Fazla Mesai Toplamı", c:"s-fm"}, {n:"İŞ SAĞLIĞI VE GÜVENLİĞİ (YOL)", c:"s-isg"}
+        {n:"Resmi Tatil Çalışması(RTÇ)", c:"s-rtc"}, {n:"İŞ SAĞLIĞI VE GÜVENLİĞİ (YOL)", c:"s-isg"}, {n:"Gündüz Fazla Mesai Toplamı", c:"s-fm"}
     ];
     
     let sayfaHtml = ""; 
@@ -880,7 +888,6 @@ function raporuOlustur(filtreIsim) {
                     let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; 
                     if(info.tip==='izin') bg='hucre-izin';
                     
-                    // data-smisim DİREKT SHIFTMASTER İSMİNİ TUTUYOR!
                     h+=`<td contenteditable="true" class="veri-hucre ${bg}" data-smisim="${p.smName}" data-tarih="${tamTarihStr}" onfocus="hucreOdaklan(this)" onblur="hucreCik(this)">${formatliVardiya(v)}</td>`;
                     
                     if(d.getDay()===0 || idx === days.length - 1){
@@ -1019,6 +1026,7 @@ function unmergeSelectedCells() {
     if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
 }
 
+// === EXCEL KAYDETME KISMINDAKİ HATALI TARİH BUG'I BURADA ÇÖZÜLDÜ ===
 function exceleSifirKayipsizIndir() {
     const tablolar = document.querySelectorAll('.veri-tablosu');
     if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
@@ -1058,7 +1066,8 @@ function exceleSifirKayipsizIndir() {
                 inlineStyle += "text-align: center;";
             }
 
-            if (el.hasAttribute('data-tarih')) {
+            // DÜZELTME: SADECE TH İSE TARİHİ AL (Böylece vardiyalar tarihe dönüşmez!)
+            if (el.hasAttribute('data-tarih') && el.tagName === 'TH') {
                 el.innerHTML = el.getAttribute('data-tarih');
                 inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: bold;";
             }
