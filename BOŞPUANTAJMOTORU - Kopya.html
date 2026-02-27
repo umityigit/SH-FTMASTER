@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v130 (CTRL+Z & SHIFTMASTER ÇİFT YÖNLÜ SENKRON)</title>
+    <title>TEMİZLİK BİRİMİ PUANTAJ SİSTEMİ v131 (CTRL+Z & SHIFTMASTER ÇİFT YÖNLÜ SENKRON)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #2c3e50; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --blue: #2980b9; --dark: #1a252f; }
@@ -570,7 +570,7 @@ function excelTarih(s){
     return null;
 }
 
-// ==== YENİDEN YAZILAN KUSURSUZ HESAPLAMA MANTIĞI ====
+// ==== YENİDEN YAZILAN KUSURSUZ GÜN HESAPLAMA MANTIĞI ====
 function satirHesapla(td) {
     if (!td) return;
     const tr = td.closest('tr');
@@ -578,12 +578,16 @@ function satirHesapla(td) {
 
     let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0, tFM = 0;
     let wHs = 0, wHg = 0;
+    let tGun = 0; // Toplam Puantaj Gün Sayısı (Sabit Kalacak)
 
     const allCells = Array.from(tr.children);
     allCells.forEach(c => {
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
 
+        // Geçerli bir tarih sütunundaysak (Hafta toplamı falan değilse)
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
+            tGun++; // Her geçerli gün hücresi, periyodun toplam gününü bulmak için sayılır (Örn: 28, 30, 31).
+
             const v = getCleanValue(c.innerText || c.textContent);
             if (v === "" || v === "0") return;
 
@@ -596,7 +600,7 @@ function satirHesapla(td) {
 
             // Eğer s > 0 ise kişi o gün FİİLEN ÇALIŞMIŞ (İşe Gelmiş) demektir.
             if (s > 0) {
-                tAg++; // Çalışma/İşe Gelme gününü artır
+                tAg++; // İşe fiilen gelme sayısı (Yol) artar.
                 wHg++;
                 wHs += s;
                 tAge += (inf.g || 0);
@@ -604,7 +608,7 @@ function satirHesapla(td) {
                 if (c.classList.contains('hucre-haftasonu')) n_htc++;
             } else {
                 // Saat içermeyen bir şey girilmiş, izin/rapor vs olabilir. 
-                // Çalışma gününe DÂHİL EDİLMEZ. Rapor, Yİ gibi ise renk kırmızısı yapılır.
+                // İşe gelme günü (tAg) ARTMAZ.
                 if (v === "RT") n_rt++;
                 else if (v === "HT") n_ht++;
                 else if (v === "R" || v === "RAPOR") { n_r++; c.classList.add('hucre-izin'); }
@@ -636,8 +640,8 @@ function satirHesapla(td) {
         if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2));
     };
 
-    update('.s-calisma', tAg); 
-    update('.s-yol', tAg); // Yol hakkı doğrudan fiilen geldiği gündür
+    update('.s-calisma', tGun); // <--- DEĞİŞİKLİK BURADA: Artık toplam periyot gününü (örn: 28) sabit gösterir.
+    update('.s-yol', tAg);      // <--- İşe gelme günü (Yol hakkı) sadece fiilen gelinen, çalışma olan günleri sayar.
     update('.s-rapor', n_r);
     update('.s-izin', n_i); 
     update('.s-ht', n_ht); 
@@ -761,7 +765,6 @@ function raporuOlustur(filtreIsim) {
         days.forEach(day => { let k = getKey(day); if(!p.data[k]) p.data[k] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; });
     });
 
-    // === SÜTUN YERLERİ BURADA DEĞİŞTİRİLDİ ===
     const HDR = [
         {n:"Çalışma Günü", c:"s-calisma"}, {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, {n:"Raporlu Gün Sayısı", c:"s-rapor"}, 
         {n:"İzinli Olduğu Gün Sayısı", c:"s-izin"}, {n:"Hafta Tatili Toplamı(HT)", c:"s-ht"}, {n:"Resmi Tatil(Tam Gün)(RT)", c:"s-rt"}, 
@@ -1026,7 +1029,6 @@ function unmergeSelectedCells() {
     if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
 }
 
-// === EXCEL KAYDETME KISMINDAKİ HATALI TARİH BUG'I BURADA ÇÖZÜLDÜ ===
 function exceleSifirKayipsizIndir() {
     const tablolar = document.querySelectorAll('.veri-tablosu');
     if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
@@ -1066,7 +1068,6 @@ function exceleSifirKayipsizIndir() {
                 inlineStyle += "text-align: center;";
             }
 
-            // DÜZELTME: SADECE TH İSE TARİHİ AL (Böylece vardiyalar tarihe dönüşmez!)
             if (el.hasAttribute('data-tarih') && el.tagName === 'TH') {
                 el.innerHTML = el.getAttribute('data-tarih');
                 inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: bold;";
