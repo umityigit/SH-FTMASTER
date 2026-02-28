@@ -995,5 +995,135 @@
             document.getElementById('startDate').valueAsDate = new Date();
         };
     </script>
+    <style>
+    /* ShiftMaster temasına uygun şık, cam efektli tasarım */
+    .sm-player {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid #3b82f6;
+        border-radius: 50px;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: white;
+        z-index: 9999;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        font-family: 'Segoe UI', sans-serif;
+        transition: all 0.3s ease;
+    }
+    .sm-player:hover { border-color: #f59e0b; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3); }
+    .sm-btn {
+        background: none; border: none; color: #3b82f6; 
+        font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .sm-btn:hover { color: #f59e0b; transform: scale(1.2); }
+    .sm-track-info {
+        display: flex; flex-direction: column;
+    }
+    .sm-title { font-size: 0.85rem; font-weight: bold; color: #f3f4f6; width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sm-status { font-size: 0.7rem; color: #10b981; }
+    /* Müzik çalarken beliren ses dalgası animasyonu */
+    .equalizer { display: none; gap: 2px; height: 15px; align-items: flex-end; }
+    .equalizer.active { display: flex; }
+    .bar { width: 3px; background: #10b981; animation: eq 1s infinite ease-in-out alternate; }
+    .bar:nth-child(2) { animation-delay: 0.2s; }
+    .bar:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes eq { 0% { height: 3px; } 100% { height: 15px; } }
+</style>
+
+<div class="sm-player" id="sm-player">
+    <button class="sm-btn" onclick="smMusic.prev()" title="Önceki">⏮</button>
+    <button class="sm-btn" onclick="smMusic.toggle()" id="sm-play-btn" style="font-size: 1.5rem;" title="Oynat/Durdur">▶</button>
+    <button class="sm-btn" onclick="smMusic.next()" title="Sonraki">⏭</button>
+    
+    <div class="sm-track-info">
+        <span class="sm-title" id="sm-title">ShiftMaster Radyo</span>
+        <span class="sm-status" id="sm-status">Sistem Bekleniyor...</span>
+    </div>
+
+    <div class="equalizer" id="sm-eq">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+</div>
+
+<script>
+    const smMusic = {
+        audio: new Audio(),
+        isPlaying: false,
+        index: 0,
+        // BURAYA İSTEDİĞİN ŞARKILARIN İNTERNET LİNKLERİNİ KOYABİLİRSİN
+        // Şimdilik test için telifsiz dinlendirici radyolar/müzikler ekledim.
+        playlist: [
+            { name: "Çalışma Modu (Lofi)", url: "https://stream.zeno.fm/f3wvbbqmdg8uv" }, // Örnek Lofi Radyo
+            { name: "Odaklanma (Piyano)", url: "https://stream.zeno.fm/8q7v1b1m8x8uv" }, // Örnek Piyano
+            { name: "Hareketli Başlangıç", url: "https://stream.zeno.fm/0r0xa792kwzuv" }  // Örnek Elektronik
+        ],
+
+        init() {
+            this.audio.src = this.playlist[this.index].url;
+            this.audio.volume = 0.5; // Ses seviyesi %50 (Hastanede rahatsız etmesin diye)
+            document.getElementById('sm-title').innerText = this.playlist[this.index].name;
+            
+            // Şarkı bitince diğerine geç
+            this.audio.onended = () => this.next();
+        },
+
+        toggle() {
+            if (this.isPlaying) this.pause();
+            else this.play();
+        },
+
+        play() {
+            this.audio.play().then(() => {
+                this.isPlaying = true;
+                document.getElementById('sm-play-btn').innerText = "⏸";
+                document.getElementById('sm-status').innerText = "Oynatılıyor";
+                document.getElementById('sm-status').style.color = "#10b981";
+                document.getElementById('sm-eq').classList.add('active');
+            }).catch(e => console.log("Otomatik çalma engellendi, kullanıcı tıklaması bekleniyor."));
+        },
+
+        pause() {
+            this.audio.pause();
+            this.isPlaying = false;
+            document.getElementById('sm-play-btn').innerText = "▶";
+            document.getElementById('sm-status').innerText = "Duraklatıldı";
+            document.getElementById('sm-status').style.color = "#f59e0b";
+            document.getElementById('sm-eq').classList.remove('active');
+        },
+
+        next() {
+            this.index = (this.index + 1) % this.playlist.length;
+            this.changeTrack();
+        },
+
+        prev() {
+            this.index = (this.index - 1 + this.playlist.length) % this.playlist.length;
+            this.changeTrack();
+        },
+
+        changeTrack() {
+            this.audio.src = this.playlist[this.index].url;
+            document.getElementById('sm-title').innerText = this.playlist[this.index].name;
+            if (this.isPlaying) this.play();
+        },
+        
+        // Bu fonksiyonu ShiftMaster'ın "Giriş Yap" butonunun içine ekleyebilirsin
+        loginTrigger() {
+            if(!this.isPlaying) {
+                this.play();
+            }
+        }
+    };
+
+    // Sistemi hazırla
+    smMusic.init();
+</script>
 </body>
 </html>
+
