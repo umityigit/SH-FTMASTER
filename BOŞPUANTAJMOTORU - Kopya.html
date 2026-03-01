@@ -240,7 +240,7 @@ const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", data
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
 // === ÇİFT YÖNLÜ SENKRON DEĞİŞKENLERİ ===
-window.firebaseCellPaths = {}; // Hücrelerin ShiftMaster adres haritası
+window.firebaseCellPaths = {}; 
 let historyStack = []; 
 let hasUnsavedChanges = false; 
 
@@ -455,14 +455,21 @@ function tarihGuncelle(){
 }
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
 
-// ==== GÜN HESAPLAMA MANTIĞI ====
+// ==== YENİ GÜN & FAZLA MESAİ HESAPLAMA MANTIĞI ====
 function satirHesapla(td) {
     if (!td) return; const tr = td.closest('tr'); if (!tr) return;
-    let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0, tFM = 0;
+    let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0;
+    
+    // Gündüz ve Gece Fazla Mesai ayrı ayrı tutulacak
+    let tFM_Gunduz = 0, tFM_Gece = 0;
+    
     let wHs = 0, wHg = 0; let tGun = 0; 
+    let currentWeekFmTotal = 0; // Sadece o hafta tablosunda görünmesi için
 
     Array.from(tr.children).forEach(c => {
         if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
+        
+        // --- 1. GÜNLÜK HÜCRELERİN (VARDİYALARIN) HESAPLANMASI ---
         if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
             tGun++; 
             const v = getCleanValue(c.innerText || c.textContent);
@@ -470,7 +477,44 @@ function satirHesapla(td) {
             const inf = getVardiyaInfo(v); const mS = parseFloat(v.replace(",", ".")); const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
             c.classList.remove('hucre-izin');
 
-            if (s > 0) { tAg++; wHg++; wHs += s; tAge += (inf.g || 0); if (v === "RTÇ") n_rtc++; if (c.classList.contains('hucre-haftasonu')) n_htc++; } 
+            if (s > 0) { 
+                tAg++; wHg++; 
+                
+                // Gündüz ve Gece saatlerini ayır
+                let gece = (inf.g || 0);
+                let gunduz = s - gece;
+                if (gunduz < 0) gunduz = 0;
+                
+                tAge += gece; 
+                
+                // --- FAZLA MESAİYİ KRONOLOJİK OLARAK DAĞITMA MANTIĞI ---
+                // Eğer haftalık çalışma saati şimdiden 45'i doldurmuşsa, bu vardiyanın tamamı Fazla Mesaidir.
+                if (wHs >= 45) {
+                    tFM_Gece += gece;
+                    tFM_Gunduz += gunduz;
+                    currentWeekFmTotal += s;
+                } 
+                // Eğer bu vardiya eklenince 45'i GEÇİYORSA (Örn: 40 saatti, 8 saatlik vardiya geldi)
+                else if (wHs + s > 45) {
+                    // Sadece sınırı aşan kısım Fazla Mesaidir
+                    let fmInThisShift = (wHs + s) - 45;
+                    currentWeekFmTotal += fmInThisShift;
+                    
+                    // Aşan kısmı, bu vardiyanın kendi gece/gündüz oranına göre orantılı olarak dağıtır
+                    let shiftGeceOrani = s > 0 ? (gece / s) : 0;
+                    let fmGeceThisShift = fmInThisShift * shiftGeceOrani;
+                    let fmGunduzThisShift = fmInThisShift - fmGeceThisShift;
+                    
+                    tFM_Gece += fmGeceThisShift;
+                    tFM_Gunduz += fmGunduzThisShift;
+                }
+                
+                // Haftalık saati güncelle
+                wHs += s; 
+
+                if (v === "RTÇ") n_rtc++; 
+                if (c.classList.contains('hucre-haftasonu')) n_htc++; 
+            }
             else {
                 if (v === "RT") n_rt++; else if (v === "HT") n_ht++;
                 else if (v === "R" || v === "RAPOR") { n_r++; c.classList.add('hucre-izin'); }
@@ -478,17 +522,34 @@ function satirHesapla(td) {
                 else if (v !== "" && v !== "0") { c.classList.add('hucre-izin'); }
             }
         }
+        
+        // --- 2. HAFTALIK ÖZET HÜCRELERİNİN DOLDURULMASI ---
         if (c.classList.contains('bg-hafta')) {
             const type = c.getAttribute('data-type');
             if (type === 'h-gun') { c.innerText = wHg > 0 ? wHg : ""; } 
             else if (type === 'h-saat') { c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : ""; } 
-            else if (type === 'h-fm') { let wFm = wHs > 45 ? (wHs - 45) : 0; c.innerText = wFm > 0 ? Number(wFm.toFixed(2)) : ""; tFM += wFm; wHs = 0; wHg = 0; }
+            else if (type === 'h-fm') { 
+                // Hafta bitti, fazla mesai bilgisini ekrana yaz ve sayaçları diğer hafta için sıfırla
+                c.innerText = currentWeekFmTotal > 0 ? Number(currentWeekFmTotal.toFixed(2)) : ""; 
+                wHs = 0; wHg = 0; currentWeekFmTotal = 0; 
+            }
         }
     });
 
+    // --- 3. ANA TABLO SONU ÖZETLERİNİ GÜNCELLEME ---
     const update = (cls, v) => { const el = tr.querySelector(cls); if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2)); };
-    update('.s-calisma', tGun); update('.s-yol', tAg); update('.s-rapor', n_r); update('.s-izin', n_i); update('.s-ht', n_ht); update('.s-rt', n_rt); update('.s-rtc', n_rtc); update('.s-fm', tFM); update('.s-gecefm', 0); update('.s-gece', tAge);
+    update('.s-calisma', tGun); 
+    update('.s-yol', tAg); 
+    update('.s-rapor', n_r); 
+    update('.s-izin', n_i); 
+    update('.s-ht', n_ht); 
+    update('.s-rt', n_rt); 
+    update('.s-rtc', n_rtc); 
+    update('.s-fm', tFM_Gunduz);   // Doğru dağıtılmış Gündüz FM
+    update('.s-gecefm', tFM_Gece); // Doğru dağıtılmış Gece FM
+    update('.s-gece', tAge);       // Toplam Gece Çalışması
 }
+
 
 // === İŞTE YARIM KAYDETMEYİ ÇÖZEN YENİ VERİ ÇEKME MOTORU ===
 function veriyiCekVeOlustur(arananIsim) {
@@ -842,4 +903,3 @@ function exceleSifirKayipsizIndir() {
 </script>
 </body>
 </html>
-
