@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v114.0 - GHOST PIN & PATRON EDITION (SOCIAL PANEL)</title>
+    <title>ShiftMaster v115.0 - ULTIMATE EXCEL & SORT</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,14 +19,14 @@
         body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); padding: 25px; margin: 0; padding-bottom: 90px; }
 
         /* ✨ GİRİŞ EKRANI */
-        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; transition: opacity 1s ease; perspective: 1000px; }
-        .splash-hospital { font-size: 18px; color: var(--accent); letter-spacing: 4px; margin-bottom: 40px; font-weight: 800; text-align: center; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); line-height: 1.6; opacity: 0; animation: fadeUp 1s forwards 0.5s; }
-        .splash-logo { width: 150px; height: 150px; background: var(--accent); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 80px rgba(56, 189, 248, 0.5); animation: pulse 2.5s infinite, logoDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; margin-bottom: 30px; }
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; transition: opacity 0.5s ease; perspective: 1000px; }
+        .splash-hospital { font-size: 18px; color: var(--accent); letter-spacing: 4px; margin-bottom: 40px; font-weight: 800; text-align: center; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); line-height: 1.6; opacity: 0; animation: fadeUp 0.5s forwards 0.2s; }
+        .splash-logo { width: 150px; height: 150px; background: var(--accent); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 80px rgba(56, 189, 248, 0.5); animation: pulse 2.5s infinite, logoDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; margin-bottom: 30px; }
         .splash-text-container { display: flex; gap: 5px; margin-bottom: 15px; }
-        .splash-char { font-size: 56px; font-weight: 900; color: var(--text); text-shadow: 0 5px 15px #000; opacity: 0; transform: rotateY(90deg) translateY(50px); display: inline-block; animation: letterReveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        .splash-char { font-size: 56px; font-weight: 900; color: var(--text); text-shadow: 0 5px 15px #000; opacity: 0; transform: rotateY(90deg) translateY(50px); display: inline-block; animation: letterReveal 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
         
         /* GİZLİ KİLİT TETİKLEYİCİSİ */
-        .splash-prod { font-size: 14px; color: #94a3b8; letter-spacing: 3px; font-weight: 600; opacity: 0; border-top: 1px solid #334155; padding-top: 20px; margin-top: 10px; width: 300px; text-align: center; animation: fadeUp 1s forwards 1.5s; cursor: pointer; user-select: none; }
+        .splash-prod { font-size: 14px; color: #94a3b8; letter-spacing: 3px; font-weight: 600; opacity: 0; border-top: 1px solid #334155; padding-top: 20px; margin-top: 10px; width: 300px; text-align: center; animation: fadeUp 0.5s forwards 0.8s; cursor: pointer; user-select: none; }
         .splash-prod:active { color: var(--warning); }
 
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 60px rgba(56, 189, 248, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 100px rgba(56, 189, 248, 0.8); } 100% { transform: scale(1); box-shadow: 0 0 60px rgba(56, 189, 248, 0.4); } }
@@ -70,7 +70,6 @@
         .news-text { font-size: 13px; font-weight: 500; color: #fff; line-height: 1.5; }
         .news-time { font-size: 10px; color: #94a3b8; font-weight: 400; font-style: italic; }
         
-        /* Sosyal Butonlar ve Emoji Stilleri */
         .news-actions { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
         .reaction-btn { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; padding: 4px 10px; border-radius: 20px; font-size: 12px; cursor: pointer; color: #cbd5e1; transition: 0.2s; display: flex; align-items: center; gap: 5px; user-select: none; }
         .reaction-btn:hover { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); transform: translateY(-2px); }
@@ -78,20 +77,18 @@
         .reply-btn { background: transparent; border: none; color: var(--accent); font-size: 12px; cursor: pointer; font-weight: 700; padding: 4px; margin-left: auto; transition: 0.2s; }
         .reply-btn:hover { color: #fff; text-shadow: 0 0 5px var(--accent); }
         
-        /* Emoji Açılır Penceresi */
         .emoji-picker-wrapper { position: relative; }
         .emoji-picker { display: none; position: absolute; bottom: 120%; left: 0; background: #0f172a; border: 1px solid var(--accent); padding: 8px; border-radius: 15px; z-index: 100; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
         .emoji-picker.active { display: flex; }
         .emoji-item { cursor: pointer; font-size: 18px; transition: 0.2s; padding: 2px; }
         .emoji-item:hover { transform: scale(1.3); }
 
-        /* İçiçe Cevaplar (Replies) */
         .replies-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-left: 12px; border-left: 2px dashed #475569; }
         .reply-item { background: rgba(0, 0, 0, 0.25); padding: 10px; border-radius: 10px; font-size: 12px; }
         .reply-input-box { display: none; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #334155; animation: fadeIn 0.3s; }
         .reply-input-box.active { display: flex; }
 
-        /* 🕵️‍♂️ LOG PANOSU (Büyütüldü) */
+        /* 🕵️‍♂️ LOG PANOSU */
         .log-container { flex: 1; background: #0f172a; border: 2px solid var(--warning); border-radius: 20px; padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
         .log-list { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px; }
         .log-item { background: rgba(0,0,0,0.5); border-left: 3px solid var(--warning); padding: 10px 12px; border-radius: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; }
@@ -109,7 +106,7 @@
         .full-modal-overlay.show { opacity: 1; }
         .full-modal-overlay.show .full-modal-content { transform: scale(1); }
         
-        .modal-header-bar { padding: 20px 30px; background: #0f172a; border-bottom: 2px solid #38bdf8; display: flex; justify-content: space-between; align-items: center; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-header-bar { padding: 20px 30px; background: #0f172a; border-bottom: 2px solid #38bdf8; display: flex; justify-content: space-between; align-items: center; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.5); flex-wrap: wrap; gap: 15px;}
         .modal-body-area { padding: 25px; flex: 1; overflow-y: auto; }
 
         /* ÇOKLU TABLO YAPISI */
@@ -121,7 +118,6 @@
         .scroll-area { overflow-x: auto; border-radius: 15px; border: 1px solid #334155; background: #0f172a; max-width: 100%; box-shadow: inset 0 0 20px #000; position: relative; padding-bottom: 15px; }
         table { width: auto; border-collapse: collapse; min-width: 100%; table-layout: auto; }
         
-        /* TABLO HÜCRELERİ */
         th, td { border: 1px solid #1e293b; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; white-space: normal; line-height: 1.2; position: relative; transition: all 0.2s; }
         th { background: #1e293b; color: var(--accent); text-transform: uppercase; height: 50px; user-select: none; font-weight: 800; }
         td { color: #cbd5e1; height: 50px; }
@@ -290,7 +286,9 @@
                     <span id="masterArchiveTitle">📁 Yeni Dosya</span>
                     <button class="btn" style="background:transparent; color:var(--warning); padding:5px; font-size:10px;" onclick="renameMasterArchive()">✏️ İSİM DEĞİŞTİR</button>
                 </div>
-                <div style="display:flex; gap:12px; align-items:center;">
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <button class="btn" style="background:#0ea5e9; color:white; font-size:13px; padding:12px 25px; box-shadow:0 0 20px rgba(14,165,233,0.5);" onclick="exportAllToExcel()">📋 TÜM TABLOLARI EXCEL'E KOPYALA</button>
+                    <span style="width:2px; height:30px; background:#334155; margin:0 5px;"></span>
                     <button class="btn" style="background:#10b981; color:white; font-size:13px; padding:12px 25px; box-shadow:0 0 20px rgba(16,185,129,0.5);" onclick="saveMasterArchive()">💾 TÜMÜNÜ PANODA KAYDET</button>
                     <span style="width:2px; height:30px; background:#334155; margin:0 5px;"></span>
                     <button class="btn" style="background:#3b82f6; color:white;" onclick="addGlobalBlankTable()">➕ YENİ BOŞ TABLO EKLE</button>
@@ -448,6 +446,7 @@
             document.getElementById("mainContent").style.display = "block";
             document.getElementById("welcomeText").innerText = `👋 HOŞ GELDİN, ${currentUser}`;
             loadStaffPool(); loadArchives(); loadNews();
+            if(window.smMusic && !window.smMusic.isPlaying) window.smMusic.play();
         }
 
         function logout() {
@@ -548,135 +547,6 @@
             'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }
         };
 
-        function openTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; setTimeout(() => modal.classList.add('show'), 10); }
-        function closeTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
-        function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
-        
-        function loadNews() { 
-            db.ref("haberler").on("value", snap => { 
-                const l = document.getElementById("newsList"); l.innerHTML = ""; 
-                const data = snap.val(); 
-                if(data) { 
-                    Object.entries(data).reverse().forEach(([id, val]) => { 
-                        let repliesHtml = '';
-                        if(val.replies) {
-                            repliesHtml = '<div class="replies-container">';
-                            Object.entries(val.replies).forEach(([rId, rVal]) => {
-                                repliesHtml += `<div class="reply-item"><strong style="color:var(--warning);">${rVal.user}:</strong> <span style="color:#e2e8f0;">${rVal.text}</span> <span style="font-size:9px; color:#94a3b8; display:block; margin-top:3px;">${rVal.time}</span></div>`;
-                            });
-                            repliesHtml += '</div>';
-                        }
-
-                        const quickEmojis = ['👍', '👎', '❤️'];
-                        let reactionsHtml = '';
-                        const reactions = val.reactions || {};
-                        
-                        quickEmojis.forEach(emoji => {
-                            const count = reactions[emoji] ? Object.keys(reactions[emoji]).length : 0;
-                            const hasReacted = (reactions[emoji] && reactions[emoji][currentUser]) ? 'active' : '';
-                            reactionsHtml += `<div class="reaction-btn ${hasReacted}" onclick="toggleReaction('${id}', '${emoji}')">${emoji} ${count > 0 ? count : ''}</div>`;
-                        });
-
-                        Object.keys(reactions).forEach(emoji => {
-                            if (!quickEmojis.includes(emoji)) {
-                                const count = Object.keys(reactions[emoji]).length;
-                                const hasReacted = reactions[emoji][currentUser] ? 'active' : '';
-                                reactionsHtml += `<div class="reaction-btn ${hasReacted}" onclick="toggleReaction('${id}', '${emoji}')">${emoji} ${count > 0 ? count : ''}</div>`;
-                            }
-                        });
-
-                        l.innerHTML += `
-                        <div class="news-item">
-                            <div style="display:flex; justify-content:space-between;">
-                                <div class="news-text">${val.text}</div>
-                                <span class="news-delete" onclick="deleteNews('${id}')" style="color: var(--danger); cursor: pointer; font-size:16px;">×</span>
-                            </div>
-                            <div class="news-time">${val.user} • ${val.time}</div>
-                            
-                            ${repliesHtml}
-                            
-                            <div class="news-actions">
-                                ${reactionsHtml}
-                                
-                                <div class="emoji-picker-wrapper">
-                                    <div class="reaction-btn" onclick="toggleEmojiPicker('${id}')" style="border-radius:50%; width:24px; height:24px; justify-content:center; padding:0;">➕</div>
-                                    <div id="emoji-picker-${id}" class="emoji-picker">
-                                        <span class="emoji-item" onclick="toggleReaction('${id}', '😂')">😂</span>
-                                        <span class="emoji-item" onclick="toggleReaction('${id}', '🌸')">🌸</span>
-                                        <span class="emoji-item" onclick="toggleReaction('${id}', '🎉')">🎉</span>
-                                        <span class="emoji-item" onclick="toggleReaction('${id}', '🔥')">🔥</span>
-                                        <span class="emoji-item" onclick="toggleReaction('${id}', '💡')">💡</span>
-                                    </div>
-                                </div>
-
-                                <button class="reply-btn" onclick="toggleReplyBox('${id}')">↩️ Cevapla</button>
-                            </div>
-
-                            <div id="reply-box-${id}" class="reply-input-box">
-                                <input type="text" id="reply-input-${id}" class="glass-input" style="flex:1; padding:8px 12px; font-size:11px;" placeholder="Cevabını yaz..." onkeydown="if(event.key==='Enter') sendReply('${id}')">
-                                <button class="btn" style="background:var(--success); color:white; padding:8px 15px;" onclick="sendReply('${id}')">Gönder</button>
-                            </div>
-                        </div>`; 
-                    }); 
-                } 
-            }); 
-        }
-
-        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) }); logAction(`Panoya not bıraktı: "${i.value.substring(0,10)}..."`); i.value = ""; } }
-        function deleteNews(id) { if(confirm("Mesajı kalıcı olarak silmek istiyor musun?")) { db.ref("haberler").child(id).remove(); logAction("Panodan bir mesaj sildi."); } }
-
-        function toggleReplyBox(id) {
-            const box = document.getElementById(`reply-box-${id}`);
-            box.classList.toggle('active');
-            if(box.classList.contains('active')) document.getElementById(`reply-input-${id}`).focus();
-        }
-
-        function sendReply(newsId) {
-            const input = document.getElementById(`reply-input-${newsId}`);
-            const text = input.value.trim();
-            if(text) {
-                db.ref(`haberler/${newsId}/replies`).push({
-                    text: text,
-                    user: currentUser,
-                    time: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})
-                });
-                input.value = '';
-                toggleReplyBox(newsId);
-                logAction("Bir mesaja cevap verdi.");
-            }
-        }
-
-        function toggleEmojiPicker(id) {
-            document.querySelectorAll('.emoji-picker.active').forEach(p => {
-                if(p.id !== `emoji-picker-${id}`) p.classList.remove('active');
-            });
-            const picker = document.getElementById(`emoji-picker-${id}`);
-            picker.classList.toggle('active');
-        }
-
-        function toggleReaction(newsId, emoji) {
-            if(!currentUser) return;
-            const ref = db.ref(`haberler/${newsId}/reactions/${emoji}/${currentUser}`);
-            ref.once('value', snap => {
-                if(snap.exists()) ref.remove(); 
-                else ref.set(true); 
-            });
-            
-            const picker = document.getElementById(`emoji-picker-${newsId}`);
-            if(picker) picker.classList.remove('active');
-        }
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.emoji-picker-wrapper')) {
-                document.querySelectorAll('.emoji-picker.active').forEach(p => p.classList.remove('active'));
-            }
-        });
-
-
-        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const data = snap.val(); let count = 0; staffList = []; if(data) { Object.entries(data).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; const div = document.createElement("div"); div.className = "staff-chip"; div.innerHTML = `<input type="checkbox" value="${item.name}"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; p.appendChild(div); }); } document.getElementById("staffCounter").innerText = count; }); }
-        function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); logAction(`Havuz'a kişi ekledi: ${v}`); inp.value = ""; } }
-        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); logAction("Havuzdan kişi sildi."); } }
-
         function addGhostPinToCell() {
             if(!activeCell) return;
             let currentNote = activeCell.getAttribute("data-pin") || "";
@@ -753,7 +623,10 @@
                 const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent";
                 const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : "";
                 const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; 
-                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`;
+                const customW = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].cw) ? ` data-custom-w="${savedShifts[shiftIdx].cw}"` : "";
+                const customN = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].cn) ? ` data-custom-n="${savedShifts[shiftIdx].cn}"` : "";
+                
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}${customW}${customN}>${txt}</td>`;
                 shiftIdx++; if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:#334155 !important;"></td>`;
             }
             cells += `<td class="total-summary-cell" style="background:#020617 !important;"></td>`;
@@ -764,7 +637,6 @@
         function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let current = wrapper.getAttribute("data-tablename"); let pName = prompt("Bu alt tablonun adı ne olsun?", current); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; } }
         function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
 
-        /* KOPYALAMA İÇİN YENİ TEMİZ TEXT ÇEKİCİ (Sorunu Kökten Çözer) */
         function getCleanCellText(cell) { 
             if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
             if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
@@ -773,16 +645,68 @@
             if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; 
             return text; 
         }
+        function getCellColor(cell) { let bg = cell.style.background || cell.style.backgroundColor || 'transparent'; if (bg.includes('transparent') || bg === '') bg = cell.tagName === 'TH' ? '#1e293b' : '#0f172a'; return bg; }
 
         function copyTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
             if(cbs.length === 0) return alert("Kopyalanacak satırları seçiniz!");
             let html = "<table border='1'><thead><tr>"; let tsv = "";
-            table.querySelectorAll('thead th').forEach(th => { if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return; let text = getCleanCellText(th); html += `<th>${text}</th>`; tsv += text + "\t"; });
+            table.querySelectorAll('thead th').forEach(th => { if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return; let text = getCleanCellText(th); html += `<th style="background-color: #1e293b; color: #38bdf8;">${text}</th>`; tsv += text + "\t"; });
             html += "</tr></thead><tbody>"; tsv += "\n";
-            cbs.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; let text = getCleanCellText(td); html += `<td>${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; });
+            cbs.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; let bg = getCellColor(td); let text = getCleanCellText(td); html += `<td style="background-color: ${bg}; color: white;">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; });
             html += "</tbody></table>";
             navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { let oldText = btn.innerHTML; btn.innerHTML = "✅ KOPYALANDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#0ea5e9"; }, 2000); });
+        }
+
+        // ✨ TÜM TABLOLARI EXCEL'E KOPYALAMA ✨
+        function exportAllToExcel() {
+            const wrappers = document.querySelectorAll('.table-wrapper');
+            if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
+            
+            let html = ""; let tsv = "";
+            wrappers.forEach(wrapper => {
+                let tableName = wrapper.getAttribute("data-tablename");
+                html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse: collapse; text-align: center;">`;
+                tsv += `${tableName}\n`;
+                
+                const table = wrapper.querySelector('table');
+                table.querySelectorAll("tr").forEach(tr => {
+                    html += "<tr>"; let rowData = [];
+                    tr.querySelectorAll("th, td").forEach(cell => {
+                        if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return;
+                        
+                        let bg = getCellColor(cell); 
+                        let text = getCleanCellText(cell);
+                        
+                        let color = cell.tagName === 'TH' ? '#000000' : '#ffffff';
+                        if(bg === 'transparent' || bg === '#0f172a' || bg === '#1e293b') {
+                            bg = cell.tagName === 'TH' ? '#e2e8f0' : '#ffffff';
+                            color = '#000000';
+                        }
+                        
+                        html += `<td style="background-color: ${bg}; color: ${color}; padding: 5px;">${text}</td>`; 
+                        rowData.push(text);
+                    });
+                    html += "</tr>"; tsv += rowData.join("\t") + "\n";
+                });
+                html += "</table><br><br>";
+                tsv += "\n\n";
+            });
+
+            try {
+                const clipboardItem = new ClipboardItem({ 
+                    "text/html": new Blob([html], { type: "text/html" }), 
+                    "text/plain": new Blob([tsv], { type: "text/plain" }) 
+                });
+                navigator.clipboard.write([clipboardItem]).then(() => {
+                    alert("Tüm tablolar başarıyla kopyalandı! Excel'e yapıştırabilirsiniz. 📤");
+                    logAction("Tüm tabloları Excel'e kopyaladı.");
+                }).catch(err => {
+                    navigator.clipboard.writeText(tsv).then(() => alert("Tablolar düz metin olarak kopyalandı. 📤"));
+                });
+            } catch (e) {
+                navigator.clipboard.writeText(tsv).then(() => alert("Tablolar düz metin olarak kopyalandı. 📤"));
+            }
         }
 
         function cleanExcelRows(raw) { let rows = raw.split("\n").filter(r => r.trim() !== ""); while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; } return rows; }
@@ -802,6 +726,7 @@
                             if(oldPin) td.setAttribute("data-pin", oldPin); 
                             let r = shiftRules[val] || keyMatchesVal(val); 
                             td.style.background = r ? r.color : "transparent";
+                            td.removeAttribute("data-custom-w"); td.removeAttribute("data-custom-n");
                         });
                     });
                     updateAllStats(); logAction("Tabloya veri yapıştırdı."); let oldText = btn.innerHTML; btn.innerHTML = "✅ YAPIŞTIRILDI"; btn.style.background = "#10b981"; setTimeout(() => { btn.innerHTML = oldText; btn.style.background = "#a855f7"; }, 2000);
@@ -810,7 +735,7 @@
                 
                 if(cbs.length > 0) {
                     let rowIndex = 0;
-                    cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") td.querySelector('.editable-name').innerText = val; else if(td.classList.contains('shift-cell')) { let oldPin = td.getAttribute("data-pin"); td.innerText = val; if(oldPin) td.setAttribute("data-pin", oldPin); const r = shiftRules[val] || keyMatchesVal(val); td.style.background = r ? r.color : "transparent"; } } colIndex++; }); rowIndex++; });
+                    cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") td.querySelector('.editable-name').innerText = val; else if(td.classList.contains('shift-cell')) { let oldPin = td.getAttribute("data-pin"); td.innerText = val; if(oldPin) td.setAttribute("data-pin", oldPin); const r = shiftRules[val] || keyMatchesVal(val); td.style.background = r ? r.color : "transparent"; td.removeAttribute("data-custom-w"); td.removeAttribute("data-custom-n"); } } colIndex++; }); rowIndex++; });
                 } else {
                     if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } 
                     rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { return { text: s ? s.trim() : "", bg: "transparent" } }); const newRowHtml = createRowHtml(name, colCount, startDt, shifts); tbody.insertAdjacentHTML('beforeend', newRowHtml); });
@@ -830,7 +755,6 @@
 
         function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); let staffNames = Array.from(wrapper.querySelectorAll('.editable-name')).map(el => el.innerText.trim()); if(staffNames.length === 0) return alert("Bu tabloda hiç personel yok!"); let d = prompt("Kaç günlük yeni bir tablo oluşturulsun?", "30"); if(!d) return; let c = parseInt(d); let currentStart = new Date(wrapper.getAttribute("data-startdt")); let nextMonth = new Date(currentStart.getFullYear(), currentStart.getMonth() + 1, 1); let nextMonthStr = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth()+1).padStart(2,'0')}-${String(nextMonth.getDate()).padStart(2,'0')}`; let s = prompt("Başlangıç tarihi (Yıl-Ay-Gün formatında):", nextMonthStr); if(!s) return; generateTable(false, staffNames, "Yeni Tablo", new Date(s), c, wrapper); }
         function addGlobalBlankTable() { let cols = parseInt(document.getElementById("colCount").value) || 30; let startDateVal = document.getElementById("startDate").value || new Date().toISOString().split('T')[0]; generateTable(false, ["İSİM GİRİNİZ..."], "Yeni Tablo", new Date(startDateVal), cols); logAction("Yeni boş tablo ekledi."); }
-        function renameMasterArchive() { let mName = prompt("Panodaki Ana Klasör Adı (Örn: Acil Servis):", currentMasterArchiveName); if(mName && mName.trim() !== "") { currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; } }
 
         function saveMasterArchive() {
             if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { let mName = prompt("Panoda (Arşivde) görünecek ANA KLASÖR adını girin (Örn: Acil Servis):", "Vardiya Klasörü"); if(!mName) return; currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; }
@@ -840,13 +764,17 @@
                 let tName = wrapper.getAttribute("data-tablename");
                 if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { let pName = prompt((index+1) + ". Tablonun adını belirleyin (Örn: Doktorlar):", tName); if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; } }
                 const rowsData = [];
-                wrapper.querySelectorAll("tbody tr").forEach(tr => { let name = tr.querySelector(".editable-name").innerText.trim(); let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText, bg: td.style.background, pin: td.getAttribute("data-pin") || "" })); rowsData.push({ name: name, shifts: shifts }); });
+                wrapper.querySelectorAll("tbody tr").forEach(tr => { 
+                    let name = tr.querySelector(".editable-name").innerText.trim(); 
+                    let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText, bg: td.style.background, pin: td.getAttribute("data-pin") || "", cw: td.getAttribute("data-custom-w") || "", cn: td.getAttribute("data-custom-n") || "" })); 
+                    rowsData.push({ name: name, shifts: shifts }); 
+                });
                 let notesVal = wrapper.querySelector(".table-notes").value; tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
             });
             const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData };
             if(currentMasterArchiveId) { db.ref("arsivlenmis_shiftler").child(currentMasterArchiveId).update(saveData); } else { const ref = db.ref("arsivlenmis_shiftler").push(); ref.set(saveData); currentMasterArchiveId = ref.key; }
             logAction(`'${currentMasterArchiveName}' klasörünü kaydetti.`);
-            alert(`💾 Tüm Tablolar başarıyla '${currentMasterArchiveName}' içine kaydedildi!`);
+            alert(`💾 Notların, İğnelerin ve Tüm Tabloların başarıyla '${currentMasterArchiveName}' içine kaydedildi!`);
         }
 
         function openExcelModalForTable(btn) { currentTargetTable = btn.closest('.table-wrapper'); document.getElementById("excelModalTitle").innerText = "📥 Bu Tabloya Veri Ekle"; document.getElementById("excelModal").style.display = "flex"; document.getElementById("excelInput").value = ""; setTimeout(() => document.getElementById("excelInput").focus(), 100); }
@@ -865,61 +793,21 @@
             logAction("Excel'den sisteme veri çekti."); closeExcelModal(); document.getElementById("excelInput").value = "";
         }
 
-        function toggleAllRows(cb) { const table = cb.closest('table'); table.querySelectorAll('.row-checkbox').forEach(c => { if(c !== cb) c.checked = cb.checked; }); }
-        function keyMatchesVal(val) { for(let k in shiftRules) { if(k.replace(/\s/g,'') === val.replace(/\s/g,'') || (val !== "" && k.includes(val))) return shiftRules[k]; } return null; }
-
-        function updateAllStats() {
-            document.querySelectorAll("table tbody tr").forEach(row => {
-                const cells = Array.from(row.querySelectorAll("td")); let hW=0, hN=0, aW=0, aN=0;
-                cells.forEach(td => {
-                    if(td.classList.contains("shift-cell")) {
-                        const val = td.innerText.trim(); let r = shiftRules[val]; 
-                        if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(td.hasAttribute("data-custom-w")) { hW += parseFloat(td.getAttribute("data-custom-w")) || 0; hN += parseFloat(td.getAttribute("data-custom-n")) || 0; aW += hW; aN += hN; } else { td.style.background = "transparent"; }
-                    }
-                    if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
-                    if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
-                });
-            });
-        }
-
-        function moveRow(btn, dir) { saveHistory(); const row = btn.closest('tr'); if(dir===-1 && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); else if(dir===1 && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); }
-        function setShift(v, c) { if(activeCell) { saveHistory(); activeCell.innerText = v; activeCell.style.background = v==="" ? "transparent" : c; updateAllStats(); if(v!=="") logAction(`Bir hücreye '${v}' yazdı.`); } document.getElementById("contextMenu").style.display = "none"; }
-        
-        function setAdjustableShift() {
-            if(!activeCell) return; let label = prompt("Vardiya etiketini girin (Örn: 09:00-15:00):"); if(!label) return;
-            let workHours = prompt("Toplam çalışma saati (Sayı girin, Örn: 6):", "7.5"); let nightHours = prompt("Gece çalışma saati (Varsa girin, Örn: 2):", "0");
-            if(label && !isNaN(workHours)) { saveHistory(); activeCell.innerText = label; activeCell.style.background = "linear-gradient(145deg, #475569, #1e293b)"; activeCell.setAttribute("data-custom-w", workHours); activeCell.setAttribute("data-custom-n", nightHours); updateAllStats(); logAction(`Ayarlanabilir saat girdi: ${label}`); }
-            document.getElementById("contextMenu").style.display = "none";
-        }  
-        
-        function openStaffQuickMenu(e, btn) { e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; const poolNames = Array.from(document.querySelectorAll("#staffPool input")).map(i => i.value); poolNames.forEach(n => { const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; d.onclick = () => { saveHistory(); activeCell.innerText = n; m.style.display = "none"; }; m.appendChild(d); }); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
-
+        // AKILLI SIRALAMA
         function loadArchives() { 
             db.ref("arsivlenmis_shiftler").on("value", snap => { 
                 const l = document.getElementById("archiveList"); l.innerHTML = ""; const data = snap.val(); 
-                if(data) { Object.entries(data).reverse().forEach(([id, val]) => { 
-                    let tableCount = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; 
-                    div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${val.name.replace(/'/g,"\\'")}')"><b style="color:var(--accent); font-size:15px;">📁 ${val.name}</b><br><small style="color:#94a3b8; font-size:10px;">${val.date} | <b>${tableCount}</b> Tablo İçeriyor</small></div><div style="display:flex; flex-direction:column; gap:5px; margin-left:10px;"><button class="btn" style="background:var(--warning); color:#000; padding:4px 8px; font-size:10px; justify-content:center;" onclick="renameArchive(event, '${id}', '${val.name.replace(/'/g,"\\'")}')">✏️ KLASÖR ADI</button><button class="btn" style="background:transparent; color:var(--danger); border:1px solid var(--danger); padding:4px 8px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); 
-                }); } 
+                if(data) { 
+                    let archiveArray = Object.entries(data).map(([id, val]) => ({id, val}));
+                    archiveArray.sort((a, b) => a.val.name.localeCompare(b.val.name, 'tr', { numeric: true }));
+
+                    archiveArray.forEach(({id, val}) => { 
+                        let tableCount = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; 
+                        div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${val.name.replace(/'/g,"\\'")}')"><b style="color:var(--accent); font-size:15px;">📁 ${val.name}</b><br><small style="color:#94a3b8; font-size:10px;">${val.date} | <b>${tableCount}</b> Tablo İçeriyor</small></div><div style="display:flex; flex-direction:column; gap:5px; margin-left:10px;"><button class="btn" style="background:var(--warning); color:#000; padding:4px 8px; font-size:10px; justify-content:center;" onclick="renameArchive(event, '${id}', '${val.name.replace(/'/g,"\\'")}')">✏️ KLASÖR ADI</button><button class="btn" style="background:transparent; color:var(--danger); border:1px solid var(--danger); padding:4px 8px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); 
+                    }); 
+                } 
             }); 
         }
-        function delArchive(e, id) { e.stopPropagation(); if(confirm("Tüm klasörü ve içindeki tabloları kalıcı olarak silmek istediğine emin misin?")) { db.ref("arsivlenmis_shiftler").child(id).remove(); logAction("Arşivden bir klasör sildi."); } }
-        function renameArchive(e, id, oldName) { e.stopPropagation(); let newName = prompt("Klasörün yeni adını girin:", oldName); if (newName && newName.trim() !== "" && newName !== oldName) { db.ref("arsivlenmis_shiftler").child(id).update({name: newName.trim()}); } }
-        
-        function openArchive(id, name) { 
-            db.ref("arsivlenmis_shiftler").child(id).once("value", snap => {
-                const val = snap.val(); currentMasterArchiveId = id; currentMasterArchiveName = name;
-                document.getElementById("masterArchiveTitle").innerText = "📁 " + name; document.getElementById("tablesContainer").innerHTML = ""; 
-                if(val.tables) { val.tables.forEach(t => { generateTable(true, t.data, t.tableName, new Date(t.startDate), t.colCount, null, t.notes || ""); }); } else if(val.data) { generateTable(true, val.data, val.name, new Date(val.startDate), val.colCount); }
-                logAction(`'${name}' klasörünü açtı.`);
-            });
-        }
-        function openShiftMenu(e, c) { e.preventDefault(); activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
-
-        function saveHistory() { const cont = document.getElementById("tablesContainer").innerHTML; history.push(cont); if(history.length > 25) history.shift(); }
-        function undo() { if(history.length > 0) { document.getElementById("tablesContainer").innerHTML = history.pop(); updateAllStats(); } }
-        document.addEventListener('keydown', e => { if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
-        function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll("#staffPool input:checked")).map(cb => cb.value); if(sel.length===0) return alert("Lütfen havuzdan personel seçin!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); logAction("Havuzdan seçerek yeni tablo oluşturdu."); }
 
         let isDraggingCells = false; let startSelectCell = null;
         document.addEventListener('mousedown', e => {
@@ -943,16 +831,11 @@
             const selected = document.querySelectorAll('.selected-cell');
             if(selected.length > 0) { 
                 e.preventDefault(); let html = "<table border='1'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
-                selected.forEach(cell => { 
+                selected.forEach(cell => {
                     if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; 
-                    const cellRow = cell.closest('tr'); 
-                    if(currentRow !== cellRow) { 
-                        if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } 
-                        currentRow = cellRow; trHtml = "<tr>"; 
-                    } 
-                    let text = getCleanCellText(cell); 
-                    trHtml += `<td>${text}</td>`; 
-                    rowData.push(text); 
+                    const cellRow = cell.closest('tr');
+                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
+                    let bg = getCellColor(cell); let text = getCleanCellText(cell); trHtml += `<td style="background-color: ${bg}; color: ${cell.tagName === 'TH' ? '#38bdf8' : 'white'};">${text}</td>`; rowData.push(text);
                 });
                 if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } html += "</table>";
                 e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv);
@@ -964,7 +847,7 @@
             if(document.activeElement && (document.activeElement.classList.contains('shift-cell') || document.activeElement.classList.contains('editable-name')) && selectedCells.length <= 1) { const pastedData = (e.clipboardData || window.clipboardData).getData('text'); if(!pastedData.includes('\t') && !pastedData.includes('\n')) return; }
             if(targetCell && (targetCell.classList.contains('shift-cell') || targetCell.closest('td'))) {
                 e.preventDefault(); saveHistory(); const pastedData = (e.clipboardData || window.clipboardData).getData('text');
-                const rows = cleanExcelRows(pastedData); 
+                const rows = cleanExcelRows(pastedData);
                 
                 if (rows.length === 1 && rows[0].split('\t').length === 1 && selectedCells.length > 1) {
                     let val = rows[0].trim();
@@ -975,159 +858,90 @@
                             if(oldPin) cell.setAttribute("data-pin", oldPin); 
                             let r = shiftRules[val] || keyMatchesVal(val); 
                             cell.style.background = r ? r.color : "transparent";
+                            cell.removeAttribute("data-custom-w"); cell.removeAttribute("data-custom-n");
                         }
                     });
-                    updateAllStats(); logAction("Çoklu hücreye veri yapıştırdı.");
-                    return;
+                    updateAllStats(); logAction("Çoklu hücreye veri yapıştırdı."); return;
                 }
 
                 const table = targetCell.closest('table'); const tableRows = Array.from(table.querySelectorAll('tr')); const startRowIdx = tableRows.indexOf(targetCell.closest('tr')); 
                 let validCellsInStartRow = Array.from(targetCell.closest('tr').querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); let startValidColIdx = validCellsInStartRow.indexOf(targetCell); if(startValidColIdx === -1) startValidColIdx = 0;
-                for(let i = 0; i < rows.length; i++) { const cols = rows[i].split('\t'); const targetTr = tableRows[startRowIdx + i]; if(!targetTr) break; let validCells = Array.from(targetTr.querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell')); for(let j = 0; j < cols.length; j++) { const cell = validCells[startValidColIdx + j]; if(!cell) break; let val = cols[j].trim(); if(cell.querySelector('.editable-name')) cell.querySelector('.editable-name').innerText = val; else if(cell.classList.contains('shift-cell')) { let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); let r = shiftRules[val] || keyMatchesVal(val); cell.style.background = r ? r.color : "transparent"; } } } updateAllStats(); logAction("Tablo içine veri yapıştırdı.");
+                for(let i = 0; i < rows.length; i++) {
+                    const cols = rows[i].split('\t'); const targetTr = tableRows[startRowIdx + i]; if(!targetTr) break;
+                    let validCells = Array.from(targetTr.querySelectorAll('th, td')).filter(c => !c.classList.contains('week-summary-cell') && !c.classList.contains('total-summary-cell'));
+                    for(let j = 0; j < cols.length; j++) { 
+                        const cell = validCells[startValidColIdx + j]; if(!cell) break; let val = cols[j].trim(); 
+                        if(cell.querySelector('.editable-name')) cell.querySelector('.editable-name').innerText = val; 
+                        else if(cell.classList.contains('shift-cell')) { 
+                            let oldPin = cell.getAttribute("data-pin"); 
+                            cell.innerText = val; 
+                            if(oldPin) cell.setAttribute("data-pin", oldPin); 
+                            let r = shiftRules[val] || keyMatchesVal(val); 
+                            cell.style.background = r ? r.color : "transparent";
+                            cell.removeAttribute("data-custom-w"); cell.removeAttribute("data-custom-n"); 
+                        } 
+                    }
+                } updateAllStats();
             }
         });
 
         window.onclick = (e) => { if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { document.getElementById("contextMenu").style.display = "none"; document.getElementById("staffSelectMenu").style.display = "none"; } };
+        
         window.onload = () => {
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
-            text.split("").forEach((char, index) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.5 + (index * 0.1)) + "s"; container.appendChild(span); });
-            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('lockScreen').style.display = 'flex'; }, 1000); }, 3500);
+            text.split("").forEach((char, index) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.1 + (index * 0.05)) + "s"; container.appendChild(span); });
+            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('lockScreen').style.display = 'flex'; }, 500); }, 1500);
             document.getElementById('startDate').valueAsDate = new Date();
         };
     </script>
+
     <style>
-    /* ShiftMaster temasına uygun şık, cam efektli tasarım */
-    .sm-player {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: rgba(15, 23, 42, 0.85);
-        border: 1px solid #3b82f6;
-        border-radius: 50px;
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: white;
-        z-index: 9999;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        font-family: 'Segoe UI', sans-serif;
-        transition: all 0.3s ease;
-    }
+    .sm-player { position: fixed; bottom: 20px; right: 20px; background: rgba(15, 23, 42, 0.85); border: 1px solid #3b82f6; border-radius: 50px; padding: 10px 20px; display: flex; align-items: center; gap: 15px; color: white; z-index: 9999; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-family: 'Segoe UI', sans-serif; transition: all 0.3s ease; }
     .sm-player:hover { border-color: #f59e0b; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3); }
-    .sm-btn {
-        background: none; border: none; color: #3b82f6; 
-        font-size: 1.2rem; cursor: pointer; transition: 0.2s;
-        display: flex; align-items: center; justify-content: center;
-    }
+    .sm-btn { background: none; border: none; color: #3b82f6; font-size: 1.2rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
     .sm-btn:hover { color: #f59e0b; transform: scale(1.2); }
-    .sm-track-info {
-        display: flex; flex-direction: column;
-    }
+    .sm-track-info { display: flex; flex-direction: column; }
     .sm-title { font-size: 0.85rem; font-weight: bold; color: #f3f4f6; width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sm-status { font-size: 0.7rem; color: #10b981; }
-    /* Müzik çalarken beliren ses dalgası animasyonu */
     .equalizer { display: none; gap: 2px; height: 15px; align-items: flex-end; }
     .equalizer.active { display: flex; }
     .bar { width: 3px; background: #10b981; animation: eq 1s infinite ease-in-out alternate; }
     .bar:nth-child(2) { animation-delay: 0.2s; }
     .bar:nth-child(3) { animation-delay: 0.4s; }
     @keyframes eq { 0% { height: 3px; } 100% { height: 15px; } }
-</style>
+    </style>
 
-<div class="sm-player" id="sm-player">
-    <button class="sm-btn" onclick="smMusic.prev()" title="Önceki">⏮</button>
-    <button class="sm-btn" onclick="smMusic.toggle()" id="sm-play-btn" style="font-size: 1.5rem;" title="Oynat/Durdur">▶</button>
-    <button class="sm-btn" onclick="smMusic.next()" title="Sonraki">⏭</button>
-    
-    <div class="sm-track-info">
-        <span class="sm-title" id="sm-title">ShiftMaster Radyo</span>
-        <span class="sm-status" id="sm-status">Sistem Bekleniyor...</span>
+    <div class="sm-player" id="sm-player">
+        <button class="sm-btn" onclick="smMusic.prev()" title="Önceki">⏮</button>
+        <button class="sm-btn" onclick="smMusic.toggle()" id="sm-play-btn" style="font-size: 1.5rem;" title="Oynat/Durdur">▶</button>
+        <button class="sm-btn" onclick="smMusic.next()" title="Sonraki">⏭</button>
+        <div class="sm-track-info">
+            <span class="sm-title" id="sm-title">ShiftMaster Radyo</span>
+            <span class="sm-status" id="sm-status">Sistem Bekleniyor...</span>
+        </div>
+        <div class="equalizer" id="sm-eq">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
     </div>
 
-    <div class="equalizer" id="sm-eq">
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-    </div>
-</div>
-
-<script>
-    const smMusic = {
-        audio: new Audio(),
-        isPlaying: false,
-        index: 0,
-        // BURAYA İSTEDİĞİN ŞARKILARIN İNTERNET LİNKLERİNİ KOYABİLİRSİN
-        // Şimdilik test için telifsiz dinlendirici radyolar/müzikler ekledim.
-        playlist: [
-            // İŞTE SENİN GÜNÜN BOMBASI (1. SIRADA)
-           // DİĞER SAKİN RADYOLAR
-            { name: "Çalışma Modu (Lofi)", url: "https://stream.zeno.fm/f3wvbbqmdg8uv" }, 
-            { name: "Odaklanma (Piyano)", url: "https://stream.zeno.fm/8q7v1b1m8x8uv" }, 
-            { name: "Hareketli Başlangıç", url: "https://stream.zeno.fm/0r0xa792kwzuv" }  
-        ],
-
-        init() {
-            this.audio.src = this.playlist[this.index].url;
-            this.audio.volume = 0.5; // Ses seviyesi %50 (Hastanede rahatsız etmesin diye)
-            document.getElementById('sm-title').innerText = this.playlist[this.index].name;
-            
-            // Şarkı bitince diğerine geç
-            this.audio.onended = () => this.next();
-        },
-
-        toggle() {
-            if (this.isPlaying) this.pause();
-            else this.play();
-        },
-
-        play() {
-            this.audio.play().then(() => {
-                this.isPlaying = true;
-                document.getElementById('sm-play-btn').innerText = "⏸";
-                document.getElementById('sm-status').innerText = "Oynatılıyor";
-                document.getElementById('sm-status').style.color = "#10b981";
-                document.getElementById('sm-eq').classList.add('active');
-            }).catch(e => console.log("Otomatik çalma engellendi, kullanıcı tıklaması bekleniyor."));
-        },
-
-        pause() {
-            this.audio.pause();
-            this.isPlaying = false;
-            document.getElementById('sm-play-btn').innerText = "▶";
-            document.getElementById('sm-status').innerText = "Duraklatıldı";
-            document.getElementById('sm-status').style.color = "#f59e0b";
-            document.getElementById('sm-eq').classList.remove('active');
-        },
-
-        next() {
-            this.index = (this.index + 1) % this.playlist.length;
-            this.changeTrack();
-        },
-
-        prev() {
-            this.index = (this.index - 1 + this.playlist.length) % this.playlist.length;
-            this.changeTrack();
-        },
-
-        changeTrack() {
-            this.audio.src = this.playlist[this.index].url;
-            document.getElementById('sm-title').innerText = this.playlist[this.index].name;
-            if (this.isPlaying) this.play();
-        },
-        
-        // Bu fonksiyonu ShiftMaster'ın "Giriş Yap" butonunun içine ekleyebilirsin
-        loginTrigger() {
-            if(!this.isPlaying) {
-                this.play();
-            }
-        }
-    };
-
-    // Sistemi hazırla
-    smMusic.init();
-</script>
+    <script>
+        const smMusic = {
+            audio: new Audio(), isPlaying: false, index: 0,
+            playlist: [
+                { name: "Çalışma Modu (Lofi)", url: "https://stream.zeno.fm/f3wvbbqmdg8uv" }, 
+                { name: "Odaklanma (Piyano)", url: "https://stream.zeno.fm/8q7v1b1m8x8uv" }, 
+                { name: "Hareketli Başlangıç", url: "https://stream.zeno.fm/0r0xa792kwzuv" }  
+            ],
+            init() { this.audio.src = this.playlist[this.index].url; this.audio.volume = 0.5; document.getElementById('sm-title').innerText = this.playlist[this.index].name; this.audio.onended = () => this.next(); },
+            toggle() { if (this.isPlaying) this.pause(); else this.play(); },
+            play() { this.audio.play().then(() => { this.isPlaying = true; document.getElementById('sm-play-btn').innerText = "⏸"; document.getElementById('sm-status').innerText = "Oynatılıyor"; document.getElementById('sm-status').style.color = "#10b981"; document.getElementById('sm-eq').classList.add('active'); }).catch(e => console.log("Otomatik çalma engellendi")); },
+            pause() { this.audio.pause(); this.isPlaying = false; document.getElementById('sm-play-btn').innerText = "▶"; document.getElementById('sm-status').innerText = "Duraklatıldı"; document.getElementById('sm-status').style.color = "#f59e0b"; document.getElementById('sm-eq').classList.remove('active'); },
+            next() { this.index = (this.index + 1) % this.playlist.length; this.changeTrack(); },
+            prev() { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.changeTrack(); },
+            changeTrack() { this.audio.src = this.playlist[this.index].url; document.getElementById('sm-title').innerText = this.playlist[this.index].name; if (this.isPlaying) this.play(); },
+            loginTrigger() { if(!this.isPlaying) { this.play(); } }
+        };
+        smMusic.init();
+    </script>
 </body>
 </html>
-
-
-
