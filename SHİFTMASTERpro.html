@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v114.2 - PATRON & DYNAMIC COLORS</title>
+    <title>ShiftMaster v116.2 - QUICK PALETTE ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,7 +41,6 @@
             justify-content: center; align-items: center; z-index: 999999; 
             transition: opacity 0.5s ease; perspective: 1000px; 
         }
-        
         .splash-hospital { 
             font-size: 18px; color: var(--accent); letter-spacing: 4px; margin-bottom: 40px; 
             font-weight: 800; text-align: center; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); 
@@ -100,18 +99,20 @@
         .full-modal-overlay.show .full-modal-content { transform: scale(1); }
         .modal-box { background: var(--card); padding: 30px; border-radius: 30px; border: 1px solid #334155; width: 90%; max-width: 600px; transform: scale(0.9); transition: transform 0.3s; }
         .modal-overlay.show .modal-box { transform: scale(1); }
+        .modal-header-bar { padding: 20px 30px; background: #0f172a; border-bottom: 2px solid #38bdf8; display: flex; justify-content: space-between; align-items: center; z-index: 1001; flex-wrap: wrap; gap: 15px;}
+        .modal-body-area { padding: 25px; flex: 1; overflow-y: auto; }
 
         /* TABLO ALANLARI */
         .table-wrapper { background: var(--card); border: 2px solid #334155; border-radius: 20px; padding: 20px; margin-bottom: 30px; }
         .scroll-area { overflow-x: auto; border-radius: 15px; border: 1px solid #334155; background: #0f172a; max-width: 100%; position: relative; padding-bottom: 15px; }
         table { width: auto; border-collapse: collapse; min-width: 100%; table-layout: auto; }
-        th, td { border: 1px solid #1e293b; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; white-space: normal; line-height: 1.2; position: relative; transition: all 0.2s; }
+        th, td { border: 1px solid #1e293b; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; white-space: normal; line-height: 1.2; position: relative; }
         th { background: #1e293b; color: var(--accent); text-transform: uppercase; height: 50px; user-select: none; font-weight: 800; }
         td { color: #cbd5e1; height: 50px; }
         .shift-cell { box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.3), inset -2px -2px 6px rgba(0, 0, 0, 0.6); text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); color: #ffffff !important; }
         .shift-cell:focus, .editable-name:focus { background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(12px); box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.6); outline: none; }
         .selected-cell { background: rgba(56, 189, 248, 0.4) !important; outline: 2px solid var(--accent) !important; color: #fff !important; z-index: 10; }
-        
+        .row-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
         .name-wrapper { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 190px; padding: 0 5px; }
         .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 1px solid transparent; font-weight: 700; }
         .editable-name:focus { border-bottom: 2px solid var(--accent); color: var(--accent); }
@@ -124,20 +125,27 @@
         .glass-input { background: rgba(30, 41, 59, 0.6); border: 1px solid #475569; color: white; padding: 12px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 500; }
         .glass-input:focus { border-color: var(--accent); background: #1e293b; }
 
-        /* ✨ DİNAMİK VARDİYA MENÜSÜ */
+        /* ✨ DİNAMİK VARDİYA MENÜSÜ & 20'Lİ RENK PALETİ */
         .custom-menu { display: none; position: absolute; background: #1e293b; border: 2px solid var(--accent); border-radius: 20px; z-index: 100010; width: 360px; padding: 12px; }
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .menu-item { padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 800; font-size: 11px; transition: 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.25), inset -3px -3px 8px rgba(0, 0, 0, 0.5); text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; }
         .menu-item:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.5); }
-
-        /* ✨ RENK SEÇİCİ SWATCH'LAR */
-        .color-swatch { width: 50px; height: 50px; border-radius: 12px; cursor: pointer; transition: 0.2s; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), 0 5px 10px rgba(0,0,0,0.5); }
-        .color-swatch:hover { transform: scale(1.15); border: 2px solid white; }
+        
+        /* 20'Lİ KÜÇÜK RENK SEÇİCİ SWATCH'LAR (HIZLI BOYA) */
+        .mini-swatch { height: 25px; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.5); }
+        .mini-swatch:hover { transform: scale(1.15); border: 1px solid white; z-index: 10; }
 
         .stat-sub { display: inline-block; width: 44%; border: 1px solid #555; font-size: 11px; padding: 4px 0; border-radius: 6px; margin: 1px; font-weight: 800; background: rgba(0,0,0,0.2); }
         .week-summary-cell, .total-summary-cell { width: 95px !important; min-width: 95px !important; background: #334155 !important; }
 
-        /* HAYALET İĞNE (GHOST PIN) */
+        /* PERSONEL HAVUZU */
+        .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; align-items: stretch; } 
+        .staff-chip { background: #1e293b; border: 1px solid #475569; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 13px; color: #e2e8f0; user-select: none; }
+        .staff-chip.selected { border-color: var(--accent); background: rgba(56, 189, 248, 0.15); color: white; }
+        .staff-chip input { pointer-events: none; width: 18px; height: 18px; accent-color: var(--accent); }
+        .staff-del { margin-left: auto; color: #ef4444; font-size: 18px; font-weight: bold; padding: 2px 8px; border-radius: 4px; pointer-events: auto; cursor: pointer; }
+
+        /* ✨ HAYALET İĞNE (GHOST PIN) */
         .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: 2px; right: 2px; font-size: 13px; z-index: 10; cursor: help; text-shadow: 0 0 5px #000; animation: pinPulse 2s infinite; }
         @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
         .shift-cell[data-pin]:hover::after { content: attr(data-pin); position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); border: 1px solid var(--warning); color: var(--warning); padding: 10px 15px; border-radius: 12px; font-size: 12px; font-weight: 700; white-space: pre-wrap; width: max-content; max-width: 200px; z-index: 99999; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
@@ -174,38 +182,6 @@
         </div>
     </div>
 
-    <div id="colorPickerModal" class="modal-overlay">
-        <div class="modal-box" style="max-width: 500px; text-align:center;">
-            <h3 style="margin-top:0; color:var(--accent);">🎨 Yeni Vardiya Rengini Seçin</h3>
-            <p style="font-size: 11px; color: #94a3b8; margin-top: -10px; margin-bottom: 15px;">Seçtiğiniz renk sisteme kalıcı olarak kaydedilecek ve sağ tık menüsünde hep görünecek.</p>
-            
-            <div id="colorGrid" style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:25px; justify-content:center;">
-                <div class="color-swatch" style="background:linear-gradient(145deg, #ff00cc, #333399);" onclick="saveNewShiftColor('linear-gradient(145deg, #ff00cc, #333399)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #00c6ff, #0072ff);" onclick="saveNewShiftColor('linear-gradient(145deg, #00c6ff, #0072ff)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #f7971e, #ffd200);" onclick="saveNewShiftColor('linear-gradient(145deg, #f7971e, #ffd200)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #11998e, #38ef7d);" onclick="saveNewShiftColor('linear-gradient(145deg, #11998e, #38ef7d)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #8A2387, #E94057);" onclick="saveNewShiftColor('linear-gradient(145deg, #8A2387, #E94057)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #000000, #434343);" onclick="saveNewShiftColor('linear-gradient(145deg, #000000, #434343)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #b92b27, #1565C0);" onclick="saveNewShiftColor('linear-gradient(145deg, #b92b27, #1565C0)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #1D976C, #93F9B9);" onclick="saveNewShiftColor('linear-gradient(145deg, #1D976C, #93F9B9)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #FF416C, #FF4B2B);" onclick="saveNewShiftColor('linear-gradient(145deg, #FF416C, #FF4B2B)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #a8c0ff, #3f2b96);" onclick="saveNewShiftColor('linear-gradient(145deg, #a8c0ff, #3f2b96)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #f59e0b, #b45309);" onclick="saveNewShiftColor('linear-gradient(145deg, #f59e0b, #b45309)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #1e3a8a, #020617);" onclick="saveNewShiftColor('linear-gradient(145deg, #1e3a8a, #020617)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #10b981, #047857);" onclick="saveNewShiftColor('linear-gradient(145deg, #10b981, #047857)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #d946ef, #86198f);" onclick="saveNewShiftColor('linear-gradient(145deg, #d946ef, #86198f)')"></div>
-                <div class="color-swatch" style="background:linear-gradient(145deg, #14b8a6, #0f766e);" onclick="saveNewShiftColor('linear-gradient(145deg, #14b8a6, #0f766e)')"></div>
-            </div>
-            
-            <button class="btn" style="width:100%; justify-content:center; background:var(--danger); color:white;" onclick="closeModal('colorPickerModal')">İPTAL</button>
-        </div>
-    </div>
-
-    <div id="contextMenu" class="custom-menu">
-        <div class="menu-grid" id="dynamicMenuGrid">
-            </div>
-    </div>
-
     <div id="mainContent">
         <div class="container">
             <div class="main-header">
@@ -220,6 +196,17 @@
                     <div><label style="font-size:10px; color:var(--accent); font-weight:900;">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input"></div>
                     <div><label style="font-size:10px; color:var(--accent); font-weight:900;">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:60px; text-align:center;"></div>
                     <button class="btn" style="background:var(--accent); color:#000;" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div style="display:flex; align-items:center; margin-bottom:20px; gap:15px; border-bottom:2px solid #334155; padding-bottom:10px;">
+                    <div style="color:var(--accent); font-size:24px; font-weight:900;">PERSONEL HAVUZU</div>
+                </div>
+                <div id="staffPool" class="pool-grid" style="margin-bottom: 20px;"></div>
+                <div style="display:flex; gap:15px;">
+                    <input type="text" id="staffInput" placeholder="Personel ismi..." class="glass-input" style="flex:1;" onkeydown="if(event.key==='Enter') addStaff()">
+                    <button class="btn" style="background:var(--accent); color:#000;" onclick="addStaff()">EKLE</button>
                 </div>
             </div>
         </div>
@@ -239,6 +226,39 @@
         </div>
     </div>
 
+    <div id="contextMenu" class="custom-menu">
+        <div class="menu-grid" id="dynamicMenuGrid"></div>
+        
+        <div style="margin-top:12px; padding-top:12px; border-top:1px solid #334155; text-align:center;">
+            <span style="color:#94a3b8; font-size:10px; display:block; margin-bottom:8px; font-weight:700; letter-spacing:1px;">HÜCREDEKİ YAZIYI RENKLENDİR / SİSTEME KAYDET</span>
+            <div id="quickColorGrid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;">
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #f59e0b, #b45309);" onclick="applyColorToCell('linear-gradient(145deg, #f59e0b, #b45309)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #1e3a8a, #020617);" onclick="applyColorToCell('linear-gradient(145deg, #1e3a8a, #020617)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #f97316, #9a3412);" onclick="applyColorToCell('linear-gradient(145deg, #f97316, #9a3412)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #0ea5e9, #0369a1);" onclick="applyColorToCell('linear-gradient(145deg, #0ea5e9, #0369a1)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #3b82f6, #1d4ed8);" onclick="applyColorToCell('linear-gradient(145deg, #3b82f6, #1d4ed8)')"></div>
+                
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #4338ca, #1e1b4b);" onclick="applyColorToCell('linear-gradient(145deg, #4338ca, #1e1b4b)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #10b981, #047857);" onclick="applyColorToCell('linear-gradient(145deg, #10b981, #047857)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #8b5cf6, #5b21b6);" onclick="applyColorToCell('linear-gradient(145deg, #8b5cf6, #5b21b6)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #4c1d95, #2e1065);" onclick="applyColorToCell('linear-gradient(145deg, #4c1d95, #2e1065)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #d946ef, #86198f);" onclick="applyColorToCell('linear-gradient(145deg, #d946ef, #86198f)')"></div>
+                
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #14b8a6, #0f766e);" onclick="applyColorToCell('linear-gradient(145deg, #14b8a6, #0f766e)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #f43f5e, #be123c);" onclick="applyColorToCell('linear-gradient(145deg, #f43f5e, #be123c)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #ef4444, #991b1b);" onclick="applyColorToCell('linear-gradient(145deg, #ef4444, #991b1b)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #ff00cc, #333399);" onclick="applyColorToCell('linear-gradient(145deg, #ff00cc, #333399)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #00c6ff, #0072ff);" onclick="applyColorToCell('linear-gradient(145deg, #00c6ff, #0072ff)')"></div>
+                
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #11998e, #38ef7d);" onclick="applyColorToCell('linear-gradient(145deg, #11998e, #38ef7d)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #8A2387, #E94057);" onclick="applyColorToCell('linear-gradient(145deg, #8A2387, #E94057)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #000000, #434343);" onclick="applyColorToCell('linear-gradient(145deg, #000000, #434343)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #b92b27, #1565C0);" onclick="applyColorToCell('linear-gradient(145deg, #b92b27, #1565C0)')"></div>
+                <div class="mini-swatch" style="background:linear-gradient(145deg, #a8c0ff, #3f2b96);" onclick="applyColorToCell('linear-gradient(145deg, #a8c0ff, #3f2b96)')"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
         firebase.initializeApp(firebaseConfig);
@@ -248,8 +268,17 @@
         let currentUser = "";
         let selectedUserKey = "";
         let userPasswords = { ali: '1234', gullu: '1234', umit: '1234' };
+        
+        let shiftRules = {};
+        const defaultRules = {
+            '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
+            '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' },
+            'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' },
+            'Yİ': { w: 0, n: 0, color: 'linear-gradient(145deg, #f43f5e, #be123c)' },
+            'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }
+        };
 
-        // ---------------- AÇILIŞ SENKRONİZASYONU ----------------
+        // ---------------- AÇILIŞ SENKRONİZASYONU VE PATRON KİLİDİ ----------------
         window.onload = () => {
             const text = "SHIFTMASTER"; 
             const container = document.getElementById("splashTextContainer");
@@ -272,7 +301,6 @@
             document.getElementById('startDate').valueAsDate = new Date();
         };
 
-        // ---------------- 🔥 PATRON KİLİDİ ----------------
         let secretClicks = 0; let secretTimer;
         document.getElementById('secretTrigger').addEventListener('click', () => {
             secretClicks++; 
@@ -303,6 +331,10 @@
             }
         });
 
+        db.ref('kullanici_sifreleri').on('value', snap => {
+            if(snap.val()) { userPasswords = { ...userPasswords, ...snap.val() }; }
+        });
+
         // ---------------- GİRİŞ İŞLEMLERİ ----------------
         function selectProfile(key) {
             db.ref('sistem_kilitli').once('value').then(snap => {
@@ -317,21 +349,10 @@
             });
         }
         function cancelLogin() { document.getElementById('passBox').style.display = 'none'; document.getElementById('profileContainer').style.display = 'flex'; document.getElementById('passInput').value = ""; document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('active')); selectedUserKey = ""; }
-        function checkPass() { const input = document.getElementById("passInput").value; if(input === '1234') { currentUser = "ÜMİT"; document.getElementById("lockScreen").style.display = "none"; document.getElementById("mainContent").style.display = "block"; } else { alert("Yanlış Şifre"); } }
+        function checkPass() { const input = document.getElementById("passInput").value; if(input === '1234') { currentUser = "ÜMİT"; document.getElementById("lockScreen").style.display = "none"; document.getElementById("mainContent").style.display = "block"; loadStaffPool(); } else { alert("Yanlış Şifre"); } }
         function logout() { currentUser = ""; selectedUserKey = ""; document.getElementById("mainContent").style.display = "none"; document.getElementById("lockScreen").style.display = "flex"; cancelLogin(); }
 
-        // ---------------- DİNAMİK MENÜ VE RENK SEÇİCİ (YENİ SİSTEM) ----------------
-        let shiftRules = {};
-        let newShiftNameCache = "";
-        
-        const defaultRules = {
-            '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
-            '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' },
-            'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' },
-            'Yİ': { w: 0, n: 0, color: 'linear-gradient(145deg, #f43f5e, #be123c)' },
-            'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }
-        };
-
+        // ---------------- DİNAMİK MENÜ VE YENİ RENK SEÇİCİ (20'Lİ PALET) ----------------
         db.ref("vardiya_kurallari").on('value', snap => {
             if(snap.val()) { shiftRules = snap.val(); } 
             else { shiftRules = defaultRules; db.ref("vardiya_kurallari").set(defaultRules); }
@@ -347,50 +368,43 @@
             });
             
             html += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div>`;
-            html += `<div class="menu-item" style="background:var(--accent); color:#000; grid-column: span 2;" onclick="promptNewShiftColor()">➕ YENİ VARDİYA RENGİ BELİRLE</div>`;
             html += `<div class="menu-item" style="background:var(--warning); color:#000; font-size:11px; box-shadow:0 0 10px var(--warning);" onclick="addGhostPinToCell()">📍 İĞNE / NOT AT</div>`;
             html += `<div class="menu-item" style="background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;" onclick="removeGhostPinFromCell()">🗑️ İĞNE SİL</div>`;
             
             grid.innerHTML = html;
         }
 
-        function promptNewShiftColor() {
+        // ✨ HÜCREDEKİ YAZIYI RENKLENDİR VE SİSTEME KAYDET (YENİ) ✨
+        function applyColorToCell(gradient) {
             if(!activeCell) return;
             let val = activeCell.innerText.trim();
             if(val === "") {
-                alert("Önce hücrenin içine eklemek istediğiniz vardiya adını veya kodunu (Örn: EĞİTİM, X, Y) klavyeyle yazın, sonra sağ tıklayıp bu butona basın.");
+                alert("Lütfen önce hücreye vardiya adını (Örn: X, EĞİTİM, İZİN) yazın, ardından sağ tıklayıp renk seçin.");
                 document.getElementById("contextMenu").style.display = "none";
                 return;
             }
-            newShiftNameCache = val; 
-            document.getElementById("contextMenu").style.display = "none";
-            
-            let modal = document.getElementById("colorPickerModal");
-            modal.style.display = "flex";
-            setTimeout(() => modal.classList.add('show'), 10);
-        }
 
-        function saveNewShiftColor(gradient) {
-            let wStr = prompt(`"${newShiftNameCache}" için Gündüz Çalışma Saati kaç? (Örn: 7.5)`, "7.5");
+            let safeKey = val.replace(/\./g, ':');
+            let existingRule = shiftRules[safeKey];
+            
+            let defaultW = existingRule ? existingRule.w : "7.5";
+            let defaultN = existingRule ? existingRule.n : "0";
+
+            let wStr = prompt(`"${val}" için Gündüz Çalışma Saati kaç?`, defaultW);
             if(wStr === null) return;
-            let nStr = prompt(`"${newShiftNameCache}" için Gece Çalışma Saati var mı? (Varsa girin, yoksa 0)`, "0");
+            let nStr = prompt(`"${val}" için Gece Çalışma Saati var mı?`, defaultN);
             if(nStr === null) return;
 
             let w = parseFloat(wStr.replace(',', '.')) || 0;
             let n = parseFloat(nStr.replace(',', '.')) || 0;
 
-            let safeKey = newShiftNameCache.replace(/\./g, ':');
-
             db.ref("vardiya_kurallari/" + safeKey).set({ w: w, n: n, color: gradient });
-            closeModal('colorPickerModal');
             
             activeCell.style.background = gradient;
             updateAllStats();
-            alert("✅ Yeni vardiya/harf kodu başarıyla sisteme eklendi!");
+            document.getElementById("contextMenu").style.display = "none";
         }
 
-        function closeModal(id) { const modal = document.getElementById(id); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
-        
         function addGhostPinToCell() {
             if(!activeCell) return;
             let currentNote = activeCell.getAttribute("data-pin") || "";
@@ -401,10 +415,34 @@
             }
             document.getElementById("contextMenu").style.display = "none";
         }
-        function removeGhostPinFromCell() { if(!activeCell) return; activeCell.removeAttribute("data-pin"); document.getElementById("contextMenu").style.display = "none"; }
+        
+        function removeGhostPinFromCell() { 
+            if(!activeCell) return; 
+            activeCell.removeAttribute("data-pin"); 
+            document.getElementById("contextMenu").style.display = "none"; 
+        }
 
-        // TABLO TEMEL FONKSİYONLARI
+        // ---------------- TABLO TEMEL FONKSİYONLARI ----------------
+        function loadStaffPool() { 
+            db.ref("personel_havuzu").on("value", snap => { 
+                const p = document.getElementById("staffPool"); p.innerHTML = ""; 
+                const data = snap.val(); if(data) { 
+                    Object.entries(data).forEach(([id, name]) => { 
+                        const div = document.createElement("div"); div.className = "staff-chip"; 
+                        div.innerHTML = `<input type="checkbox" value="${name}"> <span>${name}</span> <span class="staff-del" onclick="removeStaff(event, '${id}')">×</span>`; 
+                        div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; 
+                        p.appendChild(div); 
+                    }); 
+                } 
+            }); 
+        }
+        function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); inp.value = ""; } }
+        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); } }
+
         function generateTableFromSelected() {
+            const sel = Array.from(document.querySelectorAll("#staffPool input:checked")).map(cb => cb.value); 
+            if(sel.length===0) return alert("Lütfen havuzdan personel seçin!"); 
+            
             const startDt = new Date(document.getElementById("startDate").value);
             const cols = parseInt(document.getElementById("colCount").value);
             let h = `<table><thead><tr><th>PERSONEL</th>`;
@@ -414,8 +452,7 @@
             }
             h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`;
             
-            // Dummy veriler
-            ["ÜMİT", "ALİ", "GÜLLÜ"].forEach(name => {
+            sel.forEach(name => {
                 h += `<tr><td><div class="editable-name" contenteditable="true">${name}</div></td>`;
                 for(let i=0; i<cols; i++) h += `<td class="shift-cell" contenteditable="true" oncontextmenu="openShiftMenu(event, this)"></td>`;
                 h += `<td class="total-summary-cell"></td></tr>`;
@@ -449,7 +486,7 @@
             });
         }
         
-        window.onclick = (e) => { if(!e.target.closest('.custom-menu') && !e.target.closest('.color-swatch')) { document.getElementById("contextMenu").style.display = "none"; } };
+        window.onclick = (e) => { if(!e.target.closest('.custom-menu') && !e.target.closest('.mini-swatch')) { document.getElementById("contextMenu").style.display = "none"; } };
     </script>
 </body>
 </html>
