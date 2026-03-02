@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v118.0 - RESCUE & COPY ELITE</title>
+    <title>ShiftMaster v118.1 - FOTO & SELECTION ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -128,6 +128,8 @@
         .pass-box { background: rgba(15, 23, 42, 0.95); padding: 30px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 350px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); display: none; flex-direction: column; align-items: center; }
         .pass-input { width: 80%; background: #020617; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; font-size: 24px; text-align: center; margin-bottom: 20px; outline: none; font-family: 'Poppins', sans-serif; letter-spacing: 5px; }
         .shake { animation: shake 0.5s; } @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+        
+        /* 🔥 PATRON (GÖLGE KİLİT) EKRANI */
         #kickScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10000000; }
 
         /* ANA YAPI */
@@ -136,27 +138,16 @@
         .card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #334155; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7); }
         .main-header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 25px; border-radius: 20px; border: 1px solid #334155; margin-bottom: 20px; }
-        .top-panels { display: flex; gap: 20px; margin-bottom: 25px; }
         
+        /* 📢 HABERLEŞME VE LOG EKRANI */
+        .top-panels { display: flex; gap: 20px; margin-bottom: 25px; }
         .news-container { flex: 1; background: var(--card); border: 2px solid #334155; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; }
         .news-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .news-list { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 5px; }
         .news-item { background: rgba(56, 189, 248, 0.05); border-left: 4px solid var(--accent); padding: 15px; border-radius: 12px; position: relative; display: flex; flex-direction: column; gap: 6px; }
         .news-text { font-size: 13px; font-weight: 500; color: #fff; line-height: 1.5; }
         .news-time { font-size: 10px; color: #94a3b8; font-style: italic; }
-        .news-actions { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
-        .reaction-btn { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; padding: 4px 10px; border-radius: 20px; font-size: 12px; cursor: pointer; color: #cbd5e1; display: flex; align-items: center; gap: 5px; user-select: none; }
-        .reaction-btn.active { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); color: var(--accent); }
-        .reply-btn { background: transparent; border: none; color: var(--accent); font-size: 12px; cursor: pointer; font-weight: 700; padding: 4px; margin-left: auto; }
-        .emoji-picker-wrapper { position: relative; }
-        .emoji-picker { display: none; position: absolute; bottom: 120%; left: 0; background: #0f172a; border: 1px solid var(--accent); padding: 8px; border-radius: 15px; z-index: 100; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
-        .emoji-picker.active { display: flex; }
-        .emoji-item { cursor: pointer; font-size: 18px; padding: 2px; }
-        .replies-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-left: 12px; border-left: 2px dashed #475569; }
-        .reply-item { background: rgba(0, 0, 0, 0.25); padding: 10px; border-radius: 10px; font-size: 12px; }
-        .reply-input-box { display: none; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #334155; }
-        .reply-input-box.active { display: flex; }
-
+        
         .log-container { flex: 1; background: #0f172a; border: 2px solid var(--warning); border-radius: 20px; padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
         .log-list { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px; }
         .log-item { background: rgba(0,0,0,0.5); border-left: 3px solid var(--warning); padding: 10px 12px; border-radius: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; color: #cbd5e1; }
@@ -181,9 +172,10 @@
         .table-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
         .table-title { font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
         .table-actions-bottom { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; padding: 15px; background: rgba(15, 23, 42, 0.6); border-radius: 15px; border: 1px solid #334155; align-items: center; }
-        .scroll-area { overflow-x: auto; border-radius: 15px; border: 1px solid #334155; background: #0f172a; max-width: 100%; position: relative; padding-bottom: 15px; }
         
+        .scroll-area { overflow-x: auto; border-radius: 15px; border: 1px solid #334155; background: #0f172a; max-width: 100%; position: relative; padding-bottom: 15px; }
         table { width: auto; border-collapse: collapse; min-width: 100%; table-layout: auto; }
+        
         th, td { border: 1px solid #1e293b; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; white-space: normal; line-height: 1.2; position: relative; transition: all 0.2s; }
         th { background: #1e293b; color: var(--accent); text-transform: uppercase; height: 50px; user-select: none; font-weight: 800; }
         td { color: #cbd5e1; height: 50px; }
@@ -200,14 +192,17 @@
         .editable-name:focus { border-bottom: 2px solid var(--accent); color: var(--accent); }
         .nav-box { display: flex; flex-direction: column; gap: 2px; }
         .mini-btn { background: #334155; color: var(--accent); border: 1px solid #475569; padding: 2px 5px; border-radius: 4px; cursor: pointer; font-size: 8px; font-weight: 900; }
-        .select-icon { background: var(--accent); color: #000; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+        
+        /* ✨ DÖNEN (ANİMASYONLU) İSİM SEÇME BUTONU GERİ GELDİ ✨ */
+        .select-icon { background: var(--accent); color: #000; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .select-icon:hover { transform: rotate(180deg) scale(1.2); box-shadow: 0 0 15px var(--accent); background: white; }
 
         .btn { padding: 10px 18px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 11px; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Poppins', sans-serif; }
         .btn:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .glass-input { background: rgba(30, 41, 59, 0.6); border: 1px solid #475569; color: white; padding: 12px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 500; }
         .glass-input:focus { border-color: var(--accent); background: #1e293b; }
 
-        /* ✨ DİNAMİK VARDİYA MENÜSÜ & 30'LU RENK PALETİ */
+        /* DİNAMİK VARDİYA MENÜSÜ & 30'LU RENK PALETİ */
         .custom-menu { display: none; position: absolute; background: #1e293b; border: 2px solid var(--accent); border-radius: 20px; z-index: 100010; width: 380px; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); animation: menuPop 0.2s; }
         @keyframes menuPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -215,6 +210,8 @@
         .menu-item-wrapper { position: relative; width: 100%; display: inline-block; }
         .menu-item { width: 100%; padding: 12px 8px; cursor: pointer; border-radius: 10px; text-align: center; font-weight: 800; font-size: 11px; transition: 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.25), inset -3px -3px 8px rgba(0, 0, 0, 0.5); text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; box-sizing: border-box; }
         .menu-item:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.5); }
+        
+        /* ÖZEL RENK SİLME (X) BUTONU */
         .delete-custom-btn { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; width: 16px; height: 16px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; box-shadow: 0 0 5px black; transition:0.2s; }
         .delete-custom-btn:hover { transform: scale(1.3); }
 
@@ -262,11 +259,22 @@
 
     <div id="lockScreen">
         <h2 style="color:white; margin-bottom:40px; font-weight:900; font-size: 28px; letter-spacing: 2px;">👥 KULLANICI SEÇİN</h2>
+        
         <div class="profile-container" id="profileContainer">
-            <div class="profile-card" onclick="selectProfile('ali')"><div class="profile-icon">🏍️</div><div class="profile-name">ALİ</div></div>
-            <div class="profile-card" onclick="selectProfile('gullu')"><div class="profile-icon">🌹</div><div class="profile-name">GÜLLÜ</div></div>
-            <div class="profile-card" onclick="selectProfile('umit')" style="border-color: var(--warning);"><div class="profile-icon">☀️</div><div class="profile-name" style="color: var(--warning);">ÜMİT</div></div>
+            <div class="profile-card" onclick="selectProfile('ali')">
+                <div class="profile-icon">🏍️</div>
+                <div class="profile-name">ALİ</div>
+            </div>
+            <div class="profile-card" onclick="selectProfile('gullu')">
+                <div class="profile-icon">🌹</div>
+                <div class="profile-name">GÜLLÜ</div>
+            </div>
+            <div class="profile-card" onclick="selectProfile('umit')" style="border-color: var(--warning);">
+                <div class="profile-icon">☀️</div>
+                <div class="profile-name" style="color: var(--warning);">ÜMİT</div>
+            </div>
         </div>
+
         <div class="pass-box" id="passBox">
             <h3 style="color:var(--accent); margin-top:0;" id="loginTitle">ŞİFRE GİRİNİZ</h3>
             <input type="password" id="passInput" class="pass-input" placeholder="••••" onkeydown="if(event.key==='Enter') checkPass()">
@@ -284,6 +292,24 @@
                 </div>
             </div>
 
+            <div class="top-panels">
+                <div class="news-container card">
+                    <div class="news-header"><h4 style="margin:0; color:var(--accent); display:flex; align-items:center; gap:10px;">📢 HABERLEŞME PANOSU</h4></div>
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="newsInput" class="glass-input" style="flex:1;" placeholder="Ekip için bir not bırak..." onkeydown="if(event.key==='Enter') addNews()">
+                        <button class="btn" style="background:var(--accent); color:#000;" onclick="addNews()">GÖNDER</button>
+                    </div>
+                    <div id="newsList" class="news-list"></div>
+                </div>
+
+                <div class="log-container card">
+                    <div class="news-header"><h4 style="margin:0; color:var(--warning); display:flex; align-items:center; gap:10px;">🕵️‍♂️ SON İŞLEMLER (LOG)</h4></div>
+                    <div id="logList" class="log-list">
+                        <div style="color: #475569; font-size: 11px; text-align: center; margin-top: 20px;">Sistem hareketleri bekleniyor...</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <h4 style="margin-top:0; color:var(--text); border-bottom:1px solid #334155; padding-bottom:15px;">📁 PANODA KAYITLI ÇALIŞMA PLANLARI (KLASÖRLER)</h4>
                 <div id="archiveList" class="archive-grid"></div>
@@ -291,9 +317,10 @@
 
             <div class="card">
                 <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:flex-end;">
-                    <div><label style="font-size:10px; color:var(--accent); font-weight:900;">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input"></div>
-                    <div><label style="font-size:10px; color:var(--accent); font-weight:900;">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:60px; text-align:center;"></div>
-                    <button class="btn" style="background:var(--accent); color:#000; padding:12px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
+                    <div><label style="font-size:10px; color:var(--accent); font-weight:900; margin-left:5px;">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input"></div>
+                    <div><label style="font-size:10px; color:var(--accent); font-weight:900; margin-left:5px;">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:60px; text-align:center;"></div>
+                    <button class="btn" style="background:var(--accent); color:#000; padding:12px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 SIFIRDAN YENİ MATRİS OLUŞTUR</button>
+                    <button class="btn" style="background:var(--success); color:white; padding:12px 20px; font-size: 14px;" onclick="openExcelModal()">📥 SIFIRDAN BİR TABLOYA EXCEL'DEN ÇEK</button>
                 </div>
             </div>
 
@@ -319,6 +346,17 @@
                 </div>
             </div>
             <div class="modal-body-area" id="tablesContainer"></div>
+        </div>
+    </div>
+
+    <div id="excelModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="margin-top:0; color:var(--accent);" id="excelModalTitle">📥 Excel'den Veri Çek</h3>
+            <textarea id="excelInput" class="glass-input" style="width:100%; height:200px; font-family:monospace; margin-bottom:15px;"></textarea>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:1; background:var(--success); color:white; justify-content:center;" onclick="importFromExcel()">VERİLERİ İŞLE</button>
+                <button class="btn" style="flex:1; background:var(--danger); color:white; justify-content:center;" onclick="closeModal('excelModal')">İPTAL</button>
+            </div>
         </div>
     </div>
 
@@ -374,6 +412,8 @@
             </div>
         </div>
     </div>
+    
+    <div id="staffSelectMenu" class="custom-menu" style="max-height:300px; overflow-y:auto; width:200px;"></div>
 
     <div id="toast">Başarıyla kopyalandı!</div>
 
@@ -416,7 +456,6 @@
             'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }
         };
 
-        // TOAST MESAJI
         function showToast(msg) {
             let x = document.getElementById("toast");
             x.innerText = msg;
@@ -424,7 +463,6 @@
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
         }
 
-        // Açılış Animasyonu
         window.onload = () => {
             const text = "SHIFTMASTER"; 
             const container = document.getElementById("splashTextContainer");
@@ -443,13 +481,36 @@
             if (startDateInput) startDateInput.valueAsDate = new Date();
         };
 
-        // ---------------- SİSTEM ŞİFRE VE KİLİT ----------------
-        db.ref('kullanici_sifreleri').on('value', snap => { if(snap.val()) userPasswords = { ...userPasswords, ...snap.val() }; });
+        let secretClicks = 0; let secretTimer;
+        document.getElementById('secretTrigger').addEventListener('click', () => {
+            secretClicks++; 
+            clearTimeout(secretTimer);
+            secretTimer = setTimeout(() => { secretClicks = 0; }, 1500);
+            
+            if(secretClicks >= 3) {
+                secretClicks = 0;
+                const godPass = prompt("🔥 GÖLGE KİLİT MASTER ŞİFRE:");
+                if(godPass === "PATRON") {
+                    db.ref('sistem_kilitli').once('value').then(snap => {
+                        let isLocked = snap.val();
+                        if(isLocked) {
+                            if(confirm("Sistem şu an kilitli. KİLİDİ AÇMAK ister misin?")) { db.ref('sistem_kilitli').set(false); alert("Sistem Kiliti Açıldı. Herkes girebilir."); }
+                        } else {
+                            if(confirm("Sistemi kitlemek üzeresin. Senin dışında herkes ATILACAK. Onaylıyor musun?")) { db.ref('sistem_kilitli').set(true); alert("Sistem kilitlendi. Yalnızca sen varsın."); }
+                        }
+                    });
+                }
+            }
+        });
+
         db.ref('sistem_kilitli').on('value', snap => {
-            if(snap.val() && currentUser !== 'ÜMİT' && currentUser !== "") {
+            const isLocked = snap.val();
+            if(isLocked && currentUser !== 'ÜMİT' && currentUser !== "") {
                 document.getElementById('kickScreen').style.display = 'flex'; document.getElementById('mainContent').style.display = 'none';
             }
         });
+
+        db.ref('kullanici_sifreleri').on('value', snap => { if(snap.val()) userPasswords = { ...userPasswords, ...snap.val() }; });
 
         function selectProfile(key) {
             db.ref('sistem_kilitli').once('value').then(snap => {
@@ -464,59 +525,34 @@
 
         function executeLogin() {
             currentUser = users[selectedUserKey].name;
+            logAction("Sisteme giriş yaptı.");
             document.getElementById("lockScreen").style.display = "none";
             document.getElementById("mainContent").style.display = "block";
             document.getElementById("welcomeText").innerText = `👋 HOŞ GELDİN, ${currentUser}`;
             loadStaffPool(); 
             loadArchives(); 
+            loadNews();
         }
 
         function logout() { currentUser = ""; selectedUserKey = ""; document.getElementById("mainContent").style.display = "none"; document.getElementById("lockScreen").style.display = "flex"; cancelLogin(); }
 
-        let secretClicks = 0; let secretTimer;
-        document.getElementById('secretTrigger').addEventListener('click', () => {
-            secretClicks++; clearTimeout(secretTimer); secretTimer = setTimeout(() => { secretClicks = 0; }, 1500);
-            if(secretClicks >= 3) {
-                secretClicks = 0; const godPass = prompt("🔥 GÖLGE KİLİT MASTER ŞİFRE:");
-                if(godPass === "PATRON") {
-                    db.ref('sistem_kilitli').once('value').then(snap => {
-                        let isLocked = snap.val();
-                        if(isLocked) { if(confirm("Sistem şu an kilitli. KİLİDİ AÇMAK ister misin?")) { db.ref('sistem_kilitli').set(false); alert("Sistem Kiliti Açıldı. Herkes girebilir."); } } 
-                        else { if(confirm("Sistemi kitlemek üzeresin. Senin dışında herkes ATILACAK. Onaylıyor musun?")) { db.ref('sistem_kilitli').set(true); alert("Sistem kilitlendi. Yalnızca sen varsın."); } }
-                    });
-                }
-            }
-        });
+        function logAction(actionText) { if(!currentUser) return; const logData = { user: currentUser, action: actionText, time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}) }; db.ref("islem_loglari").push(logData); }
+        db.ref("islem_loglari").limitToLast(25).on("value", snap => { const l = document.getElementById("logList"); if(!l) return; l.innerHTML = ""; const data = snap.val(); if(data) { Object.values(data).reverse().forEach(val => { l.innerHTML += `<div class="log-item"><span class="log-user">${val.user}:</span> <span style="flex:1;">${val.action}</span> <span style="color:#64748b; font-size:9px;">${val.time}</span></div>`; }); } else { l.innerHTML = `<div style="color: #475569; font-size: 11px; text-align: center; margin-top: 20px;">Henüz işlem yok.</div>`; } });
 
-        // MODAL FONKSİYONLARI
         function openTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; setTimeout(() => modal.classList.add('show'), 10); }
         function closeTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
+        function closeModal(id) { const modal = document.getElementById(id); modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
 
-        // PERSONEL HAVUZU
-        function loadStaffPool() { 
-            db.ref("personel_havuzu").on("value", snap => { 
-                const p = document.getElementById("staffPool"); p.innerHTML = ""; const data = snap.val(); let count = 0; staffList = []; 
-                if(data) { 
-                    Object.entries(data).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); 
-                    staffList.sort((a, b) => a.name.localeCompare(b.name)); 
-                    staffList.forEach(item => { 
-                        count++; const div = document.createElement("div"); div.className = "staff-chip"; 
-                        div.innerHTML = `<input type="checkbox" value="${item.name}"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; 
-                        div.onclick = (e) => { 
-                            if(!e.target.classList.contains('staff-del')) { 
-                                const cb = div.querySelector('input'); cb.checked = !cb.checked; 
-                                if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); 
-                            } 
-                        }; p.appendChild(div); 
-                    }); 
-                } document.getElementById("staffCounter").innerText = count; 
-            }); 
-        }
-        function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); inp.value = ""; } }
-        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); } }
+        function loadNews() { db.ref("haberler").on("value", snap => { const l = document.getElementById("newsList"); l.innerHTML = ""; const data = snap.val(); if(data) { Object.entries(data).reverse().forEach(([id, val]) => { l.innerHTML += `<div class="news-item"><div style="display:flex; justify-content:space-between;"><div class="news-text">${val.text}</div><span class="news-delete" onclick="deleteNews('${id}')" style="color: var(--danger); cursor: pointer; font-size:16px;">×</span></div><div class="news-time">${val.user || 'Sistem'} • ${val.time}</div></div>`; }); } }); }
+        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) }); logAction(`Panoya not bıraktı: "${i.value.substring(0,10)}..."`); i.value = ""; } }
+        function deleteNews(id) { if(confirm("Mesajı kalıcı olarak silmek istiyor musun?")) { db.ref("haberler").child(id).remove(); logAction("Panodan bir mesaj sildi."); } }
 
-        // ---------------- DİNAMİK MENÜ VE RENK SEÇİCİ ----------------
+        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const data = snap.val(); let count = 0; staffList = []; if(data) { Object.entries(data).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; const div = document.createElement("div"); div.className = "staff-chip"; div.innerHTML = `<input type="checkbox" value="${item.name}"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; p.appendChild(div); }); } document.getElementById("staffCounter").innerText = count; }); }
+        function addStaff() { const inp = document.getElementById("staffInput"); const v = inp.value.trim(); if(v) { db.ref("personel_havuzu").push(v); logAction(`Havuz'a kişi ekledi: ${v}`); inp.value = ""; } }
+        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); logAction("Havuzdan kişi sildi."); } }
+
+        // ---------------- DİNAMİK MENÜ VE RENK SEÇİCİ (SİLME ÖZELLİKLİ) ----------------
         db.ref("vardiya_kurallari").on('value', snap => {
             if(snap.val()) { shiftRules = snap.val(); } 
             else { shiftRules = defaultRules; db.ref("vardiya_kurallari").set(defaultRules); }
@@ -533,7 +569,6 @@
                 let isCustom = !defaultKeys.includes(sName);
                 
                 if(isCustom) {
-                    // Özel eklenenler silinebilir X butonu ile gelir
                     html += `
                     <div class="menu-item-wrapper">
                         <div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div>
@@ -545,16 +580,12 @@
             });
             
             html += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div>`;
-            html += `<div class="menu-item" style="background:var(--warning); color:#000; font-size:11px; box-shadow:0 0 10px var(--warning);" onclick="addGhostPinToCell()">📍 İĞNE / NOT AT</div>`;
-            html += `<div class="menu-item" style="background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;" onclick="removeGhostPinFromCell()">🗑️ İĞNE SİL</div>`;
-            
             grid.innerHTML = html;
         }
 
-        // Kendi oluşturduğu renkleri veritabanından söküp atma fonksiyonu
         function deleteShiftRule(key, e) {
             e.stopPropagation();
-            if(confirm(`"${key}" vardiyasını kalıcı olarak silmek istiyor musunuz?`)) {
+            if(confirm(`"${key}" vardiyasını sağ tık menüsünden kalıcı olarak silmek istiyor musunuz?`)) {
                 db.ref("vardiya_kurallari/" + key).remove();
             }
         }
@@ -589,11 +620,8 @@
             document.getElementById("contextMenu").style.display = "none";
         }
 
-        function applyCustomColorFromWheel(hexColor) {
-            applyColorToCell(hexColor);
-        }
+        function applyCustomColorFromWheel(hexColor) { applyColorToCell(hexColor); }
 
-        // ✨ HAYALET İĞNE (GHOST PIN) 
         function addGhostPinToCell() {
             if(!activeCell) return;
             let currentNote = activeCell.getAttribute("data-pin") || "";
@@ -648,10 +676,6 @@
                     <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:4px 10px; border-radius:8px; margin-left:auto;">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span>
                 </div>
                 <div class="scroll-area">${h}</div>
-                <div style="margin-top: 20px; padding: 15px; background: rgba(15, 23, 42, 0.4); border-radius: 15px; border: 1px dashed var(--accent);">
-                    <label style="font-size: 12px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">📝 BU AY NE OLDU? <span style="color:#94a3b8; font-weight:400; font-size:10px;">(Genel Tablo Notları, Olaylar... Hepsi arşive kaydedilir.)</span></label>
-                    <textarea class="table-notes glass-input" style="width: 100%; height: 60px; margin-top: 10px; resize: vertical; box-sizing: border-box; font-size:12px; color:#fff; border-color:var(--accent);" placeholder="Bu tabloyla ilgili aklınızda tutamadığınız her şeyi buraya yazın...">${savedNotes}</textarea>
-                </div>
                 <div class="table-actions-bottom">
                     <button class="btn" style="background:#10b981; color:white;" onclick="addEmptyRow(this)">➕ SATIR EKLE</button>
                     <button class="btn" style="background:#0ea5e9; color:white;" onclick="copyTableRows(this)">📋 KOPYALA</button>
@@ -659,6 +683,7 @@
                     <button class="btn" style="background:var(--danger); color:white;" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button>
                     <span style="width: 2px; height: 20px; background: #334155; margin: 0 5px;"></span>
                     <button class="btn" style="background:#8b5cf6; color:white;" onclick="calcTable(this)">🔄 HESAPLA</button>
+                    <button class="btn" style="background:#ec4899; color:white;" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button>
                     <span style="flex-grow:1;"></span>
                     <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ TABLOYU EKRANDAN SİL</button>
                 </div>
@@ -675,9 +700,17 @@
             openTableModal(); 
         }
 
+        // HÜCRE İSİM VEYA ALANA TIKLANDIĞINDA CHECKBOX'I SEÇME (AKILLI TIKLAMA)
+        function toggleCheckboxFromCell(e, cell) {
+            // Editable name'e veya yanındaki dropdown'a tıklandıysa checkBox'a dokunma
+            if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return;
+            const cb = cell.querySelector('.row-checkbox');
+            if(cb && e.target !== cb) cb.checked = !cb.checked;
+        }
+
         function createRowHtml(name, colCount, startDt, savedShifts = null) {
             let cells = `
-            <td>
+            <td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <input type="checkbox" class="row-checkbox">
                     <div class="name-wrapper">
@@ -728,6 +761,26 @@
             wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); 
             saveHistory(); 
             updateAllStats(); 
+        }
+
+        function takeFullScreenshot(btn) { 
+            const wrapper = btn.closest('.table-wrapper'); 
+            const captureArea = wrapper.querySelector(".scroll-area"); 
+            const table = wrapper.querySelector("table"); 
+            let oldText = btn.innerHTML; 
+            btn.innerHTML = "⏳ FOTO ALINIYOR..."; 
+            
+            let oldOverflow = captureArea.style.overflowX; 
+            captureArea.style.overflowX = 'visible'; 
+            
+            html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, width: table.scrollWidth + 10 }).then(canvas => { 
+                const link = document.createElement("a"); 
+                link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; 
+                link.href = canvas.toDataURL(); 
+                link.click(); 
+                btn.innerHTML = oldText; 
+                captureArea.style.overflowX = oldOverflow; 
+            }); 
         }
 
         // ZIRHLI METİN ÇEKİCİ
@@ -862,7 +915,6 @@
             }
         }
 
-        // AKILLI BAŞLIK SİLİCİ
         function cleanExcelRows(raw) { 
             let rows = raw.split("\n").filter(r => r.trim() !== ""); 
             while (rows.length > 0) { 
@@ -982,7 +1034,7 @@
             } 
         }
 
-        // AKILLI SIRALAMA İLE ARŞİV OKUMA VE SAĞLAMLAŞTIRILMIŞ TARİH
+        // AKILLI SIRALAMA İLE ARŞİV OKUMA
         function loadArchives() { 
             db.ref("arsivlenmis_shiftler").on("value", snap => { 
                 const l = document.getElementById("archiveList"); 
@@ -1255,7 +1307,7 @@
             }
         });
 
-        // BİREBİR YAPIŞTIRMA (ÖZETLERİ ATLAYARAK)
+        // BİREBİR YAPIŞTIRMA
         document.addEventListener('paste', e => {
             const selectedCells = document.querySelectorAll('.selected-cell'); 
             const targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell;
