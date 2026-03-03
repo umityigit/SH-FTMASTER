@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v127.1 - DRAG MENU ONLY</title>
+    <title>ShiftMaster v128.0 - BUTTON FIX ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -607,7 +607,7 @@
             margin-right: 8px; 
         }
 
-        /* 📁 ARŞİV VE KALICI DEPO EKRANI */
+        /* 📁 ARŞİV VE KALICI DEPO EKRANI (DÜZELTİLMİŞ BUTONLU YAPI) */
         .archive-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -623,9 +623,9 @@
             padding: 15px; 
             border-radius: 20px; 
             display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            cursor: pointer; 
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
             transition: 0.3s; 
             position: relative; 
             overflow: hidden; 
@@ -946,7 +946,7 @@
         }
 
         /* =========================================
-           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & DRAG AND DROP SÜRÜKLE BIRAK ✨
+           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & SÜRÜKLE BIRAK
            ========================================= */
         .custom-menu { 
             display: none; 
@@ -973,6 +973,7 @@
             gap: 10px; 
         }
 
+        /* Sürükle Bırak İçin Ek Sınıflar */
         .menu-item-wrapper { 
             position: relative; 
             width: 100%; 
@@ -1433,8 +1434,13 @@
             </div>
 
             <div class="card">
-                <h4 style="margin-top:0; color:var(--text); border-bottom:1px solid #334155; padding-bottom:15px;">📁 PANODA KAYITLI ÇALIŞMA PLANLARI (KLASÖRLER)</h4>
+                <h4 style="margin-top:0; color:var(--text); border-bottom:1px solid #334155; padding-bottom:15px;">📁 PANODA KAYITLI ÇALIŞMA PLANLARI (AKTİF KLASÖRLER)</h4>
                 <div id="archiveList" class="archive-grid"></div>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-top:0; color:#94a3b8; border-bottom:1px dashed #334155; padding-bottom:15px;">📦 KALICI DEPO (ESKİ PROGRAMLAR)</h4>
+                <div id="permanentArchiveList" class="archive-grid"></div>
             </div>
 
             <div class="card">
@@ -1872,6 +1878,7 @@
             
             loadStaffPool(); 
             loadArchives(); 
+            loadPermanentArchives(); 
             loadNews();
         }
 
@@ -2398,6 +2405,24 @@
             logAction("Bir satırı böldü.");
         }
 
+        function toggleTableCollapse(header, e) {
+            if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) {
+                return;
+            }
+            const wrapper = header.closest('.table-wrapper');
+            wrapper.classList.toggle('collapsed');
+        }
+
+        function moveTableWrapper(btn, dir, e) {
+            e.stopPropagation(); 
+            const wrapper = btn.closest('.table-wrapper');
+            if(dir === -1 && wrapper.previousElementSibling) {
+                wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling);
+            } else if (dir === 1 && wrapper.nextElementSibling) {
+                wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper);
+            }
+        }
+
         // ---------------- ÇOKLU TABLO OLUŞTURMA ----------------
         function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
             const cols = customColCount || parseInt(document.getElementById("colCount").value);
@@ -2444,12 +2469,16 @@
             wrapper.setAttribute("data-tablename", tableName);
             
             wrapper.innerHTML = `
-                <div class="table-header">
-                    <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this)">📌 ${tableName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span></span>
+                <div class="table-header" onclick="toggleTableCollapse(this, event)">
+                    <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;">
+                        <button class="mini-btn" style="padding:2px 8px; font-size:10px;" onclick="moveTableWrapper(this, -1, event)">▲</button>
+                        <button class="mini-btn" style="padding:2px 8px; font-size:10px;" onclick="moveTableWrapper(this, 1, event)">▼</button>
+                    </div>
+                    <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span></span>
                     <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:4px 10px; border-radius:8px; margin-left:auto;">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span>
                 </div>
                 <div class="scroll-area">${h}</div>
-                <div style="margin-top: 20px; padding: 15px; background: rgba(15, 23, 42, 0.4); border-radius: 15px; border: 1px dashed var(--accent);">
+                <div class="table-notes-container">
                     <label style="font-size: 12px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">📝 BU AY NE OLDU? <span style="color:#94a3b8; font-weight:400; font-size:10px;">(Genel Tablo Notları, Olaylar... Hepsi arşive kaydedilir.)</span></label>
                     <textarea class="table-notes glass-input" style="width: 100%; height: 60px; margin-top: 10px; resize: vertical; box-sizing: border-box; font-size:12px; color:#fff; border-color:var(--accent);" placeholder="Bu tabloyla ilgili aklınızda tutamadığınız her şeyi buraya yazın...">${savedNotes}</textarea>
                 </div>
@@ -2840,6 +2869,7 @@
             });
         }
 
+        // AKILLI BAŞLIK SİLİCİ
         function cleanExcelRows(raw) { 
             let rows = raw.split("\n").filter(r => r.trim() !== ""); 
             while (rows.length > 0) { 
@@ -3079,19 +3109,106 @@
                         let safeName = (val.name || "İsimsiz").replace(/'/g,"\\'");
                         const div = document.createElement("div"); 
                         div.className = "archive-card"; 
+                        div.style.flexDirection = "column";
+                        div.style.alignItems = "flex-start";
+                        div.style.gap = "10px";
                         div.innerHTML = `
-                            <div style="flex:1" onclick="openArchive('${id}', '${safeName}', false)">
+                            <div style="width: 100%;">
                                 <b style="color:var(--accent); font-size:15px;">📁 ${val.name || 'İsimsiz'}</b><br>
                                 <small style="color:#94a3b8; font-size:10px;">${val.date} | <b>${tableCount}</b> Tablo İçeriyor</small>
                             </div>
-                            <div style="display:flex; flex-direction:column; gap:5px; margin-left:10px;">
-                                <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:4px 8px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button>
+                            <div style="display:flex; gap:5px; width:100%; flex-wrap:wrap; margin-top:5px;">
+                                <button class="btn btn-green" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="openArchive('${id}', '${safeName}', false)">📂 AÇ</button>
+                                <button class="btn btn-cyan" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="renameArchive(event, '${id}', '${safeName}')">✏️ DÜZENLE</button>
+                                <button class="btn btn-orange" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button>
+                                <button class="btn btn-red" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button>
                             </div>
                         `; 
                         l.appendChild(div); 
                     }); 
                 } 
             }); 
+        }
+
+        // ✨ KALICI DEPO SİSTEMİ ✨
+        function loadPermanentArchives() { 
+            db.ref("kalici_depo").on("value", snap => { 
+                const l = document.getElementById("permanentArchiveList"); 
+                if(!l) return;
+                l.innerHTML = ""; 
+                const data = snap.val(); 
+                if(data) { 
+                    let archiveArray = Object.entries(data).map(([id, val]) => ({id, val}));
+                    archiveArray.sort((a, b) => {
+                        let nameA = a.val.name || "";
+                        let nameB = b.val.name || "";
+                        return nameA.localeCompare(nameB, 'tr', { numeric: true });
+                    });
+
+                    archiveArray.forEach(({id, val}) => { 
+                        let tableCount = val.tables ? val.tables.length : 1; 
+                        let safeName = (val.name || "İsimsiz").replace(/'/g,"\\'");
+                        const div = document.createElement("div"); 
+                        div.className = "archive-card"; 
+                        div.style.border = "1px dashed #64748b";
+                        div.style.flexDirection = "column";
+                        div.style.alignItems = "flex-start";
+                        div.style.gap = "10px";
+                        div.innerHTML = `
+                            <div style="width: 100%;">
+                                <b style="color:#94a3b8; font-size:15px;">📦 ${val.name || 'İsimsiz'}</b><br>
+                                <small style="color:#64748b; font-size:10px;">${val.date} | <b>${tableCount}</b> Tablo</small>
+                            </div>
+                            <div style="display:flex; gap:5px; width:100%; flex-wrap:wrap; margin-top:5px;">
+                                <button class="btn btn-green" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="openArchive('${id}', '${safeName}', true)">📂 AÇ</button>
+                                <button class="btn btn-cyan" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button>
+                                <button class="btn btn-red" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button>
+                            </div>
+                        `; 
+                        l.appendChild(div); 
+                    }); 
+                } else {
+                    l.innerHTML = "<div style='color:#64748b; font-size:11px; padding:10px;'>Depo şu an boş...</div>";
+                }
+            }); 
+        }
+
+        function sendToPermanentArchive(e, id) {
+            e.stopPropagation();
+            if(!confirm("Bu klasörü Kalıcı Depo'ya kaldırmak istiyor musunuz? Aktif panodan silinecek.")) return;
+            db.ref("arsivlenmis_shiftler").child(id).once("value", snap => {
+                const data = snap.val();
+                if(data) {
+                    db.ref("kalici_depo").child(id).set(data).then(() => {
+                        db.ref("arsivlenmis_shiftler").child(id).remove();
+                        showToast("📦 Klasör Depoya Kaldırıldı!");
+                        logAction("Bir klasörü Kalıcı Depoya kaldırdı.");
+                    });
+                }
+            });
+        }
+
+        function restoreFromPermanentArchive(e, id) {
+            e.stopPropagation();
+            if(!confirm("Kalıcı Depodaki bu klasörü Aktif Panoya geri almak istiyor musunuz?")) return;
+            db.ref("kalici_depo").child(id).once("value", snap => {
+                const data = snap.val();
+                if(data) {
+                    db.ref("arsivlenmis_shiftler").child(id).set(data).then(() => {
+                        db.ref("kalici_depo").child(id).remove();
+                        showToast("♻️ Klasör Aktif Panoya Geri Alındı!");
+                        logAction("Bir klasörü Depodan Aktif Panoya geri aldı.");
+                    });
+                }
+            });
+        }
+
+        function delPermanentArchive(e, id) {
+            e.stopPropagation();
+            if(confirm("DİKKAT! Depodaki bu dosyayı TAMAMEN silmek istediğinize emin misiniz? Geri dönüşü yoktur.")) {
+                db.ref("kalici_depo").child(id).remove();
+                logAction("Kalıcı depodan dosya sildi.");
+            }
         }
 
         function delArchive(e, id) { 
@@ -3143,7 +3260,7 @@
             });
         }
 
-        // ✨ MASTER KAYIT ✨
+        // ✨ MASTER KAYIT (FİREBASE TRY-CATCH İLE GÜÇLENDİRİLDİ) ✨
         function saveMasterArchive() {
             try {
                 if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { 
