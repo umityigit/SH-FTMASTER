@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v122.0 - MULTI-SELECT ELITE</title>
+    <title>ShiftMaster v122.1 - FULL ACTIVE ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -741,7 +741,6 @@
             transition: 0.3s;
         }
 
-        /* YENİ: Akordeon Kapalı Durumu */
         .table-wrapper.collapsed .scroll-area, 
         .table-wrapper.collapsed .table-notes-container, 
         .table-wrapper.collapsed .table-actions-bottom { 
@@ -2132,9 +2131,7 @@
             });
             
             html += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div>`;
-            
             html += `<div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`;
-            
             html += `<div class="menu-item" style="background:var(--warning); color:#000; font-size:11px; box-shadow:0 0 10px var(--warning);" onclick="addGhostPinToCell()">📍 İĞNE / NOT AT</div>`;
             html += `<div class="menu-item" style="background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;" onclick="removeGhostPinFromCell()">🗑️ İĞNE SİL</div>`;
             
@@ -2148,7 +2145,7 @@
             }
         }
 
-        // ✨ ÇOKLU SEÇİM DESTEKLİ RENK ATAMA ✨
+        // ✨ ÇOKLU SEÇİME RENK ATAMA ✨
         function applyColorToCell(colorOrGradient) {
             const selectedCells = document.querySelectorAll('.selected-cell.shift-cell');
             let targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell;
@@ -2216,7 +2213,60 @@
             logAction(`Hücre iğnesini kaldırdı.`); 
         }
 
-        // ---------------- ÇOKLU TABLO OLUŞTURMA VE HÜCRE YAPISI ----------------
+        // ✨ SHİFT KESME / BÖLME FONKSİYONU ✨
+        function splitRowFromCell() {
+            if(!activeCell) return;
+            const cell = activeCell;
+            const row = cell.closest('tr');
+            const tbody = row.parentElement;
+            
+            const allShiftCells = Array.from(row.querySelectorAll('.shift-cell'));
+            const cellIndex = allShiftCells.indexOf(cell);
+            if(cellIndex === -1) return;
+            
+            saveHistory();
+            
+            const newRow = row.cloneNode(true);
+            const origName = row.querySelector('.editable-name').innerText;
+            newRow.querySelector('.editable-name').innerText = origName + " (Devamı)";
+            
+            for(let i = cellIndex; i < allShiftCells.length; i++) {
+                allShiftCells[i].innerText = "";
+                allShiftCells[i].style.background = "transparent";
+                allShiftCells[i].removeAttribute("data-pin");
+            }
+            
+            const newShiftCells = Array.from(newRow.querySelectorAll('.shift-cell'));
+            for(let i = 0; i < cellIndex; i++) {
+                newShiftCells[i].innerText = "";
+                newShiftCells[i].style.background = "transparent";
+                newShiftCells[i].removeAttribute("data-pin");
+            }
+            
+            tbody.insertBefore(newRow, row.nextSibling);
+            updateAllStats();
+            document.getElementById("contextMenu").style.display = "none";
+            showToast("Satır başarıyla ikiye bölündü! ✂️");
+            logAction("Bir satırı böldü.");
+        }
+
+        function toggleTableCollapse(header, e) {
+            if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return;
+            const wrapper = header.closest('.table-wrapper');
+            wrapper.classList.toggle('collapsed');
+        }
+
+        function moveTableWrapper(btn, dir, e) {
+            e.stopPropagation(); 
+            const wrapper = btn.closest('.table-wrapper');
+            if(dir === -1 && wrapper.previousElementSibling) {
+                wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling);
+            } else if (dir === 1 && wrapper.nextElementSibling) {
+                wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper);
+            }
+        }
+
+        // ---------------- ÇOKLU TABLO OLUŞTURMA ----------------
         function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
             const cols = customColCount || parseInt(document.getElementById("colCount").value);
             let startDt = customStartDt;
@@ -2287,6 +2337,26 @@
             openTableModal(); 
         }
 
+        // ✨ AYNI KİŞİLERLE YENİ TABLO OLUŞTURMA FONKSİYONU (EKSİKTİ EKLENDİ) ✨
+        function addTableWithSameStaff(btn) { 
+            const wrapper = btn.closest('.table-wrapper'); 
+            let staffNames = Array.from(wrapper.querySelectorAll('.editable-name')).map(el => el.innerText.trim()); 
+            if(staffNames.length === 0) return alert("Bu tabloda hiç personel yok!"); 
+            
+            let d = prompt("Kaç günlük yeni bir tablo oluşturulsun?", "30"); 
+            if(!d) return; 
+            let c = parseInt(d); 
+            
+            let currentStart = new Date(wrapper.getAttribute("data-startdt")); 
+            let nextMonth = new Date(currentStart.getFullYear(), currentStart.getMonth() + 1, 1); 
+            let nextMonthStr = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth()+1).padStart(2,'0')}-${String(nextMonth.getDate()).padStart(2,'0')}`; 
+            
+            let s = prompt("Başlangıç tarihi (Yıl-Ay-Gün formatında):", nextMonthStr); 
+            if(!s) return; 
+            
+            generateTable(false, staffNames, "Yeni Tablo", new Date(s), c, wrapper); 
+        }
+
         // HÜCRE İSİM VEYA ALANA TIKLANDIĞINDA CHECKBOX'I SEÇME (AKILLI TIKLAMA)
         function toggleCheckboxFromCell(e, cell) {
             if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return;
@@ -2339,16 +2409,6 @@
             } 
         }
 
-        function addEmptyRow(btn) { 
-            const wrapper = btn.closest('.table-wrapper'); 
-            const startDt = new Date(wrapper.getAttribute("data-startdt")); 
-            const cols = parseInt(wrapper.getAttribute("data-colcount")); 
-            const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); 
-            wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); 
-            saveHistory(); 
-            updateAllStats(); 
-        }
-
         function safeAppendTable() {
             const wrappers = document.querySelectorAll(".table-wrapper");
             if(wrappers.length === 0) return alert("Önce bir tablo oluşturmalısın!");
@@ -2372,6 +2432,16 @@
             }
         }
 
+        function addEmptyRow(btn) { 
+            const wrapper = btn.closest('.table-wrapper'); 
+            const startDt = new Date(wrapper.getAttribute("data-startdt")); 
+            const cols = parseInt(wrapper.getAttribute("data-colcount")); 
+            const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); 
+            wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); 
+            saveHistory(); 
+            updateAllStats(); 
+        }
+
         function takeFullScreenshot(btn) { 
             const wrapper = btn.closest('.table-wrapper'); 
             const captureArea = wrapper.querySelector(".scroll-area"); 
@@ -2393,58 +2463,6 @@
             logAction("Tablonun fotoğrafını aldı.");
         }
 
-        function splitRowFromCell() {
-            if(!activeCell) return;
-            const cell = activeCell;
-            const row = cell.closest('tr');
-            const tbody = row.parentElement;
-            
-            const allShiftCells = Array.from(row.querySelectorAll('.shift-cell'));
-            const cellIndex = allShiftCells.indexOf(cell);
-            if(cellIndex === -1) return;
-            
-            saveHistory();
-            
-            const newRow = row.cloneNode(true);
-            const origName = row.querySelector('.editable-name').innerText;
-            newRow.querySelector('.editable-name').innerText = origName + " (Devamı)";
-            
-            for(let i = cellIndex; i < allShiftCells.length; i++) {
-                allShiftCells[i].innerText = "";
-                allShiftCells[i].style.background = "transparent";
-                allShiftCells[i].removeAttribute("data-pin");
-            }
-            
-            const newShiftCells = Array.from(newRow.querySelectorAll('.shift-cell'));
-            for(let i = 0; i < cellIndex; i++) {
-                newShiftCells[i].innerText = "";
-                newShiftCells[i].style.background = "transparent";
-                newShiftCells[i].removeAttribute("data-pin");
-            }
-            
-            tbody.insertBefore(newRow, row.nextSibling);
-            updateAllStats();
-            document.getElementById("contextMenu").style.display = "none";
-            showToast("Satır başarıyla ikiye bölündü! ✂️");
-            logAction("Bir satırı böldü.");
-        }
-
-        function toggleTableCollapse(header, e) {
-            if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return;
-            const wrapper = header.closest('.table-wrapper');
-            wrapper.classList.toggle('collapsed');
-        }
-
-        function moveTableWrapper(btn, dir, e) {
-            e.stopPropagation(); 
-            const wrapper = btn.closest('.table-wrapper');
-            if(dir === -1 && wrapper.previousElementSibling) {
-                wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling);
-            } else if (dir === 1 && wrapper.nextElementSibling) {
-                wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper);
-            }
-        }
-
         // ZIRHLI METİN ÇEKİCİ
         function getCleanCellText(cell) { 
             if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
@@ -2461,7 +2479,7 @@
             return bg; 
         }
 
-        // ✨ MAUSE İLE SEÇİLİ ALANI KOPYALAMA (YENİ SİSTEM) ✨
+        // ✨ MAUSE İLE SEÇİLİ ALANI KOPYALAMA ✨
         function copyTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); 
             const table = wrapper.querySelector('table'); 
@@ -2472,7 +2490,6 @@
             let tsv = "";
             
             if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) {
-                // SADECE MAVİ SEÇİLİ ALANI KOPYALA
                 let currentRow = null; 
                 let rowData = []; 
                 let trHtml = "";
@@ -2513,7 +2530,6 @@
                 });
 
             } else if(cbs.length > 0) {
-                // KLASİK KUTUCUK İŞARETLEYEREK SATIR KOPYALAMA
                 table.querySelectorAll('thead th').forEach(th => { 
                     if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return; 
                     let text = getCleanCellText(th); html += `<th style="background-color: #1e293b; color: #ffffff; padding: 5px;">${text}</th>`; tsv += text + "\t"; 
@@ -2765,7 +2781,7 @@
             } 
         }
 
-        // AKILLI SIRALAMA İLE ARŞİV OKUMA VE SAĞLAMLAŞTIRILMIŞ TARİH
+        // AKILLI SIRALAMA İLE AKTİF ARŞİV OKUMA
         function loadArchives() { 
             db.ref("arsivlenmis_shiftler").on("value", snap => { 
                 const l = document.getElementById("archiveList"); 
@@ -2900,7 +2916,7 @@
                 if(!val) return;
                 currentMasterArchiveId = id; 
                 currentMasterArchiveName = name;
-                window.currentArchiveNode = sourceNode;
+                window.currentArchiveNode = sourceNode; 
 
                 document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; 
                 document.getElementById("tablesContainer").innerHTML = ""; 
@@ -3059,7 +3075,6 @@
         function openShiftMenu(e, c) { 
             e.preventDefault(); 
             
-            // Eğer sağ tıklanan hücre mevcut seçimin dışındaysa, seçimi sıfırla ve bunu seç
             if (!c.classList.contains('selected-cell')) {
                 document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell'));
                 c.classList.add('selected-cell');
