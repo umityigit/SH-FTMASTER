@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v123.0 - ARCHIVE & SORT ELITE</title>
+    <title>ShiftMaster v124.0 - DRAG & DROP ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -347,19 +347,14 @@
         
         .btn-cyan { background: linear-gradient(135deg, #0ea5e9, #0284c7); box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4); }
         .btn-cyan:hover { box-shadow: 0 8px 25px rgba(14, 165, 233, 0.6); }
-        
         .btn-green { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
         .btn-green:hover { box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
-        
         .btn-orange { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
         .btn-orange:hover { box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6); }
-        
         .btn-purple { background: linear-gradient(135deg, #a855f7, #7e22ce); box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4); }
         .btn-purple:hover { box-shadow: 0 8px 25px rgba(168, 85, 247, 0.6); }
-
         .btn-red { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); }
         .btn-red:hover { box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6); }
-        
         .btn-pink { background: linear-gradient(135deg, #ec4899, #be185d); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4); }
         .btn-pink:hover { box-shadow: 0 8px 25px rgba(236, 72, 153, 0.6); }
 
@@ -741,7 +736,7 @@
             transition: 0.3s;
         }
 
-        /* YENİ: Akordeon Kapalı Durumu */
+        /* Akordeon Kapalı Durumu */
         .table-wrapper.collapsed .scroll-area, 
         .table-wrapper.collapsed .table-notes-container, 
         .table-wrapper.collapsed .table-actions-bottom { 
@@ -947,7 +942,7 @@
         }
 
         /* =========================================
-           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ
+           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & SÜRÜKLE BIRAK
            ========================================= */
         .custom-menu { 
             display: none; 
@@ -978,12 +973,20 @@
             position: relative; 
             width: 100%; 
             display: inline-block; 
+            transition: 0.2s;
+        }
+
+        /* Sürükleme Efekti */
+        .menu-item-wrapper.drag-over {
+            border: 2px dashed var(--accent);
+            border-radius: 10px;
+            opacity: 0.7;
         }
 
         .menu-item { 
             width: 100%; 
             padding: 12px 8px; 
-            cursor: pointer; 
+            cursor: grab; 
             border-radius: 10px; 
             text-align: center; 
             font-weight: 800; 
@@ -998,6 +1001,8 @@
             color: #ffffff !important; 
             box-sizing: border-box; 
         }
+
+        .menu-item:active { cursor: grabbing; }
 
         .menu-item:hover { 
             transform: scale(1.05); 
@@ -1031,31 +1036,6 @@
             transform: scale(1.3) rotate(90deg); 
             background: #b91c1c; 
         }
-        
-        /* YER DEĞİŞTİRME OKLARI */
-        .move-btn-left, .move-btn-right { 
-            position: absolute; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            background: #334155; 
-            color: white; 
-            width: 16px; 
-            height: 16px; 
-            border-radius: 50%; 
-            font-size: 10px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            z-index: 10; 
-            border: 1px solid #0f172a; 
-            opacity: 0; 
-            transition: 0.2s; 
-        }
-        .move-btn-left { left: -8px; }
-        .move-btn-right { right: -8px; }
-        .menu-item-wrapper:hover .move-btn-left, .menu-item-wrapper:hover .move-btn-right { opacity: 1; }
-        .move-btn-left:hover, .move-btn-right:hover { background: var(--accent); color: black; transform: translateY(-50%) scale(1.3); }
 
         /* RENK PALETİ SWATCH'LARI */
         .mini-swatch { 
@@ -1619,6 +1599,24 @@
         let currentMasterArchiveName = "Yeni Dosya";
         let lastUsedEndDate = null; 
 
+        // VARDİYA KURALLARI (DİNAMİK)
+        let shiftRules = {};
+        const defaultRules = {
+            '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
+            '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' },
+            '12:00-24:00': { w: 11, n: 4, color: 'linear-gradient(145deg, #f97316, #9a3412)' },
+            '08:00-16:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #0ea5e9, #0369a1)' },
+            '16:00-24:00': { w: 7.5, n: 4, color: 'linear-gradient(145deg, #3b82f6, #1d4ed8)' },
+            '24:00-08:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4338ca, #1e1b4b)' },
+            '07:00-15:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #10b981, #047857)' },
+            '15:00-23:00': { w: 7.5, n: 3, color: 'linear-gradient(145deg, #8b5cf6, #5b21b6)' },
+            '23:00-07:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4c1d95, #2e1065)' },
+            '08:00-18:00': { w: 9, n: 0, color: 'linear-gradient(145deg, #d946ef, #86198f)' },
+            'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' },
+            'Yİ': { w: 0, n: 0, color: 'linear-gradient(145deg, #f43f5e, #be123c)' },
+            'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }
+        };
+
         // ✨ CANLI RADYO (MÜZİK ÇALAR KONTROLÜ) ✨
         const smMusic = {
             audio: new Audio(), 
@@ -2107,11 +2105,10 @@
             document.getElementById("tablesContainer").innerHTML = ""; 
         }
 
-        // ---------------- DİNAMİK MENÜ VE RENK SEÇİCİ (SIRALAMA ÖZELLİKLİ) ----------------
+        // ---------------- ✨ DRAG & DROP DİNAMİK MENÜ VE RENK SEÇİCİ ✨ ----------------
         
-        let rulesArr = []; // Sıralama için dizi
+        let rulesArr = []; 
 
-        // VARDİYA KURALLARINI FİREBASE'DEN ÇEK VE DİZİYE AKTAR (SIRALAMAK İÇİN)
         db.ref("vardiya_kurallari").on('value', snap => {
             if(snap.val()) { 
                 shiftRules = snap.val(); 
@@ -2139,26 +2136,19 @@
             rulesArr.forEach((r, idx) => {
                 let isCustom = !defaultKeys.includes(r.key);
                 
-                html += `<div class="menu-item-wrapper">`;
-                
-                // Yukarı/Sola Taşı Oku
-                if(idx > 0) {
-                    html += `<div class="move-btn-left" onclick="moveShiftRule(${idx}, -1, event)">◀</div>`;
-                }
-                
-                html += `<div class="menu-item" style="background:${r.color};" onclick="setShift('${r.key}','${r.color}')">${r.key}</div>`;
-                
-                // Aşağı/Sağa Taşı Oku
-                if(idx < rulesArr.length - 1) {
-                    html += `<div class="move-btn-right" onclick="moveShiftRule(${idx}, 1, event)">▶</div>`;
-                }
-
-                // Silme Butonu (X)
-                if(isCustom) {
-                    html += `<div class="delete-custom-btn" onclick="deleteShiftRule('${r.key}', event)">x</div>`;
-                }
-                
-                html += `</div>`;
+                // YENİ: Sürükle Bırak Özellikleri eklendi
+                html += `
+                <div class="menu-item-wrapper" draggable="true" 
+                     ondragstart="handleDragStart(event, ${idx})" 
+                     ondragend="handleDragEnd(event)" 
+                     ondragover="handleDragOver(event)" 
+                     ondragleave="handleDragLeave(event)" 
+                     ondrop="handleDrop(event, ${idx})">
+                     
+                    <div class="menu-item" style="background:${r.color};" onclick="setShift('${r.key}','${r.color}')">${r.key}</div>
+                    
+                    ${isCustom ? `<div class="delete-custom-btn" onclick="deleteShiftRule('${r.key}', event)">x</div>` : ''}
+                </div>`;
             });
             
             html += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div>`;
@@ -2169,16 +2159,44 @@
             grid.innerHTML = html;
         }
 
-        // ✨ SAĞ TIK MENÜSÜ YER DEĞİŞTİRME MANTIĞI ✨
-        function moveShiftRule(index, direction, e) {
-            e.stopPropagation();
-            let targetIndex = index + direction;
-            if(targetIndex < 0 || targetIndex >= rulesArr.length) return;
+        // ✨ DRAG & DROP FONKSİYONLARI ✨
+        let draggedIndex = null;
+
+        function handleDragStart(e, index) {
+            draggedIndex = index;
+            e.dataTransfer.effectAllowed = "move";
+            setTimeout(() => { e.target.style.opacity = "0.5"; }, 0);
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = "1";
+            document.querySelectorAll('.menu-item-wrapper').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            const wrapper = e.target.closest('.menu-item-wrapper');
+            if(wrapper) wrapper.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            const wrapper = e.target.closest('.menu-item-wrapper');
+            if(wrapper) wrapper.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, targetIndex) {
+            e.preventDefault();
+            const wrapper = e.target.closest('.menu-item-wrapper');
+            if(wrapper) wrapper.classList.remove('drag-over');
             
-            let temp = rulesArr[index];
-            rulesArr[index] = rulesArr[targetIndex];
-            rulesArr[targetIndex] = temp;
-            
+            if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+            // Dizide yer değiştir
+            const draggedItem = rulesArr.splice(draggedIndex, 1)[0];
+            rulesArr.splice(targetIndex, 0, draggedItem);
+
+            // Firebase'e yeni sıralamayı kaydet
             let updates = {};
             rulesArr.forEach((r, i) => {
                 updates[`vardiya_kurallari/${r.key}/order`] = i;
@@ -2300,7 +2318,6 @@
             logAction("Bir satırı böldü.");
         }
 
-        // ✨ TABLO AÇ/KAPAT FONKSİYONU ✨
         function toggleTableCollapse(header, e) {
             if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return;
             const wrapper = header.closest('.table-wrapper');
@@ -2317,7 +2334,7 @@
             }
         }
 
-        // ---------------- ÇOKLU TABLO OLUŞTURMA ----------------
+        // ---------------- ÇOKLU TABLO OLUŞTURMA VE BİREYSEL DEPOYA AT BUTONU ----------------
         function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
             const cols = customColCount || parseInt(document.getElementById("colCount").value);
             let startDt = customStartDt;
@@ -2347,7 +2364,6 @@
             wrapper.setAttribute("data-colcount", cols); 
             wrapper.setAttribute("data-tablename", tableName);
             
-            // ✨ DİKKAT: "DEPOYA AT" BUTONU TABLO İÇİNE EKLENDİ ✨
             wrapper.innerHTML = `
                 <div class="table-header" onclick="toggleTableCollapse(this, event)">
                     <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;">
@@ -2375,7 +2391,7 @@
                     <span style="flex-grow:1;"></span>
                     
                     <button class="btn btn-orange" onclick="archiveSingleTable(this)">📦 DEPOYA AT</button>
-                    
+
                     <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO (AYNI KİŞİLERLE)</button>
                     <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ TABLOYU EKRANDAN SİL</button>
                 </div>
@@ -2930,6 +2946,13 @@
                 if(document.querySelectorAll('.table-wrapper').length === 0) { closeTableModal(); } 
             } 
         }
+
+        window.onclick = (e) => { 
+            if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { 
+                document.getElementById("contextMenu").style.display = "none"; 
+                document.getElementById("staffSelectMenu").style.display = "none"; 
+            } 
+        };
         
     </script>
 </body>
