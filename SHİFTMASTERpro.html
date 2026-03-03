@@ -607,7 +607,7 @@
             margin-right: 8px; 
         }
 
-        /* 📁 ARŞİV VE KALICI DEPO EKRANI */
+        /* 📁 ARŞİV EKRANI (DEPO EKLENDİ) */
         .archive-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -654,7 +654,7 @@
             background: var(--success); 
         }
 
-        /* ✨ POPUP MODALLARI (TABLO EKRANI) */
+        /* ✨ POPUP MODALLARI */
         .full-modal-overlay, .modal-overlay { 
             position: fixed; 
             top: 0; 
@@ -728,9 +728,7 @@
             overflow-y: auto; 
         }
 
-        /* =========================================
-           TABLO ALANLARI VE HÜCRE TASARIMLARI
-           ========================================= */
+        /* TABLO ALANLARI VE TASARIMLARI */
         .table-wrapper { 
             background: var(--card); 
             border: 2px solid #334155; 
@@ -738,13 +736,6 @@
             padding: 20px; 
             margin-bottom: 30px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            transition: 0.3s;
-        }
-
-        .table-wrapper.collapsed .scroll-area, 
-        .table-wrapper.collapsed .table-notes-container, 
-        .table-wrapper.collapsed .table-actions-bottom { 
-            display: none !important; 
         }
 
         .table-header { 
@@ -754,26 +745,13 @@
             margin-bottom: 15px; 
             border-bottom: 1px solid #334155; 
             padding-bottom: 10px; 
-            cursor: pointer; 
-            user-select: none;
         }
 
-        .table-header:hover { 
-            background: rgba(255,255,255,0.02); 
-            border-radius: 10px; 
-        }
-        
         .table-title { 
             font-size: 18px; 
             font-weight: 800; 
             color: var(--accent); 
             letter-spacing: 1px; 
-            transition: 0.2s;
-        }
-
-        .table-title:hover { 
-            color: #fff; 
-            text-shadow: 0 0 10px var(--accent); 
         }
 
         .table-actions-bottom { 
@@ -786,14 +764,6 @@
             border-radius: 15px; 
             border: 1px solid #334155; 
             align-items: center; 
-        }
-
-        .table-notes-container {
-            margin-top: 20px; 
-            padding: 15px; 
-            background: rgba(15, 23, 42, 0.4); 
-            border-radius: 15px; 
-            border: 1px dashed var(--accent);
         }
 
         .scroll-area { 
@@ -862,7 +832,6 @@
             border-radius: 4px; 
         }
 
-        /* ÇOKLU SEÇİM EFEKTİ */
         .selected-cell { 
             background: rgba(56, 189, 248, 0.4) !important; 
             outline: 2px solid var(--accent) !important; 
@@ -922,7 +891,6 @@
             font-weight: 900; 
         }
 
-        /* DÖNEN (ANİMASYONLU) İSİM SEÇME BUTONU */
         .select-icon { 
             background: linear-gradient(135deg, var(--accent), #0284c7); 
             color: #000; 
@@ -945,9 +913,7 @@
             background: #fff; 
         }
 
-        /* =========================================
-           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & DRAG AND DROP
-           ========================================= */
+        /* ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & DRAG AND DROP SÜRÜKLE BIRAK ✨ */
         .custom-menu { 
             display: none; 
             position: absolute; 
@@ -973,19 +939,18 @@
             gap: 10px; 
         }
 
-        /* ✨ SÜRÜKLE BIRAK CSS ✨ */
         .menu-item-wrapper { 
             position: relative; 
             width: 100%; 
             display: inline-block; 
-            transition: 0.2s; 
+            transition: 0.2s;
         }
 
-        .menu-item-wrapper.drag-over { 
-            border: 2px dashed var(--accent); 
-            border-radius: 10px; 
-            opacity: 0.7; 
-            transform: scale(1.05); 
+        .menu-item-wrapper.drag-over {
+            border: 2px dashed var(--accent);
+            border-radius: 10px;
+            opacity: 0.7;
+            transform: scale(1.05);
         }
 
         .menu-item { 
@@ -1007,8 +972,8 @@
             box-sizing: border-box; 
         }
 
-        .menu-item:active { 
-            cursor: grabbing; 
+        .menu-item:active {
+            cursor: grabbing;
         }
 
         .menu-item:hover { 
@@ -1017,7 +982,6 @@
             z-index: 5; 
         }
 
-        /* ÖZEL RENK SİLME (X) BUTONU */
         .delete-custom-btn { 
             position: absolute; 
             top: -5px; 
@@ -1044,7 +1008,6 @@
             background: #b91c1c; 
         }
 
-        /* RENK PALETİ SWATCH'LARI */
         .mini-swatch { 
             height: 22px; 
             border-radius: 6px; 
@@ -1078,9 +1041,7 @@
             background: #334155 !important; 
         }
 
-        /* =========================================
-           👥 PERSONEL HAVUZU
-           ========================================= */
+        /* PERSONEL HAVUZU */
         .pool-header { 
             display: flex; 
             align-items: center; 
@@ -1160,9 +1121,7 @@
             transform: scale(1.2); 
         }
 
-        /* =========================================
-           ✨ HAYALET İĞNE (GHOST PIN) 
-           ========================================= */
+        /* ✨ HAYALET İĞNE (GHOST PIN) */
         .shift-cell[data-pin]::before { 
             content: '📍'; 
             position: absolute; 
@@ -1204,9 +1163,7 @@
             text-shadow: none; 
         }
 
-        /* =========================================
-           TOAST BİLDİRİMİ 
-           ========================================= */
+        /* TOAST BİLDİRİMİ */
         #toast { 
             visibility: hidden; 
             min-width: 250px; 
@@ -1241,9 +1198,7 @@
             to {bottom: 0; opacity: 0; transform: translateX(-50%) scale(0.8);} 
         }
 
-        /* =========================================
-           ✨ CANLI RADYO / MÜZİK ÇALAR 
-           ========================================= */
+        /* ✨ CANLI RADYO / MÜZİK ÇALAR */
         .sm-player { 
             position: fixed; 
             bottom: 20px; 
@@ -1497,7 +1452,7 @@
             <p style="font-size: 11px; color: #94a3b8; margin-top: -10px; margin-bottom: 15px;">Akıllı Sistem: Başlıkları ve tarihleri kendisi siler. Sadece veriyi yapıştırın yeter.</p>
             <textarea id="excelInput" class="glass-input" style="width:100%; height:200px; font-family:monospace; font-size:11px; margin-bottom:15px;"></textarea>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-green" style="flex:1; justify-content:center;" id="excelProcessBtn" onclick="importFromExcel()">VERİLERİ İŞLE</button>
+                <button class="btn btn-green" style="flex:1; justify-content:center;" onclick="importFromExcel()">VERİLERİ İŞLE</button>
                 <button class="btn btn-red" style="flex:1; justify-content:center;" onclick="closeModal('excelModal')">İPTAL</button>
             </div>
         </div>
@@ -1555,7 +1510,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="staffSelectMenu" class="custom-menu" style="max-height:300px; overflow-y:auto; width:200px;"></div>
 
     <div id="toast">İşlem Başarılı!</div>
@@ -1604,7 +1559,6 @@
         let currentTargetTable = null; 
         let currentMasterArchiveId = null; 
         let currentMasterArchiveName = "Yeni Dosya";
-        let lastUsedEndDate = null; 
 
         // VARDİYA KURALLARI (DİNAMİK)
         let shiftRules = {};
@@ -1641,10 +1595,7 @@
                 this.audio.src = this.playlist[this.index].url; 
                 this.audio.volume = 0.5; 
                 document.getElementById('sm-title').innerText = this.playlist[this.index].name; 
-                
-                this.audio.onended = () => {
-                    this.next(); 
-                };
+                this.audio.onended = () => this.next(); 
                 
                 this.audio.onerror = () => {
                     document.getElementById('sm-status').innerText = "Kanal Hatası, Geçiliyor...";
@@ -1878,7 +1829,7 @@
             
             loadStaffPool(); 
             loadArchives(); 
-            loadPermanentArchives(); 
+            loadPermanentArchives(); // YENİ EKLENDİ
             loadNews();
         }
 
@@ -2141,7 +2092,7 @@
             } 
         }
 
-        // ---------------- MODAL / TABLO KONTROLLERİ VE AÇILIP KAPANMA ----------------
+        // ---------------- MODAL / TABLO KONTROLLERİ ----------------
         function openTableModal() { 
             const modal = document.getElementById('tableModalOverlay'); 
             modal.style.display = 'flex'; 
@@ -2176,7 +2127,7 @@
             document.getElementById("tablesContainer").innerHTML = ""; 
         }
 
-        // ---------------- ✨ DRAG & DROP (TUT BIRAK) DİNAMİK MENÜ ✨ ----------------
+        // ---------------- ✨ DRAG & DROP DİNAMİK MENÜ VE RENK SEÇİCİ ✨ ----------------
         
         let rulesArr = []; 
 
@@ -2192,9 +2143,7 @@
             rulesArr.sort((a, b) => {
                 let oA = a.order !== undefined ? a.order : 999;
                 let oB = b.order !== undefined ? b.order : 999;
-                if (oA === oB) {
-                    return a.key.localeCompare(b.key);
-                }
+                if (oA === oB) return a.key.localeCompare(b.key);
                 return oA - oB;
             });
             
@@ -2216,9 +2165,7 @@
                      ondragover="handleDragOver(event)" 
                      ondragleave="handleDragLeave(event)" 
                      ondrop="handleDrop(event, ${idx})">
-                     
                     <div class="menu-item" style="background:${r.color};" onclick="setShift('${r.key}','${r.color}')">${r.key}</div>
-                    
                     ${isCustom ? `<div class="delete-custom-btn" onclick="deleteShiftRule('${r.key}', event)">x</div>` : ''}
                 </div>`;
             });
@@ -2231,7 +2178,6 @@
             grid.innerHTML = html;
         }
 
-        // Sürükle Bırak Javascript Kodları
         let draggedIndex = null;
 
         function handleDragStart(e, index) {
@@ -2426,9 +2372,6 @@
                 if(d.getDay() === 0) {
                     h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`;
                 }
-                if(i === cols - 1) {
-                    lastUsedEndDate = new Date(d);
-                }
             }
             h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`;
             
@@ -2449,19 +2392,15 @@
             wrapper.setAttribute("data-colcount", cols); 
             wrapper.setAttribute("data-tablename", tableName);
             
-            // ✨ YENİ: "DEPOYA AT" BUTONU TABLO İÇİNE EKLENDİ ✨
+            // ✨ YENİ: "DEPOYA AT" BUTONU EKLENDİ ✨
             wrapper.innerHTML = `
-                <div class="table-header" onclick="toggleTableCollapse(this, event)">
-                    <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;">
-                        <button class="mini-btn" style="padding:2px 8px; font-size:10px;" onclick="moveTableWrapper(this, -1, event)">▲</button>
-                        <button class="mini-btn" style="padding:2px 8px; font-size:10px;" onclick="moveTableWrapper(this, 1, event)">▼</button>
-                    </div>
-                    <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName}</span>
+                <div class="table-header">
+                    <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this)">📌 ${tableName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span></span>
                     <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:4px 10px; border-radius:8px; margin-left:auto;">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span>
                 </div>
                 <div class="scroll-area">${h}</div>
-                <div class="table-notes-container">
-                    <label style="font-size: 12px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">📝 BU AY NE OLDU?</label>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(15, 23, 42, 0.4); border-radius: 15px; border: 1px dashed var(--accent);">
+                    <label style="font-size: 12px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">📝 BU AY NE OLDU? <span style="color:#94a3b8; font-weight:400; font-size:10px;">(Genel Tablo Notları, Olaylar... Hepsi arşive kaydedilir.)</span></label>
                     <textarea class="table-notes glass-input" style="width: 100%; height: 60px; margin-top: 10px; resize: vertical; box-sizing: border-box; font-size:12px; color:#fff; border-color:var(--accent);" placeholder="Bu tabloyla ilgili aklınızda tutamadığınız her şeyi buraya yazın...">${savedNotes}</textarea>
                 </div>
                 <div class="table-actions-bottom">
@@ -2477,9 +2416,9 @@
                     <span style="flex-grow:1;"></span>
                     
                     <button class="btn btn-orange" onclick="archiveSingleTable(this)">📦 DEPOYA AT</button>
-                    
-                    <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ AYNI KİŞİLERLE YENİ</button>
-                    <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button>
+
+                    <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO (AYNI KİŞİLERLE)</button>
+                    <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ TABLOYU EKRANDAN SİL</button>
                 </div>
             `;
             
@@ -2540,11 +2479,8 @@
                 if(snap.exists()) {
                     let key = Object.keys(snap.val())[0];
                     let existingTables = snap.val()[key].tables || [];
-                    
-                    // Firebase null array hatasını engelleme
                     existingTables = existingTables.filter(t => t !== null);
                     existingTables.push(tableData);
-                    
                     db.ref("kalici_depo/" + key + "/tables").set(existingTables);
                 } else {
                     db.ref("kalici_depo").push({
@@ -2633,24 +2569,7 @@
             generateTable(false, staffNames, "Yeni Tablo", new Date(s), c, wrapper); 
         }
 
-        function toggleTableCollapse(header, e) {
-            if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) {
-                return;
-            }
-            const wrapper = header.closest('.table-wrapper');
-            wrapper.classList.toggle('collapsed');
-        }
-
-        function moveTableWrapper(btn, dir, e) {
-            e.stopPropagation(); 
-            const wrapper = btn.closest('.table-wrapper');
-            if(dir === -1 && wrapper.previousElementSibling) {
-                wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling);
-            } else if (dir === 1 && wrapper.nextElementSibling) {
-                wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper);
-            }
-        }
-
+        // TÜM SATIRLARI SEÇME FONKSİYONU
         function toggleAllRows(masterCheckbox) {
             const table = masterCheckbox.closest('table');
             const checkboxes = table.querySelectorAll('tbody .row-checkbox');
@@ -2710,24 +2629,16 @@
             let pName = prompt("Bu alt tablonun adı ne olsun?", current); 
             if(pName && pName.trim() !== "") { 
                 wrapper.setAttribute("data-tablename", pName.trim()); 
-                span.innerHTML = `📌 ${pName.trim()}`; 
+                span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span>`; 
             } 
         }
 
+        // BOŞ TABLO EKLE BUTONU FONKSİYONU
         function safeAppendTable() {
             const wrappers = document.querySelectorAll(".table-wrapper");
-            if(wrappers.length === 0) {
-                return alert("Önce bir tablo oluşturmalısın!");
-            }
             saveHistory();
-            const lastWrapper = wrappers[wrappers.length - 1];
-            const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText);
             
             let nextDate = new Date(); 
-            if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { 
-                nextDate = new Date(lastUsedEndDate); 
-                nextDate.setDate(nextDate.getDate() + 1); 
-            }
             const yyyy = nextDate.getFullYear(); 
             const mm = String(nextDate.getMonth() + 1).padStart(2, '0'); 
             const dd = String(nextDate.getDate()).padStart(2, '0');
@@ -2736,7 +2647,7 @@
             if (userDate) { 
                 const parsedDate = new Date(userDate); 
                 if (!isNaN(parsedDate.getTime())) {
-                    generateTable(false, names, "Yeni Tablo", parsedDate); 
+                    generateTable(false, [], "Yeni Tablo", parsedDate); 
                 }
             }
         }
@@ -2795,6 +2706,102 @@
                 bg = cell.tagName === 'TH' ? '#1e293b' : '#0f172a'; 
             }
             return bg; 
+        }
+
+        // İÇE AKTARMA (EXCEL) FONKSİYONLARI
+        function openExcelModal() {
+            document.getElementById('excelInput').value = "";
+            document.getElementById('excelModalTitle').innerText = "📥 Excel'den Veri Çek";
+            document.getElementById('excelModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('excelModal').classList.add('show'), 10);
+            
+            const processBtn = document.getElementById('excelProcessBtn');
+            if(processBtn) {
+                processBtn.onclick = function() {
+                    importFromExcel();
+                };
+            }
+        }
+
+        function openExcelModalForTable(btn) {
+            currentTargetTable = btn.closest('.table-wrapper');
+            document.getElementById('excelInput').value = "";
+            document.getElementById('excelModalTitle').innerText = "📥 Bu Tabloya Excel'den Ekle";
+            document.getElementById('excelModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('excelModal').classList.add('show'), 10);
+            
+            const processBtn = document.getElementById('excelProcessBtn');
+            if(processBtn) {
+                processBtn.onclick = function() {
+                    appendExcelToSpecificTable();
+                };
+            }
+        }
+
+        function importFromExcel() {
+            const raw = document.getElementById('excelInput').value;
+            if(!raw.trim()) return alert("Veri girmediniz!");
+            const rows = cleanExcelRows(raw);
+            if(rows.length === 0) return alert("Geçerli veri bulunamadı.");
+
+            const staffData = [];
+            let maxCols = 0;
+
+            rows.forEach(r => {
+                const cols = r.split('\t');
+                const name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ...";
+                const shifts = [];
+                for(let i=1; i<cols.length; i++) {
+                    let val = cols[i].trim();
+                    let safeVal = val.replace(/\./g, ':');
+                    let rule = shiftRules[safeVal] || shiftRules[val];
+                    shifts.push({
+                        text: val,
+                        bg: rule ? rule.color : "transparent"
+                    });
+                }
+                if(shifts.length > maxCols) {
+                    maxCols = shifts.length;
+                }
+                staffData.push({ name: name, shifts: shifts });
+            });
+
+            closeModal('excelModal');
+            startNewSession();
+            generateTable(true, staffData, "İçe Aktarılan Liste", new Date(), maxCols === 0 ? 30 : maxCols);
+        }
+
+        function appendExcelToSpecificTable() {
+            const raw = document.getElementById('excelInput').value;
+            if(!raw.trim()) return alert("Veri girmediniz!");
+            const rows = cleanExcelRows(raw);
+            if(rows.length === 0) return alert("Geçerli veri bulunamadı.");
+
+            if(!currentTargetTable) return;
+            const tbody = currentTargetTable.querySelector('tbody');
+            const colCount = parseInt(currentTargetTable.getAttribute("data-colcount"));
+            const startDt = new Date(currentTargetTable.getAttribute("data-startdt"));
+
+            rows.forEach(r => {
+                const cols = r.split('\t');
+                const name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ...";
+                const shifts = [];
+                for(let i=1; i<colCount+1; i++) {
+                    let val = cols[i] ? cols[i].trim() : "";
+                    let safeVal = val.replace(/\./g, ':');
+                    let rule = shiftRules[safeVal] || shiftRules[val];
+                    shifts.push({
+                        text: val,
+                        bg: rule ? rule.color : "transparent"
+                    });
+                }
+                const newRowHtml = createRowHtml(name, colCount, startDt, shifts);
+                tbody.insertAdjacentHTML('beforeend', newRowHtml);
+            });
+
+            saveHistory();
+            updateAllStats();
+            closeModal('excelModal');
         }
 
         function copyTableRows(btn) {
@@ -2987,7 +2994,6 @@
             });
         }
 
-        // AKILLI BAŞLIK SİLİCİ
         function cleanExcelRows(raw) { 
             let rows = raw.split("\n").filter(r => r.trim() !== ""); 
             while (rows.length > 0) { 
@@ -3146,6 +3152,7 @@
             }); 
         }
 
+        // ✨ KALICI DEPO SİSTEMİ ✨
         function loadPermanentArchives() { 
             db.ref("kalici_depo").on("value", snap => { 
                 const l = document.getElementById("permanentArchiveList"); 
@@ -3256,7 +3263,7 @@
             });
         }
 
-        // ✨ MASTER KAYIT ✨
+        // ✨ MASTER KAYIT (FİREBASE TRY-CATCH İLE GÜÇLENDİRİLDİ) ✨
         function saveMasterArchive() {
             try {
                 if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { 
@@ -3367,247 +3374,6 @@
                     }
                 });
             });
-        }
-
-        // BİREYSEL DEPOYA AT BUTONU (SESSİZ KAYIT)
-        function archiveSingleTable(btn) {
-            if(!confirm("Bu tabloyu aktif klasörden çıkarıp Kalıcı Depo'ya taşımak istiyor musunuz?")) return;
-            
-            const wrapper = btn.closest('.table-wrapper');
-            let tName = wrapper.getAttribute("data-tablename");
-            let sDate = wrapper.getAttribute("data-startdt");
-            let cCount = wrapper.getAttribute("data-colcount");
-            
-            const rowsData = [];
-            wrapper.querySelectorAll("tbody tr").forEach(tr => { 
-                let nameEl = tr.querySelector(".editable-name");
-                if(!nameEl) return;
-                let name = nameEl.innerText.trim(); 
-                let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
-                    text: td.innerText.replace(/[\n\r]/g, ""), 
-                    bg: td.style.background || "transparent", 
-                    pin: td.getAttribute("data-pin") || "" 
-                })); 
-                rowsData.push({ name: name, shifts: shifts }); 
-            });
-            
-            let notesElement = wrapper.querySelector(".table-notes");
-            let notesVal = notesElement ? notesElement.value : ""; 
-            
-            let tableData = {
-                tableName: tName,
-                startDate: sDate,
-                colCount: cCount,
-                data: rowsData,
-                notes: notesVal
-            };
-
-            // Ekranda tabloyu sil
-            wrapper.remove();
-            
-            // Kalan tabloları sessizce mevcut klasöre kaydet
-            silentSaveMasterArchive();
-
-            // Sildiğimiz tabloyu Kalıcı Depodaki aynı isimli klasöre ekle veya yeni klasör oluştur
-            let folderName = currentMasterArchiveName || "Arşivlenmiş Tablolar";
-            
-            db.ref("kalici_depo").orderByChild("name").equalTo(folderName).once("value", snap => {
-                if(snap.exists()) {
-                    let key = Object.keys(snap.val())[0];
-                    let existingTables = snap.val()[key].tables || [];
-                    existingTables = existingTables.filter(t => t !== null);
-                    existingTables.push(tableData);
-                    db.ref("kalici_depo/" + key + "/tables").set(existingTables);
-                } else {
-                    db.ref("kalici_depo").push({
-                        name: folderName,
-                        date: new Date().toLocaleString('tr-TR'),
-                        tables: [tableData]
-                    });
-                }
-                showToast("📦 Tablo Kalıcı Depo'ya taşındı!");
-                logAction(`'${tName}' tablosunu depoya attı.`);
-                
-                if(document.querySelectorAll('.table-wrapper').length === 0) { 
-                    closeTableModal(); 
-                }
-            });
-        }
-
-        function silentSaveMasterArchive() {
-            if(!currentMasterArchiveId) return; 
-            
-            const tables = document.querySelectorAll('.table-wrapper'); 
-            const tablesData = [];
-            
-            tables.forEach((wrapper) => {
-                let tName = wrapper.getAttribute("data-tablename");
-                const rowsData = [];
-                wrapper.querySelectorAll("tbody tr").forEach(tr => { 
-                    let nameEl = tr.querySelector(".editable-name");
-                    if (!nameEl) return;
-                    let name = nameEl.innerText.trim(); 
-                    let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
-                        text: td.innerText.replace(/[\n\r]/g, ""), 
-                        bg: td.style.background || "transparent", 
-                        pin: td.getAttribute("data-pin") || ""
-                    })); 
-                    rowsData.push({ name: name, shifts: shifts }); 
-                });
-                let notesElement = wrapper.querySelector(".table-notes");
-                let notesVal = notesElement ? notesElement.value : ""; 
-                
-                tablesData.push({ 
-                    tableName: tName, 
-                    startDate: wrapper.getAttribute("data-startdt"), 
-                    colCount: wrapper.getAttribute("data-colcount"), 
-                    data: rowsData, 
-                    notes: notesVal 
-                });
-            });
-
-            const saveData = { 
-                name: currentMasterArchiveName, 
-                date: new Date().toLocaleString('tr-TR'), 
-                tables: tablesData 
-            };
-            
-            let targetNode = window.currentArchiveNode || "arsivlenmis_shiftler";
-            
-            if(tablesData.length > 0) { 
-                db.ref(targetNode).child(currentMasterArchiveId).update(saveData);
-            } else {
-                db.ref(targetNode).child(currentMasterArchiveId).remove();
-                currentMasterArchiveId = null;
-            }
-        }
-
-        function moveRow(btn, dir) { 
-            saveHistory(); 
-            const row = btn.closest('tr'); 
-            if(dir===-1 && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); 
-            else if(dir===1 && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); 
-        }
-        
-        function setShift(v, c) { 
-            const selectedCells = document.querySelectorAll('.selected-cell.shift-cell');
-            if(selectedCells.length > 0) { 
-                saveHistory(); 
-                selectedCells.forEach(cell => {
-                    cell.innerText = v; 
-                    cell.style.background = v === "" ? "transparent" : c; 
-                });
-                updateAllStats(); 
-                if(v !== "") logAction(`Çoklu hücreye vardiya atadı.`);
-            } 
-            document.getElementById("contextMenu").style.display = "none"; 
-        }
-        
-        function openShiftMenu(e, c) { 
-            e.preventDefault(); 
-            
-            if (!c.classList.contains('selected-cell')) {
-                document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell'));
-                c.classList.add('selected-cell');
-            }
-            
-            activeCell = c; 
-            const m = document.getElementById("contextMenu"); 
-            m.style.display = "block"; 
-            m.style.left = e.pageX + "px"; 
-            m.style.top = e.pageY + "px"; 
-        }
-        
-        function openStaffQuickMenu(e, btn) { 
-            e.preventDefault(); 
-            e.stopPropagation(); 
-            activeCell = btn.previousElementSibling; 
-            const m = document.getElementById("staffSelectMenu"); 
-            m.innerHTML = ""; 
-            const poolNames = Array.from(document.querySelectorAll("#staffPool input")).map(i => i.value); 
-            poolNames.forEach(n => { 
-                const d = document.createElement("div"); 
-                d.className = "menu-item"; 
-                d.innerText = n; 
-                d.onclick = () => { saveHistory(); activeCell.innerText = n; m.style.display = "none"; }; 
-                m.appendChild(d); 
-            }); 
-            m.style.display = "block"; 
-            m.style.left = e.pageX + "px"; 
-            m.style.top = e.pageY + "px"; 
-        }
-
-        function saveHistory() { 
-            const cont = document.getElementById("tablesContainer").innerHTML; 
-            historyStack.push(cont); 
-            if(historyStack.length > 25) historyStack.shift(); 
-        }
-        
-        function undo() { 
-            if(historyStack.length > 0) { 
-                document.getElementById("tablesContainer").innerHTML = historyStack.pop(); 
-                updateAllStats(); 
-            } 
-        }
-        
-        document.addEventListener('keydown', e => { 
-            if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } 
-        });
-        
-        function generateTableFromSelected() { 
-            const sel = Array.from(document.querySelectorAll("#staffPool input:checked")).map(cb => cb.value); 
-            if(sel.length===0) return alert("Lütfen havuzdan personel seçin!"); 
-            startNewSession(); 
-            generateTable(false, sel, "Yeni Tablo"); 
-        }
-
-        // HÜCRE SEÇİMİ (MAUSE İLE SÜRÜKLE BIRAK)
-        let isDraggingCells = false; let startSelectCell = null;
-        document.addEventListener('mousedown', e => {
-            if(e.button !== 0) return; 
-            if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA') return; 
-            const cell = e.target.closest('td, th');
-            if(cell && cell.closest('table')) { 
-                isDraggingCells = true; 
-                startSelectCell = cell; 
-                document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); 
-                cell.classList.add('selected-cell'); 
-                if (cell.classList.contains('shift-cell')) activeCell = cell; 
-            } 
-            else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn') && !e.target.closest('.color-swatch') && !e.target.closest('.mini-swatch') && e.target.id !== "customColorInput") { 
-                document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); 
-            }
-        });
-        
-        document.addEventListener('mouseover', e => { 
-            if(isDraggingCells) { 
-                const cell = e.target.closest('td, th'); 
-                if(cell && cell.closest('table') === startSelectCell.closest('table')) selectCellRange(startSelectCell, cell); 
-            } 
-        });
-        
-        document.addEventListener('mouseup', () => { isDraggingCells = false; });
-        document.addEventListener('selectstart', e => { if(isDraggingCells) e.preventDefault(); }); 
-        
-        function selectCellRange(start, end) {
-            document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
-            const table = start.closest('table'); 
-            const rows = Array.from(table.querySelectorAll('tr')); 
-            const startRowIdx = rows.indexOf(start.closest('tr')); 
-            const endRowIdx = rows.indexOf(end.closest('tr')); 
-            const startColIdx = Array.from(start.closest('tr').querySelectorAll('th, td')).indexOf(start); 
-            const endColIdx = Array.from(end.closest('tr').querySelectorAll('th, td')).indexOf(end);
-            const minRow = Math.min(startRowIdx, endRowIdx); 
-            const maxRow = Math.max(startRowIdx, endRowIdx); 
-            const minCol = Math.min(startColIdx, endColIdx); 
-            const maxCol = Math.max(startColIdx, endColIdx);
-            
-            for(let r = minRow; r <= maxRow; r++) { 
-                const trCells = Array.from(rows[r].querySelectorAll('th, td')); 
-                for(let c = minCol; c <= maxCol; c++) { 
-                    if(trCells[c]) trCells[c].classList.add('selected-cell'); 
-                } 
-            }
         }
 
         window.onclick = (e) => { 
