@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v122.1 - FULL ACTIVE ELITE</title>
+    <title>ShiftMaster v127.2 - DRAG MENU ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -946,7 +946,7 @@
         }
 
         /* =========================================
-           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ
+           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ 
            ========================================= */
         .custom-menu { 
             display: none; 
@@ -977,12 +977,21 @@
             position: relative; 
             width: 100%; 
             display: inline-block; 
+            transition: 0.2s; /* Yeni: Sürükleme için */
+        }
+
+        /* Yeni Sürükle Bırak Sınıfı */
+        .menu-item-wrapper.drag-over {
+            border: 2px dashed var(--accent);
+            border-radius: 10px;
+            opacity: 0.7;
+            transform: scale(1.05);
         }
 
         .menu-item { 
             width: 100%; 
             padding: 12px 8px; 
-            cursor: pointer; 
+            cursor: grab; /* Düzenlendi */
             border-radius: 10px; 
             text-align: center; 
             font-weight: 800; 
@@ -996,6 +1005,10 @@
             border: 1px solid rgba(255, 255, 255, 0.1); 
             color: #ffffff !important; 
             box-sizing: border-box; 
+        }
+
+        .menu-item:active {
+            cursor: grabbing;
         }
 
         .menu-item:hover { 
@@ -1595,6 +1608,9 @@
 
         // VARDİYA KURALLARI (DİNAMİK)
         let shiftRules = {};
+        // YENİ: Sürükle bırak sıralaması için dizi
+        let rulesArr = []; 
+
         const defaultRules = {
             '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
             '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' },
@@ -2099,7 +2115,8 @@
             document.getElementById("tablesContainer").innerHTML = ""; 
         }
 
-        // ---------------- DİNAMİK MENÜ VE RENK SEÇİCİ ----------------
+        // ---------------- ✨ DRAG & DROP DİNAMİK MENÜ VE RENK SEÇİCİ ✨ ----------------
+        
         db.ref("vardiya_kurallari").on('value', snap => {
             if(snap.val()) { 
                 shiftRules = snap.val(); 
@@ -2107,6 +2124,16 @@
                 shiftRules = defaultRules; 
                 db.ref("vardiya_kurallari").set(defaultRules); 
             }
+            
+            // YENİ: Kuralları diziye çevir ve sırala
+            rulesArr = Object.keys(shiftRules).map(k => ({ key: k, ...shiftRules[k] }));
+            rulesArr.sort((a, b) => {
+                let oA = a.order !== undefined ? a.order : 999;
+                let oB = b.order !== undefined ? b.order : 999;
+                if (oA === oB) return a.key.localeCompare(b.key);
+                return oA - oB;
+            });
+            
             renderContextMenu();
         });
 
@@ -2115,19 +2142,21 @@
             let html = "";
             const defaultKeys = Object.keys(defaultRules);
 
-            Object.keys(shiftRules).forEach(sName => {
-                let r = shiftRules[sName];
-                let isCustom = !defaultKeys.includes(sName);
+            rulesArr.forEach((r, idx) => {
+                let isCustom = !defaultKeys.includes(r.key);
                 
-                if(isCustom) {
-                    html += `
-                    <div class="menu-item-wrapper">
-                        <div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div>
-                        <div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div>
-                    </div>`;
-                } else {
-                    html += `<div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div>`;
-                }
+                // YENİ: Sürükle bırak (draggable) özellikleri eklendi
+                html += `
+                <div class="menu-item-wrapper" draggable="true" 
+                     ondragstart="handleDragStart(event, ${idx})" 
+                     ondragend="handleDragEnd(event)" 
+                     ondragover="handleDragOver(event)" 
+                     ondragleave="handleDragLeave(event)" 
+                     ondrop="handleDrop(event, ${idx})">
+                     
+                    <div class="menu-item" style="background:${r.color};" onclick="setShift('${r.key}','${r.color}')">${r.key}</div>
+                    ${isCustom ? `<div class="delete-custom-btn" onclick="deleteShiftRule('${r.key}', event)">x</div>` : ''}
+                </div>`;
             });
             
             html += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div>`;
@@ -2136,6 +2165,47 @@
             html += `<div class="menu-item" style="background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;" onclick="removeGhostPinFromCell()">🗑️ İĞNE SİL</div>`;
             
             grid.innerHTML = html;
+        }
+
+        // YENİ: Sürükle Bırak İşlevleri
+        let draggedIndex = null;
+
+        function handleDragStart(e, index) { 
+            draggedIndex = index; 
+            e.dataTransfer.effectAllowed = "move"; 
+            setTimeout(() => { e.target.style.opacity = "0.5"; }, 0); 
+        }
+        
+        function handleDragEnd(e) { 
+            e.target.style.opacity = "1"; 
+            document.querySelectorAll('.menu-item-wrapper').forEach(el => el.classList.remove('drag-over')); 
+        }
+        
+        function handleDragOver(e) { 
+            e.preventDefault(); 
+            e.dataTransfer.dropEffect = "move"; 
+            const wrapper = e.target.closest('.menu-item-wrapper'); 
+            if(wrapper) wrapper.classList.add('drag-over'); 
+        }
+        
+        function handleDragLeave(e) { 
+            const wrapper = e.target.closest('.menu-item-wrapper'); 
+            if(wrapper) wrapper.classList.remove('drag-over'); 
+        }
+        
+        function handleDrop(e, targetIndex) {
+            e.preventDefault(); 
+            const wrapper = e.target.closest('.menu-item-wrapper'); 
+            if(wrapper) wrapper.classList.remove('drag-over');
+            
+            if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+            const draggedItem = rulesArr.splice(draggedIndex, 1)[0];
+            rulesArr.splice(targetIndex, 0, draggedItem);
+
+            let updates = {};
+            rulesArr.forEach((r, i) => { updates[`vardiya_kurallari/${r.key}/order`] = i; });
+            db.ref().update(updates);
         }
 
         function deleteShiftRule(key, e) {
@@ -2173,7 +2243,11 @@
             let w = parseFloat(wStr.replace(',', '.')) || 0;
             let n = parseFloat(nStr.replace(',', '.')) || 0;
 
-            db.ref("vardiya_kurallari/" + safeKey).set({ w: w, n: n, color: colorOrGradient });
+            // YENİ: Sıralamayı koru veya en sona ekle
+            let newOrder = rulesArr.length;
+            if(existingRule && existingRule.order !== undefined) newOrder = existingRule.order;
+
+            db.ref("vardiya_kurallari/" + safeKey).set({ w: w, n: n, color: colorOrGradient, order: newOrder });
             
             if (selectedCells.length > 0) {
                 selectedCells.forEach(cell => {
@@ -2337,7 +2411,7 @@
             openTableModal(); 
         }
 
-        // ✨ AYNI KİŞİLERLE YENİ TABLO OLUŞTURMA FONKSİYONU (EKSİKTİ EKLENDİ) ✨
+        // ✨ AYNI KİŞİLERLE YENİ TABLO OLUŞTURMA FONKSİYONU ✨
         function addTableWithSameStaff(btn) { 
             const wrapper = btn.closest('.table-wrapper'); 
             let staffNames = Array.from(wrapper.querySelectorAll('.editable-name')).map(el => el.innerText.trim()); 
@@ -2781,7 +2855,7 @@
             } 
         }
 
-        // AKILLI SIRALAMA İLE AKTİF ARŞİV OKUMA
+        // AKILLI SIRALAMA İLE ARŞİV OKUMA VE SAĞLAMLAŞTIRILMIŞ TARİH
         function loadArchives() { 
             db.ref("arsivlenmis_shiftler").on("value", snap => { 
                 const l = document.getElementById("archiveList"); 
@@ -2916,7 +2990,7 @@
                 if(!val) return;
                 currentMasterArchiveId = id; 
                 currentMasterArchiveName = name;
-                window.currentArchiveNode = sourceNode; 
+                window.currentArchiveNode = sourceNode;
 
                 document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; 
                 document.getElementById("tablesContainer").innerHTML = ""; 
@@ -3075,6 +3149,7 @@
         function openShiftMenu(e, c) { 
             e.preventDefault(); 
             
+            // Eğer sağ tıklanan hücre mevcut seçimin dışındaysa, seçimi sıfırla ve bunu seç
             if (!c.classList.contains('selected-cell')) {
                 document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell'));
                 c.classList.add('selected-cell');
@@ -3312,4 +3387,3 @@
     </script>
 </body>
 </html>
-
