@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v128.1 - FIREBASE BUG FIX</title>
+    <title>ShiftMaster v129.0 - PURE & DRAG ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -607,7 +607,7 @@
             margin-right: 8px; 
         }
 
-        /* 📁 ARŞİV VE KALICI DEPO EKRANI */
+        /* 📁 ARŞİV EKRANI (DEPO KALDIRILDI) */
         .archive-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -946,7 +946,7 @@
         }
 
         /* =========================================
-           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & DRAG DROP
+           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & DRAG AND DROP
            ========================================= */
         .custom-menu { 
             display: none; 
@@ -973,7 +973,6 @@
             gap: 10px; 
         }
 
-        /* ✨ SÜRÜKLE BIRAK CSS ✨ */
         .menu-item-wrapper { 
             position: relative; 
             width: 100%; 
@@ -981,6 +980,7 @@
             transition: 0.2s; 
         }
 
+        /* Sürükleme Efekti İçin */
         .menu-item-wrapper.drag-over { 
             border: 2px dashed var(--accent); 
             border-radius: 10px; 
@@ -1439,11 +1439,6 @@
             </div>
 
             <div class="card">
-                <h4 style="margin-top:0; color:#94a3b8; border-bottom:1px dashed #334155; padding-bottom:15px;">📦 KALICI DEPO (ESKİ PROGRAMLAR)</h4>
-                <div id="permanentArchiveList" class="archive-grid"></div>
-            </div>
-
-            <div class="card">
                 <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:flex-end;">
                     <div>
                         <label style="font-size:10px; color:var(--accent); font-weight:900; margin-left:5px;">BAŞLANGIÇ</label><br>
@@ -1608,8 +1603,8 @@
 
         // VARDİYA KURALLARI (DİNAMİK)
         let shiftRules = {};
-        // ✨ YENİ: Sürükle Bırak Sıralaması İçin Dizi
-        let rulesArr = [];
+        // YENİ: Sürükle Bırak Sıralaması İçin Dizi
+        let rulesArr = []; 
 
         const defaultRules = {
             '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
@@ -1845,7 +1840,6 @@
             
             loadStaffPool(); 
             loadArchives(); 
-            loadPermanentArchives(); 
             loadNews();
         }
 
@@ -2125,7 +2119,7 @@
                 db.ref("vardiya_kurallari").set(defaultRules); 
             }
             
-            // ✨ YENİ: Firebase sıralama özelliği için veriyi diziye çevir ✨
+            // ✨ YENİ: Firebase sıralama özelliği için veriyi diziye çeviriyoruz
             rulesArr = Object.keys(shiftRules).map(k => ({ key: k, ...shiftRules[k] }));
             rulesArr.sort((a, b) => {
                 let oA = a.order !== undefined ? a.order : 999;
@@ -2145,7 +2139,7 @@
             rulesArr.forEach((r, idx) => {
                 let isCustom = !defaultKeys.includes(r.key);
                 
-                // ✨ YENİ: Sürükle bırak HTML yapılandırması eklendi ✨
+                // ✨ YENİ: Sürükle bırak HTML özellikleri eklendi ✨
                 html += `
                 <div class="menu-item-wrapper" draggable="true" 
                      ondragstart="handleDragStart(event, ${idx})" 
@@ -2155,6 +2149,7 @@
                      ondrop="handleDrop(event, ${idx})">
                      
                     <div class="menu-item" style="background:${r.color};" onclick="setShift('${r.key}','${r.color}')">${r.key}</div>
+                    
                     ${isCustom ? `<div class="delete-custom-btn" onclick="deleteShiftRule('${r.key}', event)">x</div>` : ''}
                 </div>`;
             });
@@ -2200,11 +2195,15 @@
             
             if (draggedIndex === null || draggedIndex === targetIndex) return;
 
+            // Dizide yer değiştirme işlemi
             const draggedItem = rulesArr.splice(draggedIndex, 1)[0];
             rulesArr.splice(targetIndex, 0, draggedItem);
 
+            // Firebase'e yeni sıralamayı kaydetme
             let updates = {};
-            rulesArr.forEach((r, i) => { updates[`vardiya_kurallari/${r.key}/order`] = i; });
+            rulesArr.forEach((r, i) => {
+                updates[`vardiya_kurallari/${r.key}/order`] = i;
+            });
             db.ref().update(updates);
         }
 
@@ -2242,7 +2241,7 @@
             let w = parseFloat(wStr.replace(',', '.')) || 0;
             let n = parseFloat(nStr.replace(',', '.')) || 0;
 
-            // Sıralamayı koru veya sona ekle
+            // Sıralamayı korumak veya en sona eklemek için order değeri
             let newOrder = rulesArr.length;
             if(existingRule && existingRule.order !== undefined) newOrder = existingRule.order;
 
@@ -2339,7 +2338,7 @@
             }
         }
 
-        // ---------------- ÇOKLU TABLO OLUŞTURMA VE DEPOYA AT BUTONU ----------------
+        // ---------------- ÇOKLU TABLO OLUŞTURMA ----------------
         function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
             const cols = customColCount || parseInt(document.getElementById("colCount").value);
             let startDt = customStartDt;
@@ -2369,7 +2368,6 @@
             wrapper.setAttribute("data-colcount", cols); 
             wrapper.setAttribute("data-tablename", tableName);
             
-            // ✨ YENİ: "📦 DEPOYA AT" Butonu Eklendi ✨
             wrapper.innerHTML = `
                 <div class="table-header" onclick="toggleTableCollapse(this, event)">
                     <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;">
@@ -2395,9 +2393,6 @@
                     <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button>
                     <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button>
                     <span style="flex-grow:1;"></span>
-                    
-                    <button class="btn btn-orange" onclick="archiveSingleTable(this)">📦 DEPOYA AT</button>
-
                     <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO (AYNI KİŞİLERLE)</button>
                     <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ TABLOYU EKRANDAN SİL</button>
                 </div>
@@ -2414,124 +2409,7 @@
             openTableModal(); 
         }
 
-        // ✨ TABLOYU BİREYSEL DEPOYA ATMA (GÜVENLİ FONKSİYON) ✨
-        function archiveSingleTable(btn) {
-            if(!confirm("Bu tabloyu Kalıcı Depoya kaldırmak istiyor musunuz? Panodan silinecektir.")) return;
-            
-            const wrapper = btn.closest('.table-wrapper');
-            let tName = wrapper.getAttribute("data-tablename") || "İsimsiz Tablo";
-            let sDate = wrapper.getAttribute("data-startdt");
-            let cCount = wrapper.getAttribute("data-colcount");
-            
-            const rowsData = [];
-            wrapper.querySelectorAll("tbody tr").forEach(tr => { 
-                let nameEl = tr.querySelector(".editable-name");
-                if(!nameEl) return;
-                let name = nameEl.innerText.trim(); 
-                let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
-                    text: td.innerText.replace(/[\n\r]/g, ""), 
-                    bg: td.style.background || "transparent", 
-                    pin: td.getAttribute("data-pin") || "" 
-                })); 
-                rowsData.push({ name: name, shifts: shifts }); 
-            });
-            
-            let notesElement = wrapper.querySelector(".table-notes");
-            let notesVal = notesElement ? notesElement.value : ""; 
-            
-            let tableData = {
-                tableName: tName,
-                startDate: sDate,
-                colCount: cCount,
-                data: rowsData,
-                notes: notesVal
-            };
-
-            // 1. Ekrandan Kaldır
-            wrapper.remove();
-            
-            // 2. Mevcut Kalan Tabloları Hemen Arka Planda Kaydet
-            if (currentMasterArchiveId) {
-                saveMasterArchiveSilent(); 
-            }
-
-            // 3. Kalıcı Depoya Gönder
-            let folderName = (currentMasterArchiveName || "Panodan Gelenler") + " (Arşiv)";
-            
-            db.ref("kalici_depo").orderByChild("name").equalTo(folderName).once("value", snap => {
-                if(snap.exists()) {
-                    let key = Object.keys(snap.val())[0];
-                    let existingData = snap.val()[key].tables;
-                    
-                    // ZIRH: Firebase hatasına karşı kontrol
-                    let existingArray = [];
-                    if (Array.isArray(existingData)) {
-                        existingArray = existingData;
-                    } else if (existingData) {
-                        existingArray = Object.values(existingData);
-                    }
-                    
-                    existingArray = existingArray.filter(t => t !== null && t !== undefined);
-                    existingArray.push(tableData);
-                    
-                    db.ref("kalici_depo/" + key + "/tables").set(existingArray);
-                } else {
-                    db.ref("kalici_depo").push({
-                        name: folderName,
-                        date: new Date().toLocaleString('tr-TR'),
-                        tables: [tableData]
-                    });
-                }
-                showToast("📦 Tablo Kalıcı Depo'ya taşındı!");
-                logAction(`'${tName}' tablosunu depoya attı.`);
-                
-                if(document.querySelectorAll('.table-wrapper').length === 0) { 
-                    closeTableModal(); 
-                }
-            });
-        }
-
-        // Bireysel Depoya Atma Esnasında Aktif Panoyu Korumak İçin Sessiz Kayıt
-        function saveMasterArchiveSilent() {
-            if(!currentMasterArchiveId) return; 
-            const tables = document.querySelectorAll('.table-wrapper'); 
-            const tablesData = [];
-            tables.forEach((wrapper) => {
-                let tName = wrapper.getAttribute("data-tablename");
-                const rowsData = [];
-                wrapper.querySelectorAll("tbody tr").forEach(tr => { 
-                    let nameEl = tr.querySelector(".editable-name");
-                    if (!nameEl) return;
-                    let name = nameEl.innerText.trim(); 
-                    let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
-                        text: td.innerText.replace(/[\n\r]/g, ""), 
-                        bg: td.style.background || "transparent", 
-                        pin: td.getAttribute("data-pin") || ""
-                    })); 
-                    rowsData.push({ name: name, shifts: shifts }); 
-                });
-                let notesElement = wrapper.querySelector(".table-notes");
-                let notesVal = notesElement ? notesElement.value : ""; 
-                tablesData.push({ 
-                    tableName: tName, 
-                    startDate: wrapper.getAttribute("data-startdt"), 
-                    colCount: wrapper.getAttribute("data-colcount"), 
-                    data: rowsData, 
-                    notes: notesVal 
-                });
-            });
-
-            let targetNode = window.currentArchiveNode || "arsivlenmis_shiftler";
-            
-            if(tablesData.length > 0) { 
-                db.ref(targetNode).child(currentMasterArchiveId).update({ tables: tablesData });
-            } else {
-                db.ref(targetNode).child(currentMasterArchiveId).remove();
-                currentMasterArchiveId = null;
-            }
-        }
-
-        // AYNI KİŞİLERLE YENİ TABLO OLUŞTURMA FONKSİYONU
+        // ✨ AYNI KİŞİLERLE YENİ TABLO OLUŞTURMA FONKSİYONU ✨
         function addTableWithSameStaff(btn) { 
             const wrapper = btn.closest('.table-wrapper'); 
             let staffNames = Array.from(wrapper.querySelectorAll('.editable-name')).map(el => el.innerText.trim()); 
@@ -2665,6 +2543,7 @@
             logAction("Tablonun fotoğrafını aldı.");
         }
 
+        // ZIRHLI METİN ÇEKİCİ
         function getCleanCellText(cell) { 
             if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
             if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
@@ -2680,6 +2559,7 @@
             return bg; 
         }
 
+        // ✨ MAUSE İLE SEÇİLİ ALANI KOPYALAMA ✨
         function copyTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); 
             const table = wrapper.querySelector('table'); 
@@ -2758,6 +2638,7 @@
             }
         }
 
+        // ✨ TÜM TABLOLARI EXCEL'E KOPYALAMA ✨
         function exportAllToExcel() {
             const wrappers = document.querySelectorAll('.table-wrapper');
             if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
@@ -2873,6 +2754,7 @@
             return rows; 
         }
 
+        // İÇE AKTARMA (EXCEL) FONKSİYONLARI
         function openExcelModal() {
             document.getElementById('excelInput').value = "";
             document.getElementById('excelModalTitle').innerText = "📥 Excel'den Veri Çek";
@@ -3114,67 +2996,6 @@
             }); 
         }
 
-        function loadPermanentArchives() { 
-            db.ref("kalici_depo").on("value", snap => { 
-                const l = document.getElementById("permanentArchiveList"); 
-                if(!l) return;
-                l.innerHTML = ""; 
-                const data = snap.val(); 
-                if(data) { 
-                    let archiveArray = Object.entries(data).map(([id, val]) => ({id, val}));
-                    archiveArray.sort((a, b) => {
-                        let nameA = a.val.name || "";
-                        let nameB = b.val.name || "";
-                        return nameA.localeCompare(nameB, 'tr', { numeric: true });
-                    });
-
-                    archiveArray.forEach(({id, val}) => { 
-                        let tableCount = val.tables ? val.tables.length : 1; 
-                        let safeName = (val.name || "İsimsiz").replace(/'/g,"\\'");
-                        const div = document.createElement("div"); 
-                        div.className = "archive-card"; 
-                        div.style.border = "1px dashed #64748b";
-                        div.innerHTML = `
-                            <div style="flex:1" onclick="openArchive('${id}', '${safeName}', true)">
-                                <b style="color:#94a3b8; font-size:15px;">📦 ${val.name || 'İsimsiz'}</b><br>
-                                <small style="color:#64748b; font-size:10px;">${val.date} | <b>${tableCount}</b> Tablo</small>
-                            </div>
-                            <div style="display:flex; flex-direction:column; gap:5px; margin-left:10px;">
-                                <button class="btn btn-green" style="padding:4px 8px; font-size:10px; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button>
-                                <button class="btn btn-red" style="padding:4px 8px; font-size:10px; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button>
-                            </div>
-                        `; 
-                        l.appendChild(div); 
-                    }); 
-                } else {
-                    l.innerHTML = "<div style='color:#64748b; font-size:11px; padding:10px;'>Depo şu an boş...</div>";
-                }
-            }); 
-        }
-
-        function restoreFromPermanentArchive(e, id) {
-            e.stopPropagation();
-            if(!confirm("Kalıcı Depodaki bu klasörü Aktif Panoya geri almak istiyor musunuz?")) return;
-            db.ref("kalici_depo").child(id).once("value", snap => {
-                const data = snap.val();
-                if(data) {
-                    db.ref("arsivlenmis_shiftler").child(id).set(data).then(() => {
-                        db.ref("kalici_depo").child(id).remove();
-                        showToast("♻️ Klasör Aktif Panoya Geri Alındı!");
-                        logAction("Bir klasörü Depodan Aktif Panoya geri aldı.");
-                    });
-                }
-            });
-        }
-
-        function delPermanentArchive(e, id) {
-            e.stopPropagation();
-            if(confirm("DİKKAT! Depodaki bu dosyayı TAMAMEN silmek istediğinize emin misiniz? Geri dönüşü yoktur.")) {
-                db.ref("kalici_depo").child(id).remove();
-                logAction("Kalıcı depodan dosya sildi.");
-            }
-        }
-
         function delArchive(e, id) { 
             e.stopPropagation(); 
             if(confirm("Tüm klasörü ve içindeki tabloları kalıcı olarak silmek istediğine emin misin?")) {
@@ -3183,9 +3004,17 @@
             }
         }
         
-        // ✨ FIREBASE ARRAY/OBJECT DÖNÜŞÜM HATASINI ÖNLEYEN ZIRHLI OPEN FONKSİYONU ✨
+        function renameArchive(e, id, oldName) { 
+            e.stopPropagation(); 
+            let newName = prompt("Klasörün yeni adını girin:", oldName); 
+            if (newName && newName.trim() !== "" && newName !== oldName) { 
+                db.ref("arsivlenmis_shiftler").child(id).update({name: newName.trim()}); 
+            } 
+        }
+        
+        // ✨ FIREBASE BUG FIX UYGULANDI ✨
         function openArchive(id, name, isPermanent = false) { 
-            const sourceNode = isPermanent ? "kalici_depo" : "arsivlenmis_shiftler";
+            const sourceNode = "arsivlenmis_shiftler";
             db.ref(sourceNode).child(id).once("value", snap => {
                 const val = snap.val(); 
                 if(!val) return;
@@ -3193,11 +3022,11 @@
                 currentMasterArchiveName = name;
                 window.currentArchiveNode = sourceNode; 
 
-                document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; 
+                document.getElementById("masterArchiveTitle").innerText = "📁 " + name; 
                 document.getElementById("tablesContainer").innerHTML = ""; 
                 
+                // KORUMA KALKANI: Firebase veriyi nesneye (object) çevirmişse, tekrar diziye (array) çevirir.
                 if(val.tables) { 
-                    // FİREBASE HATASI ÇÖZÜMÜ: Eğer Firebase diziyi nesneye çevirdiyse, onu tekrar dizi yap!
                     let tablesArray = Array.isArray(val.tables) ? val.tables : Object.values(val.tables);
                     
                     tablesArray.forEach(t => { 
@@ -3220,7 +3049,7 @@
             });
         }
 
-        // ✨ MASTER KAYIT (FİREBASE TRY-CATCH İLE GÜÇLENDİRİLDİ) ✨
+        // ✨ MASTER KAYIT ✨
         function saveMasterArchive() {
             try {
                 if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { 
