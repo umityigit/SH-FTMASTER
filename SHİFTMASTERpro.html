@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ShiftMaster v129.0 - CONNECTION FIX</title>
+    <title>ShiftMaster v129.1 - FINAL CONNECTION ELITE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -607,7 +607,7 @@
             margin-right: 8px; 
         }
 
-        /* 📁 ARŞİV EKRANI (Butonlu Düzen) */
+        /* 📁 ARŞİV VE KALICI DEPO EKRANI */
         .archive-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -623,9 +623,9 @@
             padding: 15px; 
             border-radius: 20px; 
             display: flex; 
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
             transition: 0.3s; 
             position: relative; 
             overflow: hidden; 
@@ -946,7 +946,7 @@
         }
 
         /* =========================================
-           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ VE DRAG DROP
+           ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ & DRAG DROP
            ========================================= */
         .custom-menu { 
             display: none; 
@@ -973,7 +973,7 @@
             gap: 10px; 
         }
 
-        /* Sürükle Bırak Efekti Sınıfı */
+        /* ✨ YENİ SÜRÜKLE BIRAK SINIFLARI ✨ */
         .menu-item-wrapper { 
             position: relative; 
             width: 100%; 
@@ -991,7 +991,7 @@
         .menu-item { 
             width: 100%; 
             padding: 12px 8px; 
-            cursor: grab; 
+            cursor: grab; /* GRAB EKLENDİ */
             border-radius: 10px; 
             text-align: center; 
             font-weight: 800; 
@@ -1603,7 +1603,7 @@
 
         // VARDİYA KURALLARI (DİNAMİK)
         let shiftRules = {};
-        let rulesArr = []; // ✨ Sürükle bırak sıralaması için dizi
+        let rulesArr = []; // ✨ YENİ EKLENDİ
 
         const defaultRules = {
             '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
@@ -1648,11 +1648,8 @@
             },
             
             toggle() { 
-                if (this.isPlaying) {
-                    this.pause(); 
-                } else {
-                    this.play(); 
-                }
+                if (this.isPlaying) this.pause(); 
+                else this.play(); 
             },
             
             play() { 
@@ -1689,9 +1686,7 @@
             changeTrack() { 
                 this.audio.src = this.playlist[this.index].url; 
                 document.getElementById('sm-title').innerText = this.playlist[this.index].name; 
-                if (this.isPlaying) {
-                    this.play(); 
-                }
+                if (this.isPlaying) this.play(); 
             }
         };
 
@@ -1699,9 +1694,7 @@
             let x = document.getElementById("toast");
             x.innerText = msg;
             x.className = "show";
-            setTimeout(function(){ 
-                x.className = x.className.replace("show", ""); 
-            }, 3000);
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
         }
 
         // Açılış Animasyonu Sistemi
@@ -2115,8 +2108,7 @@
             document.getElementById("tablesContainer").innerHTML = ""; 
         }
 
-        // ---------------- ✨ DRAG & DROP DİNAMİK MENÜ VE RENK SEÇİCİ ✨ ----------------
-        
+        // ---------------- DİNAMİK MENÜ VE RENK SEÇİCİ (DRAG & DROP) ----------------
         db.ref("vardiya_kurallari").on('value', snap => {
             if(snap.val()) { 
                 shiftRules = snap.val(); 
@@ -2125,7 +2117,7 @@
                 db.ref("vardiya_kurallari").set(defaultRules); 
             }
             
-            // ✨ YENİ: Firebase verilerini diziye aktarıp, order değerine göre sıralıyoruz
+            // YENİ: Firebase'den gelen veriyi diziye çevir ve sırala
             rulesArr = Object.keys(shiftRules).map(k => ({ key: k, ...shiftRules[k] }));
             rulesArr.sort((a, b) => {
                 let oA = a.order !== undefined ? a.order : 999;
@@ -2145,7 +2137,7 @@
             rulesArr.forEach((r, idx) => {
                 let isCustom = !defaultKeys.includes(r.key);
                 
-                // ✨ YENİ: HTML İçine Sürükle-Bırak (Drag & Drop) Özellikleri Eklendi ✨
+                // HTML Drag & Drop eventleri
                 html += `
                 <div class="menu-item-wrapper" draggable="true" 
                      ondragstart="handleDragStart(event, ${idx})" 
@@ -2153,9 +2145,7 @@
                      ondragover="handleDragOver(event)" 
                      ondragleave="handleDragLeave(event)" 
                      ondrop="handleDrop(event, ${idx})">
-                     
                     <div class="menu-item" style="background:${r.color};" onclick="setShift('${r.key}','${r.color}')">${r.key}</div>
-                    
                     ${isCustom ? `<div class="delete-custom-btn" onclick="deleteShiftRule('${r.key}', event)">x</div>` : ''}
                 </div>`;
             });
@@ -2168,7 +2158,7 @@
             grid.innerHTML = html;
         }
 
-        // ✨ YENİ: Sürükle Bırak İşlevleri ✨
+        // DRAG & DROP FONKSİYONLARI
         let draggedIndex = null;
 
         function handleDragStart(e, index) {
@@ -2201,11 +2191,9 @@
             
             if (draggedIndex === null || draggedIndex === targetIndex) return;
 
-            // Dizide elemanların yerini değiştir
             const draggedItem = rulesArr.splice(draggedIndex, 1)[0];
             rulesArr.splice(targetIndex, 0, draggedItem);
 
-            // Firebase'e yeni sıralamayı kaydet
             let updates = {};
             rulesArr.forEach((r, i) => {
                 updates[`vardiya_kurallari/${r.key}/order`] = i;
@@ -2220,6 +2208,7 @@
             }
         }
 
+        // ✨ ÇOKLU SEÇİME RENK ATAMA ✨
         function applyColorToCell(colorOrGradient) {
             const selectedCells = document.querySelectorAll('.selected-cell.shift-cell');
             let targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell;
@@ -2247,7 +2236,7 @@
             let w = parseFloat(wStr.replace(',', '.')) || 0;
             let n = parseFloat(nStr.replace(',', '.')) || 0;
 
-            // Sıralamayı korumak veya en sona eklemek için order değeri
+            // Sıralamayı koru veya sona ekle
             let newOrder = rulesArr.length;
             if(existingRule && existingRule.order !== undefined) newOrder = existingRule.order;
 
@@ -2412,12 +2401,10 @@
 
             saveHistory(); 
             updateAllStats(); 
-            
-            // HER İHTİMALE KARŞI EKRANI AÇMASI İÇİN GARANTİ FONKSİYON
             openTableModal(); 
         }
 
-        // ✨ AYNI KİŞİLERLE YENİ TABLO OLUŞTURMA FONKSİYONU ✨
+        // ✨ AYNI KİŞİLERLE YENİ TABLO OLUŞTURMA FONKSİYONU (EKSİKTİ EKLENDİ) ✨
         function addTableWithSameStaff(btn) { 
             const wrapper = btn.closest('.table-wrapper'); 
             let staffNames = Array.from(wrapper.querySelectorAll('.editable-name')).map(el => el.innerText.trim()); 
@@ -2435,15 +2422,6 @@
             if(!s) return; 
             
             generateTable(false, staffNames, "Yeni Tablo", new Date(s), c, wrapper); 
-        }
-
-        // TÜM SATIRLARI SEÇME FONKSİYONU
-        function toggleAllRows(masterCheckbox) {
-            const table = masterCheckbox.closest('table');
-            const checkboxes = table.querySelectorAll('tbody .row-checkbox');
-            checkboxes.forEach(cb => {
-                cb.checked = masterCheckbox.checked;
-            });
         }
 
         // HÜCRE İSİM VEYA ALANA TIKLANDIĞINDA CHECKBOX'I SEÇME (AKILLI TIKLAMA)
@@ -2763,6 +2741,102 @@
             return rows; 
         }
 
+        // İÇE AKTARMA (EXCEL) FONKSİYONLARI
+        function openExcelModal() {
+            document.getElementById('excelInput').value = "";
+            document.getElementById('excelModalTitle').innerText = "📥 Excel'den Veri Çek";
+            document.getElementById('excelModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('excelModal').classList.add('show'), 10);
+            
+            const processBtn = document.getElementById('excelProcessBtn');
+            if(processBtn) {
+                processBtn.onclick = function() {
+                    importFromExcel();
+                };
+            }
+        }
+
+        function openExcelModalForTable(btn) {
+            currentTargetTable = btn.closest('.table-wrapper');
+            document.getElementById('excelInput').value = "";
+            document.getElementById('excelModalTitle').innerText = "📥 Bu Tabloya Excel'den Ekle";
+            document.getElementById('excelModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('excelModal').classList.add('show'), 10);
+            
+            const processBtn = document.getElementById('excelProcessBtn');
+            if(processBtn) {
+                processBtn.onclick = function() {
+                    appendExcelToSpecificTable();
+                };
+            }
+        }
+
+        function importFromExcel() {
+            const raw = document.getElementById('excelInput').value;
+            if(!raw.trim()) return alert("Veri girmediniz!");
+            const rows = cleanExcelRows(raw);
+            if(rows.length === 0) return alert("Geçerli veri bulunamadı.");
+
+            const staffData = [];
+            let maxCols = 0;
+
+            rows.forEach(r => {
+                const cols = r.split('\t');
+                const name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ...";
+                const shifts = [];
+                for(let i=1; i<cols.length; i++) {
+                    let val = cols[i].trim();
+                    let safeVal = val.replace(/\./g, ':');
+                    let rule = shiftRules[safeVal] || shiftRules[val];
+                    shifts.push({
+                        text: val,
+                        bg: rule ? rule.color : "transparent"
+                    });
+                }
+                if(shifts.length > maxCols) {
+                    maxCols = shifts.length;
+                }
+                staffData.push({ name: name, shifts: shifts });
+            });
+
+            closeModal('excelModal');
+            startNewSession();
+            generateTable(true, staffData, "İçe Aktarılan Liste", new Date(), maxCols === 0 ? 30 : maxCols);
+        }
+
+        function appendExcelToSpecificTable() {
+            const raw = document.getElementById('excelInput').value;
+            if(!raw.trim()) return alert("Veri girmediniz!");
+            const rows = cleanExcelRows(raw);
+            if(rows.length === 0) return alert("Geçerli veri bulunamadı.");
+
+            if(!currentTargetTable) return;
+            const tbody = currentTargetTable.querySelector('tbody');
+            const colCount = parseInt(currentTargetTable.getAttribute("data-colcount"));
+            const startDt = new Date(currentTargetTable.getAttribute("data-startdt"));
+
+            rows.forEach(r => {
+                const cols = r.split('\t');
+                const name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ...";
+                const shifts = [];
+                for(let i=1; i<colCount+1; i++) {
+                    let val = cols[i] ? cols[i].trim() : "";
+                    let safeVal = val.replace(/\./g, ':');
+                    let rule = shiftRules[safeVal] || shiftRules[val];
+                    shifts.push({
+                        text: val,
+                        bg: rule ? rule.color : "transparent"
+                    });
+                }
+                const newRowHtml = createRowHtml(name, colCount, startDt, shifts);
+                tbody.insertAdjacentHTML('beforeend', newRowHtml);
+            });
+
+            saveHistory();
+            updateAllStats();
+            closeModal('excelModal');
+        }
+
         async function pasteToTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); 
             const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked');
@@ -2876,7 +2950,7 @@
             } 
         }
 
-        // ✨ FIREBASE VERİ BOZULMASINI (ARRAY->OBJECT) ÖNLEYEN ZIRHLI KLASÖR AÇMA FONKSİYONLARI ✨
+        // ✨ FIREBASE VERİ BOZULMASINI (ARRAY->OBJECT) ÖNLEYEN ZIRHLI KLASÖR AÇMA FONKSİYONU ✨
         function loadArchives() { 
             db.ref("arsivlenmis_shiftler").on("value", snap => { 
                 const l = document.getElementById("archiveList"); 
@@ -2891,31 +2965,17 @@
                     });
 
                     archiveArray.forEach(({id, val}) => { 
-                        // Zırhlı tablo sayısı hesaplama
-                        let tableCount = 0;
-                        if (val.tables) {
-                            tableCount = Array.isArray(val.tables) ? val.tables.length : Object.keys(val.tables).length;
-                        } else if (val.data) {
-                            tableCount = 1;
-                        }
-
+                        let tableCount = val.tables ? (Array.isArray(val.tables) ? val.tables.length : Object.keys(val.tables).length) : 1; 
                         let safeName = (val.name || "İsimsiz").replace(/'/g,"\\'");
                         const div = document.createElement("div"); 
                         div.className = "archive-card"; 
-                        div.style.flexDirection = "column";
-                        div.style.alignItems = "flex-start";
-                        div.style.gap = "10px";
-                        
-                        // Açık Buton Tasarımı
                         div.innerHTML = `
-                            <div style="width: 100%;">
+                            <div style="flex:1" onclick="openArchive('${id}', '${safeName}', false)">
                                 <b style="color:var(--accent); font-size:15px;">📁 ${val.name || 'İsimsiz'}</b><br>
                                 <small style="color:#94a3b8; font-size:10px;">${val.date} | <b>${tableCount}</b> Tablo İçeriyor</small>
                             </div>
-                            <div style="display:flex; gap:5px; width:100%; flex-wrap:wrap; margin-top:5px;">
-                                <button class="btn btn-green" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="openArchive('${id}', '${safeName}', false)">📂 AÇ</button>
-                                <button class="btn btn-cyan" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="renameArchive(event, '${id}', '${safeName}')">✏️ DÜZENLE</button>
-                                <button class="btn btn-red" style="padding:6px 10px; font-size:10px; flex:1; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button>
+                            <div style="display:flex; flex-direction:column; gap:5px; margin-left:10px;">
+                                <button class="btn" style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:4px 8px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button>
                             </div>
                         `; 
                         l.appendChild(div); 
