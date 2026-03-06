@@ -286,7 +286,7 @@
 
             if(!userVal || !passVal) { errorMsg.innerText = "Alanlar boş bırakılamaz!"; errorMsg.style.display = "block"; return; }
 
-            // 👑 SİZE ÖZEL VIP GİRİŞ (Veritabanına sormadan direkt açar)
+            // 👑 SİZE ÖZEL VIP GİRİŞ
             if(userVal === "addh" && passVal === "ADDH2026") {
                 loginSuccess("addh", "ANTALYA DÖŞEMEALTI (VIP)");
                 return;
@@ -333,10 +333,10 @@
             });
         }
 
+        // 🐛 BURADAKİ HATA DÜZELTİLDİ (Ekran takılma sorunu çözüldü)
         function loginSuccess(tenantId, displayName) {
             localStorage.setItem('sm_current_tenant', tenantId);
             localStorage.setItem('sm_current_kurum_adi', displayName);
-            document.getElementById('loginScreen').style.display = 'none'; // Varsayılanı gizle (eğer açıksa)
             closeModal('loginModal');
             showPortal(displayName);
         }
