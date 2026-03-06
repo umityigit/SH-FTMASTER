@@ -274,6 +274,33 @@
 <script>
 const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
+    // --- SAAS VERİ İZOLASYON MOTORU BAŞLANGICI ---
+    const tenantId = localStorage.getItem('sm_current_tenant');
+    
+    // Eğer biri lobiden giriş yapmadan gizlice direkt link yazarak girmeye çalışırsa, onu lobiye geri şutla:
+    if (!tenantId) {
+        window.location.href = 'index.html';
+    }
+
+    // Firebase'in orijinal veri çekme motorunu yedeğe alıyoruz
+    const originalRef = db.ref.bind(db);
+
+    // Motoru "Çoklu Şirket (Multi-Tenant)" mantığıyla yeniden programlıyoruz
+    db.ref = function(path) {
+        // ÜMİT ABİ'NİN GİZLİ YÖNETİCİ ANAHTARI:
+        // Lobiden kullanıcı adı olarak tam "dosemealti_merkez" yazıp girersen, eski dolu kayıtlarını görürsün.
+        if (tenantId === "dosemealti_merkez") {
+            return originalRef(path); 
+        }
+        
+        // DİĞER TÜM KURUMLAR VE YABANCILAR İÇİN: (Bomboş, onlara özel odalar)
+        if (path) {
+            return originalRef("kurumlar/" + tenantId + "/" + path);
+        } else {
+            return originalRef("kurumlar/" + tenantId);
+        }
+    };
+    // --- SAAS VERİ İZOLASYON MOTORU BİTİŞİ ---
 
 // === ÇİFT YÖNLÜ SENKRON DEĞİŞKENLERİ ===
 window.firebaseCellPaths = {}; 
@@ -918,3 +945,4 @@ function exceleSifirKayipsizIndir() {
 </script>
 </body>
 </html>
+
