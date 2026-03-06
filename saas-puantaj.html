@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puantaj Motoru | Kurumsal Çözüm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root { --primary: #2c3e50; --green: #10b981; --orange: #f59e0b; --red: #ef4444; --blue: #3b82f6; --dark: #0f172a; --bg: #f1f5f9; }
+        body { margin: 0; background: var(--bg); font-family: 'Roboto', sans-serif; }
+
+        #mainContent { display: block; padding-bottom: 50px; }
+        
+        .hero-search { 
+            background: #ffffff; padding: 40px 30px; border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; 
+            margin: 30px auto; width: 95%; max-width: 1200px; 
+            border-top: 8px solid var(--orange); 
+        }
+        .hero-title { color: var(--dark); margin-top: 0; font-size: 28px; font-weight: 900; letter-spacing: 1px; }
+        .hero-desc { color: #64748b; font-size: 15px; margin-bottom: 30px; line-height: 1.6; }
+        
+        .hero-input-group { display: inline-block; text-align: left; margin: 10px 15px; }
+        .hero-label { font-weight: 800; font-size: 12px; color: #94a3b8; margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center; letter-spacing: 1px;}
+        .hero-input { font-size: 18px; padding: 12px 20px; border: 2px solid #e2e8f0; border-radius: 12px; width: 200px; text-align: center; font-weight: bold; color: var(--dark); transition: 0.3s; background: #f8fafc; outline: none; }
+        .hero-input:focus { border-color: var(--orange); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); background: #ffffff; }
+        
+        details.grup-kapsayici { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 15px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        details.grup-kapsayici:hover { border-color: #cbd5e1; }
+        details.grup-kapsayici[open] { border-color: var(--orange); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.1); }
+        
+        .grup-baslik-alani { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .grup-baslik { font-size: 18px; color: var(--dark); font-weight: 900; margin: 0; display: flex; align-items: center; gap: 10px; }
+        
+        .personel-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-start; padding: 0 20px 20px 20px; }
+        
+        .kisi-secici { display: none; }
+        .kisi-secici + label {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: white; border: 2px solid #e2e8f0; color: var(--primary);
+            padding: 12px 18px; border-radius: 12px; font-weight: 700; font-size: 13px;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); position: relative; user-select: none;
+        }
+        .kisi-secici:checked + label {
+            background: linear-gradient(135deg, var(--orange), #b45309);
+            border-color: var(--orange); color: white;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+            transform: translateY(-3px);
+        }
+        
+        .personel-card { position: relative; display: inline-block; }
+        .btn-sil-badge { position: absolute; top: -8px; right: -8px; background: var(--red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; z-index: 10; opacity: 0; }
+        .personel-card:hover .btn-sil-badge { opacity: 1; }
+        .btn-sil-badge:hover { transform: scale(1.3); }
+
+        .islem-butonlari { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 35px; border-top: 2px solid #e2e8f0; padding-top: 30px; }
+        .btn-secili-dokum { font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--orange), #b45309); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); }
+        .btn-secili-dokum:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(245, 158, 11, 0.5); }
+        
+        .btn-tam-dokum { font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--green), #047857); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); }
+        .btn-tam-dokum:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5); }
+        
+        .print-btn { font-size: 14px; padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+        .print-btn:hover { background: #000; transform: translateY(-2px); }
+        
+        details summary::-webkit-details-marker { display:none; }
+        .settings-panel { background: white; padding: 25px; border-radius: 15px; display: flex; gap: 20px; flex-wrap: wrap; border: 1px solid #e2e8f0; margin-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
+        .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+        h3 { margin: 0; font-size: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--dark); font-weight: 900;}
+        .personel-row { display: flex; gap: 8px; margin-bottom: 5px; }
+        .modern-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; outline: none;}
+        .modern-input:focus { border-color: var(--orange); }
+        .personel-listesi { height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; background: #f8fafc; padding: 8px; border-radius: 8px; }
+        .personel-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 500; color: #334155;}
+        button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-add { background: var(--green); padding: 8px 12px; }
+        .btn-add:hover { background: #047857; }
+        .btn-del { background: var(--red); padding: 4px 8px; font-size: 11px; }
+        .btn-del-group { position: absolute; right: 0; top: 0; background: var(--red); padding: 4px 10px; font-size: 11px; }
+        .btn-big { width: 100%; padding: 15px; font-size: 14px; margin-top: 5px; font-weight: 900; }
+        .btn-org { background: var(--orange); } .btn-grn { background: var(--green); } .btn-blu { background: var(--blue); }
+        .vardiya-chip { display:flex; align-items:center; background:#10b981; color:white; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; margin-bottom:5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        .vardiya-chip.izin { background:#ef4444; }
+        .vardiya-del { margin-left:12px; cursor:pointer; font-size:14px; opacity: 0.8;}
+        .vardiya-del:hover { opacity: 1; transform: scale(1.2); }
+
+        .sayfa-container { 
+            width: 98%; max-height: 75vh; overflow: auto; margin: 20px auto; background: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 2px solid #cbd5e1; border-radius: 12px;
+        }
+        
+        table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; margin: 0; padding: 0; user-select: none; }
+        th, td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 1px; line-height: 1.1; word-break: break-word; overflow: visible; background: white;}
+        
+        thead { position: sticky; top: 0; z-index: 30; }
+        thead th, thead td { background: #eee; box-shadow: inset 0 0 0 1px #000; }
+        
+        .stick-1 { position: sticky; left: 0px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        .stick-2 { position: sticky; left: 35px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        .stick-3 { position: sticky; left: 135px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        .stick-4 { position: sticky; left: 265px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
+        thead .stick-1, thead .stick-2, thead .stick-3, thead .stick-4 { z-index: 40; background: #ddd; }
+
+        .veri-hucre { height: 75px !important; padding: 0 !important; cursor: crosshair !important; transition: all 0.2s;}
+        .veri-hucre:focus { background: #fff9c4 !important; outline: 3px solid #f59e0b; z-index: 5; font-size: 14px; font-weight: bold; cursor: text !important;}
+        
+        .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
+        .selected-cell { background-color: #dbeafe !important; box-shadow: inset 0 0 0 2px #2563eb !important; z-index: 5; }
+        
+        .fm-var { color: #dc2626; font-size: 13px; font-weight: 900; background: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px solid #f87171; display: inline-block;}
+
+        #tableContextMenu { font-family: 'Roboto', sans-serif; min-width: 180px; border-radius: 12px; padding: 5px; }
+        .ctx-header { background: #f8fafc; padding: 10px; font-size: 11px; font-weight: 900; color: #64748b; text-align: center; border-bottom: 2px solid var(--orange); text-transform: uppercase; letter-spacing: 1px; border-radius: 8px 8px 0 0;}
+        .ctx-item { padding: 12px 15px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; color: #334155; display: flex; align-items: center; gap: 10px; border-radius: 6px; margin: 2px 0;}
+        .ctx-item:hover { background-color: #fffbeb; color: var(--orange); padding-left: 20px; }
+        .ctx-item.danger { color: var(--red); }
+        .ctx-item.danger:hover { background-color: #fef2f2; color: var(--red); }
+
+        col.c-sno { width: 35px; } col.c-tc { width: 100px; } col.c-isim { width: 130px; } col.c-gun { width: 38px; } 
+        .kalin-yatay { font-weight: bold !important; font-size: 11px !important; text-align: center; padding: 2px !important; }
+        .isim-yatay { font-weight: bold !important; font-size: 11px !important; text-align: left; padding-left: 3px !important; }
+        th { background: #eee; padding: 2px; font-size: 10px; }
+        
+        .bg-hafta { background-color: #dcfce7 !important; border-left: 2px solid #000; }
+        .bg-genel { background-color: #fef9c3 !important; border-left: 2px solid #000; }
+        .bg-gece { background-color: #f3e8ff !important; border-left: 2px solid #000; }
+        .hucre-izin { background-color: #fee2e2 !important; color: #dc2626; font-weight: bold; }
+        .hucre-haftasonu { background-color: #f1f5f9 !important; }
+        
+        .baslik-dik { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 11px; font-weight: bold; padding: 2px 0; }
+        .baslik-dik-kucuk { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 9px; font-weight: normal; padding: 2px 0; color: #444; }
+
+        #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: 900; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
+        #btnExceleKopyala:hover { background: #059669; transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.6);}
+
+        #btnSaveToCloud { 
+            position: fixed; bottom: 20px; left: 20px; background: #10b981; color: white; border: none; 
+            width: 60px; height: 60px; border-radius: 50%; font-size: 24px; 
+            display: flex; justify-content: center; align-items: center; 
+            box-shadow: 0 4px 15px rgba(16,185,129,0.5); cursor: pointer; z-index: 100000; 
+            display: none; transition: 0.3s; animation: pulseGreen 2s infinite; 
+        }
+        #btnSaveToCloud:hover { transform: scale(1.1); }
+        #btnSaveToCloud::after { 
+            content: "KAYDET (Ctrl+S)"; position: absolute; bottom: -25px; left: -15px; width: 90px;
+            font-size: 10px; font-weight: 900; color: #10b981; background: white; 
+            padding: 4px 6px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); text-align: center;
+        }
+        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+        @media print {
+            @page { size: A4 landscape; margin: 5mm; } 
+            body { zoom: 50%; margin: 0; padding: 0; background: white; } 
+            .hero-search, details, #tableContextMenu, #btnExceleKopyala, #btnSaveToCloud { display: none !important; }
+            #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
+            
+            .sayfa-container { overflow: visible !important; width: 100%; padding:0; max-height: none !important; border: none; box-shadow: none;}
+            thead, .stick-1, .stick-2, .stick-3, .stick-4 { position: static !important; box-shadow: none !important; }
+            
+            .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            tr { page-break-inside: avoid; }
+            .selected-cell { box-shadow: none !important; outline: none !important; background-color: inherit !important; } 
+            .fm-var { background: transparent !important; border: none !important; color: black !important; font-size: 11px !important; font-weight: bold !important; padding: 0 !important; } 
+        }
+    </style>
+</head>
+<body>
+
+<div id="mainContent">
+    <div class="hero-search">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 class="hero-title" style="margin:0;">📊 PUANTAJ MOTORU</h1>
+            <button class="print-btn" style="margin:0; background: var(--dark); padding: 10px 20px;" onclick="window.location.href='index.html'">🚪 LOBİYE DÖN</button>
+        </div>
+        <p class="hero-desc">Puantajını oluşturmak istediğiniz personelleri işaretleyin. İster tek kişi, ister tüm birimi anında hazırlayın.<br><em>Ekranda oluşan tabloda <b>Sağ Tıklayarak</b> vardiya atayabilir, <b>CTRL+Z</b> ile geri alabilir, <b>CTRL+S</b> ile buluta kaydedebilirsiniz.</em></p>
+        
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+            <div class="hero-input-group">
+                <label class="hero-label">BAŞLANGIÇ</label>
+                <input type="date" id="inpTarihBas" class="hero-input">
+            </div>
+            <div class="hero-input-group">
+                <label class="hero-label">BİTİŞ</label>
+                <input type="date" id="inpTarihBit" class="hero-input">
+            </div>
+        </div>
+
+        <div id="personelButonAlani" style="margin-top: 25px; text-align: left;"></div>
+
+        <div class="islem-butonlari">
+            <button onclick="secilileriOlustur()" class="btn-secili-dokum">✨ SEÇİLİ KİŞİLERİN DÖKÜMÜNÜ AL</button>
+            <button onclick="tamDokumOlustur()" class="btn-tam-dokum">📄 LİSTEDEKİ HERKESİN DÖKÜMÜNÜ AL</button>
+            <button onclick="document.getElementById('raporAlani').innerHTML=''; document.getElementById('btnExceleKopyala').style.display='none';" class="btn-tam-dokum" style="background:#ef4444; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);">🧹 EKRANDAKİ TABLOLARI SİL</button>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <button onclick="window.print()" class="print-btn">🖨️ HAZIRLANAN RAPORU YAZDIR</button>
+        </div>
+    </div>
+
+    <details style="margin: 20px auto; width: 95%; max-width: 1200px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+        <summary style="padding: 20px; font-weight: 900; font-size: 14px; color: #64748b; cursor: pointer; border-left: 6px solid var(--orange); border-radius: 15px; outline: none; transition: 0.3s;">
+            ⚙️ GELİŞMİŞ AYARLAR (Personel ve Vardiya Ekleme Paneli)
+        </summary>
+        <div class="settings-panel">
+            <div style="width:100%; padding-bottom:5px; border-bottom:2px solid #e2e8f0; margin-bottom:10px;">
+                <h3 style="border:none; padding:0; display:inline-block; color:var(--orange);">VARDİYA YÖNETİMİ</h3>
+            </div>
+            <div style="width:100%; display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                <div style="flex:2; min-width: 150px;">
+                    <label style="font-size:11px; font-weight:bold; color:#475569;">Vardiya Adı / Kodu</label>
+                    <input type="text" id="vAd" class="modern-input" placeholder="Örn: 08:00-20:00 veya Nİ">
+                </div>
+                <div style="flex:1; min-width: 80px;">
+                    <label style="font-size:11px; font-weight:bold; color:#475569;">Toplam Saat</label>
+                    <input type="number" id="vSaat" class="modern-input" placeholder="Örn: 11" step="0.5">
+                </div>
+                <div style="flex:1; min-width: 80px;">
+                    <label style="font-size:11px; font-weight:bold; color:#475569;">Gece Saati</label>
+                    <input type="number" id="vGece" class="modern-input" placeholder="Örn: 0" step="0.5">
+                </div>
+                <div style="flex:1.5; min-width: 120px;">
+                    <label style="font-size:11px; font-weight:bold; color:#475569;">Tür</label>
+                    <select id="vTip" class="modern-input">
+                        <option value="calisma">Çalışma / Mesai</option>
+                        <option value="izin">İzin / İstirahat</option>
+                    </select>
+                </div>
+                <div>
+                    <button onclick="vardiyaEkle()" class="btn-big btn-grn" style="margin:0; padding:10px 25px; border-radius: 8px;">EKLE</button>
+                </div>
+            </div>
+            <div id="vardiyaListesi" style="width:100%; display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;"></div>
+            
+            <div id="dynamicGroups" style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%; margin-top: 15px; border-top: 2px dashed #e2e8f0; padding-top: 20px;"></div>
+            <div class="panel-col" style="flex:1; min-width: 250px; justify-content: center; align-items: center; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; background: #f8fafc;">
+                <button onclick="yeniGrupEkle()" class="btn-big btn-blu" style="border-radius: 10px; box-shadow: 0 5px 15px rgba(59,130,246,0.3);">+ YENİ GRUP EKLE</button>
+            </div>
+            <textarea id="inpExcel" style="display:none;"></textarea>
+        </div>
+    </details>
+
+    <div class="sayfa-container" id="raporScrollNoktasi">
+        <div id="raporAlani"></div>
+    </div>
+</div>
+
+<button id="btnExceleKopyala" onclick="exceleSifirKayipsizIndir()">📥 EXCEL DOSYASI İNDİR</button>
+
+<button id="btnSaveToCloud" onclick="bulutaKalıcıKaydet()" title="Değişiklikleri ShiftMaster'a Kaydet">💾</button>
+
+<div id="tableContextMenu" style="display:none; position:absolute; background:white; border:1px solid #cbd5e1; box-shadow:0 15px 35px rgba(0,0,0,0.2); z-index:99999; border-radius:12px; overflow:hidden;">
+    <div class="ctx-header">SHIFTMASTER MENÜSÜ</div>
+    <div id="ctxDinamikVardiyalar" style="max-height: 250px; overflow-y: auto; padding: 5px;"></div>
+    <div style="border-bottom: 1px solid #e2e8f0; margin: 5px 0;"></div>
+    <div class="ctx-item danger" onclick="seciliHucreleriTemizle()">🧹 Seçili Hücreleri Temizle</div>
+    <div style="border-bottom: 1px solid #e2e8f0; margin: 5px 0;"></div>
+    <div class="ctx-item" onclick="mergeSelectedCells()">🔗 Seçili Hücreleri Birleştir</div>
+    <div class="ctx-item" onclick="unmergeSelectedCells()">✂️ Hücre Birleştirmesini Ayır</div>
+</div>
+
+<script>
+const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+firebase.initializeApp(firebaseConfig); const db = firebase.database();
+
+// --- SAAS VERİ İZOLASYON MOTORU BAŞLANGICI ---
+const tenantId = localStorage.getItem('sm_current_tenant');
+if (!tenantId) window.location.href = 'index.html';
+
+const originalRef = db.ref.bind(db);
+db.ref = function(path) {
+    if (path) return originalRef("kurumlar/" + tenantId + "/" + path);
+    else return originalRef("kurumlar/" + tenantId);
+};
+// --- SAAS VERİ İZOLASYON MOTORU BİTİŞİ ---
+
+window.firebaseCellPaths = {}; 
+let historyStack = []; 
+let hasUnsavedChanges = false; 
+
+function checkUnsaved() { hasUnsavedChanges = true; document.getElementById('btnSaveToCloud').style.display = 'flex'; }
+function resetUnsaved() { hasUnsavedChanges = false; document.getElementById('btnSaveToCloud').style.display = 'none'; }
+function pushToHistory(changesArray) { historyStack.push(changesArray); if(historyStack.length > 50) historyStack.shift(); checkUnsaved(); }
+
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (historyStack.length > 0) {
+            let lastChanges = historyStack.pop();
+            lastChanges.forEach(ch => { ch.td.innerHTML = ch.oldVal; satirHesapla(ch.td); });
+            checkUnsaved();
+        }
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 's') { e.preventDefault(); if (hasUnsavedChanges) bulutaKalıcıKaydet(); }
+});
+
+function bulutaKalıcıKaydet() {
+    if(!confirm("⚠️ DİKKAT!\n\nYaptığınız değişiklikler SHIFTMASTER veritabanına kalıcı olarak işlenecek.\nEmin misiniz?")) return;
+    let btn = document.getElementById('btnSaveToCloud');
+    btn.innerHTML = "⏳"; btn.style.pointerEvents = "none";
+
+    let updates = {};
+    document.querySelectorAll('td.veri-hucre').forEach(td => {
+        let isim = td.getAttribute('data-smisim');
+        let tarih = td.getAttribute('data-tarih');
+        if(isim && tarih && window.firebaseCellPaths) {
+            let path = window.firebaseCellPaths[`${isim}_${tarih}`];
+            if(path) {
+                let text = getCleanValue(td.innerText || td.textContent);
+                updates[path] = text;
+            }
+        }
+    });
+
+    if(Object.keys(updates).length === 0) {
+        alert("Bulut bağlantılı bir veri bulunamadı!");
+        btn.innerHTML = "💾"; btn.style.pointerEvents = "auto";
+        return;
+    }
+
+    db.ref().update(updates).then(() => {
+        btn.innerHTML = "✅"; btn.style.background = "#10b981";
+        setTimeout(() => { resetUnsaved(); btn.innerHTML = "💾"; btn.style.background = "#10b981"; btn.style.pointerEvents = "auto"; }, 2000);
+    }).catch(err => { alert("Hata: " + err); btn.innerHTML = "💾"; btn.style.pointerEvents = "auto"; });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    let bugun = new Date();
+    let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
+    let bit = new Date(bugun.getFullYear(), bugun.getMonth() + 1, 14);
+    
+    document.getElementById('inpTarihBas').value = `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
+    document.getElementById('inpTarihBit').value = `${bit.getFullYear()}-${String(bit.getMonth()+1).padStart(2,'0')}-${String(bit.getDate()).padStart(2,'0')}`;
+    
+    bulutBaglantisiniKur();
+});
+
+const DEFAULT_VARDIYALAR = { 
+    "08:00-18:00":{t:9,g:0, tip:"calisma"}, "08:00-20:00":{t:11,g:0, tip:"calisma"}, "08:00-16:00":{t:7.5,g:0, tip:"calisma"}, 
+    "20:00-08:00":{t:11,g:11, tip:"calisma"}, "16:00-24:00":{t:7.5,g:4, tip:"calisma"}, "24:00-08:00":{t:7.5,g:6, tip:"calisma"}, 
+    "HT":{t:0,g:0, tip:"izin"}, "Yİ":{t:0,g:0, tip:"izin"}, "R":{t:0,g:0, tip:"izin"}, "İ":{t:0,g:0, tip:"izin"}, 
+    "Nİ":{t:0,g:0, tip:"izin"}, "RT":{t:0,g:0, tip:"izin"}, "RTÇ":{t:9,g:0, tip:"calisma"} 
+};
+
+let appData = { gruplar: [], vardiyalar: null };
+
+function ilkKurulumuYap() {
+    appData = { gruplar: [], vardiyalar: DEFAULT_VARDIYALAR };
+    // Müşteriye özel boş şablon
+    const genelListe = []; 
+    appData.gruplar = [{ id: "g_1", ad: "ÖRNEK BİRİM", kisiler: genelListe }];
+    veriKaydet(); 
+}
+
+function bulutBaglantisiniKur() {
+    db.ref("puantaj_motoru_ayarlar").on("value", snap => {
+        let data = snap.val();
+        if(data) {
+            appData = data;
+            if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
+            if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "YENİ BİRİM", kisiler: [] }];
+            arayuzCiz(); vardiyaArayuzCiz(); anaEkranaButonlariCiz(); 
+        } else { ilkKurulumuYap(); }
+    });
+}
+
+function veriKaydet() { db.ref("puantaj_motoru_ayarlar").set(appData); }
+
+function vardiyaEkle() {
+    let kod = document.getElementById("vAd").value.trim().toUpperCase();
+    let t = parseFloat(document.getElementById("vSaat").value) || 0;
+    let g = parseFloat(document.getElementById("vGece").value) || 0;
+    let tip = document.getElementById("vTip").value;
+    if(!kod) return alert("Vardiya adı boş olamaz!");
+    appData.vardiyalar[kod] = { t: t, g: g, tip: tip };
+    veriKaydet(); 
+}
+function vardiyaSil(kod) { if(confirm(kod + " silinsin mi?")) { delete appData.vardiyalar[kod]; veriKaydet(); } }
+
+function vardiyaArayuzCiz() {
+    const root = document.getElementById("vardiyaListesi"); root.innerHTML = "";
+    for(let v in appData.vardiyalar) {
+        let info = appData.vardiyalar[v];
+        let cClass = info.tip === 'izin' ? 'izin' : 'calisma';
+        let desc = info.tip === 'calisma' ? `(${info.t}s / G:${info.g}s)` : '(İzin)';
+        root.innerHTML += `<div class="vardiya-chip ${cClass}"><span>${v} ${desc}</span><span class="vardiya-del" onclick="vardiyaSil('${v}')">✖</span></div>`;
+    }
+}
+
+function tumGrubuSec(grupId, checkbox) {
+    const kisiler = document.querySelectorAll(`.grup-kisi-${grupId}`);
+    kisiler.forEach(k => k.checked = checkbox.checked);
+}
+
+function anaEkrandanGrupSil(id, ad) {
+    if (confirm(`⚠️ DİKKAT!\n\n"${ad}" grubunu ve içindeki tüm personelleri tamamen silmek istediğinize emin misiniz?`)) { 
+        appData.gruplar = appData.gruplar.filter(g => g.id !== id); 
+        veriKaydet(); 
+    }
+}
+
+function anaEkranaButonlariCiz() {
+    const container = document.getElementById("personelButonAlani"); container.innerHTML = "";
+    appData.gruplar.forEach(grup => {
+        let html = `
+        <details class="grup-kapsayici" open>
+            <summary class="grup-baslik-alani" style="cursor:pointer; outline:none; list-style:none; user-select:none;">
+                <h2 class="grup-baslik" style="pointer-events:none; margin:0; display:flex; align-items:center; gap:10px;">
+                    🏢 ${grup.ad} 
+                    <span style="font-size:11px; font-weight:normal; color:#94a3b8;">(Tıkla ve Listeyi Aç/Gizle)</span>
+                </h2>
+                <div style="display:flex; align-items:center; gap:10px;" onclick="event.stopPropagation();">
+                    <label style="font-size:11px; cursor:pointer; background:#e2e8f0; padding:6px 10px; border-radius:6px; color:#475569; border:1px solid #cbd5e1; font-weight:bold;">
+                        <input type="checkbox" onchange="tumGrubuSec('${grup.id}', this)" style="vertical-align:middle; accent-color:var(--orange);"> Tümünü Seç
+                    </label>
+                    <button onclick="anaEkrandanGrupSil('${grup.id}', '${grup.ad}')" style="background:var(--red); color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold;" title="Bu grubu sil">🗑️ GRUBU SİL</button>
+                </div>
+            </summary>
+            <div class="personel-grid" style="margin-top: 15px; border-top: 1px dashed #cbd5e1; padding-top: 15px;">`;
+        
+        if(grup.kisiler && grup.kisiler.length > 0) {
+            grup.kisiler.sort((a,b) => {
+                let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
+                let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
+                return isimA.localeCompare(isimB, 'tr');
+            }).forEach((isimTam) => {
+                let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
+                let guvenliIsimTam = isimTam.replace(/'/g, "\\'"); 
+                let idText = guvenliIsimTam.replace(/[^a-zA-Z0-9]/g, ""); 
+                
+                html += `
+                <div class="personel-card">
+                    <input type="checkbox" id="chk_${idText}" value="${sadeceIsim}" class="kisi-secici grup-kisi-${grup.id}">
+                    <label for="chk_${idText}">👤 ${sadeceIsim}</label>
+                    <button class="btn-sil-badge" title="Sistemden Sil" onclick="anaEkrandanPersonelSil('${grup.id}', '${guvenliIsimTam}')">✖</button>
+                </div>`;
+            });
+        }
+        
+        html += `
+            <div class="personel-card">
+                <label onclick="anaEkrandanPersonelEkle('${grup.id}')" style="background: #f8fafc; border: 2px dashed var(--orange); color: var(--orange); display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 12px; font-weight: 900; font-size: 13px; cursor: pointer; transition: all 0.3s;">
+                    👤+ EKLE
+                </label>
+            </div>`;
+            
+        html += `</div></details>`;
+        container.innerHTML += html;
+    });
+}
+
+function anaEkrandanPersonelEkle(grupId) {
+    let isim = prompt("Lütfen eklenecek personelin Kimlik numarasını ve Adını girin.\n(Örn: 12345678912 - AHMET YILMAZ)");
+    if(isim && isim.trim() !== "") {
+        isim = isim.trim().toUpperCase('tr'); let grup = appData.gruplar.find(g => g.id === grupId);
+        if(!grup.kisiler) grup.kisiler = [];
+        if(!grup.kisiler.includes(isim)) { grup.kisiler.push(isim); veriKaydet(); } else { alert("Bu personel zaten var!"); }
+    }
+}
+function anaEkrandanPersonelSil(grupId, isimTam) {
+    let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
+    if(confirm(`⚠️ DİKKAT!\n\n${sadeceIsim} personeli sistemden silinsin mi?`)) { let grup = appData.gruplar.find(g => g.id === grupId); grup.kisiler = grup.kisiler.filter(k => k !== isimTam); veriKaydet(); }
+}
+
+function getCleanValue(text) { 
+    if(!text) return ""; 
+    return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
+}
+
+function hucreOdaklan(td) { td._oldVal = td.innerHTML; temizleFormat(td); }
+function hucreCik(td) { let beforeVal = td._oldVal; uygulaFormat(td); if(td.innerHTML !== beforeVal) { pushToHistory([{ td: td, oldVal: beforeVal, newVal: td.innerHTML }]); } }
+function temizleFormat(td) { let metin = td.innerText || td.textContent || ""; td.innerHTML = metin.trim(); }
+function uygulaFormat(td) { let metin = getCleanValue(td.innerText || td.textContent); if (metin !== "") { td.innerHTML = `<div class="dik-yazi">${metin}</div>`; } else { td.innerHTML = ""; } satirHesapla(td); }
+function formatliVardiya(val) { if(!val) return ""; return `<div class="dik-yazi">${val.trim()}</div>`; }
+function getVardiyaInfo(val) {
+    if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""};
+    let cleanVal = val.replace(/<br\s*\/?>/gi, "-").trim().toUpperCase(); 
+    if (appData.vardiyalar && appData.vardiyalar[cleanVal]) return { ...appData.vardiyalar[cleanVal], val: cleanVal };
+    let valWithHyphen = cleanVal.replace(/[\s\n\r]+/g, "-");
+    if (appData.vardiyalar && appData.vardiyalar[valWithHyphen]) return { ...appData.vardiyalar[valWithHyphen], val: valWithHyphen };
+    return {t:0, g:0, tip:"bilinmeyen", val: cleanVal};
+}
+
+function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ BİRİM", kisiler: [] }); veriKaydet(); }
+function grupSil(id) { if (confirm("Grup silinsin mi?")) { appData.gruplar = appData.gruplar.filter(g => g.id !== id); veriKaydet(); } }
+function grupAdiGuncelle(id, ad) { let g = appData.gruplar.find(g => g.id === id); if (g) { g.ad = ad.trim() || "İSİMSİZ GRUP"; veriKaydet(); } }
+function personelEkle(grupId) { let input = document.getElementById("add_" + grupId); let isim = input.value.trim().toUpperCase(); let grup = appData.gruplar.find(g => g.id === grupId); if(!grup.kisiler) grup.kisiler = []; if (isim && grup && !grup.kisiler.includes(isim)) { grup.kisiler.push(isim); veriKaydet(); } input.value = ""; }
+function personelSil(gId, isim) { if (confirm("Silinsin mi?")) { let g = appData.gruplar.find(g => g.id === gId); g.kisiler = g.kisiler.filter(k => k !== isim); veriKaydet(); } }
+
+function arayuzCiz() {
+    const container = document.getElementById("dynamicGroups"); container.innerHTML = "";
+    appData.gruplar.forEach(grup => {
+        let html = `<div class="panel-col"><button class="btn-del-group" onclick="grupSil('${grup.id}')">✖</button><h3 contenteditable="true" onblur="grupAdiGuncelle('${grup.id}', this.innerText)">${grup.ad}</h3><div class="personel-row"><input type="text" id="add_${grup.id}" class="modern-input" placeholder="T.C. - AD SOYAD..." onkeypress="if(event.key==='Enter') personelEkle('${grup.id}')"><button onclick="personelEkle('${grup.id}')" class="btn-add">+</button></div><div class="personel-listesi">`;
+        if(grup.kisiler) { grup.kisiler.sort().forEach((isim) => { html += `<div class="personel-item"><span>${isim}</span><button onclick="personelSil('${grup.id}', '${isim}')" class="btn-del">✖</button></div>`; }); }
+        container.innerHTML += html + `</div></div>`;
+    });
+}
+
+function getSafeDate(val) {
+    if (!val) return new Date(); val = val.trim(); let p;
+    if (val.includes('-')) p = val.split('-'); else if (val.includes('.')) p = val.split('.'); else if (val.includes('/')) p = val.split('/'); else return new Date(val);
+    if (p && p.length === 3) { let y = parseInt(p[0].length === 4 ? p[0] : p[2]); let m = parseInt(p[1]) - 1; let d = parseInt(p[0].length === 4 ? p[2] : p[0]); return new Date(y, m, d); }
+    return new Date(val);
+}
+
+function tarihGuncelle(){ 
+    let bas = getSafeDate(document.getElementById('inpTarihBas').value); let bit = getSafeDate(document.getElementById('inpTarihBit').value); 
+    let str = `${String(bas.getDate()).padStart(2,'0')}.${String(bas.getMonth()+1).padStart(2,'0')}.${bas.getFullYear()} - ${String(bit.getDate()).padStart(2,'0')}.${String(bit.getMonth()+1).padStart(2,'0')}.${bit.getFullYear()}`;
+    return {bas, bit, str}; 
+}
+function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
+
+function satirHesapla(td) {
+    if (!td) return; const tr = td.closest('tr'); if (!tr) return;
+    let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0;
+    let tFM_Gunduz = 0, tFM_Gece = 0;
+    let wHs = 0, wHg = 0; let tGun = 0; 
+    let currentWeekFmTotal = 0;
+
+    Array.from(tr.children).forEach(c => {
+        if (c.style.display === 'none' || c.hasAttribute('data-merged-by')) return;
+        
+        if (c.classList.contains('veri-hucre') && !c.classList.contains('bg-hafta')) {
+            tGun++; 
+            const v = getCleanValue(c.innerText || c.textContent);
+            if (v === "" || v === "0") return;
+            const inf = getVardiyaInfo(v); const mS = parseFloat(v.replace(",", ".")); const s = (inf && inf.t > 0) ? inf.t : (!isNaN(mS) ? mS : 0);
+            c.classList.remove('hucre-izin');
+
+            if (s > 0) { 
+                tAg++; wHg++; 
+                let gece = (inf.g || 0); let gunduz = s - gece; if (gunduz < 0) gunduz = 0;
+                tAge += gece; 
+                
+                if (wHs >= 45) { tFM_Gece += gece; tFM_Gunduz += gunduz; currentWeekFmTotal += s; } 
+                else if (wHs + s > 45) {
+                    let fmInThisShift = (wHs + s) - 45; currentWeekFmTotal += fmInThisShift;
+                    let shiftGeceOrani = s > 0 ? (gece / s) : 0;
+                    let fmGeceThisShift = fmInThisShift * shiftGeceOrani; let fmGunduzThisShift = fmInThisShift - fmGeceThisShift;
+                    tFM_Gece += fmGeceThisShift; tFM_Gunduz += fmGunduzThisShift;
+                }
+                wHs += s; 
+                if (v === "RTÇ") n_rtc++; 
+                if (c.classList.contains('hucre-haftasonu')) n_htc++; 
+            }
+            else {
+                if (v === "RT") n_rt++; else if (v === "HT") n_ht++;
+                else if (v === "R" || v === "RAPOR") { n_r++; c.classList.add('hucre-izin'); }
+                else if (v === "Yİ" || v === "İ" || v === "Nİ" || (inf && inf.tip === "izin")) { n_i++; c.classList.add('hucre-izin'); }
+                else if (v !== "" && v !== "0") { c.classList.add('hucre-izin'); }
+            }
+        }
+        
+        if (c.classList.contains('bg-hafta')) {
+            const type = c.getAttribute('data-type');
+            if (type === 'h-gun') { 
+                c.innerText = wHg > 0 ? wHg : "0"; 
+            } 
+            else if (type === 'h-saat') { 
+                c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "0"; 
+            } 
+            else if (type === 'h-fm') { 
+                if(currentWeekFmTotal > 0) {
+                    c.innerHTML = `<div class="fm-var">${Number(currentWeekFmTotal.toFixed(2))}</div>`;
+                } else {
+                    c.innerText = "0"; 
+                }
+                wHs = 0; wHg = 0; currentWeekFmTotal = 0; 
+            }
+        }
+    });
+
+    const update = (cls, v) => { const el = tr.querySelector(cls); if (el) el.innerText = (v === 0 || !v) ? "0" : Number(v.toFixed(2)); };
+    update('.s-calisma', tGun); update('.s-yol', tAg); update('.s-rapor', n_r); update('.s-izin', n_i); 
+    update('.s-ht', n_ht); update('.s-rt', n_rt); update('.s-rtc', n_rtc); 
+    update('.s-fm', tFM_Gunduz); update('.s-gecefm', tFM_Gece); update('.s-gece', tAge);       
+}
+
+function secilileriOlustur() {
+    let secilenler = Array.from(document.querySelectorAll('.kisi-secici:checked')).map(cb => cb.value);
+    if(secilenler.length === 0) return alert("Lütfen listeden en az bir kişi seçin!");
+    veriyiCekVeOlustur(secilenler);
+}
+
+function tamDokumOlustur() { veriyiCekVeOlustur([]); }
+
+function veriyiCekVeOlustur(arananParam) {
+    let basInput = document.getElementById('inpTarihBas').value; let bitInput = document.getElementById('inpTarihBit').value;
+    if(!basInput || !bitInput) return alert("Lütfen Başlangıç ve Bitiş Tarihi seçin!");
+
+    document.body.style.cursor = "wait"; window.firebaseCellPaths = {}; historyStack = []; resetUnsaved(); 
+    let bas = getSafeDate(basInput); let bit = getSafeDate(bitInput);
+
+    db.ref("arsivlenmis_shiftler").once("value").then(snap => {
+        let data = snap.val(); 
+        if(!data) { alert("Buluta kayıtlı arşiv bulunamadı! Personelinize ShiftMaster panosundan çalışma planı oluşturun."); document.body.style.cursor = "default"; return; }
+        
+        let personelShiftleri = {};
+        Object.keys(data).forEach(arsivKey => {
+            let arsiv = data[arsivKey]; let tablolar = arsiv.tables ? arsiv.tables : (arsiv.data ? [arsiv] : []);
+            let genelBaslangic = getSafeDate(arsiv.startDate || (tablolar[0] && tablolar[0].startDate));
+            let gunOffset = 0; 
+            
+            tablolar.forEach((tablo, tIdx) => {
+                let currentTableStart = tablo.startDate ? getSafeDate(tablo.startDate) : null;
+                if(!currentTableStart) { currentTableStart = new Date(genelBaslangic.getTime()); currentTableStart.setDate(currentTableStart.getDate() + gunOffset); }
+                let daysInThisTable = 0;
+
+                tablo.data.forEach((satir, sIdx) => {
+                    let isim = satir.name.trim().toUpperCase(); 
+                    if(!personelShiftleri[isim]) personelShiftleri[isim] = {};
+                    if(satir.shifts.length > daysInThisTable) daysInThisTable = satir.shifts.length;
+                    
+                    satir.shifts.forEach((shiftObj, index) => {
+                        let suankiTarih = new Date(currentTableStart.getTime()); suankiTarih.setDate(currentTableStart.getDate() + index); suankiTarih.setHours(0,0,0,0); 
+                        let basCheck = new Date(bas.getTime()); basCheck.setHours(0,0,0,0); let bitCheck = new Date(bit.getTime()); bitCheck.setHours(0,0,0,0);
+                        
+                        if(suankiTarih >= basCheck && suankiTarih <= bitCheck) {
+                            let tStr = `${String(suankiTarih.getDate()).padStart(2,'0')}.${String(suankiTarih.getMonth()+1).padStart(2,'0')}.${suankiTarih.getFullYear()}`;
+                            if(shiftObj.text) personelShiftleri[isim][tStr] = shiftObj.text;
+                            let path = arsiv.tables ? `arsivlenmis_shiftler/${arsivKey}/tables/${tIdx}/data/${sIdx}/shifts/${index}/text` : `arsivlenmis_shiftler/${arsivKey}/data/${sIdx}/shifts/${index}/text`;
+                            window.firebaseCellPaths[`${isim}_${tStr}`] = path;
+                        }
+                    });
+                });
+                gunOffset += daysInThisTable; 
+            });
+        });
+        
+        let days = []; let d = new Date(bas.getTime()); d.setHours(0,0,0,0); let bitCheck2 = new Date(bit.getTime()); bitCheck2.setHours(0,0,0,0);
+        while(d <= bitCheck2) { days.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); d.setDate(d.getDate() + 1); }
+        let excelStr = "AD SOYAD\t" + days.join("\t") + "\n";
+        Object.keys(personelShiftleri).forEach(isim => { let satirStr = isim; days.forEach(t => satirStr += "\t" + (personelShiftleri[isim][t] || "")); excelStr += satirStr + "\n"; });
+        document.getElementById('inpExcel').value = excelStr;
+        
+        raporuOlustur(arananParam, personelShiftleri);
+        document.body.style.cursor = "default";
+        document.getElementById("raporScrollNoktasi").scrollIntoView({behavior: "smooth"});
+    });
+}
+
+function raporuOlustur(filtreParam, pShiftleri) {
+    const {bas,bit,str} = tarihGuncelle();
+    let days=[]; let d=new Date(bas.getTime()); while(d<=bit){ days.push(new Date(d.getTime())); d.setDate(d.getDate()+1); }
+    
+    let filtreDizisi = [];
+    if (Array.isArray(filtreParam)) { filtreDizisi = filtreParam; } 
+    else if (filtreParam && filtreParam !== "") { filtreDizisi = [filtreParam]; }
+    
+    let people = {};
+    appData.gruplar.forEach(grup => {
+        if(grup.kisiler) {
+            grup.kisiler.forEach(n => { 
+                let exactName = ""; let parts = n.includes("-") ? n.split("-")[1].trim() : n;
+                Object.keys(pShiftleri).forEach(sm => {
+                    let normSM = sm.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+                    let normP = parts.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+                    if (normSM.includes(normP)) exactName = sm;
+                });
+                people[n] = { n: n, gId: grup.id, gAd: grup.ad, data: exactName ? pShiftleri[exactName] : {}, smName: exactName }; 
+            });
+        }
+    });
+
+    Object.values(people).forEach(p => { days.forEach(day => { let k = getKey(day); let tStr = `${String(day.getDate()).padStart(2,'0')}.${String(day.getMonth()+1).padStart(2,'0')}.${day.getFullYear()}`; if(!p.data[tStr]) p.data[tStr] = (day.getDay()===0||day.getDay()===6) ? "HT" : "08:00-18:00"; }); });
+
+    const HDR = [
+        {n:"Çalışma Günü", c:"s-calisma"}, {n:"İşe Gelme Günü(Yol)", c:"s-yol"}, {n:"Raporlu Gün Sayısı", c:"s-rapor"}, 
+        {n:"İzinli Olduğu Gün Sayısı", c:"s-izin"}, {n:"Hafta Tatili Toplamı(HT)", c:"s-ht"}, {n:"Resmi Tatil(Tam Gün)(RT)", c:"s-rt"}, 
+        {n:"Resmi Tatil Çalışması(RTÇ)", c:"s-rtc"}, {n:"İŞ SAĞLIĞI VE GÜVENLİĞİ (YOL)", c:"s-isg"}, {n:"Gündüz Fazla Mesai Toplamı", c:"s-fm"}
+    ];
+    
+    let sayfaHtml = ""; 
+    let gArr = Object.values(people).reduce((acc, p) => { 
+        let tamAd = p.n.toUpperCase('tr');
+        if (filtreDizisi.length > 0) {
+            let normalizeAd = tamAd.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+            let found = filtreDizisi.some(aranan => {
+                let normAranan = aranan.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
+                return normalizeAd.includes(normAranan);
+            });
+            if(!found) return acc; 
+        }
+        acc[p.gAd] = acc[p.gAd]||[]; acc[p.gAd].push(p); return acc; 
+    }, {});
+    
+    if(Object.keys(gArr).length === 0) {
+        document.getElementById('raporAlani').innerHTML = `<h3 style="color:var(--red); font-size: 20px; padding: 30px; background: white; border-radius: 10px; margin-top:20px; text-align:center;">Seçtiğiniz kriterlere uygun veri bulunamadı.</h3>`;
+        document.getElementById('btnExceleKopyala').style.display = "none"; return;
+    }
+
+    for(let gAd in gArr) {
+        let fullList = gArr[gAd].sort((a,b) => {
+            let isimA = a.n.includes("-") ? a.n.split("-")[1].trim() : a.n;
+            let isimB = b.n.includes("-") ? b.n.split("-")[1].trim() : b.n;
+            return isimA.localeCompare(isimB, 'tr');
+        });
+        
+        let gunSutunSayisi = 0; days.forEach((d, idx) => { gunSutunSayisi++; if (d.getDay() === 0 || idx === days.length - 1) gunSutunSayisi += 3; });
+        let toplamSutun = 5 + gunSutunSayisi + HDR.length + 2; let chunkSize = 16; let globalIndex = 1;
+        
+        for (let i = 0; i < fullList.length; i += chunkSize) {
+            let list = fullList.slice(i, i + chunkSize);
+            let h = `<div class="sayfa"><table class="veri-tablosu" data-grup="${gAd}">
+            <colgroup><col class="c-sno"><col class="c-tc"><col class="c-isim"><col class="c-isim"><col class="c-sno">`;
+            days.forEach((d, idx)=>{ h+=`<col class="c-gun">`; if(d.getDay()===0 || idx === days.length - 1) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
+            HDR.forEach(()=>h+=`<col class="c-gun">`); h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
+            <tr>
+                <td colspan="5" class="stick-1" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white; z-index:40;" contenteditable="true">KURUM BİLGİSİ YAZILACAK ALAN</td>
+                <td colspan="${toplamSutun - 5}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white;" contenteditable="true">${gAd.toUpperCase()} PERSONEL PUANTAJ BİLDİRİMİ</td>
+            </tr>
+            <tr>
+                <td colspan="5" class="stick-1" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px; background: white; z-index:40;" contenteditable="true">BİRİM ADI    :    ${gAd.toUpperCase()}</td>
+                <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px; background: white;">${str}</td>
+            </tr>`;
+
+            let tr1 = `<tr><th rowspan="2" class="stick-1"><div class="baslik-dik">SIRA NO</div></th><th rowspan="2" class="kalin-yatay stick-2">T.C. KİMLİK NUMARASI</th><th rowspan="2" class="isim-yatay stick-3">PERSONELİN ADI</th><th rowspan="2" class="isim-yatay stick-4">PERSONELİN SOYADI</th><th rowspan="2"><div class="baslik-dik">Devreden Çalışma Saati</div></th>`;
+            let tr2 = `<tr>`;
+
+            let weekCount = 1;
+            days.forEach((d, idx)=>{
+                let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
+                let gunAdi = d.toLocaleDateString('tr-TR', { weekday: 'long' }).toUpperCase();
+                let bgStyle = (d.getDay()===0||d.getDay()===6) ? 'background:#e0e0e0;' : '';
+                tr1 += `<th style="${bgStyle} padding: 1px;" data-tarih="${tamTarihStr}"><div class="baslik-dik">${tamTarihStr}</div></th>`;
+                tr2 += `<th style="${bgStyle} padding: 1px;" data-gun="${gunAdi}"><div class="baslik-dik-kucuk">${gunAdi}</div></th>`;
+                if(d.getDay()===0 || idx === days.length - 1) {
+                    tr1 += `<th rowspan="2" class="bg-hafta"><div class="baslik-dik">${weekCount}-Haftalık İşe Gelme Günü</div></th><th rowspan="2" class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Toplamı</div></th><th rowspan="2" class="bg-hafta"><div class="baslik-dik">${weekCount}.Hafta Fazla Mesai</div></th>`;
+                    weekCount++;
+                }
+            });
+
+            HDR.forEach(b => { tr1 += `<th rowspan="2" class="bg-genel"><div class="baslik-dik">${b.n}</div></th>`; });
+            tr1 += `<th rowspan="2" class="bg-gece"><div class="baslik-dik">Gece Fazla Mesai Toplamı (Saat)</div></th><th rowspan="2" class="bg-gece"><div class="baslik-dik">Toplam Gece Çalışması (Saat)</div></th></tr>`;
+            tr2 += `</tr>`;
+            h += tr1 + tr2 + `</thead><tbody>`;
+
+            list.forEach((p, index)=>{
+                let tcNo = ""; let ad = p.n; let soyad = "";
+                if (p.n.includes("-")) {
+                    let parts = p.n.split("-"); tcNo = parts[0].trim(); let tamIsim = parts[1].trim(); let isimParcalari = tamIsim.split(" ");
+                    if(isimParcalari.length > 1) { soyad = isimParcalari.pop(); ad = isimParcalari.join(" "); } else { ad = tamIsim; }
+                }
+                h+=`<tr>
+                    <td class="kalin-yatay stick-1" contenteditable="true">${globalIndex++}</td>
+                    <td class="kalin-yatay stick-2" contenteditable="true">${tcNo}</td>
+                    <td class="isim-yatay stick-3" contenteditable="true">${ad}</td>
+                    <td class="isim-yatay stick-4" contenteditable="true">${soyad}</td>
+                    <td class="kalin-yatay" contenteditable="true">0</td>`;
+                
+                days.forEach((d, idx)=>{
+                    let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
+                    let v = p.data[tamTarihStr] || ""; let info = getVardiyaInfo(v); 
+                    let bg=(d.getDay()===0||d.getDay()===6)?'hucre-haftasonu':''; if(info.tip==='izin') bg='hucre-izin';
+                    h+=`<td contenteditable="true" class="veri-hucre ${bg}" data-smisim="${p.smName}" data-tarih="${tamTarihStr}" onfocus="hucreOdaklan(this)" onblur="hucreCik(this)">${formatliVardiya(v)}</td>`;
+                    if(d.getDay()===0 || idx === days.length - 1){
+                        h+=`<th class="bg-hafta veri-hucre kalin-yatay" data-type="h-gun">0</th><th class="bg-hafta veri-hucre kalin-yatay" data-type="h-saat">0</th><th class="bg-hafta veri-hucre kalin-yatay" data-type="h-fm">0</th>`;
+                    }
+                });
+                HDR.forEach(b => { h += `<th class="bg-genel kalin-yatay ${b.c}" ${b.c === 's-isg' ? 'contenteditable="true"' : ''}>0</th>`; });
+                h += `<th class="bg-gece kalin-yatay s-gecefm">0</th><th class="bg-gece kalin-yatay s-gece">0</th></tr>`;
+            });
+
+            h+=`</tbody>
+            <tfoot>
+                <tr><td colspan="${toplamSutun}" style="border: none; text-align: left; padding-top: 5px;"><div style="font-size: 9px; font-weight: bold; color: #2c3e50;">NOT: "Fazla Mesai Saat" = Haftalık 45 Saati Aşan Mesailer Toplamıdır.</div></td></tr>
+                <tr><td colspan="${toplamSutun}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 2px 0;">AÇIKLAMALAR</td></tr>
+                <tr><td colspan="${toplamSutun}" style="border: 1px solid #000; text-align: left; font-size: 10px; padding: 4px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
+                <tr>
+                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Düzenleyen</strong><br>BİRİM SORUMLUSU<br><br><br>...................</td>
+                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Kontrol Eden</strong><br>İLGİLİ YÖNETİCİ<br><br><br>...................</td>
+                    <td colspan="${toplamSutun - 2*Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Onaylayan</strong><br>KURUM MÜDÜRÜ<br><br><br>...................</td>
+                </tr>
+            </tfoot>
+            </table></div>`;
+            sayfaHtml+=h;
+        }
+    }
+    document.getElementById('raporAlani').innerHTML = sayfaHtml;
+    document.querySelectorAll('.veri-hucre').forEach(td => satirHesapla(td));
+    document.getElementById('btnExceleKopyala').style.display = "block";
+}
+
+let isSelecting = false; let startCell = null; let selectedCells = [];
+function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
+function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
+function clearSelection() { selectedCells.forEach(td => { if(td) td.classList.remove('selected-cell'); }); selectedCells = []; }
+function selectRectangle(start, end) {
+    clearSelection(); let r1 = getRowIdx(start), r2 = getRowIdx(end); let c1 = getColIdx(start), c2 = getColIdx(end);
+    let minR = Math.min(r1, r2), maxR = Math.max(r1, r2); let minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
+    let rows = start.closest('tbody').children;
+    for (let r = minR; r <= maxR; r++) { let tds = rows[r].children; for (let c = minC; c <= maxC; c++) { let td = tds[c]; if (td && td.style.display !== 'none' && !td.hasAttribute('colspan')) { td.classList.add('selected-cell'); selectedCells.push(td); } } }
+}
+document.addEventListener('mousedown', function(e) { if (e.button !== 0 || e.target.closest('#tableContextMenu')) return; if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { isSelecting = true; startCell = e.target; clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } else clearSelection(); });
+document.addEventListener('mouseover', function(e) { if (isSelecting && e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) selectRectangle(startCell, e.target); });
+document.addEventListener('mouseup', function() { isSelecting = false; });
+
+document.addEventListener('contextmenu', function(e) { 
+    if (e.target.tagName === 'TD' && e.target.closest('.veri-tablosu') && !e.target.hasAttribute('colspan')) { 
+        e.preventDefault(); 
+        if (!selectedCells.includes(e.target)) { clearSelection(); e.target.classList.add('selected-cell'); selectedCells.push(e.target); } 
+        
+        let ctxMenuDiv = document.getElementById('ctxDinamikVardiyalar'); ctxMenuDiv.innerHTML = '';
+        if(appData.vardiyalar) {
+            for(let v in appData.vardiyalar) {
+                let info = appData.vardiyalar[v]; let icon = info.tip === 'izin' ? '🔴' : '🟢';
+                ctxMenuDiv.innerHTML += `<div class="ctx-item" onclick="seciliHucrelereVardiyaYaz('${v}')">${icon} ${v}</div>`;
+            }
+        }
+        let ctxMenu = document.getElementById('tableContextMenu'); 
+        ctxMenu.style.display = 'block'; ctxMenu.style.left = e.pageX + 'px'; ctxMenu.style.top = e.pageY + 'px'; 
+    } 
+});
+document.addEventListener('click', function(e) { if(!e.target.closest('#tableContextMenu')) document.getElementById('tableContextMenu').style.display = 'none'; });
+
+function seciliHucrelereVardiyaYaz(vardiyaKodu) {
+    document.getElementById('tableContextMenu').style.display = 'none'; let batch = [];
+    selectedCells.forEach(td => {
+        if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
+            batch.push({ td: td, oldVal: td.innerHTML }); td.innerHTML = formatliVardiya(vardiyaKodu); satirHesapla(td); batch[batch.length-1].newVal = td.innerHTML;
+        }
+    });
+    if(batch.length > 0) pushToHistory(batch); clearSelection();
+}
+function seciliHucreleriTemizle() {
+    document.getElementById('tableContextMenu').style.display = 'none'; let batch = [];
+    selectedCells.forEach(td => {
+        if(td.style.display !== 'none' && td.classList.contains('veri-hucre')) {
+            batch.push({ td: td, oldVal: td.innerHTML }); td.innerHTML = ''; td.classList.remove('hucre-izin'); satirHesapla(td); batch[batch.length-1].newVal = td.innerHTML;
+        }
+    });
+    if(batch.length > 0) pushToHistory(batch); clearSelection();
+}
+
+function mergeSelectedCells() {
+    document.getElementById('tableContextMenu').style.display = 'none'; if (selectedCells.length <= 1) return clearSelection();
+    selectedCells.sort((a, b) => { let rDiff = getRowIdx(a) - getRowIdx(b); return rDiff !== 0 ? rDiff : getColIdx(a) - getColIdx(b); });
+    let mainCell = selectedCells[0]; let mergeId = "merge_" + Date.now(); let isRowMerge = getRowIdx(selectedCells[0]) === getRowIdx(selectedCells[1]);
+    if (isRowMerge) {
+        let totalColSpan = 0; let mergedText = "";
+        selectedCells.forEach((td, index) => { totalColSpan += parseInt(td.getAttribute('colspan') || 1); if(getCleanValue(td.innerText || td.textContent) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        mainCell.setAttribute('colspan', totalColSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
+    } else {
+        let totalRowSpan = 0; let mergedText = "";
+        selectedCells.forEach((td, index) => { totalRowSpan += parseInt(td.getAttribute('rowspan') || 1); if(getCleanValue(td.innerText || td.textContent) !== "" && mergedText === "") mergedText = td.innerHTML; if (index > 0) { td.style.display = 'none'; td.setAttribute('data-merged-by', mergeId); } });
+        mainCell.setAttribute('rowspan', totalRowSpan); mainCell.setAttribute('data-merge-id', mergeId); mainCell.innerHTML = mergedText;
+    }
+    satirHesapla(mainCell); clearSelection();
+}
+function unmergeSelectedCells() {
+    document.getElementById('tableContextMenu').style.display = 'none';
+    selectedCells.forEach(td => {
+        let mergeId = td.getAttribute('data-merge-id');
+        if (mergeId) {
+            td.removeAttribute('colspan'); td.removeAttribute('rowspan'); td.removeAttribute('data-merge-id');
+            td.closest('tbody').querySelectorAll(`td[data-merged-by="${mergeId}"]`).forEach(hiddenTd => { hiddenTd.style.display = ''; hiddenTd.removeAttribute('data-merged-by'); satirHesapla(hiddenTd); });
+        }
+    });
+    if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
+}
+
+function exceleSifirKayipsizIndir() {
+    const tablolar = document.querySelectorAll('.veri-tablosu'); if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
+    let combinedHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table { border-collapse: collapse; font-family: 'Arial', sans-serif; font-size: 11px; } td, th { border: 0.5pt solid black; text-align: center; vertical-align: middle; }</style></head><body>`;
+    tablolar.forEach(tablo => {
+        if(tablo.closest('.sayfa').style.display === 'none') return;
+        let clone = tablo.cloneNode(true);
+        clone.querySelectorAll('script, button').forEach(el => el.remove()); clone.querySelectorAll('td[style*="display: none"], th[style*="display: none"]').forEach(c => c.remove());
+        clone.querySelectorAll('th, td').forEach(el => {
+            let inlineStyle = `border: 0.5pt solid black; vertical-align: middle; `;
+            if (el.classList.contains('bg-hafta')) inlineStyle += "background-color: #dff0d8;"; else if (el.classList.contains('bg-genel')) inlineStyle += "background-color: #fcf3cf;"; else if (el.classList.contains('bg-gece')) inlineStyle += "background-color: #e8daef;"; else if (el.classList.contains('hucre-izin')) inlineStyle += "background-color: #fadbd8; color: #c0392b;"; else if (el.classList.contains('hucre-haftasonu')) inlineStyle += "background-color: #f2f2f2;";
+            if (el.classList.contains('kalin-yatay')) inlineStyle += "font-weight: bold; font-size: 11px; text-align: center;"; else if (el.classList.contains('isim-yatay')) inlineStyle += "font-weight: bold; font-size: 11px; text-align: left;"; else inlineStyle += "text-align: center;";
+            
+            if (el.hasAttribute('data-tarih') && el.tagName === 'TH') { el.innerHTML = el.getAttribute('data-tarih'); inlineStyle += "mso-rotate: 90; height: 60pt; white-space: nowrap; font-weight: bold;"; }
+            else if (el.hasAttribute('data-gun')) { el.innerHTML = el.getAttribute('data-gun'); inlineStyle += "mso-rotate: 90; height: 45pt; white-space: nowrap; font-weight: normal; font-size: 9px;"; }
+            else {
+                let raw = el.innerText || el.textContent || ""; raw = raw.trim();
+                if (el.classList.contains('veri-hucre') && raw) { raw = raw.replace(/\s+/g, '-').replace(/-+/g, '-'); el.innerHTML = raw; inlineStyle += "mso-rotate: 90; height: 65pt; white-space: nowrap; font-weight: bold;"; }
+                else { let dikeyBaslik = el.querySelector('.baslik-dik'); if (dikeyBaslik) { el.innerHTML = dikeyBaslik.innerHTML; inlineStyle += "mso-rotate: 90; height: 110pt; white-space: normal;"; } }
+            }
+            el.setAttribute('style', inlineStyle);
+        });
+        combinedHtml += clone.outerHTML + "<br><br><br>"; 
+    });
+    combinedHtml += "</body></html>";
+    const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Puantaj_Listesi.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
