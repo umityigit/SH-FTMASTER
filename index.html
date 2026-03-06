@@ -286,14 +286,17 @@
 
             if(!userVal || !passVal) { errorMsg.innerText = "Alanlar boş bırakılamaz!"; errorMsg.style.display = "block"; return; }
 
+            // 👑 SİZE ÖZEL VIP GİRİŞ (Veritabanına sormadan direkt açar)
+            if(userVal === "addh" && passVal === "ADDH2026") {
+                loginSuccess("addh", "ANTALYA DÖŞEMEALTI (VIP)");
+                return;
+            }
+
+            // DİĞER MÜŞTERİLER İÇİN NORMAL KONTROL
             db.ref('saas_kullanicilar/' + userVal).once('value').then(snap => {
                 const data = snap.val();
                 if (data && data.sifre === passVal) {
-                    // Şifre Doğru - Portalı Aç
-                    localStorage.setItem('sm_current_tenant', userVal);
-                    localStorage.setItem('sm_current_kurum_adi', data.kurumAdi);
-                    closeModal('loginModal');
-                    showPortal(data.kurumAdi);
+                    loginSuccess(userVal, data.kurumAdi);
                 } else {
                     errorMsg.innerText = "Kullanıcı adı bulunamadı veya şifre hatalı!"; 
                     errorMsg.style.display = "block";
@@ -304,7 +307,7 @@
         // --- YENİ KAYIT OLMA MANTIĞI ---
         function handleRegister() {
             const kurum = document.getElementById("regKurum").value.trim();
-            const user = document.getElementById("regUser").value.trim();
+            const user = document.getElementById("regUser").value.trim().toLowerCase();
             const mail = document.getElementById("regMail").value.trim();
             const phone = document.getElementById("regPhone").value.trim();
             const pass = document.getElementById("regPass").value.trim();
@@ -313,36 +316,29 @@
 
             if(!kurum || !user || !mail || !pass) { errorMsg.innerText = "Lütfen telefon hariç tüm alanları doldurun!"; errorMsg.style.display = "block"; return; }
             if(pass.length < 6) { errorMsg.innerText = "Şifreniz en az 6 karakter olmalıdır!"; errorMsg.style.display = "block"; return; }
+            if(user === "addh") { errorMsg.innerText = "Bu kullanıcı adı sisteme rezerve edilmiştir!"; errorMsg.style.display = "block"; return; }
 
-            // Kullanıcı adı daha önce alınmış mı kontrol et
             db.ref('saas_kullanicilar/' + user).once('value').then(snap => {
                 if(snap.exists()) {
                     errorMsg.innerText = "Bu kullanıcı adı zaten kullanılıyor. Lütfen başka bir ad seçin."; 
                     errorMsg.style.display = "block";
                 } else {
-                    // Alınmamış, yeni kayıt oluştur.
                     db.ref('saas_kullanicilar/' + user).set({
-                        kurumAdi: kurum,
-                        email: mail,
-                        telefon: phone,
-                        sifre: pass,
-                        paket: 'deneme_14_gun',
-                        kayitTarihi: new Date().toISOString()
+                        kurumAdi: kurum, email: mail, telefon: phone, sifre: pass, paket: 'deneme_14_gun', kayitTarihi: new Date().toISOString()
                     }).then(() => {
-                        errorMsg.style.display = "none";
-                        successMsg.style.display = "block";
-                        
-                        // Sisteme otomatik giriş yap
-                        localStorage.setItem('sm_current_tenant', user);
-                        localStorage.setItem('sm_current_kurum_adi', kurum);
-                        
-                        setTimeout(() => {
-                            closeModal('registerModal');
-                            showPortal(kurum);
-                        }, 1500);
+                        errorMsg.style.display = "none"; successMsg.style.display = "block";
+                        setTimeout(() => { loginSuccess(user, kurum); closeModal('registerModal'); }, 1500);
                     });
                 }
             });
+        }
+
+        function loginSuccess(tenantId, displayName) {
+            localStorage.setItem('sm_current_tenant', tenantId);
+            localStorage.setItem('sm_current_kurum_adi', displayName);
+            document.getElementById('loginScreen').style.display = 'none'; // Varsayılanı gizle (eğer açıksa)
+            closeModal('loginModal');
+            showPortal(displayName);
         }
 
         // --- PORTAL EKRANI VE YÖNLENDİRİCİ ---
@@ -358,13 +354,13 @@
             window.location.reload();
         }
 
-        // İŞTE SİHİRLİ YÖNLENDİRİCİ (Trafik Polisi)
+        // 🚦 İŞTE SİHİRLİ YÖNLENDİRİCİ (Trafik Polisi)
         function openApp(appType) { 
             const tenantId = localStorage.getItem('sm_current_tenant');
             if(!tenantId) { alert("Oturum süreniz dolmuş, lütfen tekrar giriş yapın."); window.location.reload(); return; }
 
-            // ÜMİT ABİ'NİN ANAHTARI (Eski dolu dosyalara gider)
-            if (tenantId === "dosemealti_merkez") {
+            // 👑 SİZİN ANAHTARINIZ (Eski dolu dosyalara gider)
+            if (tenantId === "addh") {
                 if(appType === 'shift') window.location.href = 'shiftmaster.html';
                 else window.location.href = 'PUANTAJMOTORU.html';
             } 
