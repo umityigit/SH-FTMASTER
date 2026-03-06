@@ -39,7 +39,7 @@
         .grup-baslik-alani { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
         .grup-baslik { font-size: 18px; color: var(--dark); font-weight: 900; margin: 0; display: flex; align-items: center; gap: 10px; }
         
-        .personel-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-start; }
+        .personel-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-start; padding: 0 20px 20px 20px; }
         
         /* GİZLİ CHECKBOX VE YENİ NESİL BUTONLAR */
         .kisi-secici { display: none; }
@@ -144,6 +144,7 @@
         #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: 900; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
         #btnExceleKopyala:hover { background: #059669; transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.6);}
 
+        /* YUVARLAK YEŞİL KAYDET BUTONU */
         #btnSaveToCloud { 
             position: fixed; bottom: 20px; left: 20px; background: #10b981; color: white; border: none; 
             width: 60px; height: 60px; border-radius: 50%; font-size: 24px; 
@@ -173,6 +174,7 @@
             tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; }
             .selected-cell { box-shadow: none !important; outline: none !important; background-color: inherit !important; } 
+            /* Çıktıda fazla mesai düz çıksın, kutu içine girmesin */
             .fm-var { background: transparent !important; border: none !important; color: black !important; font-size: 11px !important; font-weight: bold !important; padding: 0 !important; } 
         }
     </style>
@@ -422,11 +424,11 @@ function anaEkranaButonlariCiz() {
     const container = document.getElementById("personelButonAlani"); container.innerHTML = "";
     appData.gruplar.forEach(grup => {
         let html = `
-        <details class="grup-kapsayici">
+        <details class="grup-kapsayici" open>
             <summary class="grup-baslik-alani" style="cursor:pointer; outline:none; list-style:none; user-select:none;">
                 <h2 class="grup-baslik" style="pointer-events:none; margin:0; display:flex; align-items:center; gap:10px;">
                     🏢 ${grup.ad} 
-                    <span style="font-size:11px; font-weight:normal; color:#94a3b8;">(Tıkla ve Listeyi Aç)</span>
+                    <span style="font-size:11px; font-weight:normal; color:#94a3b8;">(Tıkla ve Listeyi Aç/Gizle)</span>
                 </h2>
                 <div style="display:flex; align-items:center; gap:10px;" onclick="event.stopPropagation();">
                     <label style="font-size:11px; cursor:pointer; background:#e2e8f0; padding:6px 10px; border-radius:6px; color:#475569; border:1px solid #cbd5e1; font-weight:bold;">
@@ -455,6 +457,15 @@ function anaEkranaButonlariCiz() {
                 </div>`;
             });
         }
+        
+        // ✨ EKSİK OLAN +EKLE BUTONU YENİ TASARIMIYLA GERİ GELDİ ✨
+        html += `
+            <div class="personel-card">
+                <label onclick="anaEkrandanPersonelEkle('${grup.id}')" style="background: #f8fafc; border: 2px dashed var(--green); color: var(--green); display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 12px; font-weight: 900; font-size: 13px; cursor: pointer; transition: all 0.3s;">
+                    👤+ EKLE
+                </label>
+            </div>`;
+            
         html += `</div></details>`;
         container.innerHTML += html;
     });
@@ -563,7 +574,7 @@ function satirHesapla(td) {
             }
         }
         
-        // HATA GİDERİLDİ: TÜM HAFTA HÜCRELERİNDE 0 GÖRÜNECEK
+        // ✨ SIFIR YAZMA VE KIRMIZI MESAİ EFEKTİ ✨
         if (c.classList.contains('bg-hafta')) {
             const type = c.getAttribute('data-type');
             if (type === 'h-gun') { 
@@ -688,6 +699,7 @@ function raporuOlustur(filtreParam, pShiftleri) {
     let gArr = Object.values(people).reduce((acc, p) => { 
         let tamAd = p.n.toUpperCase('tr');
         
+        // FİLTRELEME
         if (filtreDizisi.length > 0) {
             let normalizeAd = tamAd.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
             let found = filtreDizisi.some(aranan => {
