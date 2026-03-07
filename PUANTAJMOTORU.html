@@ -13,48 +13,59 @@
         :root { --primary: #2c3e50; --green: #10b981; --orange: #f59e0b; --red: #ef4444; --blue: #3b82f6; --dark: #0f172a; --bg: #f1f5f9; }
         body { margin: 0; background: var(--bg); font-family: 'Roboto', sans-serif; }
 
-        /* AÇILIŞ VİTRİNİ (SPLASH) */
+        /* ✨ EFSANE AÇILIŞ VİTRİNİ (SPLASH) ✨ */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050b14; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; transition: opacity 0.6s ease; perspective: 1000px; }
         .splash-hospital { font-size: 20px; color: #38bdf8; letter-spacing: 5px; margin-bottom: 40px; font-weight: 900; text-align: center; text-shadow: 0 0 25px #0284c7; opacity: 0; animation: fadeUp 1s forwards 0.2s; }
-        .splash-logo { width: 160px; height: 160px; background: linear-gradient(135deg, #38bdf8, #0284c7); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 60px rgba(56, 189, 248, 0.3), inset 5px 5px 15px rgba(255,255,255,0.4), inset -5px -5px 15px rgba(0,0,0,0.4); margin-bottom: 30px; opacity: 0; animation: logoDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s; }
+        .splash-logo { width: 160px; height: 160px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 60px rgba(16, 185, 129, 0.3), inset 5px 5px 15px rgba(255,255,255,0.4), inset -5px -5px 15px rgba(0,0,0,0.4); margin-bottom: 30px; opacity: 0; animation: logoDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s; }
+        
         .splash-text-container { display: flex; gap: 5px; margin-bottom: 15px; }
-        .splash-char { font-size: 56px; font-weight: 900; color: #f8fafc; text-shadow: 0 10px 20px #000, 0 0 30px #0284c7; opacity: 0; transform: rotateY(90deg) translateY(50px); display: inline-block; animation: letterReveal 0.8s forwards; }
+        .splash-char { font-size: 56px; font-weight: 900; color: #f8fafc; text-shadow: 0 10px 20px #000, 0 0 30px #10b981; opacity: 0; transform: rotateY(90deg) translateY(50px); display: inline-block; animation: letterReveal 0.8s forwards; }
+        
         @keyframes logoDrop { from { transform: scale(0) rotate(-180deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
         @keyframes letterReveal { to { opacity: 1; transform: rotateY(0) translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         #mainContent { display: block; padding-bottom: 50px; }
         
-        .hero-search { background: #ffffff; padding: 40px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; margin: 30px auto; width: 95%; max-width: 1200px; border-top: 8px solid var(--blue); }
+        /* === MODERN ANA EKRAN (HERO) === */
+        .hero-search { background: #ffffff; padding: 40px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; margin: 30px auto; width: 95%; max-width: 1200px; border-top: 8px solid var(--green); }
         .hero-title { color: var(--dark); margin-top: 0; font-size: 28px; font-weight: 900; letter-spacing: 1px; }
         .hero-desc { color: #64748b; font-size: 15px; margin-bottom: 30px; line-height: 1.6; }
         
         .hero-input-group { display: inline-block; text-align: left; margin: 10px 15px; }
         .hero-label { font-weight: 800; font-size: 12px; color: #94a3b8; margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center; letter-spacing: 1px;}
         .hero-input { font-size: 18px; padding: 12px 20px; border: 2px solid #e2e8f0; border-radius: 12px; width: 200px; text-align: center; font-weight: bold; color: var(--dark); transition: 0.3s; background: #f8fafc; outline: none; }
-        .hero-input:focus { border-color: var(--blue); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); background: #ffffff; }
+        .hero-input:focus { border-color: var(--green); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); background: #ffffff; }
         
+        /* ✨ AKILLI KATLANABİLİR GRUP MENÜLERİ ✨ */
         details.grup-kapsayici { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 15px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
         details.grup-kapsayici:hover { border-color: #cbd5e1; }
-        details.grup-kapsayici[open] { border-color: var(--blue); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1); }
+        details.grup-kapsayici[open] { border-color: var(--green); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1); }
+        
         .grup-baslik-alani { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
         .grup-baslik { font-size: 18px; color: var(--dark); font-weight: 900; margin: 0; display: flex; align-items: center; gap: 10px; }
+        
         .personel-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-start; padding: 0 20px 20px 20px; }
         
+        /* GİZLİ CHECKBOX VE YENİ NESİL BUTONLAR */
         .kisi-secici { display: none; }
         .kisi-secici + label { display: inline-flex; align-items: center; justify-content: center; background: white; border: 2px solid #e2e8f0; color: var(--primary); padding: 12px 18px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.02); position: relative; user-select: none; }
-        .kisi-secici:checked + label { background: linear-gradient(135deg, var(--blue), #1d4ed8); border-color: var(--blue); color: white; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); transform: translateY(-3px); }
+        .kisi-secici:checked + label { background: linear-gradient(135deg, var(--green), #047857); border-color: var(--green); color: white; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); transform: translateY(-3px); }
         
         .personel-card { position: relative; display: inline-block; }
         .btn-sil-badge { position: absolute; top: -8px; right: -8px; background: var(--red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; z-index: 10; opacity: 0; }
         .personel-card:hover .btn-sil-badge { opacity: 1; }
-        
+        .btn-sil-badge:hover { transform: scale(1.3); }
+
         .islem-butonlari { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 35px; border-top: 2px solid #e2e8f0; padding-top: 30px; }
         .btn-secili-dokum { font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--blue), #1e40af); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); }
         .btn-secili-dokum:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5); }
+        
         .btn-tam-dokum { font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--green), #047857); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); }
         .btn-tam-dokum:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5); }
+        
         .print-btn { font-size: 14px; padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+        .print-btn:hover { background: #000; transform: translateY(-2px); }
         
         details summary::-webkit-details-marker { display:none; }
         .settings-panel { background: white; padding: 25px; border-radius: 15px; display: flex; gap: 20px; flex-wrap: wrap; border: 1px solid #e2e8f0; margin-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
@@ -62,69 +73,101 @@
         h3 { margin: 0; font-size: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--dark); font-weight: 900;}
         .personel-row { display: flex; gap: 8px; margin-bottom: 5px; }
         .modern-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; outline: none;}
+        .modern-input:focus { border-color: var(--blue); }
         .personel-listesi { height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; background: #f8fafc; padding: 8px; border-radius: 8px; }
         .personel-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 500; color: #334155;}
         button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; color: white; transition: 0.2s; }
-        .btn-add { background: var(--green); padding: 8px 12px; } .btn-del { background: var(--red); padding: 4px 8px; font-size: 11px; } .btn-del-group { position: absolute; right: 0; top: 0; background: var(--red); padding: 4px 10px; font-size: 11px; }
+        .btn-add { background: var(--green); padding: 8px 12px; } .btn-add:hover { background: #047857; }
+        .btn-del { background: var(--red); padding: 4px 8px; font-size: 11px; }
+        .btn-del-group { position: absolute; right: 0; top: 0; background: var(--red); padding: 4px 10px; font-size: 11px; }
         .btn-big { width: 100%; padding: 15px; font-size: 14px; margin-top: 5px; font-weight: 900; }
-        .btn-grn { background: var(--green); } .btn-blu { background: var(--blue); }
-        .vardiya-chip { display:flex; align-items:center; background:#10b981; color:white; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; margin-bottom:5px;}
-        .vardiya-chip.izin { background:#ef4444; } .vardiya-del { margin-left:12px; cursor:pointer; opacity: 0.8;}
-        
+        .btn-org { background: var(--orange); } .btn-grn { background: var(--green); } .btn-blu { background: var(--blue); }
+        .vardiya-chip { display:flex; align-items:center; background:#10b981; color:white; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; margin-bottom:5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        .vardiya-chip.izin { background:#ef4444; }
+        .vardiya-del { margin-left:12px; cursor:pointer; font-size:14px; opacity: 0.8;}
+        .vardiya-del:hover { opacity: 1; transform: scale(1.2); }
+
+        /* === YAPIŞKAN (STICKY) TABLO ALANI === */
         .sayfa-container { width: 98%; max-height: 75vh; overflow: auto; margin: 20px auto; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 2px solid #cbd5e1; border-radius: 12px; }
+        
         table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; margin: 0; padding: 0; user-select: none; }
         th, td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 1px; line-height: 1.1; word-break: break-word; overflow: visible; background: white;}
+        
         thead { position: sticky; top: 0; z-index: 30; }
         thead th, thead td { background: #eee; box-shadow: inset 0 0 0 1px #000; }
+        
         .stick-1 { position: sticky; left: 0px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         .stick-2 { position: sticky; left: 35px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         .stick-3 { position: sticky; left: 135px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         .stick-4 { position: sticky; left: 265px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         thead .stick-1, thead .stick-2, thead .stick-3, thead .stick-4 { z-index: 40; background: #ddd; }
-        
+
         .veri-hucre { height: 75px !important; padding: 0 !important; cursor: crosshair !important; transition: all 0.2s;}
         .veri-hucre:focus { background: #fff9c4 !important; outline: 3px solid #f59e0b; z-index: 5; font-size: 14px; font-weight: bold; cursor: text !important;}
+        
         .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
         .selected-cell { background-color: #dbeafe !important; box-shadow: inset 0 0 0 2px #2563eb !important; z-index: 5; }
+        
         .fm-var { color: #dc2626; font-size: 13px; font-weight: 900; background: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px solid #f87171; display: inline-block;}
 
         #tableContextMenu { font-family: 'Roboto', sans-serif; min-width: 180px; border-radius: 12px; padding: 5px; }
-        .ctx-header { background: #f8fafc; padding: 10px; font-size: 11px; font-weight: 900; color: #64748b; text-align: center; border-bottom: 2px solid var(--blue); text-transform: uppercase; border-radius: 8px 8px 0 0;}
+        .ctx-header { background: #f8fafc; padding: 10px; font-size: 11px; font-weight: 900; color: #64748b; text-align: center; border-bottom: 2px solid var(--blue); text-transform: uppercase; letter-spacing: 1px; border-radius: 8px 8px 0 0;}
         .ctx-item { padding: 12px 15px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; color: #334155; display: flex; align-items: center; gap: 10px; border-radius: 6px; margin: 2px 0;}
         .ctx-item:hover { background-color: #eff6ff; color: var(--blue); padding-left: 20px; }
-        .ctx-item.danger { color: var(--red); } .ctx-item.danger:hover { background-color: #fef2f2; color: var(--red); }
+        .ctx-item.danger { color: var(--red); }
+        .ctx-item.danger:hover { background-color: #fef2f2; color: var(--red); }
 
         col.c-sno { width: 35px; } col.c-tc { width: 100px; } col.c-isim { width: 130px; } col.c-gun { width: 38px; } 
         .kalin-yatay { font-weight: bold !important; font-size: 11px !important; text-align: center; padding: 2px !important; }
         .isim-yatay { font-weight: bold !important; font-size: 11px !important; text-align: left; padding-left: 3px !important; }
         th { background: #eee; padding: 2px; font-size: 10px; }
+        
         .bg-hafta { background-color: #dcfce7 !important; border-left: 2px solid #000; }
         .bg-genel { background-color: #fef9c3 !important; border-left: 2px solid #000; }
         .bg-gece { background-color: #f3e8ff !important; border-left: 2px solid #000; }
         .hucre-izin { background-color: #fee2e2 !important; color: #dc2626; font-weight: bold; }
         .hucre-haftasonu { background-color: #f1f5f9 !important; }
+        
         .baslik-dik { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 11px; font-weight: bold; padding: 2px 0; }
         .baslik-dik-kucuk { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 9px; font-weight: normal; padding: 2px 0; color: #444; }
 
         #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: 900; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
-        #btnSaveToCloud { position: fixed; bottom: 20px; left: 20px; background: #10b981; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(16,185,129,0.5); cursor: pointer; z-index: 100000; display: none; transition: 0.3s; animation: pulseGreen 2s infinite; }
-        #btnSaveToCloud::after { content: "KAYDET (Ctrl+S)"; position: absolute; bottom: -25px; left: -15px; width: 90px; font-size: 10px; font-weight: 900; color: #10b981; background: white; padding: 4px 6px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); text-align: center; }
+        #btnExceleKopyala:hover { background: #059669; transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.6);}
+
+        /* YUVARLAK YEŞİL KAYDET BUTONU */
+        #btnSaveToCloud { 
+            position: fixed; bottom: 20px; left: 20px; background: #10b981; color: white; border: none; 
+            width: 60px; height: 60px; border-radius: 50%; font-size: 24px; 
+            display: flex; justify-content: center; align-items: center; 
+            box-shadow: 0 4px 15px rgba(16,185,129,0.5); cursor: pointer; z-index: 100000; 
+            display: none; transition: 0.3s; animation: pulseGreen 2s infinite; 
+        }
+        #btnSaveToCloud:hover { transform: scale(1.1); }
+        #btnSaveToCloud::after { 
+            content: "KAYDET (Ctrl+S)"; position: absolute; bottom: -25px; left: -15px; width: 90px;
+            font-size: 10px; font-weight: 900; color: #10b981; background: white; 
+            padding: 4px 6px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); text-align: center;
+        }
         @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
-        #toast { visibility: hidden; min-width: 250px; background: #10b981; color: #fff; text-align: center; border-radius: 12px; padding: 16px; position: fixed; z-index: 999999; left: 50%; bottom: 30px; font-weight: 800; transform: translateX(-50%); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s forwards; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        #toast { visibility: hidden; min-width: 280px; background: #10b981; color: #fff; text-align: center; border-radius: 12px; padding: 18px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 40px; font-size: 15px; font-weight: 900; transform: translateX(-50%); box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px; }
+        #toast.show { visibility: visible; animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeout 0.5s 2.5s forwards; }
+        @keyframes popUp { from { bottom: -50px; opacity: 0; transform: translateX(-50%) scale(0.5); } to { bottom: 40px; opacity: 1; transform: translateX(-50%) scale(1); } }
+        @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
 
         @media print {
             @page { size: A4 landscape; margin: 5mm; } 
             body { zoom: 50%; margin: 0; padding: 0; background: white; } 
             .hero-search, details, #tableContextMenu, #btnExceleKopyala, #btnSaveToCloud, #toast { display: none !important; }
             #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
+            
             .sayfa-container { overflow: visible !important; width: 100%; padding:0; max-height: none !important; border: none; box-shadow: none;}
             thead, .stick-1, .stick-2, .stick-3, .stick-4 { position: static !important; box-shadow: none !important; }
+            
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
-            thead { display: table-header-group; } tfoot { display: table-footer-group; } tr { page-break-inside: avoid; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            tr { page-break-inside: avoid; }
             .selected-cell { box-shadow: none !important; outline: none !important; background-color: inherit !important; } 
             .fm-var { background: transparent !important; border: none !important; color: black !important; font-size: 11px !important; font-weight: bold !important; padding: 0 !important; } 
         }
@@ -145,7 +188,7 @@
             <button onclick="cikisYap()" style="background:var(--red); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(239,68,68,0.2);">🚪 ÇIKIŞ YAP</button>
         </div>
         
-        <h1 class="hero-title" id="puantajBaslik">📋 HIZLI PUANTAJ KONSOLU</h1>
+        <h1 class="hero-title" id="puantajBaslik">📋 PUANTAJ KONSOLU</h1>
         <p class="hero-desc">Puantajını oluşturmak istediğiniz personelleri işaretleyin. İster tek kişi, ister tüm birimi anında hazırlayın.<br><em>Ekranda oluşan tabloda <b>Sağ Tıklayarak</b> vardiya atayabilir, <b>CTRL+Z</b> ile geri alabilir, <b>CTRL+S</b> ile buluta kaydedebilirsiniz.</em></p>
         
         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
@@ -219,7 +262,7 @@
     </div>
 </div>
 
-<button id="btnExceleKopyala" onclick="exceleSifirKayipsizIndir()">📥 EXCEL DOSYASI İNDİR</button>
+<button id="btnExceleKopyala" onclick="exceleSifirKayipsizIndir()">📥 EXCEL İÇİN KOPYALA (KAYIPSIZ)</button>
 
 <button id="btnSaveToCloud" onclick="bulutaKalıcıKaydet()" title="Değişiklikleri ShiftMaster'a Kaydet">💾</button>
 
@@ -233,13 +276,15 @@
     <div class="ctx-item" onclick="unmergeSelectedCells()">✂️ Hücre Birleştirmesini Ayır</div>
 </div>
 
+<div id="toast">İşlem Başarılı!</div>
+
 <script>
+// =========================================
+// 1. FİREBASE BAĞLANTISI VE GÜVENLİK
+// =========================================
 const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-// =========================================
-// SAAS İZOLASYON (GÜVENLİK) MOTORU (TEK SEFER)
-// =========================================
 const tenantId = localStorage.getItem('sm_current_tenant');
 if (!tenantId) window.location.href = 'index.html';
 
@@ -250,14 +295,19 @@ db.ref = function(path) {
     return originalRef("kurumlar/" + tenantId);
 };
 
-// DİNAMİK BAŞLIK AYARLAMASI VE EFEKTLİ AÇILIŞ YAZISI
+function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
+
+// =========================================
+// 2. DİNAMİK AÇILIŞ VE İSİMLENDİRME
+// =========================================
 document.addEventListener('DOMContentLoaded', function() {
-    let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "KURUM BİLGİSİ YOK";
+    let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
     
-    // Açılış Ekranı ve Başlıkları Dinamik Yap
     if(aktifKurum && aktifKurum !== "null") {
         document.getElementById('dynamicSplashTitle').innerHTML = aktifKurum.toUpperCase() + "<br>PUANTAJ YÖNETİMİ";
         document.getElementById('puantajBaslik').innerHTML = `📋 ${aktifKurum.toUpperCase()} PUANTAJ KONSOLU`;
+    } else {
+        document.getElementById('dynamicSplashTitle').innerHTML = "PERSONEL LİSTESİ<br>PUANTAJ YÖNETİMİ";
     }
 
     // ✨ PUANTAJMOTORU HARF EFEKTİ ✨
@@ -273,10 +323,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    setTimeout(() => {
-        document.getElementById('splash').style.opacity = '0';
-        setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 600);
-    }, 2500); // Animasyonun izlenmesi için 2.5 saniyeye çıkarıldı
+    setTimeout(() => { 
+        document.getElementById('splash').style.opacity = '0'; 
+        setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 600); 
+    }, 2500);
 
     let bugun = new Date();
     let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
@@ -356,6 +406,7 @@ const DEFAULT_VARDIYALAR = {
 
 let appData = { gruplar: [], vardiyalar: null };
 
+// ✨ KUSURSUZ İLK KURULUM MANTIĞI ✨
 function ilkKurulumuYap() {
     appData = { gruplar: [], vardiyalar: DEFAULT_VARDIYALAR };
     
@@ -377,7 +428,7 @@ function ilkKurulumuYap() {
         appData.gruplar = [{ id: "g_1", ad: "DÖŞEMEALTI DEVLET HASTANESİ", kisiler: genelListe }];
     } else {
         // DİĞER KURUMLAR İÇİN BOŞ VE KENDİ İSİMLERİNDE GRUP
-        let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "YENİ KURUM";
+        let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "PERSONEL LİSTESİ";
         appData.gruplar = [{ id: "g_1", ad: aktifKurum.toUpperCase(), kisiler: [] }];
     }
     
@@ -391,7 +442,7 @@ function bulutBaglantisiniKur() {
             appData = data;
             if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
             if (!appData.gruplar || appData.gruplar.length === 0) {
-                let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "YENİ KURUM";
+                let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "PERSONEL LİSTESİ";
                 appData.gruplar = [{ id: "g_1", ad: aktifKurum.toUpperCase(), kisiler: [] }];
             }
             arayuzCiz(); vardiyaArayuzCiz(); anaEkranaButonlariCiz(); 
@@ -457,7 +508,7 @@ function anaEkranaButonlariCiz() {
         if(grup.kisiler && grup.kisiler.length > 0) {
             grup.kisiler.sort((a,b) => {
                 let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
-                let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
+                let isimB = b.includes("-") ? b.split("-")[1].trim() : b.n;
                 return isimA.localeCompare(isimB, 'tr');
             }).forEach((isimTam) => {
                 let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
@@ -592,11 +643,8 @@ function satirHesapla(td) {
             if (type === 'h-gun') { c.innerText = wHg > 0 ? wHg : "0"; } 
             else if (type === 'h-saat') { c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "0"; } 
             else if (type === 'h-fm') { 
-                if(currentWeekFmTotal > 0) {
-                    c.innerHTML = `<div class="fm-var">${Number(currentWeekFmTotal.toFixed(2))}</div>`;
-                } else {
-                    c.innerText = "0"; 
-                }
+                if(currentWeekFmTotal > 0) { c.innerHTML = `<div class="fm-var">${Number(currentWeekFmTotal.toFixed(2))}</div>`; } 
+                else { c.innerText = "0"; }
                 wHs = 0; wHg = 0; currentWeekFmTotal = 0; 
             }
         }
@@ -625,7 +673,7 @@ function veriyiCekVeOlustur(arananParam) {
 
     db.ref("arsivlenmis_shiftler").once("value").then(snap => {
         let data = snap.val(); 
-        if(!data) { alert("Buluta kayıtlı arşiv bulunamadı!"); document.body.style.cursor = "default"; return; }
+        if(!data) { alert("Buluta kayıtlı vardiya/arşiv bulunamadı!"); document.body.style.cursor = "default"; return; }
         
         let personelShiftleri = {};
         Object.keys(data).forEach(arsivKey => {
@@ -723,7 +771,7 @@ function raporuOlustur(filtreParam, pShiftleri) {
         document.getElementById('btnExceleKopyala').style.display = "none"; return;
     }
 
-    // DİNAMİK EXCEL KURUM BAŞLIĞI
+    // ✨ DİNAMİK EXCEL KURUM BAŞLIĞI ✨
     let kurumAdi = localStorage.getItem('sm_current_kurum_adi') || "KURUM BİLGİSİ YOK";
     let ustBaslik = tenantId === "addh" ? "ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ" : kurumAdi.toUpperCase();
 
