@@ -6,6 +6,10 @@
     <title>ShiftMaster | Kurumsal Giriş Portalı</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
         :root {
             --bg-dark: #050b14; 
@@ -45,12 +49,10 @@
 
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-bottom: 1px solid rgba(0,0,0,0.5); border-right: 1px solid rgba(0,0,0,0.5); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; box-shadow: 10px 10px 40px rgba(0,0,0,0.6); }
 
-        /* SEKMELER (TABS) */
         .tab-container { display: flex; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 25px; padding: 5px; border: 1px solid rgba(255,255,255,0.05); }
         .tab-btn { flex: 1; padding: 12px; text-align: center; font-weight: 800; font-size: 13px; color: #64748b; cursor: pointer; border-radius: 12px; transition: 0.3s; letter-spacing: 1px; }
         .tab-btn.active { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4); }
 
-        /* FORMLAR */
         .form-area { display: none; animation: fadeIn 0.4s; }
         .form-area.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -66,13 +68,6 @@
         .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 14px; cursor: pointer; background: linear-gradient(135deg, #10b981, #059669); color: white; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), 0 5px 15px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); margin-top: 10px; }
         .btn-action:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
         .btn-login { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-        .btn-login:hover { box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5); }
-
-        @media (max-width: 900px) {
-            body { flex-direction: column; overflow: auto; }
-            .slider-section { flex: none; height: 40vh; }
-            .login-section { flex: none; padding: 20px; }
-        }
     </style>
 </head>
 <body>
@@ -80,51 +75,20 @@
     <div class="slider-section">
         <div class="slide active" style="background-image: url('ZZZZZZZZ.jpg');">
             <div class="slide-overlay"></div>
-            <div class="slide-text-box" style="border-left-color: #38bdf8;">
-                <h2 class="slide-title" style="color: #38bdf8;">VARDİYA HAZIRLAMAK İŞKENCE OLMASIN!</h2>
-                <p class="slide-desc">İzinler, raporlar ve nöbetler birbirine mi girdi? ShiftMaster'ın akıllı yapısıyla saniyeler içinde kusursuz vardiyalarınızı planlayın, karmaşaya kalıcı olarak son verin.</p>
-            </div>
-        </div>
-        <div class="slide" style="background-image: url('SSAAAAAAAA.jpg');">
-            <div class="slide-overlay"></div>
-            <div class="slide-text-box" style="border-left-color: #facc15;">
-                <h2 class="slide-title" style="color: #facc15; text-shadow: 0 0 20px rgba(250,204,21,0.5);">7/24 KESİNTİSİZ KONTROL SİZDE!</h2>
-                <p class="slide-desc">İster cepten, ister tabletten, isterseniz bilgisayardan... Canlı işlem logları ve interaktif haberleşme panosu ile ekibiniz ve sisteminiz daima elinizin altında.</p>
-            </div>
-        </div>
-        <div class="slide" style="background-image: url('EEEEEEEEEEE.jpg');">
-            <div class="slide-overlay"></div>
-            <div class="slide-text-box" style="border-left-color: #10b981;">
-                <h2 class="slide-title" style="color: #10b981; text-shadow: 0 0 20px rgba(16,185,129,0.5);">TEK TIKLA BİNLERCE KİŞİNİN PUANTAJI!</h2>
-                <p class="slide-desc">Saatlerce hesap yapmaya, formüllerle boğuşmaya son! Personelinizi seçin, tarih aralığını belirleyin ve arkanıza yaslanın. ShiftMaster saniyeler içinde halletsin.</p>
-            </div>
-        </div>
-        <div class="slide" style="background-image: url('ASASAS.jpg');">
-            <div class="slide-overlay"></div>
-            <div class="slide-text-box" style="border-left-color: #a855f7;">
-                <h2 class="slide-title" style="color: #a855f7; text-shadow: 0 0 20px rgba(168,85,247,0.5);">SANİYELER İÇİNDE KUSURSUZ DÖKÜM!</h2>
-                <p class="slide-desc">Gündüz, gece, fazla mesai ve kesintiler sıfır hatayla hesaplanır. %100 Google Cloud güvencesiyle tek tıkla resmi puantajınızı yazdırın veya Excel'e aktarın.</p>
-            </div>
+            <div class="slide-text-box"><h2 class="slide-title">VARDİYA İŞKENCE OLMASIN!</h2><p class="slide-desc">ShiftMaster ile saniyeler içinde planlama yapın.</p></div>
         </div>
         <div class="indicators">
             <div class="dot active" onclick="goToSlide(0)"></div>
-            <div class="dot" onclick="goToSlide(1)"></div>
-            <div class="dot" onclick="goToSlide(2)"></div>
-            <div class="dot" onclick="goToSlide(3)"></div>
         </div>
     </div>
 
     <div class="login-section">
         <div class="login-header">
-            <div class="app-logo">
-                <svg viewBox="0 0 24 24" width="35" fill="#0f172a"><path d="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z"/></svg>
-            </div>
-            <h1 style="margin: 0 0 5px 0; font-size: 28px; font-weight: 900; letter-spacing: 1px;">SHIFT<span style="color: var(--accent);">MASTER</span></h1>
-            <p style="color: #64748b; margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 3px;">KURUMSAL GİRİŞ PORTALI</p>
+            <div class="app-logo">SM</div>
+            <h1 style="margin: 0;">SHIFT<span style="color: var(--accent);">MASTER</span></h1>
         </div>
 
         <div class="login-card">
-            
             <div class="tab-container">
                 <div class="tab-btn active" id="tabGiris" onclick="switchTab('giris')">GİRİŞ YAP</div>
                 <div class="tab-btn" id="tabKayit" onclick="switchTab('kayit')">YENİ KAYIT</div>
@@ -132,46 +96,25 @@
 
             <div id="formGiris" class="form-area active">
                 <div class="input-group">
-                    <label class="input-label">KURUM KISA ADI (KODU)</label>
-                    <input type="text" id="loginKurumKod" class="glass-input" placeholder="Örn: addh" autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label class="input-label">E-POSTA VEYA KULLANICI ADI</label>
-                    <input type="text" id="loginKullanici" class="glass-input" placeholder="E-posta adresiniz" autocomplete="off">
+                    <label class="input-label">E-POSTA ADRESİ</label>
+                    <input type="email" id="loginEmail" class="glass-input" placeholder="mail@ornek.com">
                 </div>
                 <div class="input-group">
                     <label class="input-label">ŞİFRE</label>
-                    <input type="password" id="loginSifre" class="glass-input" placeholder="••••••••" autocomplete="off">
+                    <input type="password" id="loginSifre" class="glass-input" placeholder="••••••••">
                 </div>
-                <button onclick="girisYapMotoru()" class="btn-action btn-login">GİRİŞ YAP</button>
+                <button onclick="girisYapFirebase()" class="btn-action btn-login">SİSTEME GİRİŞ YAP</button>
             </div>
 
             <div id="formKayit" class="form-area">
                 <div class="input-group">
                     <label class="input-label">KURUM ADI (ZORUNLU)</label>
-                    <input type="text" id="regKurumAd" class="glass-input" placeholder="Örn: Yıldız Eczanesi" autocomplete="off">
+                    <input type="text" id="regKurumAd" class="glass-input" placeholder="Örn: Yıldız Eczanesi">
                 </div>
-                <div class="input-group">
-                    <label class="input-label">KURUM KISA ADI (ORTAK GİRİŞ İÇİN)</label>
-                    <input type="text" id="regKurumKod" class="glass-input" placeholder="Örn: yildizeczane (Boşluksuz)" autocomplete="off">
-                </div>
-                
-                <div class="input-row">
-                    <div class="input-group">
-                        <label class="input-label">KULLANICI ADI</label>
-                        <input type="text" id="regKullanici" class="glass-input" placeholder="Adınız Soyadınız" autocomplete="off">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">TELEFON (İSTEĞE BAĞLI)</label>
-                        <input type="text" id="regTelefon" class="glass-input" placeholder="0555..." autocomplete="off">
-                    </div>
-                </div>
-
                 <div class="input-group">
                     <label class="input-label">E-MAİL ADRESİ</label>
-                    <input type="email" id="regEmail" class="glass-input" placeholder="ornek@mail.com" autocomplete="off">
+                    <input type="email" id="regEmail" class="glass-input" placeholder="mail@ornek.com">
                 </div>
-
                 <div class="input-row">
                     <div class="input-group">
                         <label class="input-label">ŞİFRE</label>
@@ -182,89 +125,67 @@
                         <input type="password" id="regSifre2" class="glass-input" placeholder="••••••••">
                     </div>
                 </div>
-
-                <button onclick="kayitOlMotoru()" class="btn-action">ÜCRETSİZ KAYIT OL</button>
-                <p style="font-size: 10px; color: #94a3b8; text-align: center; margin-top: 10px;">Kaydınızın ardından e-posta doğrulaması istenecektir.</p>
+                <button onclick="kayitOlFirebase()" class="btn-action">HESABI OLUŞTUR VE DOĞRULA</button>
             </div>
-
-        </div>
-        
-        <div style="margin-top: 20px; font-size: 11px; color: #475569; font-weight: 600;">
-            POWERED BY GOOGLE CLOUD & FIREBASE
         </div>
     </div>
 
     <script>
-        // --- SLAYT MOTORU ---
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.dot');
-        let slideInterval;
+        // 🔥 FIREBASE YAPILANDIRMASI (Tespit edilen verilere göre)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", // Tespit edilen API Anahtarın 
+            authDomain: "shiftmaster1-7fc5f.firebaseapp.com",
+            projectId: "shiftmaster1-7fc5f",
+            storageBucket: "shiftmaster1-7fc5f.appspot.com",
+            messagingSenderId: "Gerekli_Degil",
+            appId: "Gerekli_Degil"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        function showSlide(index) {
-            slides.forEach(s => s.classList.remove('active'));
-            dots.forEach(d => d.classList.remove('active'));
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-        }
-        function nextSlide() { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }
-        function goToSlide(index) { currentSlide = index; showSlide(currentSlide); resetInterval(); }
-        function resetInterval() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 6000); }
-        slideInterval = setInterval(nextSlide, 6000);
+        // KAYIT MOTORU (Mail Doğrulama Dahil)
+        function kayitOlFirebase() {
+            const email = document.getElementById("regEmail").value;
+            const sifre = document.getElementById("regSifre1").value;
+            const kurum = document.getElementById("regKurumAd").value;
 
-        // --- SEKME (TAB) DEĞİŞTİRME MOTORU ---
-        function switchTab(tabName) {
-            document.getElementById('tabGiris').classList.remove('active');
-            document.getElementById('tabKayit').classList.remove('active');
-            document.getElementById('formGiris').classList.remove('active');
-            document.getElementById('formKayit').classList.remove('active');
+            if(!email || !sifre || !kurum) { alert("Lütfen tüm alanları doldurun!"); return; }
 
-            if(tabName === 'giris') {
-                document.getElementById('tabGiris').classList.add('active');
-                document.getElementById('formGiris').classList.add('active');
-            } else {
-                document.getElementById('tabKayit').classList.add('active');
-                document.getElementById('formKayit').classList.add('active');
-            }
-        }
-
-        // --- GEÇİCİ GİRİŞ / KAYIT SİMÜLASYONU ---
-        // Not: Bir sonraki aşamada buraya gerçek Firebase Auth Kodlarını bağlayacağız.
-        function girisYapMotoru() {
-            let kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
-            let kullanici = document.getElementById("loginKullanici").value.trim().toUpperCase();
-
-            if (!kod) { alert("Sisteme giriş yapabilmek için lütfen Kurum Kısa Adını giriniz!"); return; }
-
-            localStorage.setItem('sm_current_tenant', kod);
-            localStorage.setItem('sm_active_user', kullanici || 'YÖNETİCİ');
-
-            if (kod === "addh") {
-                localStorage.setItem('sm_current_kurum_adi', 'Antalya Döşemealtı Devlet Hastanesi');
-                localStorage.setItem('sm_role', 'admin');
-                window.location.href = "shiftmaster.html"; 
-            } else {
-                localStorage.setItem('sm_current_kurum_adi', kod.toUpperCase() + ' KURUMU');
-                localStorage.setItem('sm_role', 'user');
-                window.location.href = "saas-shift.html"; 
-            }
+            auth.createUserWithEmailAndPassword(email, sifre)
+                .then((userCredential) => {
+                    // Kullanıcı oluşturuldu, şimdi mail doğrulama gönder
+                    userCredential.user.sendEmailVerification().then(() => {
+                        alert("Kayıt başarılı! Lütfen " + email + " adresine gelen doğrulama linkine tıklayın.");
+                        switchTab('giris');
+                    });
+                })
+                .catch((error) => alert("Hata: " + error.message));
         }
 
-        function kayitOlMotoru() {
-            let kurumAd = document.getElementById("regKurumAd").value.trim();
-            let kurumKod = document.getElementById("regKurumKod").value.trim();
-            let email = document.getElementById("regEmail").value.trim();
-            let sifre1 = document.getElementById("regSifre1").value;
-            let sifre2 = document.getElementById("regSifre2").value;
+        // GİRİŞ MOTORU (Doğrulama Kontrolü Dahil)
+        function girisYapFirebase() {
+            const email = document.getElementById("loginEmail").value;
+            const sifre = document.getElementById("loginSifre").value;
 
-            if(!kurumAd || !kurumKod || !email || !sifre1) { alert("Lütfen zorunlu alanları doldurun!"); return; }
-            if(sifre1 !== sifre2) { alert("Şifreler eşleşmiyor!"); return; }
-
-            alert("Harika! Bu aşamada arka planda Firebase Auth ile '" + email + "' adresine bir doğrulama linki gidecek. Gerçek veri tabanı bağlantısı bir sonraki adımda kurulacak.");
+            auth.signInWithEmailAndPassword(email, sifre)
+                .then((userCredential) => {
+                    if (userCredential.user.emailVerified) {
+                        localStorage.setItem('sm_active_user', email);
+                        window.location.href = "shiftmaster.html";
+                    } else {
+                        alert("Lütfen önce e-posta adresinizi doğrulayın!");
+                        auth.signOut();
+                    }
+                })
+                .catch((error) => alert("Giriş Hatası: " + error.message));
         }
 
-        // Enter ile form gönderme
-        document.getElementById('formGiris').addEventListener('keypress', function (e) { if (e.key === 'Enter') girisYapMotoru(); });
+        function switchTab(t) {
+            document.querySelectorAll('.tab-btn, .form-area').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+            document.getElementById('form' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+        }
     </script>
 </body>
 </html>
