@@ -264,7 +264,11 @@
         window.onload = () => { 
             const existingTenant = localStorage.getItem('sm_current_tenant');
             const existingName = localStorage.getItem('sm_current_kurum_adi');
-            if(existingTenant && existingName) showPortal(existingName);
+            // OTURUM AÇIKSA DİREKT SİSTEME AT
+            if(existingTenant && existingName) {
+                if (existingTenant === "addh") window.location.href = 'shiftmaster.html';
+                else window.location.href = 'saas-shift.html';
+            }
         };
 
         function openModal(id) { 
@@ -353,9 +357,9 @@
         function loginSuccess(tenantId, displayName) {
             localStorage.setItem('sm_current_tenant', tenantId);
             localStorage.setItem('sm_current_kurum_adi', displayName);
-            closeModal('registerModal');
-            closeModal('loginModal');
-            showPortal(displayName);
+            // BAŞARILI GİRİŞTE PORTAL YERİNE DİREKT SHİFTMASTER'A AT
+            if (tenantId === "addh") window.location.href = 'shiftmaster.html';
+            else window.location.href = 'saas-shift.html';
         }
 
         function showPortal(kurumAdi) {
