@@ -22,11 +22,7 @@
             --success: #10b981;
         }
 
-        body { 
-            margin: 0; padding: 0; display: flex; height: 100vh; 
-            font-family: 'Poppins', sans-serif; background: var(--bg-dark); 
-            color: white; overflow: hidden;
-        }
+        body { margin: 0; padding: 0; display: flex; height: 100vh; font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; overflow: hidden; }
 
         /* ✨ SOL TARAF: SİNEMATİK SLAYT ✨ */
         .slider-section { flex: 1.3; position: relative; box-shadow: 15px 0 40px rgba(0,0,0,0.9); z-index: 10; overflow: hidden; background-color: var(--bg-dark); }
@@ -46,7 +42,6 @@
         .login-header { text-align: center; margin-bottom: 20px; margin-top: 20px; }
         
         .app-logo { width: 65px; height: 65px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-radius: 20px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); margin-bottom: 15px; }
-
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; width: 100%; max-width: 420px; box-shadow: 10px 10px 40px rgba(0,0,0,0.6); }
 
         .tab-container { display: flex; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 25px; padding: 5px; border: 1px solid rgba(255,255,255,0.05); }
@@ -72,11 +67,7 @@
         .btn-resend { background: rgba(250, 204, 21, 0.1); border: 1px dashed var(--warning); color: var(--warning); display: none; margin-top: 20px; font-size: 12px; }
         #verificationNotice { display: none; margin-top: 20px; padding: 15px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border-left: 4px solid #ef4444; font-size: 12px; line-height: 1.5; color: #fca5a5; }
 
-        @media (max-width: 900px) {
-            body { flex-direction: column; overflow: auto; }
-            .slider-section { flex: none; height: 50vh; }
-            .login-section { flex: none; padding: 20px; }
-        }
+        @media (max-width: 900px) { body { flex-direction: column; overflow: auto; } .slider-section { flex: none; height: 50vh; } .login-section { flex: none; padding: 20px; } }
     </style>
 </head>
 <body>
@@ -136,9 +127,15 @@
             </div>
 
             <div id="formGiris" class="form-area active">
-                <div class="input-group">
-                    <label class="input-label">KURUM KODU</label>
-                    <input type="text" id="loginKurumKod" class="glass-input" placeholder="Örn: addh">
+                <div class="input-row">
+                    <div style="flex:1" class="input-group">
+                        <label class="input-label">KURUM KODU</label>
+                        <input type="text" id="loginKurumKod" class="glass-input" placeholder="Örn: addh">
+                    </div>
+                    <div style="flex:1.5" class="input-group">
+                        <label class="input-label">KULLANICI ADI</label>
+                        <input type="text" id="loginKullanici" class="glass-input" placeholder="Örn: ali">
+                    </div>
                 </div>
                 <div class="input-group">
                     <label class="input-label">ŞİFRE</label>
@@ -161,13 +158,13 @@
                     <input type="text" id="regKurumAd" class="glass-input" placeholder="Örn: Yıldız Eczanesi">
                 </div>
                 <div class="input-group">
-                    <label class="input-label">KURUM KISA ADI (GİRİŞ KODUNUZ OLACAK)</label>
+                    <label class="input-label">KURUM KISA ADI (ORTAK GİRİŞ KODU)</label>
                     <input type="text" id="regKurumKod" class="glass-input" placeholder="Örn: yildiz (Boşluksuz)">
                 </div>
                 <div class="input-row">
                     <div style="flex:1" class="input-group">
-                        <label class="input-label">YÖNETİCİ ADI</label>
-                        <input type="text" id="regKullanici" class="glass-input" placeholder="Ad Soyad">
+                        <label class="input-label">KULLANICI ADI (GİRİŞ İÇİN)</label>
+                        <input type="text" id="regKullanici" class="glass-input" placeholder="Örn: ali, ahmet">
                     </div>
                     <div style="flex:1" class="input-group">
                         <label class="input-label">TELEFON (İSTEĞE BAĞLI)</label>
@@ -175,7 +172,7 @@
                     </div>
                 </div>
                 <div class="input-group">
-                    <label class="input-label">E-MAİL ADRESİ (SADECE DOĞRULAMA İÇİN)</label>
+                    <label class="input-label">E-MAİL ADRESİ (DOĞRULAMA İÇİN)</label>
                     <input type="email" id="regEmail" class="glass-input" placeholder="mail@ornek.com">
                 </div>
                 <div class="input-row">
@@ -214,13 +211,7 @@
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
         let slideInterval;
-
-        function showSlide(index) {
-            slides.forEach(s => s.classList.remove('active'));
-            dots.forEach(d => d.classList.remove('active'));
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-        }
+        function showSlide(index) { slides.forEach(s => s.classList.remove('active')); dots.forEach(d => d.classList.remove('active')); slides[index].classList.add('active'); dots[index].classList.add('active'); }
         function nextSlide() { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }
         function goToSlide(index) { currentSlide = index; showSlide(currentSlide); resetInterval(); }
         function resetInterval() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 6000); }
@@ -235,27 +226,29 @@
             document.getElementById('btnResend').style.display = 'none';
         }
 
-        // 🛠️ KAYIT MOTORU
+        // 🛠️ KAYIT MOTORU (GÜNCELLENDİ)
         function kayitOlFirebase() {
             const email = document.getElementById("regEmail").value.trim();
             const s1 = document.getElementById("regSifre1").value;
             const s2 = document.getElementById("regSifre2").value;
             const kurumAd = document.getElementById("regKurumAd").value.trim();
             const kurumKod = document.getElementById("regKurumKod").value.trim().toLowerCase();
-            const kullanici = document.getElementById("regKullanici").value.trim();
+            const kullanici = document.getElementById("regKullanici").value.trim().toLowerCase(); // Küçük harf uyumluluğu
 
             if(!email || !s1 || !kurumAd || !kurumKod || !kullanici) return alert("Lütfen zorunlu alanları doldurun!");
             if(s1 !== s2) return alert("Şifreler eşleşmiyor!");
 
             auth.createUserWithEmailAndPassword(email, s1)
                 .then((userCredential) => {
-                    // Kurum bilgilerini RTDB'ye kaydet
-                    rtdb.ref('kurum_kayitlari/' + kurumKod).set({
-                        kurumAdi: kurumAd,
-                        yoneticiEmail: email,
-                        yoneticiIsim: kullanici
-                    });
+                    // Ana Kurum Bilgisi
+                    rtdb.ref('kurum_kayitlari/' + kurumKod).update({ kurumAdi: kurumAd });
                     
+                    // O kuruma ait Kullanıcı (Örn: addh -> ali -> ali@mail.com)
+                    rtdb.ref('kurum_yoneticileri/' + kurumKod + '/' + kullanici).set({
+                        email: email,
+                        isim: document.getElementById("regKullanici").value.trim() // Orijinal halini tutalım
+                    });
+
                     userCredential.user.sendEmailVerification().then(() => {
                         alert("Kayıt başarılı! Lütfen " + email + " adresine gelen doğrulama linkine tıklayın.");
                         switchTab('giris');
@@ -264,43 +257,45 @@
                 .catch((error) => alert("Hata: " + error.message));
         }
 
-        // 🔑 GİZLİ E-POSTA İLE HIZLI GİRİŞ MOTORU (SİHİR BURADA)
+        // 🔑 ÇOKLU KULLANICI İLE HIZLI GİRİŞ MOTORU (GÜNCELLENDİ)
         function girisYapFirebase() {
             const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
+            const kullanici = document.getElementById("loginKullanici").value.trim().toLowerCase();
             const sifre = document.getElementById("loginSifre").value;
 
-            if(!kod || !sifre) return alert("Lütfen Kurum Kodunu ve Şifrenizi girin!");
+            if(!kod || !kullanici || !sifre) return alert("Lütfen Kurum Kodu, Kullanıcı Adı ve Şifrenizi girin!");
 
-            // 1. Adım: Veritabanından bu kurumun e-postasını gizlice bul
-            rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
+            // 1. Adım: O kuruma ait o kullanıcının mailini bul
+            rtdb.ref('kurum_yoneticileri/' + kod + '/' + kullanici).once('value').then(snap => {
                 if(!snap.exists()) {
-                    return alert("Hatalı Kurum Kodu! Bu kodla eşleşen bir sistem bulunamadı.");
+                    return alert("Hatalı Giriş! Bu kuruma ait '" + kullanici + "' adında bir yönetici bulunamadı.");
                 }
                 
-                const kurumVerisi = snap.val();
-                const gizliEmail = kurumVerisi.yoneticiEmail;
+                const gizliEmail = snap.val().email;
+                const gercekIsim = snap.val().isim;
                 
-                // Mail'i tekrar gönderme butonu için gizli inputta saklıyoruz
                 document.getElementById("hiddenLoginEmail").value = gizliEmail;
 
-                // 2. Adım: Bulunan gizli e-posta ve girilen şifre ile giriş yap
+                // 2. Adım: Bulunan gizli e-posta ve şifre ile giriş yap
                 auth.signInWithEmailAndPassword(gizliEmail, sifre)
                     .then((userCredential) => {
                         if (userCredential.user.emailVerified) {
-                            // Giriş başarılı
                             localStorage.setItem('sm_current_tenant', kod);
-                            localStorage.setItem('sm_active_user', kurumVerisi.yoneticiIsim || gizliEmail);
-                            localStorage.setItem('sm_current_kurum_adi', kurumVerisi.kurumAdi);
+                            localStorage.setItem('sm_active_user', gercekIsim);
                             
-                            if (kod === "addh") {
-                                localStorage.setItem('sm_role', 'admin');
-                                window.location.href = "shiftmaster.html";
-                            } else {
-                                localStorage.setItem('sm_role', 'user');
-                                window.location.href = "saas-shift.html";
-                            }
+                            rtdb.ref('kurum_kayitlari/' + kod).once('value', kurumSnap => {
+                                const data = kurumSnap.val();
+                                localStorage.setItem('sm_current_kurum_adi', data ? data.kurumAdi : kod.toUpperCase());
+                                
+                                if (kod === "addh") {
+                                    localStorage.setItem('sm_role', 'admin');
+                                    window.location.href = "shiftmaster.html";
+                                } else {
+                                    localStorage.setItem('sm_role', 'user');
+                                    window.location.href = "saas-shift.html";
+                                }
+                            });
                         } else {
-                            // Doğrulama yapılmamış
                             document.getElementById('verificationNotice').style.display = 'block';
                             document.getElementById('btnResend').style.display = 'block';
                             auth.signOut();
@@ -310,7 +305,7 @@
             }).catch(err => alert("Sisteme bağlanılamadı: " + err.message));
         }
 
-        // 🔄 RESEND MOTORU (3 Dakika Zamanlayıcılı)
+        // 🔄 RESEND MOTORU
         let cooldownActive = false;
         function mailiTekrarGonder() {
             if(cooldownActive) return;
@@ -333,26 +328,16 @@
             cooldownActive = true;
             btn.disabled = true;
             let seconds = 180;
-            
             const timer = setInterval(() => {
                 let min = Math.floor(seconds / 60);
                 let sec = seconds % 60;
                 btn.innerText = `TEKRAR GÖNDERİLEBİLİR (${min}:${sec < 10 ? '0'+sec : sec})`;
                 seconds--;
-                
-                if (seconds < 0) {
-                    clearInterval(timer);
-                    cooldownActive = false;
-                    btn.disabled = false;
-                    btn.innerText = "DOĞRULAMA MAİLİNİ TEKRAR GÖNDER";
-                }
+                if (seconds < 0) { clearInterval(timer); cooldownActive = false; btn.disabled = false; btn.innerText = "DOĞRULAMA MAİLİNİ TEKRAR GÖNDER"; }
             }, 1000);
         }
 
-        // Enter tuşu ile hızlı giriş
-        document.getElementById('formGiris').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') girisYapFirebase();
-        });
+        document.getElementById('formGiris').addEventListener('keypress', function (e) { if (e.key === 'Enter') girisYapFirebase(); });
     </script>
 </body>
 </html>
