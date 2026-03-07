@@ -112,6 +112,7 @@
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent);" id="welcomeText">👋 HOŞ GELDİN</div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <button id="btnSorumluAta" class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); display:none; border:1px solid #facc15;" onclick="openModal('sorumluModal')">👑 YÖNETİCİ ATA</button>
+                    <button id="btnSifreDegistir" class="btn" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); display:none; border:1px solid #38bdf8;" onclick="bireyselSifreDegistir()">🔑 ŞİFREMİ DEĞİŞTİR</button>
                     <button class="btn btn-red" onclick="logout()">🚪 ÇIKIŞ YAP</button>
                 </div>
             </div>
@@ -361,11 +362,15 @@
                         
                         // 👑 PATRON MODE: ON / OFF
                         const btnSorumlu = document.getElementById('btnSorumluAta');
+                        const btnSifre = document.getElementById('btnSifreDegistir');
+                        
                         if (activeRole === 'admin' || currentUser === 'ÜMİT' || currentUser === 'MÜDÜR') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
+                            if (btnSifre) btnSifre.style.display = 'none';
                             loadSorumlular(); 
                         } else {
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
+                            if (btnSifre) btnSifre.style.display = 'inline-flex';
                         }
 
                         loadStaffPool(); 
@@ -402,6 +407,31 @@
             localStorage.removeItem('sm_role');
             localStorage.removeItem('sm_active_user');
             window.location.href = 'index.html'; 
+        }
+        
+        function bireyselSifreDegistir() {
+            const isim = currentUser;
+            db.ref("saas_kullanicilar/" + tenantId + "/sorumlular").once('value').then(snap => {
+                let eskiSifre = null;
+                let tumSifreler = snap.val() || {};
+                
+                Object.entries(tumSifreler).forEach(([sif, ism]) => { if(ism === isim) eskiSifre = sif; });
+                if(!eskiSifre) return alert("Hata: Hesabınız veritabanında bulunamadı!");
+
+                let yeniSifre = prompt(`Merhaba ${isim}, lütfen YENİ ŞİFRENİZİ girin:`);
+                if(yeniSifre && yeniSifre.trim() !== "") {
+                    yeniSifre = yeniSifre.trim();
+                    if(yeniSifre === eskiSifre) return alert("Yeni şifreniz eskisiyle aynı olamaz!");
+                    if(tumSifreler[yeniSifre]) return alert("Bu şifre güvenlik sebebiyle kullanılamaz! Lütfen farklı bir şifre belirleyin.");
+                    
+                    db.ref("saas_kullanicilar/" + tenantId + "/sorumlular/" + yeniSifre).set(isim).then(() => {
+                        db.ref("saas_kullanicilar/" + tenantId + "/sorumlular/" + eskiSifre).remove().then(() => {
+                            showToast("Şifreniz başarıyla değiştirildi! ✅");
+                            logAction("Kendi giriş şifresini güncelledi.");
+                        });
+                    });
+                }
+            });
         }
 
         // =========================================
