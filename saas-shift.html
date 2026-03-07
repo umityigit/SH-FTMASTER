@@ -1114,4 +1114,65 @@
                 const text = await navigator.clipboard.readText(); if(!text) return; saveHistory();
                 const rows = cleanExcelRows(text); const startDt = new Date(wrapper.getAttribute("data-startdt")); const colCount = parseInt(wrapper.getAttribute("data-colcount")); let tbody = wrapper.querySelector('tbody'); let existingNames = Array.from(tbody.querySelectorAll('.editable-name')).map(el => el.innerText.trim());
                 if (rows.length === 1 && rows[0].split('\t').length === 1 && cbs.length > 0) { let val = rows[0].trim(); cbs.forEach(cb => { const tr = cb.closest('tr'); tr.querySelectorAll('.shift-cell').forEach(td => { if(td.classList.contains('hidden-by-snipper')) return; let oldPin = td.getAttribute("data-pin"); td.innerText = val; if(oldPin) td.setAttribute("data-pin", oldPin); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; td.style.background = r ? r.color : "transparent"; }); }); updateAllStats(); showToast("Hücrelere veri yapıştırıldı! ✅"); return; }
-                if(cbs.length > 0) { let rowIndex = 0; cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell') || td.classList.contains('hidden-by-snipper')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); if(td.querySelector('.editable-name') && val !== "") {
+                if(cbs.length > 0) { let rowIndex = 0; cbs.forEach(cb => { if(rowIndex >= rows.length) return; const tr = cb.closest('tr'); const cols = rows[rowIndex].split("\t"); let colIndex = 0; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell') || td.classList.contains('hidden-by-snipper')) return; if(colIndex < cols.length) { let val = cols[colIndex].trim(); td.querySelector('.editable-name').innerText = val; } else if(td.classList.contains('shift-cell')) { let oldPin = td.getAttribute("data-pin"); td.innerText = val; if(oldPin) td.setAttribute("data-pin", oldPin); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; td.style.background = r ? r.color : "transparent"; } } colIndex++; }); rowIndex++; }); } 
+                else { if(existingNames.length === 1 && existingNames[0] === "İSİM GİRİNİZ...") { tbody.innerHTML = ""; } rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { let text = s ? s.trim() : ""; let safeText = text.replace(/\./g, ':'); let r = shiftRules[safeText] || shiftRules[text]; return { text: text, bg: r ? r.color : "transparent" }; }); tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); }); }
+                updateAllStats(); showToast("Veriler yapıştırıldı! ✅");
+            } catch (err) { alert("Tarayıcı panodan okuma izni vermedi!"); }
+        }
+
+        document.addEventListener('copy', e => {
+            const selected = document.querySelectorAll('.selected-cell');
+            if(selected.length > 0) { 
+                e.preventDefault(); let html = "<table border='1' style='border-collapse: collapse; text-align: center; font-family: sans-serif;'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
+                selected.forEach(cell => {
+                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return; 
+                    const cellRow = cell.closest('tr');
+                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
+                    let bg = getCellColor(cell); if(bg.includes('linear-gradient')) { let match = bg.match(/(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/); if(match) bg = match[0]; }
+                    let text = getCleanCellText(cell); let color = cell.tagName === 'TH' ? '#ffffff' : '#000000';
+                    if(bg === '#1e293b' || bg === '#0f172a' || bg === 'transparent') { bg = cell.tagName === 'TH' ? '#e2e8f0' : '#ffffff'; color = '#000000'; } else if(bg !== '#ffffff') color = '#ffffff';
+                    trHtml += `<td style="background-color: ${bg}; color: ${color}; padding: 5px;">${text}</td>`; rowData.push(text);
+                });
+                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } html += "</table>";
+                e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Seçili alan kopyalandı! 📋");
+            }
+        });
+
+        document.addEventListener('paste', e => {
+            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name'))) return;
+            const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
+            if(selected.length > 0) {
+                e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = cleanExcelRows(pasteData);
+                if (rows.length === 1 && rows[0].split('\t').length === 1) {
+                    let val = rows[0].trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
+                    selected.forEach(cell => { if(cell.classList.contains('hidden-by-snipper')) return; let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); cell.style.background = r ? r.color : "transparent"; });
+                } else {
+                    let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr);
+                    let rowCells = Array.from(tr.querySelectorAll('td')); let startColIdx = rowCells.indexOf(startCell);
+                    for (let i = 0; i < rows.length; i++) {
+                        if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentTrCells = Array.from(currentTr.querySelectorAll('td'));
+                        for (let j = 0; j < cols.length; j++) {
+                            if (startColIdx + j >= currentTrCells.length) break; let targetCell = currentTrCells[startColIdx + j];
+                            if (targetCell.classList.contains('shift-cell') && !targetCell.classList.contains('hidden-by-snipper')) {
+                                let val = cols[j].trim(); let oldPin = targetCell.getAttribute("data-pin"); targetCell.innerText = val; if(oldPin) targetCell.setAttribute("data-pin", oldPin); 
+                                let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; targetCell.style.background = r ? r.color : "transparent";
+                            }
+                        }
+                    }
+                }
+                updateAllStats(); showToast("Yapıştırıldı! ✅");
+            }
+        });
+
+        function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); } }
+        function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); }
+        function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) closeTableModal(); } }
+
+        window.onclick = (e) => { 
+            if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { 
+                document.getElementById("contextMenu").style.display = "none"; document.getElementById("staffSelectMenu").style.display = "none"; if(document.getElementById("headerContextMenu")) document.getElementById("headerContextMenu").style.display = "none";
+            } 
+        };
+    </script>
+</body>
+</html>
