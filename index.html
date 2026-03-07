@@ -343,17 +343,17 @@
                             localStorage.setItem('sm_role', 'admin');
                             localStorage.setItem('sm_active_user', 'MÜDÜR');
                             loginSuccess(user, kurum); 
-                            closeModal('registerModal'); 
                         }, 1500);
                     });
                 }
             });
         }
 
+        // 🐛 EKRANI KİLİTLEYEN HATA BURADAN TEMİZLENDİ
         function loginSuccess(tenantId, displayName) {
             localStorage.setItem('sm_current_tenant', tenantId);
             localStorage.setItem('sm_current_kurum_adi', displayName);
-            document.getElementById('loginScreen').style.display = 'none'; 
+            closeModal('registerModal');
             closeModal('loginModal');
             showPortal(displayName);
         }
