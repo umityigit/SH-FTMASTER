@@ -321,7 +321,7 @@
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.4);" id="welcomeText">👋 HOŞ GELDİN</div>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn" style="background: transparent; border: 1px solid var(--warning); color: var(--warning);" onclick="openChangePassModal()">🔑 ŞİFRE DEĞİŞTİR</button>
-                    <button class="btn btn-red" onclick="logout()">🚪 ÇIKIŞ YAP</button>
+                    <button class="btn btn-red" onclick="localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href='index.html'">🚪 ÇIKIŞ YAP</button>
                 </div>
             </div>
 
@@ -1365,6 +1365,7 @@
     </script>
 </body>
 </html>
+
 
 
 
