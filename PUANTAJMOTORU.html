@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PUANTAJ MOTORU (SAAS ENTEGRELİ)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
     <style>
         :root { --primary: #2c3e50; --green: #10b981; --orange: #f59e0b; --red: #ef4444; --blue: #3b82f6; --dark: #0f172a; --bg: #f1f5f9; }
-        body { margin: 0; background: var(--bg); font-family: 'Roboto', sans-serif; }
+        /* ✨ BODY FONTU POPPINS YAPILDI ✨ */
+        body { margin: 0; background: var(--bg); font-family: 'Poppins', sans-serif; }
 
         /* ✨ EFSANE AÇILIŞ VİTRİNİ (SPLASH) ✨ */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050b14; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; transition: opacity 0.6s ease; perspective: 1000px; }
@@ -34,7 +37,7 @@
         
         .hero-input-group { display: inline-block; text-align: left; margin: 10px 15px; }
         .hero-label { font-weight: 800; font-size: 12px; color: #94a3b8; margin-bottom: 8px; display: block; text-transform: uppercase; text-align: center; letter-spacing: 1px;}
-        .hero-input { font-size: 18px; padding: 12px 20px; border: 2px solid #e2e8f0; border-radius: 12px; width: 200px; text-align: center; font-weight: bold; color: var(--dark); transition: 0.3s; background: #f8fafc; outline: none; }
+        .hero-input { font-family: 'Poppins', sans-serif; font-size: 18px; padding: 12px 20px; border: 2px solid #e2e8f0; border-radius: 12px; width: 200px; text-align: center; font-weight: bold; color: var(--dark); transition: 0.3s; background: #f8fafc; outline: none; }
         .hero-input:focus { border-color: var(--green); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); background: #ffffff; }
         
         /* ✨ AKILLI KATLANABİLİR GRUP MENÜLERİ ✨ */
@@ -58,13 +61,13 @@
         .btn-sil-badge:hover { transform: scale(1.3); }
 
         .islem-butonlari { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 35px; border-top: 2px solid #e2e8f0; padding-top: 30px; }
-        .btn-secili-dokum { font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--blue), #1e40af); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); }
+        .btn-secili-dokum { font-family: 'Poppins', sans-serif; font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--blue), #1e40af); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4); }
         .btn-secili-dokum:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5); }
         
-        .btn-tam-dokum { font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--green), #047857); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); }
+        .btn-tam-dokum { font-family: 'Poppins', sans-serif; font-size: 16px; padding: 18px 35px; background: linear-gradient(135deg, var(--green), #047857); color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); }
         .btn-tam-dokum:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5); }
         
-        .print-btn { font-size: 14px; padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+        .print-btn { font-family: 'Poppins', sans-serif; font-size: 14px; padding: 15px 30px; background: var(--dark); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
         .print-btn:hover { background: #000; transform: translateY(-2px); }
         
         details summary::-webkit-details-marker { display:none; }
@@ -72,102 +75,73 @@
         .panel-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 10px; position: relative; }
         h3 { margin: 0; font-size: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--dark); font-weight: 900;}
         .personel-row { display: flex; gap: 8px; margin-bottom: 5px; }
-        .modern-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; outline: none;}
+        .modern-input { font-family: 'Poppins', sans-serif; width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box; outline: none;}
         .modern-input:focus { border-color: var(--blue); }
         .personel-listesi { height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; background: #f8fafc; padding: 8px; border-radius: 8px; }
         .personel-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 500; color: #334155;}
-        button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; color: white; transition: 0.2s; }
+        button { font-family: 'Poppins', sans-serif; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; color: white; transition: 0.2s; }
         .btn-add { background: var(--green); padding: 8px 12px; } .btn-add:hover { background: #047857; }
-        .btn-del { background: var(--red); padding: 4px 8px; font-size: 11px; }
-        .btn-del-group { position: absolute; right: 0; top: 0; background: var(--red); padding: 4px 10px; font-size: 11px; }
+        .btn-del { background: var(--red); padding: 4px 8px; font-size: 11px; } .btn-del-group { position: absolute; right: 0; top: 0; background: var(--red); padding: 4px 10px; font-size: 11px; }
         .btn-big { width: 100%; padding: 15px; font-size: 14px; margin-top: 5px; font-weight: 900; }
-        .btn-org { background: var(--orange); } .btn-grn { background: var(--green); } .btn-blu { background: var(--blue); }
-        .vardiya-chip { display:flex; align-items:center; background:#10b981; color:white; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; margin-bottom:5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-        .vardiya-chip.izin { background:#ef4444; }
-        .vardiya-del { margin-left:12px; cursor:pointer; font-size:14px; opacity: 0.8;}
-        .vardiya-del:hover { opacity: 1; transform: scale(1.2); }
-
+        .btn-grn { background: var(--green); } .btn-blu { background: var(--blue); }
+        .vardiya-chip { display:flex; align-items:center; background:#10b981; color:white; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:bold; margin-bottom:5px;}
+        .vardiya-chip.izin { background:#ef4444; } .vardiya-del { margin-left:12px; cursor:pointer; opacity: 0.8;}
+        
         /* === YAPIŞKAN (STICKY) TABLO ALANI === */
         .sayfa-container { width: 98%; max-height: 75vh; overflow: auto; margin: 20px auto; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 2px solid #cbd5e1; border-radius: 12px; }
-        
-        table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; margin: 0; padding: 0; user-select: none; }
+        table { width: 2350px !important; border-collapse: collapse; table-layout: fixed; margin: 0; padding: 0; user-select: none; font-family: 'Poppins', sans-serif;}
         th, td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 1px; line-height: 1.1; word-break: break-word; overflow: visible; background: white;}
-        
         thead { position: sticky; top: 0; z-index: 30; }
         thead th, thead td { background: #eee; box-shadow: inset 0 0 0 1px #000; }
-        
         .stick-1 { position: sticky; left: 0px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         .stick-2 { position: sticky; left: 35px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         .stick-3 { position: sticky; left: 135px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         .stick-4 { position: sticky; left: 265px; z-index: 10; background: white; box-shadow: inset 0 0 0 1px #000; }
         thead .stick-1, thead .stick-2, thead .stick-3, thead .stick-4 { z-index: 40; background: #ddd; }
-
+        
         .veri-hucre { height: 75px !important; padding: 0 !important; cursor: crosshair !important; transition: all 0.2s;}
         .veri-hucre:focus { background: #fff9c4 !important; outline: 3px solid #f59e0b; z-index: 5; font-size: 14px; font-weight: bold; cursor: text !important;}
-        
         .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
         .selected-cell { background-color: #dbeafe !important; box-shadow: inset 0 0 0 2px #2563eb !important; z-index: 5; }
-        
         .fm-var { color: #dc2626; font-size: 13px; font-weight: 900; background: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px solid #f87171; display: inline-block;}
 
-        #tableContextMenu { font-family: 'Roboto', sans-serif; min-width: 180px; border-radius: 12px; padding: 5px; }
-        .ctx-header { background: #f8fafc; padding: 10px; font-size: 11px; font-weight: 900; color: #64748b; text-align: center; border-bottom: 2px solid var(--blue); text-transform: uppercase; letter-spacing: 1px; border-radius: 8px 8px 0 0;}
+        #tableContextMenu { font-family: 'Poppins', sans-serif; min-width: 180px; border-radius: 12px; padding: 5px; }
+        .ctx-header { background: #f8fafc; padding: 10px; font-size: 11px; font-weight: 900; color: #64748b; text-align: center; border-bottom: 2px solid var(--blue); text-transform: uppercase; border-radius: 8px 8px 0 0;}
         .ctx-item { padding: 12px 15px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; color: #334155; display: flex; align-items: center; gap: 10px; border-radius: 6px; margin: 2px 0;}
         .ctx-item:hover { background-color: #eff6ff; color: var(--blue); padding-left: 20px; }
-        .ctx-item.danger { color: var(--red); }
-        .ctx-item.danger:hover { background-color: #fef2f2; color: var(--red); }
+        .ctx-item.danger { color: var(--red); } .ctx-item.danger:hover { background-color: #fef2f2; color: var(--red); }
 
         col.c-sno { width: 35px; } col.c-tc { width: 100px; } col.c-isim { width: 130px; } col.c-gun { width: 38px; } 
         .kalin-yatay { font-weight: bold !important; font-size: 11px !important; text-align: center; padding: 2px !important; }
         .isim-yatay { font-weight: bold !important; font-size: 11px !important; text-align: left; padding-left: 3px !important; }
         th { background: #eee; padding: 2px; font-size: 10px; }
-        
         .bg-hafta { background-color: #dcfce7 !important; border-left: 2px solid #000; }
         .bg-genel { background-color: #fef9c3 !important; border-left: 2px solid #000; }
         .bg-gece { background-color: #f3e8ff !important; border-left: 2px solid #000; }
         .hucre-izin { background-color: #fee2e2 !important; color: #dc2626; font-weight: bold; }
         .hucre-haftasonu { background-color: #f1f5f9 !important; }
-        
         .baslik-dik { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 11px; font-weight: bold; padding: 2px 0; }
         .baslik-dik-kucuk { writing-mode: vertical-lr; transform: rotate(180deg); white-space: nowrap; margin: auto; font-size: 9px; font-weight: normal; padding: 2px 0; color: #444; }
 
-        #btnExceleKopyala { position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: 900; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
-        #btnExceleKopyala:hover { background: #059669; transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.6);}
-
-        /* YUVARLAK YEŞİL KAYDET BUTONU */
-        #btnSaveToCloud { 
-            position: fixed; bottom: 20px; left: 20px; background: #10b981; color: white; border: none; 
-            width: 60px; height: 60px; border-radius: 50%; font-size: 24px; 
-            display: flex; justify-content: center; align-items: center; 
-            box-shadow: 0 4px 15px rgba(16,185,129,0.5); cursor: pointer; z-index: 100000; 
-            display: none; transition: 0.3s; animation: pulseGreen 2s infinite; 
-        }
-        #btnSaveToCloud:hover { transform: scale(1.1); }
-        #btnSaveToCloud::after { 
-            content: "KAYDET (Ctrl+S)"; position: absolute; bottom: -25px; left: -15px; width: 90px;
-            font-size: 10px; font-weight: 900; color: #10b981; background: white; 
-            padding: 4px 6px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); text-align: center;
-        }
+        #btnExceleKopyala { font-family: 'Poppins', sans-serif; position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-size: 14px; font-weight: 900; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); cursor: pointer; display: none; z-index: 100000; transition: 0.3s; }
+        #btnSaveToCloud { font-family: 'Poppins', sans-serif; position: fixed; bottom: 20px; left: 20px; background: #10b981; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(16,185,129,0.5); cursor: pointer; z-index: 100000; display: none; transition: 0.3s; animation: pulseGreen 2s infinite; }
+        #btnSaveToCloud::after { content: "KAYDET (Ctrl+S)"; position: absolute; bottom: -25px; left: -15px; width: 90px; font-size: 10px; font-weight: 900; color: #10b981; background: white; padding: 4px 6px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); text-align: center; }
         @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
-        #toast { visibility: hidden; min-width: 280px; background: #10b981; color: #fff; text-align: center; border-radius: 12px; padding: 18px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 40px; font-size: 15px; font-weight: 900; transform: translateX(-50%); box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px; }
-        #toast.show { visibility: visible; animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeout 0.5s 2.5s forwards; }
-        @keyframes popUp { from { bottom: -50px; opacity: 0; transform: translateX(-50%) scale(0.5); } to { bottom: 40px; opacity: 1; transform: translateX(-50%) scale(1); } }
-        @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
+        #toast { font-family: 'Poppins', sans-serif; visibility: hidden; min-width: 250px; background: #10b981; color: #fff; text-align: center; border-radius: 12px; padding: 16px; position: fixed; z-index: 999999; left: 50%; bottom: 30px; font-weight: 800; transform: translateX(-50%); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s forwards; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
         @media print {
             @page { size: A4 landscape; margin: 5mm; } 
             body { zoom: 50%; margin: 0; padding: 0; background: white; } 
             .hero-search, details, #tableContextMenu, #btnExceleKopyala, #btnSaveToCloud, #toast { display: none !important; }
             #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
-            
             .sayfa-container { overflow: visible !important; width: 100%; padding:0; max-height: none !important; border: none; box-shadow: none;}
             thead, .stick-1, .stick-2, .stick-3, .stick-4 { position: static !important; box-shadow: none !important; }
-            
             .sayfa { margin: 0; padding: 0; width: 100%; border: none; box-shadow: none; page-break-after: always; }
-            thead { display: table-header-group; }
-            tfoot { display: table-footer-group; }
-            tr { page-break-inside: avoid; }
+            thead { display: table-header-group; } tfoot { display: table-footer-group; } tr { page-break-inside: avoid; }
             .selected-cell { box-shadow: none !important; outline: none !important; background-color: inherit !important; } 
             .fm-var { background: transparent !important; border: none !important; color: black !important; font-size: 11px !important; font-weight: bold !important; padding: 0 !important; } 
         }
@@ -184,8 +158,8 @@
 <div id="mainContent">
     <div class="hero-search">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:15px;">
-            <button onclick="window.history.back()" style="background:var(--dark); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1);">🔙 VARDİYA PANELİNE DÖN</button>
-            <button onclick="cikisYap()" style="background:var(--red); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(239,68,68,0.2);">🚪 ÇIKIŞ YAP</button>
+            <button onclick="window.history.back()" style="background:var(--dark); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1); font-family: 'Poppins', sans-serif;">🔙 VARDİYA PANELİNE DÖN</button>
+            <button onclick="cikisYap()" style="background:var(--red); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(239,68,68,0.2); font-family: 'Poppins', sans-serif;">🚪 ÇIKIŞ YAP</button>
         </div>
         
         <h1 class="hero-title" id="puantajBaslik">📋 PUANTAJ KONSOLU</h1>
@@ -216,7 +190,7 @@
     </div>
 
     <details style="margin: 20px auto; width: 95%; max-width: 1200px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
-        <summary style="padding: 20px; font-weight: 900; font-size: 14px; color: #64748b; cursor: pointer; border-left: 6px solid var(--blue); border-radius: 15px; outline: none; transition: 0.3s;">
+        <summary style="padding: 20px; font-weight: 900; font-size: 14px; color: #64748b; cursor: pointer; border-left: 6px solid var(--blue); border-radius: 15px; outline: none; transition: 0.3s; font-family: 'Poppins', sans-serif;">
             ⚙️ GELİŞMİŞ AYARLAR (Yönetici Paneli - Genişletmek İçin Tıklayın)
         </summary>
         <div class="settings-panel">
@@ -262,7 +236,7 @@
     </div>
 </div>
 
-<button id="btnExceleKopyala" onclick="exceleSifirKayipsizIndir()">📥 EXCEL İÇİN KOPYALA (KAYIPSIZ)</button>
+<button id="btnExceleKopyala" onclick="copyTableToClipboard()">📥 EXCEL İÇİN KOPYALA (KAYIPSIZ)</button>
 
 <button id="btnSaveToCloud" onclick="bulutaKalıcıKaydet()" title="Değişiklikleri ShiftMaster'a Kaydet">💾</button>
 
@@ -280,7 +254,7 @@
 
 <script>
 // =========================================
-// 1. FİREBASE BAĞLANTISI VE GÜVENLİK
+// 1. FİREBASE & GÜVENLİK (SAAS)
 // =========================================
 const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
@@ -290,7 +264,7 @@ if (!tenantId) window.location.href = 'index.html';
 
 const originalRef = db.ref.bind(db);
 db.ref = function(path) {
-    if (tenantId === "addh") return originalRef(path); // Ümit Abi (Ana Kasa)
+    if (tenantId === "addh") return originalRef(path); // Ümit Abi VIP
     if (path) return originalRef("kurumlar/" + tenantId + "/" + path); // Diğer Müşteriler
     return originalRef("kurumlar/" + tenantId);
 };
@@ -346,7 +320,7 @@ function cikisYap() {
     window.location.href = 'index.html';
 }
 
-// === ÇİFT YÖNLÜ SENKRON DEĞİŞKENLERİ ===
+// === ÇİFT YÖNLÜ SENKRON ===
 window.firebaseCellPaths = {}; 
 let historyStack = []; 
 let hasUnsavedChanges = false; 
@@ -378,18 +352,11 @@ function bulutaKalıcıKaydet() {
         let tarih = td.getAttribute('data-tarih');
         if(isim && tarih && window.firebaseCellPaths) {
             let path = window.firebaseCellPaths[`${isim}_${tarih}`];
-            if(path) {
-                let text = getCleanValue(td.innerText || td.textContent);
-                updates[path] = text;
-            }
+            if(path) { let text = getCleanValue(td.innerText || td.textContent); updates[path] = text; }
         }
     });
 
-    if(Object.keys(updates).length === 0) {
-        alert("Bulut bağlantılı bir veri bulunamadı!");
-        btn.innerHTML = "💾"; btn.style.pointerEvents = "auto";
-        return;
-    }
+    if(Object.keys(updates).length === 0) { alert("Bulut bağlantılı bir veri bulunamadı!"); btn.innerHTML = "💾"; btn.style.pointerEvents = "auto"; return; }
 
     db.ref().update(updates).then(() => {
         btn.innerHTML = "✅"; btn.style.background = "#10b981";
@@ -453,38 +420,23 @@ function bulutBaglantisiniKur() {
 function veriKaydet() { db.ref("puantaj_motoru_ayarlar").set(appData); }
 
 function vardiyaEkle() {
-    let kod = document.getElementById("vAd").value.trim().toUpperCase();
-    let t = parseFloat(document.getElementById("vSaat").value) || 0;
-    let g = parseFloat(document.getElementById("vGece").value) || 0;
-    let tip = document.getElementById("vTip").value;
-    if(!kod) return alert("Vardiya adı boş olamaz!");
-    appData.vardiyalar[kod] = { t: t, g: g, tip: tip };
-    veriKaydet(); 
+    let kod = document.getElementById("vAd").value.trim().toUpperCase(); let t = parseFloat(document.getElementById("vSaat").value) || 0;
+    let g = parseFloat(document.getElementById("vGece").value) || 0; let tip = document.getElementById("vTip").value;
+    if(!kod) return alert("Vardiya adı boş olamaz!"); appData.vardiyalar[kod] = { t: t, g: g, tip: tip }; veriKaydet(); 
 }
 function vardiyaSil(kod) { if(confirm(kod + " silinsin mi?")) { delete appData.vardiyalar[kod]; veriKaydet(); } }
 
 function vardiyaArayuzCiz() {
     const root = document.getElementById("vardiyaListesi"); root.innerHTML = "";
     for(let v in appData.vardiyalar) {
-        let info = appData.vardiyalar[v];
-        let cClass = info.tip === 'izin' ? 'izin' : 'calisma';
-        let desc = info.tip === 'calisma' ? `(${info.t}s / G:${info.g}s)` : '(İzin)';
+        let info = appData.vardiyalar[v]; let cClass = info.tip === 'izin' ? 'izin' : 'calisma'; let desc = info.tip === 'calisma' ? `(${info.t}s / G:${info.g}s)` : '(İzin)';
         root.innerHTML += `<div class="vardiya-chip ${cClass}"><span>${v} ${desc}</span><span class="vardiya-del" onclick="vardiyaSil('${v}')">✖</span></div>`;
     }
 }
 
 // ==== AKILLI KATLANABİLİR GRUP / KİŞİ SEÇİM MANTIĞI ====
-function tumGrubuSec(grupId, checkbox) {
-    const kisiler = document.querySelectorAll(`.grup-kisi-${grupId}`);
-    kisiler.forEach(k => k.checked = checkbox.checked);
-}
-
-function anaEkrandanGrupSil(id, ad) {
-    if (confirm(`⚠️ DİKKAT!\n\n"${ad}" grubunu ve içindeki tüm personelleri tamamen silmek istediğinize emin misiniz?`)) { 
-        appData.gruplar = appData.gruplar.filter(g => g.id !== id); 
-        veriKaydet(); 
-    }
-}
+function tumGrubuSec(grupId, checkbox) { document.querySelectorAll(`.grup-kisi-${grupId}`).forEach(k => k.checked = checkbox.checked); }
+function anaEkrandanGrupSil(id, ad) { if (confirm(`⚠️ DİKKAT!\n\n"${ad}" grubunu silmek istediğinize emin misiniz?`)) { appData.gruplar = appData.gruplar.filter(g => g.id !== id); veriKaydet(); } }
 
 function anaEkranaButonlariCiz() {
     const container = document.getElementById("personelButonAlani"); container.innerHTML = "";
@@ -507,14 +459,10 @@ function anaEkranaButonlariCiz() {
         
         if(grup.kisiler && grup.kisiler.length > 0) {
             grup.kisiler.sort((a,b) => {
-                let isimA = a.includes("-") ? a.split("-")[1].trim() : a;
-                let isimB = b.includes("-") ? b.split("-")[1].trim() : b.n;
+                let isimA = a.includes("-") ? a.split("-")[1].trim() : a; let isimB = b.includes("-") ? b.split("-")[1].trim() : b;
                 return isimA.localeCompare(isimB, 'tr');
             }).forEach((isimTam) => {
-                let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam;
-                let guvenliIsimTam = isimTam.replace(/'/g, "\\'"); 
-                let idText = guvenliIsimTam.replace(/[^a-zA-Z0-9]/g, ""); 
-                
+                let sadeceIsim = isimTam.includes("-") ? isimTam.split("-")[1].trim() : isimTam; let guvenliIsimTam = isimTam.replace(/'/g, "\\'"); let idText = guvenliIsimTam.replace(/[^a-zA-Z0-9]/g, ""); 
                 html += `
                 <div class="personel-card">
                     <input type="checkbox" id="chk_${idText}" value="${sadeceIsim}" class="kisi-secici grup-kisi-${grup.id}">
@@ -524,13 +472,7 @@ function anaEkranaButonlariCiz() {
             });
         }
         
-        html += `
-            <div class="personel-card">
-                <label onclick="anaEkrandanPersonelEkle('${grup.id}')" style="background: #f8fafc; border: 2px dashed var(--green); color: var(--green); display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 12px; font-weight: 900; font-size: 13px; cursor: pointer; transition: all 0.3s;">
-                    👤+ EKLE
-                </label>
-            </div>`;
-            
+        html += `<div class="personel-card"><label onclick="anaEkrandanPersonelEkle('${grup.id}')" style="background: #f8fafc; border: 2px dashed var(--green); color: var(--green); display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 12px; font-weight: 900; font-size: 13px; cursor: pointer; transition: all 0.3s;">👤+ EKLE</label></div>`;
         html += `</div></details>`;
         container.innerHTML += html;
     });
@@ -549,10 +491,7 @@ function anaEkrandanPersonelSil(grupId, isimTam) {
     if(confirm(`⚠️ DİKKAT!\n\n${sadeceIsim} personeli sistemden silinsin mi?`)) { let grup = appData.gruplar.find(g => g.id === grupId); grup.kisiler = grup.kisiler.filter(k => k !== isimTam); veriKaydet(); }
 }
 
-function getCleanValue(text) { 
-    if(!text) return ""; 
-    return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); 
-}
+function getCleanValue(text) { if(!text) return ""; return text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').trim().toUpperCase(); }
 
 function hucreOdaklan(td) { td._oldVal = td.innerHTML; temizleFormat(td); }
 function hucreCik(td) { let beforeVal = td._oldVal; uygulaFormat(td); if(td.innerHTML !== beforeVal) { pushToHistory([{ td: td, oldVal: beforeVal, newVal: td.innerHTML }]); } }
@@ -560,12 +499,10 @@ function temizleFormat(td) { let metin = td.innerText || td.textContent || ""; t
 function uygulaFormat(td) { let metin = getCleanValue(td.innerText || td.textContent); if (metin !== "") { td.innerHTML = `<div class="dik-yazi">${metin}</div>`; } else { td.innerHTML = ""; } satirHesapla(td); }
 function formatliVardiya(val) { if(!val) return ""; return `<div class="dik-yazi">${val.trim()}</div>`; }
 function getVardiyaInfo(val) {
-    if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""};
-    let cleanVal = val.replace(/<br\s*\/?>/gi, "-").trim().toUpperCase(); 
+    if (!val) return {t:0, g:0, tip:"bilinmeyen", val:""}; let cleanVal = val.replace(/<br\s*\/?>/gi, "-").trim().toUpperCase(); 
     if (appData.vardiyalar && appData.vardiyalar[cleanVal]) return { ...appData.vardiyalar[cleanVal], val: cleanVal };
     let valWithHyphen = cleanVal.replace(/[\s\n\r]+/g, "-");
-    if (appData.vardiyalar && appData.vardiyalar[valWithHyphen]) return { ...appData.vardiyalar[valWithHyphen], val: valWithHyphen };
-    return {t:0, g:0, tip:"bilinmeyen", val: cleanVal};
+    if (appData.vardiyalar && appData.vardiyalar[valWithHyphen]) return { ...appData.vardiyalar[valWithHyphen], val: valWithHyphen }; return {t:0, g:0, tip:"bilinmeyen", val: cleanVal};
 }
 
 function yeniGrupEkle() { appData.gruplar.push({ id: "g_" + Date.now(), ad: "YENİ BİRİM", kisiler: [] }); veriKaydet(); }
