@@ -44,7 +44,9 @@
         /* ✨ SAĞ TARAF: GİRİŞ VE KAYIT EKRANI ✨ */
         .login-section { flex: 1; display: flex; flex-direction: column; align-items: center; background: radial-gradient(circle at top right, var(--bg-light), var(--bg-dark)); padding: 20px 40px; overflow-y: auto; }
         .login-header { text-align: center; margin-bottom: 20px; margin-top: 20px; }
-        .app-logo { width: 60px; height: 60px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-radius: 20px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); margin-bottom: 10px; }
+        
+        /* 🌟 ORİJİNAL LOGO AYARI 🌟 */
+        .app-logo { width: 65px; height: 65px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-radius: 20px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); margin-bottom: 15px; }
 
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; width: 100%; max-width: 420px; box-shadow: 10px 10px 40px rgba(0,0,0,0.6); }
 
@@ -123,7 +125,11 @@
 
     <div class="login-section">
         <div class="login-header">
-            <div class="app-logo">SM</div>
+            <div class="app-logo">
+                <svg viewBox="0 0 24 24" width="38" fill="#0f172a">
+                    <path d="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z"/>
+                </svg>
+            </div>
             <h1 style="margin: 0; font-size: 28px; font-weight: 900;">SHIFT<span style="color: var(--accent);">MASTER</span></h1>
             <p style="color: #64748b; margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 3px;">KURUMSAL GİRİŞ PORTALI</p>
         </div>
@@ -304,8 +310,6 @@
         let cooldownActive = false;
         function mailiTekrarGonder() {
             if(cooldownActive) return;
-            // Bu kısım için kullanıcının tekrar şifresini girmesi gerekir, Firebase güvenlik politikası.
-            // Bu basitleştirilmiş senaryoda, login formundaki verileri kullanıyoruz.
             const email = document.getElementById("loginEmail").value.trim();
             const sifre = document.getElementById("loginSifre").value;
 
