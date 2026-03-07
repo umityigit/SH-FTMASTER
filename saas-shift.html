@@ -330,25 +330,31 @@
 
         window.onload = () => {
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
-            if(container) text.split("").forEach((char, index) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + index * 0.1) + "s"; container.appendChild(span); });
+            if (container) text.split("").forEach((char, idx) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + idx*0.1) + "s"; container.appendChild(span); });
+            
             setTimeout(() => { 
                 document.getElementById('splash').style.opacity = '0'; 
                 setTimeout(() => { 
                     document.getElementById('splash').style.display = 'none'; 
-                    // LOBİDEN GELMİŞSE KİLİT EKRANINI ATLA VE DİREKT AÇ
+                    
+                    // ZEKİ GEÇİŞ: LOBİDEN GELMİŞSE DİREKT İÇERİ AL
                     const activeUsr = localStorage.getItem('sm_active_user');
                     if(activeUsr) {
-                        currentUser = activeUsr; logAction("Sisteme giriş yaptı.");
+                        currentUser = activeUsr; 
                         document.getElementById("mainContent").style.display = "block"; 
                         document.getElementById("welcomeText").innerText = `👋 HOŞ GELDİN, ${currentUser}`;
                         loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews();
+                        logAction("Sisteme giriş yaptı.");
                     } else {
-                        document.getElementById('lockScreen').style.display = 'flex'; document.getElementById('adminNameInput').focus(); 
+                        // Eğer lobiden şifre girilmeden buraya sızılmaya çalışılırsa, kapıya (Lobiye) geri at!
+                        window.location.href = "index.html";
                     }
                 }, 500); 
             }, 2500);
+            
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
-            const colorGrid = document.getElementById('quickColorGrid'); colors.forEach(c => { const d = document.createElement('div'); d.className = 'mini-swatch'; d.style.background = c; d.onclick = () => applyColorToCell(c); colorGrid.appendChild(d); });
+            const colorGrid = document.getElementById('quickColorGrid'); 
+            colors.forEach(c => { colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; });
         };
 
         function executeLogin() {
