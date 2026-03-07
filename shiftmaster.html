@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -193,7 +194,7 @@
                 <div style="font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--accent);" id="welcomeText">👋 HOŞ GELDİN</div>
                 <div style="display: flex; gap: 15px; align-items: center;">
                     <button id="btnSorumluAta" class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); display:none; border-color:#facc15; font-size:13px; padding:12px 25px;" onclick="openModal('sorumluModal')">👑 YÖNETİCİ ATA</button>
-                    <button id="btnSifreDegistir" class="btn" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); display:none; border-color:#38bdf8; font-size:13px; padding:12px 25px;" onclick="bireyselSifreDegistir()">🔑 ŞİFREMİ DEĞİŞTİR</button>
+                    <button id="btnSifreDegistir" class="btn" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); font-size:13px; padding:12px 25px;" onclick="bireyselSifreDegistir()">🔑 ŞİFREMİ DEĞİŞTİR</button>
                     <button class="btn btn-green" style="font-size:13px; padding:12px 25px; box-shadow: 0 0 15px rgba(16,185,129,0.5);" onclick="window.location.href='PUANTAJMOTORU.html'">💰 PUANTAJ AL</button>
                     <button class="btn btn-red" style="font-size:13px; padding:12px 25px;" onclick="logout()">🚪 ÇIKIŞ YAP</button>
                 </div>
@@ -373,7 +374,6 @@
         // 2. AÇILIŞ VE İKİ SEÇENEKLİ MENÜ 
         // =========================================
         window.onload = () => {
-            // ✨ DİNAMİK VİTRİN İSMİ ✨
             try {
                 let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
                 let splashBaslik = document.getElementById('dynamicSplashTitle');
@@ -396,18 +396,14 @@
                         currentUser = activeUsr; 
                         document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
                         
-                        // İKİ SEÇENEKLİ MENÜYÜ GÖSTER
                         document.getElementById("appSelector").style.display = "flex";
 
                         const btnSorumlu = document.getElementById('btnSorumluAta');
-                        const btnSifre = document.getElementById('btnSifreDegistir');
-                        if (activeRole === 'admin' || currentUser === 'ÜMİT' || currentUser === 'MÜDÜR' || currentUser === 'PATRON') {
+                        if (activeRole === 'admin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
-                            if (btnSifre) btnSifre.style.display = 'none';
                             loadSorumlular(); 
                         } else {
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
-                            if (btnSifre) btnSifre.style.display = 'inline-flex';
                         }
 
                         loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews();
@@ -423,7 +419,6 @@
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
         };
 
-        // Seçici ekrandan Vardiya'ya geçiş fonksiyonu
         function openShiftMaster() {
             document.getElementById("appSelector").style.display = "none";
             document.getElementById("mainContent").style.display = "block";
@@ -432,39 +427,81 @@
         function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
 
         // =========================================
-        // 3. ŞİFRE İŞLEMLERİ
+        // 3. ŞİFRE VE YÖNETİCİ ATAMA İŞLEMLERİ (YENİ SİSTEM)
         // =========================================
         function bireyselSifreDegistir() {
+            const role = localStorage.getItem('sm_role');
             const isim = currentUser;
-            db.ref("saas_kullanicilar/" + tenantId + "/sorumlular").once('value').then(snap => {
-                let eskiSifre = null; let tumSifreler = snap.val() || {};
-                Object.entries(tumSifreler).forEach(([sif, ism]) => { if(ism === isim) eskiSifre = sif; });
-                if(!eskiSifre) return alert("Hata: Hesabınız bulunamadı!");
-                let yeniSifre = prompt(`Merhaba ${isim}, lütfen YENİ ŞİFRENİZİ girin:`);
-                if(yeniSifre && yeniSifre.trim() !== "") {
-                    yeniSifre = yeniSifre.trim();
-                    if(yeniSifre === eskiSifre) return alert("Yeni şifreniz eskisiyle aynı olamaz!");
-                    if(tumSifreler[yeniSifre]) return alert("Bu şifre kullanılamaz! Farklı bir şifre belirleyin.");
-                    db.ref("saas_kullanicilar/" + tenantId + "/sorumlular/" + yeniSifre).set(isim).then(() => {
-                        db.ref("saas_kullanicilar/" + tenantId + "/sorumlular/" + eskiSifre).remove().then(() => { showToast("Şifreniz değiştirildi! ✅"); logAction("Kendi şifresini değiştirdi."); });
-                    });
+
+            if (role === 'admin') {
+                // Patron Firebase Auth kullanır
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    let yeniSifre = prompt(`Sayın Patron (${isim}), lütfen YENİ ŞİFRENİZİ girin:`);
+                    if (yeniSifre && yeniSifre.trim() !== "") {
+                        user.updatePassword(yeniSifre).then(() => {
+                            showToast("Patron şifreniz güncellendi! ✅"); logAction("Patron şifresini değiştirdi.");
+                        }).catch(err => {
+                            alert("Güvenlik gereği çıkış yapıp tekrar giriş yapmanız gerekiyor. Lütfen giriş yapıp tekrar deneyin. Hata: " + err.message);
+                        });
+                    }
+                } else {
+                    alert("Oturum bulunamadı! Lütfen tekrar giriş yapın.");
                 }
-            });
+            } else {
+                // Personel / Yönetici (Veritabanı Kullanır)
+                let eskiSifre = prompt(`Merhaba ${isim}, lütfen MEVCUT (ESKİ) ŞİFRENİZİ girin:`);
+                if (!eskiSifre) return;
+                
+                let yeniSifre = prompt("Lütfen YENİ ŞİFRENİZİ girin:");
+                if (!yeniSifre || yeniSifre.trim() === "") return;
+                
+                eskiSifre = eskiSifre.trim();
+                yeniSifre = yeniSifre.trim();
+                
+                if (eskiSifre === yeniSifre) return alert("Yeni şifreniz eskisiyle aynı olamaz!");
+
+                const eskiRef = originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + eskiSifre);
+                eskiRef.once('value').then(snap => {
+                    if (snap.exists() && snap.val().isim === isim) {
+                        const personelVerisi = snap.val();
+                        
+                        originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniSifre).once('value').then(yeniSnap => {
+                            if (yeniSnap.exists()) return alert("Bu şifre zaten kullanımda, lütfen başka bir şifre seçin!");
+                            
+                            originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniSifre).set(personelVerisi).then(() => {
+                                eskiRef.remove().then(() => {
+                                    alert("Şifreniz başarıyla değiştirildi! Güvenliğiniz için çıkış yapılıyor, lütfen yeni şifrenizle tekrar girin.");
+                                    logout();
+                                });
+                            });
+                        });
+                    } else {
+                        alert("Eski şifrenizi hatalı girdiniz!");
+                    }
+                });
+            }
         }
 
         function kaydetSorumlu() {
-            const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); const sifre = document.getElementById('sorumluSifre').value.trim();
+            const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); 
+            const sifre = document.getElementById('sorumluSifre').value.trim();
             if(!isim || !sifre) return alert("Lütfen havuzdan isim seçin ve şifre belirleyin!");
-            originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + sifre).set(isim).then(() => {
-                showToast("Yönetici Eklendi! ✅"); document.getElementById('sorumluIsim').value = ""; document.getElementById('sorumluSifre').value = ""; logAction(`Yeni sorumlu atadı: ${isim}`);
+            
+            originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).set({ isim: isim, rol: "user" }).then(() => {
+                showToast("Yönetici Eklendi! ✅"); 
+                document.getElementById('sorumluIsim').value = ""; 
+                document.getElementById('sorumluSifre').value = ""; 
+                logAction(`Yeni yönetici atadı: ${isim}`);
             });
         }
 
         function loadSorumlular() {
-            originalRef("saas_kullanicilar/" + tenantId + "/sorumlular").on('value', snap => {
+            originalRef("kurum_alt_yoneticileri/" + tenantId).on('value', snap => {
                 const list = document.getElementById('sorumluListesi'); if(!list) return; list.innerHTML = "";
                 if(snap.val()) {
-                    Object.entries(snap.val()).forEach(([sif, ism]) => { 
+                    Object.entries(snap.val()).forEach(([sif, data]) => { 
+                        let ism = data.isim;
                         list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
                             <span style="font-weight:800; color:#fff;">👤 ${ism} <span style="color:var(--warning); margin-left:8px; background:rgba(250,204,21,0.1); padding:2px 8px; border-radius:6px; border:1px dashed var(--warning);">${sif}</span></span>
                             <div style="display:flex; gap:10px; align-items:center;">
@@ -481,12 +518,22 @@
             e.stopPropagation(); let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
             if(yeniSifre && yeniSifre.trim() !== "") {
                 yeniSifre = yeniSifre.trim(); if(yeniSifre === eskiSifre) return;
-                originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + yeniSifre).set(isim).then(() => {
-                    originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + eskiSifre).remove().then(() => { showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); });
+                originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniSifre).set({ isim: isim, rol: "user" }).then(() => {
+                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiSifre).remove().then(() => { 
+                        showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); 
+                    });
                 });
             }
         }
-        function silSorumlu(e, sifre, isim) { e.stopPropagation(); if(confirm(isim + " adlı yetkiyi silmek istediğinize emin misiniz?")) { originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + sifre).remove(); logAction(`Yetki kaldırdı: ${isim}`); } }
+        
+        function silSorumlu(e, sifre, isim) { 
+            e.stopPropagation(); 
+            if(confirm(isim + " adlı yetkiyi silmek istediğinize emin misiniz?")) { 
+                originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).remove(); 
+                logAction(`Yetki kaldırdı: ${isim}`); 
+            } 
+        }
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 400); }
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
@@ -664,7 +711,7 @@
         }
 
         // =========================================
-        // 13. KUSURSUZ EXCEL KOPYALAMA MOTORU (HTML & TSV)
+        // 13. KUSURSUZ EXCEL KOPYALAMA MOTORU
         // =========================================
         function getCleanCellText(cell) { 
             if (cell.classList.contains('hidden-by-snipper')) return null;
@@ -696,10 +743,7 @@
 
         function generateExcelClipboardData(selectedCellsOrRows, isRowMode) {
             let html = "<table border='1' style='border-collapse:collapse; font-family:sans-serif; text-align:center;'>";
-            let tsv = "";
-            let currentRow = null;
-            let rowData = [];
-            let trHtml = "";
+            let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
             
             if (isRowMode) {
                 let table = selectedCellsOrRows[0].closest('table');
@@ -804,7 +848,6 @@
             logAction("Tüm tabloları kopyaladı.");
         }
 
-        // CTRL+C (NATIVE COPY) DESTEĞİ
         document.addEventListener('copy', e => {
             const selected = document.querySelectorAll('.selected-cell');
             if(selected.length > 0) { 
