@@ -51,44 +51,24 @@
         @keyframes letterReveal { to { opacity: 1; transform: rotateY(0) translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* UYGULAMA SEÇİCİ (VARDİYA / PUANTAJ) */
+        #appSelector { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 90000; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; }
+        .selector-card { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 50px 30px; border-radius: 30px; width: 280px; text-align: center; cursor: pointer; transition: 0.4s; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+        .selector-card:hover { transform: translateY(-10px) scale(1.05); border-color: var(--accent); box-shadow: 0 20px 50px rgba(56,189,248,0.3); }
+
         #mainContent { display: none; opacity: 0; animation: fadeIn 1.2s forwards; } 
         @keyframes fadeIn { to { opacity: 1; } }
 
         .container { max-width: 1450px; margin: 0 auto; }
         
-        /* ✨ 3D CAM KARTLAR (GLASSMORPHISM) ✨ */
-        .card { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            padding: 30px; 
-            border-radius: 25px; 
-            border-top: 1px solid var(--glass-border); 
-            border-left: 1px solid var(--glass-border);
-            border-bottom: 1px solid rgba(0,0,0,0.5);
-            border-right: 1px solid rgba(0,0,0,0.5);
-            margin-bottom: 25px; 
-            box-shadow: 10px 10px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02); 
-            position: relative; 
-            overflow: hidden; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+        .card { background: var(--glass-bg); backdrop-filter: blur(20px); padding: 30px; border-radius: 25px; border-top: 1px solid var(--glass-border); border-left: 1px solid var(--glass-border); border-bottom: 1px solid rgba(0,0,0,0.5); border-right: 1px solid rgba(0,0,0,0.5); margin-bottom: 25px; box-shadow: 10px 10px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02); position: relative; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card:hover { box-shadow: 15px 15px 40px rgba(0,0,0,0.7), 0 0 30px var(--glass-glow); transform: translateY(-3px); }
         .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7, var(--success)); box-shadow: 0 0 15px var(--accent); }
         
         .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 
-        /* ✨ 3D BUTONLAR ✨ */
-        .btn { 
-            padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 12px; 
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; color: white; 
-            box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), inset -3px -3px 8px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.5);
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .btn { padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; color: white; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), inset -3px -3px 8px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.5); text-shadow: 1px 1px 3px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); }
         .btn:hover { transform: translateY(-4px) scale(1.03); filter: brightness(1.2); box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4), inset -3px -3px 8px rgba(0,0,0,0.2), 0 8px 25px rgba(0,0,0,0.6); }
-        .btn:active { transform: translateY(2px) scale(0.98); box-shadow: inset 3px 3px 8px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.2); }
-        
         .btn-cyan { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
         .btn-green { background: linear-gradient(135deg, #10b981, #059669); }
         .btn-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
@@ -96,63 +76,41 @@
         .btn-red { background: linear-gradient(135deg, #ef4444, #b91c1c); }
         .btn-pink { background: linear-gradient(135deg, #ec4899, #be185d); }
 
-        .glass-input { 
-            background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); 
-            border-top: 1px solid rgba(0,0,0,0.6); border-left: 1px solid rgba(0,0,0,0.6); 
-            border-bottom: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); 
-            color: white; padding: 14px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 500; transition: 0.3s; 
-            box-shadow: inset 3px 3px 8px rgba(0,0,0,0.6), inset -2px -2px 5px rgba(255,255,255,0.05);
-        }
+        .glass-input { background: rgba(15, 23, 42, 0.5); border-top: 1px solid rgba(0,0,0,0.6); border-left: 1px solid rgba(0,0,0,0.6); border-bottom: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); color: white; padding: 14px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 500; transition: 0.3s; box-shadow: inset 3px 3px 8px rgba(0,0,0,0.6), inset -2px -2px 5px rgba(255,255,255,0.05); }
         .glass-input:focus { border-color: var(--accent); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 0 0 15px var(--glass-glow); background: rgba(15, 23, 42, 0.8); }
 
-        /* 📢 HABERLEŞME PANOSU (GERİ GELDİ VE COŞTU) */
         .top-panels { display: flex; gap: 25px; margin-bottom: 30px; flex-wrap: wrap; }
         .news-container, .log-container { flex: 1; min-width: 320px; display: flex; flex-direction: column; }
         .news-list, .log-list { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-right: 10px; }
-        
         .news-list::-webkit-scrollbar, .log-list::-webkit-scrollbar, .scroll-area::-webkit-scrollbar { width: 8px; height: 8px; }
         .news-list::-webkit-scrollbar-track, .log-list::-webkit-scrollbar-track, .scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
         .news-list::-webkit-scrollbar-thumb, .log-list::-webkit-scrollbar-thumb, .scroll-area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4); }
 
-        .news-item { 
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); 
-            border-left: 5px solid var(--accent); padding: 18px; border-radius: 15px; transition: 0.3s; 
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border);
-        }
+        .news-item { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); border-left: 5px solid var(--accent); padding: 18px; border-radius: 15px; transition: 0.3s; box-shadow: 4px 4px 10px rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); }
         .news-item:hover { transform: translateX(5px) scale(1.02); box-shadow: 8px 8px 20px rgba(0,0,0,0.6), -2px 0 15px var(--glass-glow); border-left-color: var(--success); }
         .news-text { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.6; text-shadow: 1px 1px 2px #000; }
         .news-time { font-size: 11px; color: var(--accent); font-weight: 700; margin-top: 5px; }
         
-        /* Sosyal Butonlar */
         .news-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; flex-wrap: wrap; }
         .reaction-btn { background: rgba(15, 23, 42, 0.8); border: 1px solid #475569; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; color: #cbd5e1; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 2px 2px 5px rgba(0,0,0,0.4); }
-        .reaction-btn:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--accent); transform: translateY(-2px); }
         .reaction-btn.active { background: linear-gradient(135deg, #0ea5e9, #0284c7); border-color: var(--accent); color: #fff; text-shadow: 1px 1px 2px #000; }
         .reply-btn { background: transparent; border: none; color: var(--success); font-size: 12px; cursor: pointer; font-weight: 800; margin-left: auto; text-transform: uppercase; transition: 0.3s; }
-        .reply-btn:hover { text-shadow: 0 0 10px var(--success); transform: scale(1.1); }
-        
         .replies-container { margin-top: 12px; padding-left: 15px; border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 8px; }
         .reply-item { background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 12px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .reply-input-box { display: none; gap: 10px; margin-top: 15px; animation: fadeIn 0.3s; }
-        .reply-input-box.active { display: flex; }
-        
+        .reply-input-box { display: none; gap: 10px; margin-top: 15px; } .reply-input-box.active { display: flex; }
         .emoji-picker-wrapper { position: relative; }
         .emoji-picker { display: none; position: absolute; bottom: 130%; left: 0; background: var(--bg-dark); border: 1px solid var(--accent); padding: 10px; border-radius: 20px; z-index: 100; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 20px var(--glass-glow); }
-        .emoji-picker.active { display: flex; animation: fadeIn 0.2s; }
-        .emoji-item { cursor: pointer; font-size: 22px; transition: 0.2s; }
-        .emoji-item:hover { transform: scale(1.5) translateY(-3px); }
+        .emoji-picker.active { display: flex; }
+        .emoji-item { cursor: pointer; font-size: 22px; transition: 0.2s; } .emoji-item:hover { transform: scale(1.5) translateY(-3px); }
 
         .log-item { background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(15,23,42,0.8)); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 10px; font-size: 12px; display: flex; justify-content: space-between; color: #cbd5e1; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
         .log-user { color: var(--warning); font-weight: 800; text-shadow: 0 0 5px rgba(250, 204, 21, 0.5); }
 
-        /* 📁 ARŞİV KARTLARI (3D) */
         .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-height: 280px; overflow-y: auto; padding: 10px; }
         .archive-card { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 1px 1px 3px rgba(255,255,255,0.1); position: relative; }
         .archive-card::before { content: '📂'; position: absolute; font-size: 80px; opacity: 0.05; right: 10px; bottom: -10px; transform: rotate(-15deg); transition: 0.3s; }
         .archive-card:hover { transform: translateY(-8px) scale(1.03); border-color: var(--accent); box-shadow: 10px 15px 25px rgba(0,0,0,0.6), 0 0 20px var(--glass-glow); }
-        .archive-card:hover::before { opacity: 0.15; transform: rotate(0) scale(1.1); color: var(--accent); }
 
-        /* ✨ POPUP MODALLARI (GLASS) */
         .full-modal-overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(15px); z-index: 10005; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.4s; }
         .full-modal-content { background: var(--bg-light); width: 98%; height: 98%; border-radius: 30px; border: 2px solid var(--accent); box-shadow: 0 0 80px rgba(0,0,0,0.9), inset 0 0 30px var(--glass-glow); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(50px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .full-modal-overlay.show, .modal-overlay.show { opacity: 1; }
@@ -162,14 +120,10 @@
         .modal-header-bar { padding: 25px 35px; background: rgba(15,23,42,0.8); backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 10; }
         .modal-body-area { padding: 30px; flex: 1; overflow-y: auto; background: radial-gradient(circle at center, rgba(30,41,59,0.3), transparent); }
 
-        /* =========================================
-           TABLO (MATRİS) TASARIMI (Buzlu Cam)
-           ========================================= */
-        .table-wrapper { background: rgba(30,41,59,0.4); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1); transition: 0.4s; }
+        .table-wrapper { background: rgba(30,41,59,0.4); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
         .table-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 15px; cursor: pointer; }
-        .table-title { font-size: 20px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px var(--glass-glow); transition: 0.3s; }
-        .table-title:hover { color: #fff; text-shadow: 0 0 20px #fff; }
-        .scroll-area { overflow: auto; max-height: 65vh; border-radius: 15px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); box-shadow: inset 0 10px 30px rgba(0,0,0,0.8); }
+        .table-title { font-size: 20px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px var(--glass-glow); }
+        .scroll-area { overflow: auto; max-height: 65vh; border-radius: 15px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); }
         
         table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; table-layout: auto; padding: 5px; }
         th, td { border-radius: 6px; padding: 12px 8px; text-align: center; font-size: 13px; font-weight: 700; position: relative; transition: all 0.2s; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 2px 2px 5px rgba(0,0,0,0.4); }
@@ -181,48 +135,35 @@
         .shift-cell:hover { box-shadow: inset 0 0 20px rgba(255,255,255,0.5), 0 5px 15px rgba(0,0,0,0.6); transform: scale(1.08); z-index: 999 !important; border: 1px solid #fff; }
         .selected-cell { background: linear-gradient(135deg, rgba(56, 189, 248, 0.6), rgba(2, 132, 199, 0.8)) !important; outline: 2px solid #fff !important; z-index: 10; box-shadow: 0 0 20px var(--accent) !important; }
 
-        .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 2px solid transparent; font-weight: 800; padding: 4px; border-radius: 4px; transition: 0.3s; }
-        .editable-name:focus { border-bottom-color: var(--accent); background: rgba(255,255,255,0.1); text-shadow: 0 0 10px var(--accent); }
-        .select-icon { background: linear-gradient(135deg, var(--accent), #0284c7); color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.5), 2px 2px 5px rgba(0,0,0,0.6); }
-        .select-icon:hover { transform: rotate(180deg) scale(1.2); box-shadow: 0 0 15px #fff; background: #fff; color: var(--accent); }
+        .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 2px solid transparent; font-weight: 800; padding: 4px; border-radius: 4px; }
+        .select-icon { background: linear-gradient(135deg, var(--accent), #0284c7); color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; }
 
-        /* ✨ SAĞ TIK DİNAMİK VARDİYA MENÜSÜ (Buzlu Cam) ✨ */
         .custom-menu { display: none; position: absolute; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; z-index: 100010; width: 400px; padding: 20px; box-shadow: 0 30px 70px rgba(0,0,0,0.9), inset 0 0 20px var(--glass-glow); animation: menuPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes menuPop { from { transform: scale(0.5) translateY(50px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-        
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .menu-item-wrapper { position: relative; width: 100%; display: inline-block; }
-        .menu-item { width: 100%; padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 900; font-size: 12px; transition: 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.3), inset -3px -3px 8px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.4); text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; box-sizing: border-box; }
-        .menu-item:hover { transform: scale(1.08); border-color: #fff; z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 2px 2px 8px rgba(255,255,255,0.5); }
-        .delete-custom-btn { position: absolute; top: -6px; right: -6px; background: linear-gradient(135deg, var(--danger), #991b1b); color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.8); transition: 0.3s; border: 1px solid rgba(255,255,255,0.4); }
-        .delete-custom-btn:hover { transform: scale(1.4) rotate(90deg); box-shadow: 0 0 15px var(--danger); }
+        .menu-item { width: 100%; padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 900; font-size: 12px; border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; box-sizing: border-box; }
+        .delete-custom-btn { position: absolute; top: -6px; right: -6px; background: linear-gradient(135deg, var(--danger), #991b1b); color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid rgba(255,255,255,0.4); }
         
-        .mini-swatch { height: 28px; border-radius: 50%; cursor: pointer; transition: 0.3s; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.5), inset -2px -2px 5px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); }
-        .mini-swatch:hover { transform: scale(1.5) translateY(-5px); border-color: #fff; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.9); }
+        .mini-swatch { height: 28px; border-radius: 50%; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.2); }
+        .stat-sub { display: inline-block; width: 45%; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; padding: 5px 0; border-radius: 6px; margin: 1px; font-weight: 900; background: rgba(0,0,0,0.5); }
 
-        .stat-sub { display: inline-block; width: 45%; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; padding: 5px 0; border-radius: 6px; margin: 1px; font-weight: 900; background: rgba(0,0,0,0.5); box-shadow: inset 1px 1px 3px rgba(0,0,0,0.8); }
-
-        /* 👥 PERSONEL HAVUZU KAPSÜLLERİ */
         .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; } 
-        .staff-chip { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: flex-start; gap: 12px; font-size: 14px; color: #e2e8f0; box-shadow: 5px 5px 15px rgba(0,0,0,0.4), inset 1px 1px 2px rgba(255,255,255,0.1); }
-        .staff-chip:hover { border-color: var(--accent); transform: translateY(-5px) scale(1.02); box-shadow: 10px 10px 25px rgba(0,0,0,0.6), 0 0 15px var(--glass-glow); }
-        .staff-chip.selected { border-color: var(--success); background: linear-gradient(145deg, rgba(16, 185, 129, 0.3), rgba(15, 23, 42, 0.9)); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); color: white; }
-        .staff-chip input { pointer-events: none; width: 20px; height: 20px; accent-color: var(--success); }
-        .staff-del { margin-left: auto; color: var(--danger); font-size: 20px; font-weight: 900; cursor: pointer; padding: 2px 8px; border-radius: 8px; transition: 0.3s; }
-        .staff-del:hover { background: rgba(239, 68, 68, 0.3); transform: scale(1.3); color: #fff; text-shadow: 0 0 10px var(--danger); }
+        .staff-chip { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; color: #e2e8f0; }
+        .staff-chip.selected { border-color: var(--success); background: linear-gradient(145deg, rgba(16, 185, 129, 0.3), rgba(15, 23, 42, 0.9)); color: white; }
+        .staff-del { margin-left: auto; color: var(--danger); font-size: 20px; font-weight: 900; cursor: pointer; padding: 2px 8px; border-radius: 8px; }
 
-        .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: 2px; right: 2px; font-size: 14px; z-index: 10; cursor: help; text-shadow: 0 2px 5px #000; animation: pinPulse 1.5s infinite; filter: drop-shadow(0 0 2px #fff); }
+        .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: 2px; right: 2px; font-size: 14px; z-index: 10; animation: pinPulse 1.5s infinite; }
         @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.4) rotate(20deg); } 100% { transform: scale(1); } }
-        .shift-cell[data-pin]:hover::after { content: attr(data-pin); position: absolute; top: calc(100% + 10px); bottom: auto; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); border: 2px solid var(--warning); color: var(--warning); padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 800; white-space: pre-wrap; width: max-content; max-width: 280px; z-index: 999999 !important; pointer-events: none; box-shadow: 0 15px 40px rgba(0,0,0,0.9), 0 0 20px rgba(250, 204, 21, 0.3); backdrop-filter: blur(10px); }
+        .shift-cell[data-pin]:hover::after { content: attr(data-pin); position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); border: 2px solid var(--warning); color: var(--warning); padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 800; white-space: pre-wrap; width: max-content; max-width: 280px; z-index: 999999 !important; pointer-events: none; }
 
-        #toast { visibility: hidden; min-width: 280px; background: linear-gradient(135deg, var(--success), #047857); color: #fff; text-align: center; border-radius: 50px; padding: 18px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 40px; font-size: 15px; font-weight: 900; transform: translateX(-50%); box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 2px 2px 5px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px; }
-        #toast.show { visibility: visible; animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeout 0.5s 2.5s forwards; }
+        #toast { visibility: hidden; min-width: 280px; background: linear-gradient(135deg, var(--success), #047857); color: #fff; text-align: center; border-radius: 50px; padding: 18px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 40px; font-size: 15px; font-weight: 900; transform: translateX(-50%); box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px; }
+        #toast.show { visibility: visible; animation: popUp 0.5s forwards, fadeout 0.5s 2.5s forwards; }
         @keyframes popUp { from { bottom: -50px; opacity: 0; transform: translateX(-50%) scale(0.5); } to { bottom: 40px; opacity: 1; transform: translateX(-50%) scale(1); } }
+        @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
 
-        .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 15px var(--glass-glow); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .sm-player:hover { border-color: var(--accent); box-shadow: 0 20px 45px rgba(0,0,0,0.8), 0 0 25px var(--glass-glow); transform: translateY(-8px) scale(1.05); }
-        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.3), 2px 2px 5px rgba(0,0,0,0.5); }
-        .sm-btn:hover { background: var(--accent); color: #000; transform: scale(1.15); box-shadow: 0 0 15px var(--accent); }
+        .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; }
+        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -231,6 +172,19 @@
         <div class="splash-hospital">ANTALYA DÖŞEMEALTI DEVLET HASTANESİ<br>VARDİYA YÖNETİM SİSTEMİ</div>
         <div class="splash-logo"><svg viewBox="0 0 24 24" width="80" fill="#0f172a"><path d="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z"/></svg></div>
         <div class="splash-text-container" id="splashTextContainer"></div>
+    </div>
+
+    <div id="appSelector">
+        <div class="selector-card" onclick="openShiftMaster()">
+            <div style="font-size:80px; margin-bottom:20px; text-shadow: 0 0 20px var(--accent);">📅</div>
+            <h3 style="color:var(--accent); font-size:22px; font-weight:900;">VARDİYA PANELİ</h3>
+            <p style="font-size:13px; color:#cbd5e1;">Personel nöbet ve çalışma çizelgesi oluşturun.</p>
+        </div>
+        <div class="selector-card" onclick="window.location.href='puantaj.html'">
+            <div style="font-size:80px; margin-bottom:20px; text-shadow: 0 0 20px var(--success);">💰</div>
+            <h3 style="color:var(--success); font-size:22px; font-weight:900;">PUANTAJ MOTORU</h3>
+            <p style="font-size:13px; color:#cbd5e1;">Maaş, mesai ve hakediş hesaplamalarını yapın.</p>
+        </div>
     </div>
 
     <div id="mainContent">
@@ -329,17 +283,14 @@
         <div class="modal-box" style="max-width: 450px; text-align: center; border: 2px solid var(--warning); box-shadow:0 0 40px rgba(250,204,21,0.3);">
             <h3 style="margin-top:0; color:var(--warning); font-size:26px; text-shadow:0 0 15px rgba(250,204,21,0.5);">👑 YÖNETİCİ ATA</h3>
             <p style="font-size:12px; color:#cbd5e1; margin-bottom:20px;">Havuzdaki bir personele sisteme giriş yetkisi verin.</p>
-            
             <select id="sorumluIsim" class="glass-input" style="width:100%; margin-bottom:15px; text-align:center; cursor:pointer; font-size:16px; font-weight:800; padding:15px;">
                 <option value="" style="color:black;">-- Havuzdan Personel Seçin --</option>
             </select>
             <input type="text" id="sorumluSifre" class="glass-input" style="width:100%; margin-bottom:25px; text-align:center; font-size:18px; font-weight:900; padding:15px; letter-spacing:3px;" placeholder="Giriş Şifresi (Örn: 1010)">
-            
             <div style="display:flex; gap:15px;">
                 <button class="btn btn-green" style="flex:1; justify-content:center; padding:15px; font-size:15px;" onclick="kaydetSorumlu()">YETKİ VER / KAYDET</button>
                 <button class="btn btn-red" style="padding:15px 30px; font-size:15px;" onclick="closeModal('sorumluModal')">İPTAL</button>
             </div>
-            
             <div style="margin-top: 30px; text-align: left; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px;">
                 <h4 style="color:#fff; margin-top:0; font-size:14px;">Mevcut Yöneticiler:</h4>
                 <div id="sorumluListesi" style="max-height: 180px; overflow-y: auto; padding-right:5px;"></div>
@@ -418,7 +369,7 @@
         };
 
         // =========================================
-        // 2. AÇILIŞ VE KONTROL
+        // 2. AÇILIŞ VE İKİ SEÇENEKLİ MENÜ 
         // =========================================
         window.onload = () => {
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
@@ -433,9 +384,11 @@
                     
                     if(activeUsr) {
                         currentUser = activeUsr; 
-                        document.getElementById("mainContent").style.display = "block"; 
                         document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
                         
+                        // İKİ SEÇENEKLİ MENÜYÜ GÖSTER
+                        document.getElementById("appSelector").style.display = "flex";
+
                         const btnSorumlu = document.getElementById('btnSorumluAta');
                         const btnSifre = document.getElementById('btnSifreDegistir');
                         if (activeRole === 'admin' || currentUser === 'ÜMİT' || currentUser === 'MÜDÜR' || currentUser === 'PATRON') {
@@ -460,10 +413,16 @@
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
         };
 
+        // Seçici ekrandan Vardiya'ya geçiş fonksiyonu
+        function openShiftMaster() {
+            document.getElementById("appSelector").style.display = "none";
+            document.getElementById("mainContent").style.display = "block";
+        }
+
         function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
 
         // =========================================
-        // 3. ŞİFRE İŞLEMLERİ (PATRON & BİREYSEL)
+        // 3. ŞİFRE İŞLEMLERİ
         // =========================================
         function bireyselSifreDegistir() {
             const isim = currentUser;
@@ -493,8 +452,7 @@
 
         function loadSorumlular() {
             originalRef("saas_kullanicilar/" + tenantId + "/sorumlular").on('value', snap => {
-                const list = document.getElementById('sorumluListesi'); if(!list) return;
-                list.innerHTML = "";
+                const list = document.getElementById('sorumluListesi'); if(!list) return; list.innerHTML = "";
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([sif, ism]) => { 
                         list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
@@ -524,7 +482,7 @@
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
 
         // =========================================
-        // 4. SOSYAL HABERLEŞME PANOSU
+        // 4. HABERLEŞME & LOG
         // =========================================
         function loadNews() { 
             db.ref("haberler").on("value", snap => { 
@@ -570,7 +528,6 @@
                 } else { l.innerHTML = `<div style="text-align:center; color:#64748b; margin-top:20px; font-size:12px;">Henüz mesaj yok.</div>`; }
             }); 
         }
-        
         function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) }); logAction(`Panoya yeni not bıraktı.`); i.value = ""; } }
         function deleteNews(id) { if(confirm("Mesajı silmek istiyor musun?")) db.ref("haberler").child(id).remove(); }
         function toggleReplyBox(id) { const box = document.getElementById(`reply-box-${id}`); box.classList.toggle('active'); if(box.classList.contains('active')) document.getElementById(`reply-input-${id}`).focus(); }
@@ -583,44 +540,18 @@
         db.ref("islem_loglari").limitToLast(30).on("value", snap => { const l = document.getElementById("logList"); l.innerHTML = ""; if(snap.val()) { Object.values(snap.val()).reverse().forEach(val => { l.innerHTML += `<div class="log-item"><span class="log-user">${val.user}</span> <span style="flex:1; margin-left:10px;">${val.action}</span> <span style="color:#64748b; font-size:10px;">${val.time}</span></div>`; }); } });
 
         // =========================================
-        // 5. PERSONEL HAVUZU
+        // 5. HAVUZ VE DİĞER FONKSİYONLAR
         // =========================================
-        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { 
-            const p = document.getElementById("staffPool"); p.innerHTML = ""; 
-            const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>';
-            let count = 0; staffList = []; 
-            if(snap.val()) { 
-                Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); 
-                staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); 
-            } document.getElementById("staffCounter").innerText = count; 
-        }); }
+        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; let count = 0; staffList = []; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); } document.getElementById("staffCounter").innerText = count; }); }
         function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; const lines = raw.split('\n'); lines.forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction(`${lines.length} personel ekledi.`); inp.value = ""; }
         function removeStaff(e, id) { e.stopPropagation(); if(confirm("Kişiyi havuzdan sil?")) db.ref("personel_havuzu").child(id).remove(); }
         function clearStaffPool() { if(confirm("Tüm havuzu sil?")) db.ref("personel_havuzu").remove(); }
 
-        // =========================================
-        // 6. EXCEL İÇE AKTARMA
-        // =========================================
         function openExcelModal() { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'new'); }
         function openExcelModalForTable(btn) { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'append'); window.currentTableWrapperForExcel = btn.closest('.table-wrapper'); }
         function cleanExcelRows(raw) { let rows = raw.split("\n").filter(r => r.trim() !== ""); while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; } return rows; }
-        function importFromExcel() {
-            const text = document.getElementById("excelInput").value; if(!text.trim()) return alert("Veri yapıştırın!"); 
-            const targetMode = document.getElementById('excelModal').getAttribute('data-target'); const rows = cleanExcelRows(text); 
-            if(targetMode === 'new') {
-                const colsCount = rows[0].split("\t").length - 1; document.getElementById("colCount").value = colsCount > 0 ? colsCount : 30; startNewSession();
-                generateTable(true, rows.map(r => { const c = r.split("\t"); return { name: c[0] ? c[0].trim() : "İsimsiz", shifts: c.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }) }; }), "İçe Aktarılan Liste", new Date(), colsCount);
-            } else if (targetMode === 'append' && window.currentTableWrapperForExcel) {
-                const wrapper = window.currentTableWrapperForExcel; const tbody = wrapper.querySelector('tbody'); const colCount = parseInt(wrapper.getAttribute("data-colcount")); const startDt = new Date(wrapper.getAttribute("data-startdt"));
-                rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }); tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); });
-                updateAllStats(); showToast("Veriler Tabloya Eklendi!");
-            }
-            closeModal('excelModal');
-        }
+        function importFromExcel() { const text = document.getElementById("excelInput").value; if(!text.trim()) return alert("Veri yapıştırın!"); const targetMode = document.getElementById('excelModal').getAttribute('data-target'); const rows = cleanExcelRows(text); if(targetMode === 'new') { const colsCount = rows[0].split("\t").length - 1; document.getElementById("colCount").value = colsCount > 0 ? colsCount : 30; startNewSession(); generateTable(true, rows.map(r => { const c = r.split("\t"); return { name: c[0] ? c[0].trim() : "İsimsiz", shifts: c.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }) }; }), "İçe Aktarılan Liste", new Date(), colsCount); } else if (targetMode === 'append' && window.currentTableWrapperForExcel) { const wrapper = window.currentTableWrapperForExcel; const tbody = wrapper.querySelector('tbody'); const colCount = parseInt(wrapper.getAttribute("data-colcount")); const startDt = new Date(wrapper.getAttribute("data-startdt")); rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }); tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); }); updateAllStats(); showToast("Veriler Tabloya Eklendi!"); } closeModal('excelModal'); }
 
-        // =========================================
-        // 7. SAĞ TIK DİNAMİK VARDİYA MENÜSÜ
-        // =========================================
         db.ref("vardiya_kurallari").on('value', snap => { if(snap.val()) shiftRules = snap.val(); else shiftRules = defaultRules; renderContextMenu(); });
         function renderContextMenu() { const grid = document.getElementById("dynamicMenuGrid"); grid.innerHTML = ""; Object.keys(shiftRules).forEach(sName => { let r = shiftRules[sName]; grid.innerHTML += `<div class="menu-item-wrapper"><div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div><div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div></div>`; }); grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; }
         function deleteShiftRule(key, e) { e.stopPropagation(); if(confirm(`Vardiyayı sil?`)) db.ref("vardiya_kurallari/" + key).remove(); }
@@ -629,71 +560,10 @@
         function addGhostPinToCell() { if(!activeCell) return; let current = activeCell.getAttribute("data-pin") || ""; let n = prompt("Notunuz:", current); if(n !== null) { if(n.trim() === "") activeCell.removeAttribute("data-pin"); else activeCell.setAttribute("data-pin", n); saveHistory(); } document.getElementById("contextMenu").style.display="none"; }
         function removeGhostPinFromCell() { if(!activeCell) return; activeCell.removeAttribute("data-pin"); saveHistory(); document.getElementById("contextMenu").style.display="none"; }
 
-        // =========================================
-        // 8. TABLO (MATRİS) ÜRETİMİ
-        // =========================================
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; window.currentArchiveNode = "arsivlenmis_shiftler"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
         function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll(".staff-chip.selected")).map(el => el.innerText.split('×')[0].trim()); if(sel.length===0) return alert("Seçim yapmadınız!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); }
-
-        function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
-            const cols = customColCount || parseInt(document.getElementById("colCount").value); let startDt = customStartDt; if (!(startDt instanceof Date) || isNaN(startDt.getTime())) { let dVal = document.getElementById("startDate").value; startDt = dVal ? new Date(dVal) : new Date(); }
-            let h = `<table><thead><tr><th style="width: 40px; background: rgba(15,23,42,0.9); border: none;">↕️</th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border:none; background:rgba(15,23,42,0.9);"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox" style="width:18px;height:18px;"> PERSONEL</th>`;
-            for(let i=0; i<cols; i++) { let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; if(i === cols - 1) lastUsedEndDate = new Date(d); }
-            h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`;
-            if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); }); else data.forEach(n => { h += createRowHtml(n, cols, startDt); }); h += '</tbody></table>';
-
-            const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName);
-            wrapper.innerHTML = `
-                <div class="table-header" onclick="toggleTableCollapse(this, event)">
-                    <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;">
-                        <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button>
-                        <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button>
-                    </div>
-                    <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span>
-                    <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span>
-                </div>
-                <div class="scroll-area">${h}</div>
-                <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div>
-                <div class="table-actions-bottom">
-                    <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button>
-                    <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button>
-                    <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button>
-                    <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button>
-                    <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button>
-                    <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button>
-                    <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span>
-                    <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button>
-                    <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button>
-                    <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span>
-                    <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button>
-                    <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button>
-                    <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button>
-                    <span style="flex-grow:1;"></span>
-                    <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button>
-                    <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button>
-                </div>
-            `;
-            if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper);
-            saveHistory(); updateAllStats(); openModal('tableModalOverlay'); 
-        }
-
-        function createRowHtml(name, colCount, startDt, savedShifts = null) {
-            let cells = `<td style="width: 40px; background: rgba(15,23,42,0.6); border-right: none;"><div class="nav-box" style="pointer-events:auto;"><button class="mini-btn" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" onclick="moveRow(this,1)">▼</button></div></td>`;
-            cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: none;"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`;
-            let shiftIdx = 0;
-            for(let i=0; i<colCount; i++) { 
-                let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
-                const txt = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].text : ""; const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent"; 
-                const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : ""; const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; 
-                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; 
-                shiftIdx++; if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; 
-            }
-            cells += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td>`; return `<tr>${cells}</tr>`;
-        }
-
-        // =========================================
-        // 9. TABLO İÇİ AKSİYONLAR
-        // =========================================
+        function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") { const cols = customColCount || parseInt(document.getElementById("colCount").value); let startDt = customStartDt; if (!(startDt instanceof Date) || isNaN(startDt.getTime())) { let dVal = document.getElementById("startDate").value; startDt = dVal ? new Date(dVal) : new Date(); } let h = `<table><thead><tr><th style="width: 40px; background: rgba(15,23,42,0.9); border: none;">↕️</th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border:none; background:rgba(15,23,42,0.9);"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox" style="width:18px;height:18px;"> PERSONEL</th>`; for(let i=0; i<cols; i++) { let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; if(i === cols - 1) lastUsedEndDate = new Date(d); } h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`; if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); }); else data.forEach(n => { h += createRowHtml(n, cols, startDt); }); h += '</tbody></table>'; const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); saveHistory(); updateAllStats(); openModal('tableModalOverlay'); }
+        function createRowHtml(name, colCount, startDt, savedShifts = null) { let cells = `<td style="width: 40px; background: rgba(15,23,42,0.6); border-right: none;"><div class="nav-box" style="pointer-events:auto;"><button class="mini-btn" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" onclick="moveRow(this,1)">▼</button></div></td>`; cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: none;"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`; let shiftIdx = 0; for(let i=0; i<colCount; i++) { let d = new Date(startDt); d.setDate(startDt.getDate() + i); const txt = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].text : ""; const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent"; const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : ""; const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; shiftIdx++; if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; } cells += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td>`; return `<tr>${cells}</tr>`; }
         function toggleCheckboxFromCell(e, cell) { if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return; const cb = cell.querySelector('.row-checkbox'); if(cb && e.target !== cb) cb.checked = !cb.checked; }
         function toggleAllRows(mainCb) { const wrapper = mainCb.closest('table'); wrapper.querySelectorAll('tbody .row-checkbox').forEach(cb => cb.checked = mainCb.checked); }
         function moveRow(btn, dir) { const row = btn.closest('tr'); const tbody = row.parentElement; if (dir === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling); else if (dir === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row); saveHistory(); }
@@ -702,14 +572,9 @@
         function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); const names = Array.from(wrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, null, wrapper); } }
         function safeAppendTable() { const wrappers = document.querySelectorAll(".table-wrapper"); if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); saveHistory(); const lastWrapper = wrappers[wrappers.length - 1]; const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate); } }
         function takeFullScreenshot(btn) { const wrapper = btn.closest('.table-wrapper'); const captureArea = wrapper.querySelector(".scroll-area"); const table = wrapper.querySelector("table"); let oldText = btn.innerHTML; btn.innerHTML = "⏳ FOTO ALINIYOR..."; let oldOverflow = captureArea.style.overflow; let oldMaxHeight = captureArea.style.maxHeight; captureArea.style.overflow = 'visible'; captureArea.style.maxHeight = 'none'; html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, windowWidth: table.scrollWidth + 50 }).then(canvas => { const link = document.createElement("a"); link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; link.href = canvas.toDataURL(); link.click(); btn.innerHTML = oldText; captureArea.style.overflow = oldOverflow; captureArea.style.maxHeight = oldMaxHeight; logAction("Fotoğraf aldı."); }); }
-
         function splitRowFromCell() { if(!activeCell) return; const cell = activeCell; const row = cell.closest('tr'); const tbody = row.parentElement; const allShiftCells = Array.from(row.querySelectorAll('.shift-cell')); const cellIndex = allShiftCells.indexOf(cell); if(cellIndex === -1) return; saveHistory(); const newRow = row.cloneNode(true); const origName = row.querySelector('.editable-name').innerText; newRow.querySelector('.editable-name').innerText = origName + " (Devamı)"; for(let i = cellIndex; i < allShiftCells.length; i++) { allShiftCells[i].innerText = ""; allShiftCells[i].style.background = "transparent"; allShiftCells[i].removeAttribute("data-pin"); } const newShiftCells = Array.from(newRow.querySelectorAll('.shift-cell')); for(let i = 0; i < cellIndex; i++) { newShiftCells[i].innerText = ""; newShiftCells[i].style.background = "transparent"; newShiftCells[i].removeAttribute("data-pin"); } tbody.insertBefore(newRow, row.nextSibling); updateAllStats(); document.getElementById("contextMenu").style.display = "none"; showToast("Satır bölündü! ✂️"); logAction("Satır böldü."); }
         function toggleTableCollapse(header, e) { if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return; header.closest('.table-wrapper').classList.toggle('collapsed'); }
         function moveTableWrapper(btn, dir, e) { e.stopPropagation(); const wrapper = btn.closest('.table-wrapper'); if(dir === -1 && wrapper.previousElementSibling) wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling); else if (dir === 1 && wrapper.nextElementSibling) wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper); }
-
-        // =========================================
-        // 10. SÜTUN, TARİH VE KESİM (MAKAS)
-        // =========================================
         function toggleSnippingMode(btn) { const table = btn.closest('.table-wrapper').querySelector('table'); table.classList.toggle('snipping-mode'); if(table.classList.contains('snipping-mode')) { btn.innerHTML = "🔴 KESİM AÇIK"; btn.classList.replace('btn-pink', 'btn-red'); } else { btn.innerHTML = "✂️ SÜTUN KES"; btn.classList.replace('btn-red', 'btn-pink'); } }
         function showAllColumns(btn) { saveHistory(); const table = btn.closest('.table-wrapper').querySelector('table'); table.querySelectorAll('.hidden-by-snipper').forEach(el => el.classList.remove('hidden-by-snipper')); }
         document.addEventListener('click', e => { const th = e.target.closest('th'); if(th && th.closest('table.snipping-mode')) { const table = th.closest('table'); const tr = th.parentNode; let colIndex = Array.from(tr.children).indexOf(th); if(colIndex > 1) { saveHistory(); table.querySelectorAll('tr').forEach(row => { if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper'); }); } } });
@@ -721,9 +586,6 @@
         function recalculateDatesFrom(startTh, startDate) { let currentTh = startTh.nextElementSibling; let currentDate = new Date(startDate); while(currentTh) { if(currentTh.hasAttribute("data-date")) { currentDate.setDate(currentDate.getDate() + 1); let fullDateStr = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}.${currentDate.getFullYear()}`; currentTh.setAttribute('data-date', fullDateStr); currentTh.innerHTML = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${currentDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; } currentTh = currentTh.nextElementSibling; } showToast("Tarihler güncellendi!"); }
         function deleteColumn() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; if(!confirm("Sütunu silmek istediğinize emin misiniz?")) return; saveHistory(); const targetIndex = Array.from(activeHeaderCell.parentElement.children).indexOf(activeHeaderCell); activeHeaderCell.closest('table').querySelectorAll('tbody tr').forEach(tr => { if(tr.children[targetIndex]) tr.children[targetIndex].remove(); }); activeHeaderCell.closest('.table-wrapper').setAttribute("data-colcount", parseInt(activeHeaderCell.closest('.table-wrapper').getAttribute("data-colcount")) - 1); activeHeaderCell.remove(); updateAllStats(); showToast("Sütun Silindi!"); }
 
-        // =========================================
-        // 11. ARŞİV VE KALICI DEPO SİSTEMİ
-        // =========================================
         function loadArchives() { db.ref("arsivlenmis_shiftler").on("value", snap => { const l = document.getElementById("archiveList"); l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', false)"><b style="color:var(--accent); font-size:16px; text-shadow:0 0 10px var(--glass-glow);">📁 ${val.name || 'İsimsiz'}</b><br><small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-orange" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button><button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } }); }
         function loadPermanentArchives() { db.ref("kalici_depo").on("value", snap => { const l = document.getElementById("permanentArchiveList"); if(!l) return; l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.style.border = "1px dashed rgba(255,255,255,0.2)"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', true)"><b style="color:#94a3b8; font-size:16px;">📦 ${val.name || 'İsimsiz'}</b><br><small style="color:#64748b; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button><button class="btn btn-red" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } else { l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Geçmiş ayların deposu şu an boş...</div>"; } }); }
         function sendToPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Depoya kaldır?")) { db.ref("arsivlenmis_shiftler").child(id).once("value", snap => { if(snap.val()) db.ref("kalici_depo").child(id).set(snap.val()).then(() => db.ref("arsivlenmis_shiftler").child(id).remove()); }); } }
@@ -792,7 +654,7 @@
         }
 
         // =========================================
-        // 13. EXCEL KOPYALAMA MOTORU (SAF VERİ - %100 UYUM)
+        // 13. KUSURSUZ EXCEL KOPYALAMA MOTORU (HTML & TSV)
         // =========================================
         function getCleanCellText(cell) { 
             if (cell.classList.contains('hidden-by-snipper')) return null;
@@ -803,44 +665,92 @@
             return text; 
         }
 
+        function getExcelCellHtml(cell) {
+            if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
+            
+            let text = getCleanCellText(cell);
+            let bg = '#ffffff'; let color = '#000000';
+            
+            if(cell.tagName === 'TH') {
+                bg = '#d1d5db'; color = '#000000';
+                return { html: `<th style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px; font-weight: bold;">${text}</th>`, text: text };
+            } else {
+                let cellBg = cell.style.background || cell.style.backgroundColor;
+                if(cellBg && !cellBg.includes('transparent')) {
+                    let match = cellBg.match(/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})/);
+                    if(match) { bg = match[0]; color = '#ffffff'; }
+                }
+                return { html: `<td style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px;">${text}</td>`, text: text };
+            }
+        }
+
+        function generateExcelClipboardData(selectedCellsOrRows, isRowMode) {
+            let html = "<table border='1' style='border-collapse:collapse; font-family:sans-serif; text-align:center;'>";
+            let tsv = "";
+            let currentRow = null;
+            let rowData = [];
+            let trHtml = "";
+            
+            if (isRowMode) {
+                let table = selectedCellsOrRows[0].closest('table');
+                html += "<thead><tr>";
+                table.querySelectorAll('thead th').forEach(th => { 
+                    let cd = getExcelCellHtml(th); 
+                    if(cd.html) { html += cd.html; tsv += cd.text + "\t"; } 
+                });
+                html += "</tr></thead><tbody>\n"; tsv += "\n";
+                
+                selectedCellsOrRows.forEach(cb => {
+                    const tr = cb.closest('tr'); html += "<tr>"; let rData = [];
+                    tr.querySelectorAll('td').forEach(td => {
+                        let cd = getExcelCellHtml(td);
+                        if(cd.html) { html += cd.html; rData.push(cd.text); }
+                    });
+                    html += "</tr>"; tsv += rData.join("\t") + "\n";
+                });
+                html += "</tbody>";
+            } else {
+                selectedCellsOrRows.forEach(cell => {
+                    const cellRow = cell.closest('tr');
+                    if(currentRow !== cellRow) { 
+                        if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } 
+                        currentRow = cellRow; trHtml = "<tr>"; 
+                    }
+                    let cd = getExcelCellHtml(cell);
+                    if(cd.html) { trHtml += cd.html; rowData.push(cd.text); }
+                });
+                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; }
+            }
+            html += "</table>";
+            return { html, tsv };
+        }
+
+        function executeExcelCopy(html, tsv) {
+            const container = document.createElement('div');
+            container.innerHTML = html;
+            container.style.position = 'fixed'; container.style.top = '-9999px'; container.style.pointerEvents = 'none';
+            document.body.appendChild(container);
+            const selection = window.getSelection(); const range = document.createRange();
+            range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range);
+            try { 
+                document.execCommand('copy'); 
+                showToast("Panoya Kopyalandı! 📋"); 
+            } catch(e) { 
+                navigator.clipboard.writeText(tsv).then(() => showToast("Sadece metin kopyalandı! 📋")); 
+            }
+            selection.removeAllRanges(); document.body.removeChild(container);
+        }
+
         function copyTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
             const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
-            let tsv = "";
             
             if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) {
-                let currentRow = null; let rowData = [];
-                selectedCells.forEach(cell => {
-                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; 
-                    const cellRow = cell.closest('tr');
-                    if(currentRow !== cellRow) { 
-                        if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; rowData = []; } 
-                        currentRow = cellRow; 
-                    }
-                    let txt = getCleanCellText(cell);
-                    if (txt !== null) rowData.push(txt);
-                });
-                if(rowData.length > 0) { tsv += rowData.join("\t") + "\n"; } 
-                navigator.clipboard.writeText(tsv).then(() => showToast("Seçili alan Excel için kopyalandı! 📋"));
+                const { html, tsv } = generateExcelClipboardData(selectedCells, false);
+                executeExcelCopy(html, tsv);
             } else if(cbs.length > 0) {
-                let headerData = [];
-                table.querySelectorAll('thead th').forEach(th => { 
-                    if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return;
-                    let txt = getCleanCellText(th);
-                    if(txt !== null) headerData.push(txt);
-                });
-                tsv += headerData.join("\t") + "\n";
-                
-                cbs.forEach(cb => { 
-                    const tr = cb.closest('tr'); let rowData = []; 
-                    tr.querySelectorAll('td').forEach(td => { 
-                        if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return;
-                        let txt = getCleanCellText(td);
-                        if(txt !== null) rowData.push(txt);
-                    }); 
-                    tsv += rowData.join("\t") + "\n"; 
-                }); 
-                navigator.clipboard.writeText(tsv).then(() => showToast("İşaretli satırlar Excel için kopyalandı! 📋"));
+                const { html, tsv } = generateExcelClipboardData(cbs, true);
+                executeExcelCopy(html, tsv);
             } else {
                 alert("Lütfen tablodan mavi bir alan seçin veya personel kutucuklarını işaretleyin!");
             }
@@ -848,40 +758,55 @@
 
         function exportTableToExcel(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
-            let tsv = "";
+            let html = "<table border='1' style='border-collapse:collapse; text-align:center; font-family:sans-serif;'>"; let tsv = "";
             table.querySelectorAll("tr").forEach(tr => { 
-                let rowData = []; 
+                html += "<tr>"; let rowData = []; 
                 tr.querySelectorAll("th, td").forEach(cell => { 
-                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return;
-                    let txt = getCleanCellText(cell);
-                    if(txt !== null) rowData.push(txt);
+                    let cd = getExcelCellHtml(cell);
+                    if (cd.html !== "") { html += cd.html; rowData.push(cd.text); }
                 }); 
-                tsv += rowData.join("\t") + "\n"; 
+                html += "</tr>"; tsv += rowData.join("\t") + "\n"; 
             }); 
-            navigator.clipboard.writeText(tsv).then(() => showToast("Tablo Excel'e uygun kopyalandı! 📤"));
+            html += "</table>";
+            executeExcelCopy(html, tsv);
         }
 
         function exportAllToExcel() {
             const wrappers = document.querySelectorAll('.table-wrapper'); 
             if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
-            let tsv = "";
+            let html = ""; let tsv = "";
             wrappers.forEach(wrapper => {
                 let tableName = wrapper.getAttribute("data-tablename"); 
+                html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse:collapse; text-align:center; font-family:sans-serif;">`; 
                 tsv += `${tableName}\n`;
                 const table = wrapper.querySelector('table');
                 table.querySelectorAll("tr").forEach(tr => {
-                    let rowData = []; 
+                    html += "<tr>"; let rowData = []; 
                     tr.querySelectorAll("th, td").forEach(cell => {
-                        if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return;
-                        let txt = getCleanCellText(cell);
-                        if(txt !== null) rowData.push(txt);
+                        let cd = getExcelCellHtml(cell);
+                        if (cd.html !== "") { html += cd.html; rowData.push(cd.text); }
                     }); 
-                    tsv += rowData.join("\t") + "\n";
+                    html += "</tr>"; tsv += rowData.join("\t") + "\n";
                 }); 
-                tsv += "\n\n";
+                html += "</table><br><br>"; tsv += "\n\n";
             });
-            navigator.clipboard.writeText(tsv).then(() => { showToast("Tüm tablolar kopyalandı! 📤"); logAction("Tüm tabloları kopyaladı."); });
+            executeExcelCopy(html, tsv);
+            logAction("Tüm tabloları kopyaladı.");
         }
+
+        // CTRL+C (NATIVE COPY) DESTEĞİ
+        document.addEventListener('copy', e => {
+            const selected = document.querySelectorAll('.selected-cell');
+            if(selected.length > 0) { 
+                e.preventDefault(); 
+                const { html, tsv } = generateExcelClipboardData(selected, false);
+                if(e.clipboardData) {
+                    e.clipboardData.setData('text/html', html);
+                    e.clipboardData.setData('text/plain', tsv);
+                    showToast("Seçili alan kopyalandı! 📋");
+                }
+            }
+        });
 
         document.addEventListener('paste', e => {
             const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
