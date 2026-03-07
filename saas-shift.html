@@ -307,12 +307,39 @@
                 const list = document.getElementById('sorumluListesi'); if(!list) return;
                 list.innerHTML = "<div style='color:var(--accent); font-weight:bold; margin-bottom:5px;'>Mevcut Yetkililer:</div>";
                 if(snap.val()) {
-                    Object.entries(snap.val()).forEach(([sif, ism]) => { list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px; background:rgba(0,0,0,0.4); padding:8px; border-radius:8px; border:1px solid #334155;"><span>👤 ${ism} <span style="color:var(--warning);">(${sif})</span></span><span style="color:var(--danger); cursor:pointer;" onclick="silSorumlu('${sif}', '${ism}')">X</span></div>`; });
+                    Object.entries(snap.val()).forEach(([sif, ism]) => { 
+                        list.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; background:rgba(0,0,0,0.4); padding:8px 12px; border-radius:8px; border:1px solid #334155; align-items:center;">
+                            <span>👤 ${ism} <span style="color:var(--warning); margin-left:5px;">(${sif})</span></span>
+                            <div>
+                                <span style="color:var(--success); cursor:pointer; font-weight:bold; margin-right:15px; font-size:11px;" onclick="degistirSorumluSifre('${sif}', '${ism}')">✏️ Şifre Değiştir</span>
+                                <span style="color:var(--danger); cursor:pointer; font-weight:900;" onclick="silSorumlu('${sif}', '${ism}')">X</span>
+                            </div>
+                        </div>`; 
+                    });
                 } else { list.innerHTML += "<div style='color:#64748b;'>Atanmış yetkili yok.</div>"; }
             });
         }
 
-        function silSorumlu(sifre, isim) { if(confirm(isim + " silinsin mi?")) { originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + sifre).remove(); logAction(`Yetki kaldırdı: ${isim}`); } }
+        function degistirSorumluSifre(eskiSifre, isim) {
+            let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
+            if(yeniSifre && yeniSifre.trim() !== "") {
+                yeniSifre = yeniSifre.trim();
+                originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + eskiSifre).remove().then(() => {
+                    originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + yeniSifre).set(isim).then(() => {
+                        showToast(isim + " şifresi güncellendi! ✅");
+                        logAction(`${isim} adlı yetkilinin şifresini değiştirdi.`);
+                    });
+                });
+            }
+        }
+
+        function silSorumlu(sifre, isim) { 
+            if(confirm(isim + " adlı yetkiliyi silmek istediğinize emin misiniz?")) { 
+                originalRef("saas_kullanicilar/" + tenantId + "/sorumlular/" + sifre).remove(); 
+                logAction(`Yetki kaldırdı: ${isim}`); 
+            } 
+        }
 
         let currentUser = ""; let activeCell = null; let staffList = []; let historyStack = []; let currentMasterArchiveId = null; let currentMasterArchiveName = "Yeni Dosya"; let lastUsedEndDate = null; 
 
