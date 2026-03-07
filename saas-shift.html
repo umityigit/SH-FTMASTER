@@ -229,7 +229,9 @@
     <div id="sorumluModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 400px; text-align: center; border: 2px solid var(--warning);">
             <h3 style="margin-top:0; color:var(--warning);">👑 YÖNETİCİ / SORUMLU ATA</h3>
-            <input type="text" id="sorumluIsim" class="glass-input" style="width:100%; margin-bottom:10px; text-align:center;" placeholder="Yetkili Adı (Örn: Ayşe Hemşire)">
+            <select id="sorumluIsim" class="glass-input" style="width:100%; margin-bottom:10px; text-align:center; cursor:pointer;">
+    <option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>
+</select>
             <input type="text" id="sorumluSifre" class="glass-input" style="width:100%; margin-bottom:15px; text-align:center;" placeholder="Giriş Şifresi (Örn: 1010)">
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-green" style="flex:1;" onclick="kaydetSorumlu()">KAYDET</button>
@@ -328,10 +330,25 @@
 
         window.onload = () => {
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
-            if (container) text.split("").forEach(char => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = "0.2s"; container.appendChild(span); });
-            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('lockScreen').style.display = 'flex'; }, 500); }, 2000);
+            if(container) text.split("").forEach((char, index) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + index * 0.1) + "s"; container.appendChild(span); });
+            setTimeout(() => { 
+                document.getElementById('splash').style.opacity = '0'; 
+                setTimeout(() => { 
+                    document.getElementById('splash').style.display = 'none'; 
+                    // LOBİDEN GELMİŞSE KİLİT EKRANINI ATLA VE DİREKT AÇ
+                    const activeUsr = localStorage.getItem('sm_active_user');
+                    if(activeUsr) {
+                        currentUser = activeUsr; logAction("Sisteme giriş yaptı.");
+                        document.getElementById("mainContent").style.display = "block"; 
+                        document.getElementById("welcomeText").innerText = `👋 HOŞ GELDİN, ${currentUser}`;
+                        loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews();
+                    } else {
+                        document.getElementById('lockScreen').style.display = 'flex'; document.getElementById('adminNameInput').focus(); 
+                    }
+                }, 500); 
+            }, 2500);
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
-            const colorGrid = document.getElementById('quickColorGrid'); colors.forEach(c => { colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; });
+            const colorGrid = document.getElementById('quickColorGrid'); colors.forEach(c => { const d = document.createElement('div'); d.className = 'mini-swatch'; d.style.background = c; d.onclick = () => applyColorToCell(c); colorGrid.appendChild(d); });
         };
 
         function executeLogin() {
@@ -345,8 +362,19 @@
         function deleteNews(id) { if(confirm("Mesajı sil?")) db.ref("haberler").child(id).remove(); }
         function logAction(actionText) { if(!currentUser) return; db.ref("islem_loglari").push({ user: currentUser, action: actionText, time: new Date().toLocaleTimeString() }); }
         db.ref("islem_loglari").limitToLast(25).on("value", snap => { const l = document.getElementById("logList"); l.innerHTML = ""; if(snap.val()) { Object.values(snap.val()).reverse().forEach(val => { l.innerHTML += `<div class="log-item"><span class="log-user">${val.user}:</span> <span style="flex:1;">${val.action}</span> <span style="color:#64748b; font-size:9px;">${val.time}</span></div>`; }); } });
-
-        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; let count = 0; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${name}" style="display:none;"> <span>${name}</span> <span class="staff-del" onclick="removeStaff(event, '${id}')">×</span></div>`; }); } document.getElementById("staffCounter").innerText = count; }); }
+function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { 
+            const p = document.getElementById("staffPool"); p.innerHTML = ""; 
+            const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>';
+            let count = 0; staffList = []; 
+            if(snap.val()) { 
+                Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); 
+                staffList.forEach(item => { 
+                    count++; 
+                    p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; 
+                    if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`;
+                }); 
+            } document.getElementById("staffCounter").innerText = count; 
+        }); }
         function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; raw.split('\n').forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction("Personel eklendi."); inp.value = ""; }
         function removeStaff(e, id) { e.stopPropagation(); if(confirm("Kişiyi sil?")) db.ref("personel_havuzu").child(id).remove(); }
         function clearStaffPool() { if(confirm("Tüm havuzu sil?")) db.ref("personel_havuzu").remove(); }
