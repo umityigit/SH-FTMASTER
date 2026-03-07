@@ -285,8 +285,9 @@
         <div class="container">
             <div class="main-header">
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.4);" id="welcomeText">👋 HOŞ GELDİN</div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-red" onclick="logout()">🚪 ÇIKIŞ YAP</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button id="btnSorumluAta" class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); display:none; border:1px solid #facc15;" onclick="openModal('sorumluModal')">👑 SORUMLU ATA</button>
+                    <button class="btn btn-red" onclick="window.location.href='index.html'">🚪 LOBİYE DÖN</button>
                 </div>
             </div>
 
