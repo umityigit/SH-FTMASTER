@@ -715,12 +715,7 @@
         // 5. YÖNETİCİ ATA / YETKİ KONTROLÜ
         // =========================================
         // EĞER GİREN KİŞİ ALT SORUMLU DEĞİLSE, BUTONU DİREKT GÖSTER (PATRON KABUL ET)
-        if(localStorage.getItem('sm_role') !== 'supervisor') { 
-            setTimeout(() => { 
-                const btn = document.getElementById('btnSorumluAta'); 
-                if(btn) { btn.style.display = 'inline-flex'; loadSorumlular(); } 
-            }, 200); 
-        }
+        if(localStorage.getItem('sm_role') !== 'supervisor') { setTimeout(() => { const btn = document.getElementById('btnSorumluAta'); if(btn) { btn.style.display = 'inline-flex'; loadSorumlular(); } }, 200); }
         const activeUsr = localStorage.getItem('sm_active_user');
 
         function kaydetSorumlu() {
