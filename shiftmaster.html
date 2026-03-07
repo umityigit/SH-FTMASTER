@@ -751,7 +751,7 @@
         }
 
         // =========================================
-        // 12. HÜCRE İŞLEMLERİ (TEMİZ KOPYALAMA)
+        // 12. HÜCRE İŞLEMLERİ 
         // =========================================
         function updateAllStats() {
             document.querySelectorAll("table tbody tr").forEach(row => {
@@ -792,9 +792,10 @@
         }
 
         // =========================================
-        // 13. EXCEL KOPYALAMA MOTORU (DÜZELTİLDİ)
+        // 13. EXCEL KOPYALAMA MOTORU (SAF VERİ - %100 UYUM)
         // =========================================
         function getCleanCellText(cell) { 
+            if (cell.classList.contains('hidden-by-snipper')) return null;
             if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
             if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
             let text = (cell.textContent || "").replace(/\n/g, " ").trim(); 
@@ -802,128 +803,84 @@
             return text; 
         }
 
-        function getExcelCellHtml(cell) {
-            if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
-            
-            let text = getCleanCellText(cell);
-            let bg = '#ffffff'; let color = '#000000';
-            
-            if(cell.tagName === 'TH') {
-                bg = '#d1d5db'; color = '#000000';
-                return { html: `<th style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px; font-weight: bold;">${text}</th>`, text: text };
-            } else {
-                let safeVal = text.replace(/\./g, ':'); 
-                let r = shiftRules[safeVal] || shiftRules[text];
-                if(r && r.color) {
-                    let match = r.color.match(/#[0-9a-fA-F]{6}/) || r.color.match(/#[0-9a-fA-F]{3}/);
-                    if(match) { bg = match[0]; color = '#ffffff'; }
-                }
-                return { html: `<td style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px;">${text}</td>`, text: text };
-            }
-        }
-
-        function doExcelCopy(htmlContent, tsvContent) {
-            const container = document.createElement('div');
-            container.innerHTML = htmlContent;
-            container.style.position = 'fixed';
-            container.style.top = '-9999px';
-            document.body.appendChild(container);
-            
-            const range = document.createRange();
-            range.selectNodeContents(container);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-            
-            try {
-                document.execCommand('copy');
-                showToast("Excel'e hücre hücre kopyalandı! 📋");
-            } catch (err) {
-                navigator.clipboard.writeText(tsvContent).then(() => showToast("Panoya düz metin kopyalandı! 📋"));
-            }
-            
-            sel.removeAllRanges();
-            document.body.removeChild(container);
-        }
-
         function copyTableRows(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
             const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
-            let html = "<table border='1' style='border-collapse: collapse; text-align: center; font-family: sans-serif;'>"; let tsv = "";
+            let tsv = "";
             
             if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) {
-                let currentRow = null; let rowData = []; let trHtml = "";
+                let currentRow = null; let rowData = [];
                 selectedCells.forEach(cell => {
+                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return; 
                     const cellRow = cell.closest('tr');
                     if(currentRow !== cellRow) { 
-                        if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } 
-                        currentRow = cellRow; trHtml = "<tr>"; 
+                        if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; rowData = []; } 
+                        currentRow = cellRow; 
                     }
-                    let cellData = getExcelCellHtml(cell);
-                    if (cellData.html !== "") { trHtml += cellData.html; rowData.push(cellData.text); }
+                    let txt = getCleanCellText(cell);
+                    if (txt !== null) rowData.push(txt);
                 });
-                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } 
-                html += "</table>";
-                doExcelCopy(html, tsv);
+                if(rowData.length > 0) { tsv += rowData.join("\t") + "\n"; } 
+                navigator.clipboard.writeText(tsv).then(() => showToast("Seçili alan Excel için kopyalandı! 📋"));
             } else if(cbs.length > 0) {
-                html += "<thead><tr>";
+                let headerData = [];
                 table.querySelectorAll('thead th').forEach(th => { 
-                    let cellData = getExcelCellHtml(th);
-                    if (cellData.html !== "") { html += cellData.html; tsv += cellData.text + "\t"; }
+                    if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell')) return;
+                    let txt = getCleanCellText(th);
+                    if(txt !== null) headerData.push(txt);
                 });
-                html += "</tr></thead><tbody>\n"; tsv += "\n";
+                tsv += headerData.join("\t") + "\n";
                 
                 cbs.forEach(cb => { 
-                    const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; 
+                    const tr = cb.closest('tr'); let rowData = []; 
                     tr.querySelectorAll('td').forEach(td => { 
-                        let cellData = getExcelCellHtml(td);
-                        if (cellData.html !== "") { html += cellData.html; rowData.push(cellData.text); }
+                        if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell')) return;
+                        let txt = getCleanCellText(td);
+                        if(txt !== null) rowData.push(txt);
                     }); 
-                    html += "</tr>"; tsv += rowData.join("\t") + "\n"; 
+                    tsv += rowData.join("\t") + "\n"; 
                 }); 
-                html += "</tbody></table>";
-                doExcelCopy(html, tsv);
+                navigator.clipboard.writeText(tsv).then(() => showToast("İşaretli satırlar Excel için kopyalandı! 📋"));
             } else {
-                alert("Lütfen mavi bir alan seçin veya kutucukları işaretleyin!");
+                alert("Lütfen tablodan mavi bir alan seçin veya personel kutucuklarını işaretleyin!");
             }
         }
 
         function exportTableToExcel(btn) {
             const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
-            let html = "<table border='1' style='border-collapse: collapse; text-align: center; font-family: sans-serif;'>"; let tsv = "";
+            let tsv = "";
             table.querySelectorAll("tr").forEach(tr => { 
-                html += "<tr>"; let rowData = []; 
+                let rowData = []; 
                 tr.querySelectorAll("th, td").forEach(cell => { 
-                    let cellData = getExcelCellHtml(cell);
-                    if (cellData.html !== "") { html += cellData.html; rowData.push(cellData.text); }
+                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return;
+                    let txt = getCleanCellText(cell);
+                    if(txt !== null) rowData.push(txt);
                 }); 
-                html += "</tr>"; tsv += rowData.join("\t") + "\n"; 
+                tsv += rowData.join("\t") + "\n"; 
             }); 
-            html += "</table>";
-            doExcelCopy(html, tsv);
+            navigator.clipboard.writeText(tsv).then(() => showToast("Tablo Excel'e uygun kopyalandı! 📤"));
         }
 
         function exportAllToExcel() {
             const wrappers = document.querySelectorAll('.table-wrapper'); 
             if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
-            let html = ""; let tsv = "";
-            
+            let tsv = "";
             wrappers.forEach(wrapper => {
                 let tableName = wrapper.getAttribute("data-tablename"); 
-                html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse: collapse; text-align: center; font-family: sans-serif;">`; 
                 tsv += `${tableName}\n`;
                 const table = wrapper.querySelector('table');
                 table.querySelectorAll("tr").forEach(tr => {
-                    html += "<tr>"; let rowData = []; 
+                    let rowData = []; 
                     tr.querySelectorAll("th, td").forEach(cell => {
-                        let cellData = getExcelCellHtml(cell);
-                        if (cellData.html !== "") { html += cellData.html; rowData.push(cellData.text); }
+                        if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell')) return;
+                        let txt = getCleanCellText(cell);
+                        if(txt !== null) rowData.push(txt);
                     }); 
-                    html += "</tr>"; tsv += rowData.join("\t") + "\n";
+                    tsv += rowData.join("\t") + "\n";
                 }); 
-                html += "</table><br><br>"; tsv += "\n\n";
+                tsv += "\n\n";
             });
-            doExcelCopy(html, tsv);
+            navigator.clipboard.writeText(tsv).then(() => { showToast("Tüm tablolar kopyalandı! 📤"); logAction("Tüm tabloları kopyaladı."); });
         }
 
         document.addEventListener('paste', e => {
