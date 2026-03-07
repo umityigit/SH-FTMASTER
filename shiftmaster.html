@@ -403,12 +403,10 @@
 
         let currentUser = ""; let activeCell = null; let staffList = []; let historyStack = []; let currentMasterArchiveId = null; let currentMasterArchiveName = "Yeni Dosya"; let lastUsedEndDate = null; 
 
-        // RENKLER VE VARDİYALAR
         let shiftRules = {};
         const defaultRules = { '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' }, '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' }, '12:00-24:00': { w: 11, n: 4, color: 'linear-gradient(145deg, #f97316, #9a3412)' }, '08:00-16:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #0ea5e9, #0369a1)' }, '16:00-24:00': { w: 7.5, n: 4, color: 'linear-gradient(145deg, #3b82f6, #1d4ed8)' }, '24:00-08:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4338ca, #1e1b4b)' }, 'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' }, 'İ': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }, 'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' } };
         const colors = ['#fca5a5','#f87171','#ef4444','#dc2626','#b91c1c','#991b1b','#7f1d1d','#fde047','#fbbf24','#f59e0b','#d97706','#b45309','#92400e','#78350f','#6ee7b7','#34d399','#10b981','#059669','#047857','#065f46','#064e3b','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87'];
 
-        // RADYO
         const smMusic = {
             audio: new Audio(), isPlaying: false, index: 0, playlist: [ { name: "Kral FM", url: "https://kralfmwmp.radyotvonline.net/;" }, { name: "Power Türk", url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio" } ],
             init() { this.audio.src = this.playlist[this.index].url; this.audio.volume = 0.5; document.getElementById('sm-title').innerText = this.playlist[this.index].name; },
@@ -420,7 +418,7 @@
         };
 
         // =========================================
-        // 2. AÇILIŞ (ONLOAD) VE PATRON KONTROLÜ
+        // 2. AÇILIŞ VE KONTROL
         // =========================================
         window.onload = () => {
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
@@ -438,7 +436,6 @@
                         document.getElementById("mainContent").style.display = "block"; 
                         document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
                         
-                        // 👑 PATRON MODE: ON / OFF
                         const btnSorumlu = document.getElementById('btnSorumluAta');
                         const btnSifre = document.getElementById('btnSifreDegistir');
                         if (activeRole === 'admin' || currentUser === 'ÜMİT' || currentUser === 'MÜDÜR' || currentUser === 'PATRON') {
@@ -527,7 +524,7 @@
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
 
         // =========================================
-        // 4. SOSYAL HABERLEŞME PANOSU (COŞTURULMUŞ)
+        // 4. SOSYAL HABERLEŞME PANOSU
         // =========================================
         function loadNews() { 
             db.ref("haberler").on("value", snap => { 
@@ -754,7 +751,7 @@
         }
 
         // =========================================
-        // 12. HÜCRE İŞLEMLERİ (HESAP, KOPYALA, YAPIŞTIR)
+        // 12. HÜCRE İŞLEMLERİ (TEMİZ KOPYALAMA)
         // =========================================
         function updateAllStats() {
             document.querySelectorAll("table tbody tr").forEach(row => {
@@ -794,57 +791,139 @@
             for(let r = minRow; r <= maxRow; r++) { const trCells = Array.from(rows[r].querySelectorAll('th, td')); for(let c = minCol; c <= maxCol; c++) { if(trCells[c]) trCells[c].classList.add('selected-cell'); } }
         }
 
-        function getCleanCellText(cell) { if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); if (cell.querySelector('.stat-sub')) return cell.textContent.replace(/\n/g, " | "); let text = (cell.textContent || "").replace(/\n/g, " ").trim(); if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; return text; }
-        function getCellColor(cell) { let bg = cell.style.background || cell.style.backgroundColor || 'transparent'; if (bg.includes('transparent') || bg === '') bg = cell.tagName === 'TH' ? '#1e293b' : '#0f172a'; return bg; }
+        // =========================================
+        // 13. EXCEL KOPYALAMA MOTORU (DÜZELTİLDİ)
+        // =========================================
+        function getCleanCellText(cell) { 
+            if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
+            if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
+            let text = (cell.textContent || "").replace(/\n/g, " ").trim(); 
+            if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; 
+            return text; 
+        }
+
+        function getExcelCellHtml(cell) {
+            if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
+            
+            let text = getCleanCellText(cell);
+            let bg = '#ffffff'; let color = '#000000';
+            
+            if(cell.tagName === 'TH') {
+                bg = '#d1d5db'; color = '#000000';
+                return { html: `<th style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px; font-weight: bold;">${text}</th>`, text: text };
+            } else {
+                let safeVal = text.replace(/\./g, ':'); 
+                let r = shiftRules[safeVal] || shiftRules[text];
+                if(r && r.color) {
+                    let match = r.color.match(/#[0-9a-fA-F]{6}/) || r.color.match(/#[0-9a-fA-F]{3}/);
+                    if(match) { bg = match[0]; color = '#ffffff'; }
+                }
+                return { html: `<td style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px;">${text}</td>`, text: text };
+            }
+        }
+
+        function doExcelCopy(htmlContent, tsvContent) {
+            const container = document.createElement('div');
+            container.innerHTML = htmlContent;
+            container.style.position = 'fixed';
+            container.style.top = '-9999px';
+            document.body.appendChild(container);
+            
+            const range = document.createRange();
+            range.selectNodeContents(container);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            
+            try {
+                document.execCommand('copy');
+                showToast("Excel'e hücre hücre kopyalandı! 📋");
+            } catch (err) {
+                navigator.clipboard.writeText(tsvContent).then(() => showToast("Panoya düz metin kopyalandı! 📋"));
+            }
+            
+            sel.removeAllRanges();
+            document.body.removeChild(container);
+        }
 
         function copyTableRows(btn) {
-            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
+            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
+            const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
             let html = "<table border='1' style='border-collapse: collapse; text-align: center; font-family: sans-serif;'>"; let tsv = "";
+            
             if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) {
                 let currentRow = null; let rowData = []; let trHtml = "";
                 selectedCells.forEach(cell => {
-                    if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return; 
                     const cellRow = cell.closest('tr');
-                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
-                    let bg = getCellColor(cell); if(bg.includes('linear-gradient')) { let match = bg.match(/(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/); if(match) bg = match[0]; }
-                    let text = getCleanCellText(cell); let color = cell.tagName === 'TH' ? '#ffffff' : '#000000';
-                    if(bg === '#1e293b' || bg === '#0f172a' || bg === 'transparent') { bg = '#ffffff'; color = '#000000'; } else if(bg !== '#ffffff') { color = '#ffffff'; }
-                    trHtml += `<td style="background-color: ${bg}; color: ${color}; padding: 5px;">${text}</td>`; rowData.push(text);
+                    if(currentRow !== cellRow) { 
+                        if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } 
+                        currentRow = cellRow; trHtml = "<tr>"; 
+                    }
+                    let cellData = getExcelCellHtml(cell);
+                    if (cellData.html !== "") { trHtml += cellData.html; rowData.push(cellData.text); }
                 });
-                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } html += "</table>";
-                navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => showToast("Seçili alan kopyalandı! 📋"));
+                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } 
+                html += "</table>";
+                doExcelCopy(html, tsv);
             } else if(cbs.length > 0) {
-                table.querySelectorAll('thead th').forEach(th => { if(th.classList.contains('week-summary-cell') || th.classList.contains('total-summary-cell') || th.classList.contains('hidden-by-snipper')) return; let text = getCleanCellText(th); html += `<th style="background-color: #1e293b; color: #ffffff; padding: 5px;">${text}</th>`; tsv += text + "\t"; });
+                html += "<thead><tr>";
+                table.querySelectorAll('thead th').forEach(th => { 
+                    let cellData = getExcelCellHtml(th);
+                    if (cellData.html !== "") { html += cellData.html; tsv += cellData.text + "\t"; }
+                });
                 html += "</tr></thead><tbody>\n"; tsv += "\n";
-                cbs.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; tr.querySelectorAll('td').forEach(td => { if(td.classList.contains('week-summary-cell') || td.classList.contains('total-summary-cell') || td.classList.contains('hidden-by-snipper')) return; let bg = getCellColor(td); if(bg.includes('linear-gradient')) { let match = bg.match(/(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/); if(match) bg = match[0]; } let text = getCleanCellText(td); let color = '#ffffff'; if(bg === '#1e293b' || bg === '#0f172a' || bg === 'transparent') { bg = '#ffffff'; color = '#000000'; } html += `<td style="background-color: ${bg}; color: ${color}; padding: 5px;">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</tbody></table>";
-                navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => showToast("İşaretli satırlar kopyalandı! 📋"));
-            } else alert("Lütfen mavi bir alan seçin veya kutucukları işaretleyin!");
-        }
-
-        function exportAllToExcel() {
-            const wrappers = document.querySelectorAll('.table-wrapper'); if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
-            let html = ""; let tsv = "";
-            wrappers.forEach(wrapper => {
-                let tableName = wrapper.getAttribute("data-tablename"); html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse: collapse; text-align: center; font-family: sans-serif;">`; tsv += `${tableName}\n`;
-                const table = wrapper.querySelector('table');
-                table.querySelectorAll("tr").forEach(tr => {
-                    html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => {
-                        if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return;
-                        let bg = getCellColor(cell); if(bg.includes('linear-gradient')) { let match = bg.match(/(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/); if(match) bg = match[0]; }
-                        let text = getCleanCellText(cell); let color = cell.tagName === 'TH' ? '#ffffff' : '#000000';
-                        if(bg === '#1e293b' || bg === '#0f172a' || bg === 'transparent') { bg = cell.tagName === 'TH' ? '#e2e8f0' : '#ffffff'; color = '#000000'; } else if(bg !== '#ffffff') color = '#ffffff'; 
-                        html += `<td style="background-color: ${bg}; color: ${color}; padding: 5px;">${text}</td>`; rowData.push(text);
-                    }); html += "</tr>"; tsv += rowData.join("\t") + "\n";
-                }); html += "</table><br><br>"; tsv += "\n\n";
-            });
-            try { navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { showToast("Tüm tablolar kopyalandı! 📤"); logAction("Tüm tabloları kopyaladı."); }); } 
-            catch (e) { navigator.clipboard.writeText(tsv).then(() => showToast("Düz metin kopyalandı. 📤")); }
+                
+                cbs.forEach(cb => { 
+                    const tr = cb.closest('tr'); html += "<tr>"; let rowData = []; 
+                    tr.querySelectorAll('td').forEach(td => { 
+                        let cellData = getExcelCellHtml(td);
+                        if (cellData.html !== "") { html += cellData.html; rowData.push(cellData.text); }
+                    }); 
+                    html += "</tr>"; tsv += rowData.join("\t") + "\n"; 
+                }); 
+                html += "</tbody></table>";
+                doExcelCopy(html, tsv);
+            } else {
+                alert("Lütfen mavi bir alan seçin veya kutucukları işaretleyin!");
+            }
         }
 
         function exportTableToExcel(btn) {
-            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); let html = "<table border='1' style='border-collapse: collapse; text-align: center; font-family: sans-serif;'>"; let tsv = "";
-            table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return; let bg = getCellColor(cell); if(bg.includes('linear-gradient')) { let match = bg.match(/(#[0-9a-fA-F]{3,6}|rgba?\([^)]+\))/); if(match) bg = match[0]; } let text = getCleanCellText(cell); let color = cell.tagName === 'TH' ? '#ffffff' : '#000000'; if(bg === '#1e293b' || bg === '#0f172a' || bg === 'transparent') { bg = cell.tagName === 'TH' ? '#e2e8f0' : '#ffffff'; color = '#000000'; } else if(bg !== '#ffffff') color = '#ffffff'; html += `<td style="background-color: ${bg}; color: ${color}; padding: 5px;">${text}</td>`; rowData.push(text); }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>";
-            navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([tsv], { type: "text/plain" }) })]).then(() => { showToast("Puantaja uygun kopyalandı! 📤"); });
+            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
+            let html = "<table border='1' style='border-collapse: collapse; text-align: center; font-family: sans-serif;'>"; let tsv = "";
+            table.querySelectorAll("tr").forEach(tr => { 
+                html += "<tr>"; let rowData = []; 
+                tr.querySelectorAll("th, td").forEach(cell => { 
+                    let cellData = getExcelCellHtml(cell);
+                    if (cellData.html !== "") { html += cellData.html; rowData.push(cellData.text); }
+                }); 
+                html += "</tr>"; tsv += rowData.join("\t") + "\n"; 
+            }); 
+            html += "</table>";
+            doExcelCopy(html, tsv);
+        }
+
+        function exportAllToExcel() {
+            const wrappers = document.querySelectorAll('.table-wrapper'); 
+            if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
+            let html = ""; let tsv = "";
+            
+            wrappers.forEach(wrapper => {
+                let tableName = wrapper.getAttribute("data-tablename"); 
+                html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse: collapse; text-align: center; font-family: sans-serif;">`; 
+                tsv += `${tableName}\n`;
+                const table = wrapper.querySelector('table');
+                table.querySelectorAll("tr").forEach(tr => {
+                    html += "<tr>"; let rowData = []; 
+                    tr.querySelectorAll("th, td").forEach(cell => {
+                        let cellData = getExcelCellHtml(cell);
+                        if (cellData.html !== "") { html += cellData.html; rowData.push(cellData.text); }
+                    }); 
+                    html += "</tr>"; tsv += rowData.join("\t") + "\n";
+                }); 
+                html += "</table><br><br>"; tsv += "\n\n";
+            });
+            doExcelCopy(html, tsv);
         }
 
         document.addEventListener('paste', e => {
