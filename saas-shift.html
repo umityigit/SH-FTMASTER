@@ -715,7 +715,45 @@
         // 5. YÖNETİCİ ATA / YETKİ KONTROLÜ
         // =========================================
         // EĞER GİREN KİŞİ ALT SORUMLU DEĞİLSE, BUTONU DİREKT GÖSTER (PATRON KABUL ET)
-        if(localStorage.getItem('sm_role') !== 'supervisor') { setTimeout(() => { const btn = document.getElementById('btnSorumluAta'); if(btn) { btn.style.display = 'inline-flex'; loadSorumlular(); } }, 200); }
+        window.onload = () => {
+            const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
+            if (container) text.split("").forEach((char, idx) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + idx*0.1) + "s"; container.appendChild(span); });
+            
+            setTimeout(() => { 
+                document.getElementById('splash').style.opacity = '0'; 
+                setTimeout(() => { 
+                    document.getElementById('splash').style.display = 'none'; 
+                    
+                    const activeUsr = localStorage.getItem('sm_active_user');
+                    const activeRole = localStorage.getItem('sm_role'); // Yetkiyi kontrol et
+                    
+                    if(activeUsr) {
+                        currentUser = activeUsr; 
+                        document.getElementById("mainContent").style.display = "block"; 
+                        document.getElementById("welcomeText").innerText = `👋 HOŞ GELDİN, ${currentUser}`;
+                        
+                        // 👑 İŞTE KESİN PATRON KONTROLÜ BURADA! 
+                        // Ümit girdiyse veya Admin ise buton ŞAK diye açılır!
+                        const btn = document.getElementById('btnSorumluAta');
+                        if (activeRole === 'admin' || currentUser === 'ÜMİT' || currentUser === 'MÜDÜR') {
+                            if (btn) btn.style.display = 'inline-flex';
+                            loadSorumlular(); // Yöneticileri listele
+                        } else {
+                            if (btn) btn.style.display = 'none'; // Ali, Güllü girerse butonu gizle
+                        }
+
+                        loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews();
+                        logAction("Sisteme giriş yaptı.");
+                    } else {
+                        window.location.href = "index.html"; // İzinsiz gireni lobiye at
+                    }
+                }, 500); 
+            }, 2500);
+            
+            const colorGrid = document.getElementById('quickColorGrid'); 
+            if(colorGrid && colors) { colors.forEach(c => { colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; }); }
+            try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
+        };
         const activeUsr = localStorage.getItem('sm_active_user');
 
         function kaydetSorumlu() {
