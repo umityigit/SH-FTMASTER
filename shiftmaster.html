@@ -169,7 +169,7 @@
 <body oncontextmenu="return false;">
 
     <div id="splash">
-        <div class="splash-hospital">ANTALYA DÖŞEMEALTI DEVLET HASTANESİ<br>VARDİYA YÖNETİM SİSTEMİ</div>
+        <div class="splash-hospital" id="dynamicSplashTitle">SİSTEM YÜKLENİYOR...</div>
         <div class="splash-logo"><svg viewBox="0 0 24 24" width="80" fill="#0f172a"><path d="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z"/></svg></div>
         <div class="splash-text-container" id="splashTextContainer"></div>
     </div>
@@ -373,6 +373,15 @@
         // 2. AÇILIŞ VE İKİ SEÇENEKLİ MENÜ 
         // =========================================
         window.onload = () => {
+            // ✨ DİNAMİK VİTRİN İSMİ ✨
+            try {
+                let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
+                let splashBaslik = document.getElementById('dynamicSplashTitle');
+                if(splashBaslik && aktifKurum && aktifKurum !== "null") {
+                    splashBaslik.innerHTML = aktifKurum.toUpperCase() + "<br>VARDİYA YÖNETİM SİSTEMİ";
+                }
+            } catch(e) {}
+
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
             if (container) text.split("").forEach((char, idx) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + idx*0.1) + "s"; container.appendChild(span); });
             
