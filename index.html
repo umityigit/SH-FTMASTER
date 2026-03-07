@@ -264,7 +264,7 @@
         window.onload = () => { 
             const existingTenant = localStorage.getItem('sm_current_tenant');
             const existingName = localStorage.getItem('sm_current_kurum_adi');
-            // OTURUM AÇIKSA DİREKT SİSTEME AT
+            // OTURUM AÇIKSA LOBİYİ ATLA, DİREKT SİSTEME AT
             if(existingTenant && existingName) {
                 if (existingTenant === "addh") window.location.href = 'shiftmaster.html';
                 else window.location.href = 'saas-shift.html';
@@ -280,43 +280,52 @@
 
         // --- ZEKİ GİRİŞ YAPMA MANTIĞI (YETKİ KONTROLÜ) ---
         function handleLogin() {
-            const userVal = document.getElementById("loginUser").value.trim().toLowerCase();
-            const passVal = document.getElementById("loginPass").value.trim();
+            const userVal = document.getElementById("loginUser").value.trim().toLowerCase(); // BU KURUM KODUDUR
+            const passVal = document.getElementById("loginPass").value.trim(); // BU MÜDÜR VEYA SORUMLU ŞİFRESİDİR
             const errorMsg = document.getElementById("loginError");
 
             if(!userVal || !passVal) { errorMsg.innerText = "Alanlar boş bırakılamaz!"; errorMsg.style.display = "block"; return; }
 
-            // 👑 ÜMİT ABİ VIP GİRİŞİ
-            if(userVal === "addh" && passVal === "ADDH2026") {
-                localStorage.setItem('sm_role', 'admin');
-                localStorage.setItem('sm_active_user', 'MÜDÜR');
-                loginSuccess("addh", "ANTALYA DÖŞEMEALTI (VIP)");
-                return;
-            }
-
             db.ref('saas_kullanicilar/' + userVal).once('value').then(snap => {
                 const data = snap.val();
+
+                // 👑 ÜMİT ABİ (VIP) KONTROLÜ - (ADDH Testleri İçin Düzeltildi)
+                if(userVal === "addh") {
+                    if(passVal === "ADDH2026") {
+                        // VIP PATRON GİRİŞİ
+                        localStorage.setItem('sm_role', 'admin');
+                        localStorage.setItem('sm_active_user', 'MÜDÜR');
+                        loginSuccess("addh", "ANTALYA DÖŞEMEALTI (VIP)");
+                    } else if (data && data.sorumlular && data.sorumlular[passVal]) {
+                        // VIP KURUMUNUN SORUMLU GİRİŞİ
+                        localStorage.setItem('sm_role', 'supervisor');
+                        localStorage.setItem('sm_active_user', data.sorumlular[passVal]); // Şifreye ait ismi alır
+                        loginSuccess("addh", "ANTALYA DÖŞEMEALTI (VIP)");
+                    } else {
+                        errorMsg.innerText = "Hatalı şifre girdiniz!"; errorMsg.style.display = "block";
+                    }
+                    return; // VIP ise işlemi burada bitir.
+                }
+
+                // 🏢 NORMAL MÜŞTERİ KONTROLÜ
                 if (data) {
-                    // 1. DURUM: ANA ŞİFRE GİRİLDİ (MÜDÜR)
                     if (data.sifre === passVal) {
+                        // 1. DURUM: ANA ŞİFRE GİRİLDİ (MÜDÜR)
                         localStorage.setItem('sm_role', 'admin');
                         localStorage.setItem('sm_active_user', 'MÜDÜR');
                         loginSuccess(userVal, data.kurumAdi);
                     } 
-                    // 2. DURUM: ALT ŞİFRE GİRİLDİ (SORUMLU)
                     else if (data.sorumlular && data.sorumlular[passVal]) {
+                        // 2. DURUM: ALT ŞİFRE GİRİLDİ (SORUMLU)
                         localStorage.setItem('sm_role', 'supervisor');
                         localStorage.setItem('sm_active_user', data.sorumlular[passVal]); // Şifreye ait ismi alır
                         loginSuccess(userVal, data.kurumAdi);
                     } 
-                    // 3. DURUM: YANLIŞ ŞİFRE
                     else {
-                        errorMsg.innerText = "Kullanıcı adı bulunamadı veya şifre hatalı!"; 
-                        errorMsg.style.display = "block";
+                        errorMsg.innerText = "Kullanıcı adı veya şifre hatalı!"; errorMsg.style.display = "block";
                     }
                 } else {
-                    errorMsg.innerText = "Sistemde böyle bir kurum bulunamadı!"; 
-                    errorMsg.style.display = "block";
+                    errorMsg.innerText = "Sistemde böyle bir kurum kodu bulunamadı!"; errorMsg.style.display = "block";
                 }
             }).catch(err => { errorMsg.innerText = "Sunucu bağlantı hatası!"; errorMsg.style.display = "block"; });
         }
@@ -337,7 +346,7 @@
 
             db.ref('saas_kullanicilar/' + user).once('value').then(snap => {
                 if(snap.exists()) {
-                    errorMsg.innerText = "Bu kullanıcı adı zaten kullanılıyor."; errorMsg.style.display = "block";
+                    errorMsg.innerText = "Bu kurum kodu (kullanıcı adı) zaten kullanılıyor."; errorMsg.style.display = "block";
                 } else {
                     db.ref('saas_kullanicilar/' + user).set({
                         kurumAdi: kurum, email: mail, telefon: phone, sifre: pass, paket: 'deneme_14_gun', kayitTarihi: new Date().toISOString()
@@ -353,40 +362,12 @@
             });
         }
 
-        // 🐛 EKRANI KİLİTLEYEN HATA BURADAN TEMİZLENDİ
         function loginSuccess(tenantId, displayName) {
             localStorage.setItem('sm_current_tenant', tenantId);
             localStorage.setItem('sm_current_kurum_adi', displayName);
-            // BAŞARILI GİRİŞTE PORTAL YERİNE DİREKT SHİFTMASTER'A AT
+            // GİRİŞ BAŞARILIYSA DİREKT SİSTEME IŞINLA
             if (tenantId === "addh") window.location.href = 'shiftmaster.html';
             else window.location.href = 'saas-shift.html';
-        }
-
-        function showPortal(kurumAdi) {
-            document.getElementById('portalKurumName').innerText = kurumAdi;
-            document.getElementById('portalModal').classList.add('active');
-        }
-
-        function logout() {
-            localStorage.removeItem('sm_current_tenant');
-            localStorage.removeItem('sm_current_kurum_adi');
-            localStorage.removeItem('sm_role');
-            localStorage.removeItem('sm_active_user');
-            closeModal('portalModal');
-            window.location.reload();
-        }
-
-        function openApp(appType) { 
-            const tenantId = localStorage.getItem('sm_current_tenant');
-            if(!tenantId) { alert("Oturum süreniz dolmuş."); window.location.reload(); return; }
-
-            if (tenantId === "addh") {
-                if(appType === 'shift') window.location.href = 'shiftmaster.html';
-                else window.location.href = 'PUANTAJMOTORU.html';
-            } else {
-                if(appType === 'shift') window.location.href = 'saas-shift.html';
-                else window.location.href = 'saas-puantaj.html';
-            }
         }
     </script>
 </body>
