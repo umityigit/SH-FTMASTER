@@ -56,7 +56,7 @@
            🔐 KİŞİSEL KİLİT EKRANI VE ŞİFRE
            ========================================= */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1e293b 0%, #020617 100%); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 999998; }
-        .pass-box { background: rgba(15, 23, 42, 0.95); padding: 40px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 400px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); display: flex; flex-direction: column; align-items: center; }
+        .pass-box { background: rgba(15, 23, 42, 0.95); padding: 40px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 400px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.3); display: none; flex-direction: column; align-items: center; }
         .pass-input { width: 100%; background: #020617; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; font-size: 18px; text-align: center; margin-bottom: 20px; outline: none; font-family: 'Poppins', sans-serif; letter-spacing: 2px; box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.2); }
         .shake { animation: shake 0.5s; } 
         @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
@@ -171,9 +171,14 @@
         .shift-cell:focus, .editable-name:focus { background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(12px); box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.8) !important; outline: none; border-radius: 4px; }
         .selected-cell { background: rgba(56, 189, 248, 0.4) !important; outline: 2px solid var(--accent) !important; color: #fff !important; z-index: 10; border-radius: 4px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
         
+        /* ✨ LEGO (SÜRÜKLE BIRAK) İÇİN GÖRSEL AYARLAR ✨ */
+        tr[draggable="true"] { cursor: grab; }
+        tr[draggable="true"]:active { cursor: grabbing; }
+
         .row-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
         .name-wrapper { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 190px; padding: 0 5px; }
-        .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 1px solid transparent; font-weight: 700; padding: 4px; border-radius: 4px; transition: 0.3s; }
+        .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 1px solid transparent; font-weight: 700; padding: 4px; border-radius: 4px; transition: 0.3s; cursor: grab; }
+        .editable-name:active { cursor: grabbing; }
         .editable-name:focus { border-bottom: 2px solid var(--accent); background: rgba(56, 189, 248, 0.1); color: var(--accent); cursor: text; }
         
         .nav-box { display: flex; flex-direction: column; gap: 2px; }
@@ -261,8 +266,14 @@
         <div class="splash-prod" id="secretTrigger">PROD. BY SHIFTMASTER YAZILIM</div>
     </div>
 
+    <div id="kickScreen">
+        <div style="font-size: 80px; margin-bottom: 20px;">🛑</div>
+        <h1 style="color: var(--danger); font-weight: 900; text-align: center; text-transform: uppercase; text-shadow: 0 0 20px var(--danger);">SİSTEM YÖNETİCİ TARAFINDAN KİLİTLENDİ</h1>
+        <p style="color: #94a3b8; font-size: 18px; text-align: center; max-width: 600px;">Sistem şu anda bakıma alınmış veya kilitlenmiştir. Lütfen yöneticiniz ile iletişime geçin.</p>
+    </div>
+
     <div id="lockScreen">
-        <h2 style="color:white; margin-bottom:20px; font-weight:900; font-size: 28px; letter-spacing: 2px;">SİSTEME GİRİŞ</h2>
+        <h2 style="color:white; margin-bottom:20px; font-weight:900; font-size: 24px; letter-spacing: 2px;">SİSTEME GİRİŞ</h2>
         <p style="color:#94a3b8; margin-top:-10px; margin-bottom: 20px; font-size:12px;">İşlemlerin loglara kaydedilmesi için adınızı giriniz.</p>
         <div class="pass-box" id="passBox" style="display:flex;">
             <input type="text" id="adminNameInput" class="pass-input" placeholder="Yetkili Adı (Örn: Ahmet)" onkeydown="if(event.key==='Enter') executeLogin()">
@@ -327,8 +338,8 @@
                 </div>
                 <div id="staffPool" class="pool-grid" style="margin-bottom: 20px;"></div>
                 <div style="display:flex; gap:15px;">
-                    <input type="text" id="staffInput" placeholder="Personel ismi veya toplu Excel listesini yapıştırın..." class="glass-input" style="flex:1;" onkeydown="if(event.key==='Enter') addStaff()">
-                    <button class="btn btn-cyan" onclick="addStaff()">EKLE</button>
+                    <input type="text" id="staffInput" placeholder="Tek isim yazın veya Excel listesini kopyalayıp direkt buraya yapıştırın..." class="glass-input" style="flex:1;" onkeydown="if(event.key==='Enter') addStaff()">
+                    <button class="btn btn-cyan" onclick="addStaff()">EKLE / YÜKLE</button>
                 </div>
             </div>
             
@@ -472,7 +483,6 @@
             if (tenantId === "addh") {
                 return originalRef(path); 
             }
-            
             if (path) {
                 return originalRef("kurumlar/" + tenantId + "/" + path);
             } else {
@@ -484,6 +494,7 @@
         let currentUser = ""; let activeCell = null; let staffList = []; let historyStack = []; let currentTargetTable = null; 
         let currentMasterArchiveId = null; let currentMasterArchiveName = "Yeni Dosya"; let lastUsedEndDate = null; 
 
+        // VARDİYA KURALLARI
         let shiftRules = {};
         const defaultRules = {
             '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' },
@@ -501,6 +512,7 @@
             'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }
         };
 
+        // RADYO
         const smMusic = {
             audio: new Audio(), isPlaying: false, index: 0,
             playlist: [ { name: "Kral FM", url: "https://kralfmwmp.radyotvonline.net/;" }, { name: "Power Türk", url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio" }, { name: "Sakin (Lofi)", url: "https://stream.zeno.fm/f3wvbbqmdg8uv" } ],
@@ -586,7 +598,7 @@
                 const p = document.getElementById("staffPool"); p.innerHTML = ""; const data = snap.val(); let count = 0; staffList = []; 
                 if(data) { 
                     Object.entries(data).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); 
-                    staffList.forEach(item => { count++; const div = document.createElement("div"); div.className = "staff-chip"; div.innerHTML = `<input type="checkbox" value="${item.name}"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; p.appendChild(div); }); 
+                    staffList.forEach(item => { count++; const div = document.createElement("div"); div.className = "staff-chip"; div.innerHTML = `<input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span>`; div.onclick = (e) => { if(!e.target.classList.contains('staff-del')) { const cb = div.querySelector('input'); cb.checked = !cb.checked; if(cb.checked) div.classList.add('selected'); else div.classList.remove('selected'); } }; p.appendChild(div); }); 
                 } 
                 document.getElementById("staffCounter").innerText = count; 
             }); 
@@ -599,6 +611,7 @@
             const lines = raw.split('\n');
             lines.forEach(line => {
                 let name = line.trim();
+                // Excel'den TC + İsim kopyalanmışsa sadece ismi al
                 if(name.includes('\t')) {
                     let parts = name.split('\t');
                     name = parts[1] && parts[1].trim() !== "" ? parts[1].trim() : parts[0].trim();
@@ -612,6 +625,7 @@
             inp.value = ""; 
         }
         function removeStaff(e, id) { e.stopPropagation(); if(confirm("Personel havuzdan silinsin mi?")) { db.ref("personel_havuzu").child(id).remove(); logAction("Havuzdan kişi sildi."); } }
+        function clearStaffPool() { if(confirm("Tüm havuzu silmek istediğinize emin misiniz?")) db.ref("personel_havuzu").remove(); }
 
         // ---------------- MODAL / TABLO KONTROLLERİ ----------------
         function openTableModal() { const modal = document.getElementById('tableModalOverlay'); modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; setTimeout(() => modal.classList.add('show'), 10); }
@@ -648,8 +662,6 @@
             });
             html += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div>`;
             html += `<div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`;
-            html += `<div class="menu-item" style="background:var(--warning); color:#000; font-size:11px; box-shadow:0 0 10px var(--warning);" onclick="addGhostPinToCell()">📍 İĞNE / NOT AT</div>`;
-            html += `<div class="menu-item" style="background:transparent; border:1px solid var(--danger); color:var(--danger); font-size:11px;" onclick="removeGhostPinFromCell()">🗑️ İĞNE SİL</div>`;
             grid.innerHTML = html;
         }
 
@@ -706,7 +718,7 @@
                 const tr = th.parentNode;
                 let colIndex = Array.from(tr.children).indexOf(th);
                 
-                if(colIndex > 0) { // Personel isimleri sütunu gizlenemesin
+                if(colIndex > 1) { // Oklar(0) ve Personel isimleri(1) gizlenemesin
                     saveHistory();
                     table.querySelectorAll('tr').forEach(row => {
                         if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper');
@@ -719,9 +731,9 @@
         function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") {
             const cols = customColCount || parseInt(document.getElementById("colCount").value);
             let startDt = customStartDt;
-            if(!startDt || isNaN(startDt.getTime())) { 
-                let startDateVal = document.getElementById("startDate").value || new Date().toISOString().split('T')[0]; 
-                startDt = new Date(startDateVal); 
+            if (!(startDt instanceof Date) || isNaN(startDt.getTime())) {
+                let dVal = document.getElementById("startDate").value;
+                startDt = dVal ? new Date(dVal) : new Date();
             }
             
             let h = `<table><thead><tr><th style="width: 40px; background: transparent; border: none;">↕️</th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border:none; background:transparent;"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox"> PERSONEL</th>`;
@@ -747,10 +759,6 @@
             
             wrapper.innerHTML = `
                 <div class="table-header" onclick="toggleTableCollapse(this, event)">
-                    <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;">
-                        <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button>
-                        <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button>
-                    </div>
                     <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6;">(Değiştirmek için tıkla)</span></span>
                     <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:4px 10px; border-radius:8px; margin-left:auto;">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span>
                 </div>
@@ -808,7 +816,14 @@
         function toggleCheckboxFromCell(e, cell) { if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return; const cb = cell.querySelector('.row-checkbox'); if(cb && e.target !== cb) cb.checked = !cb.checked; }
         function toggleAllRows(mainCb) { const wrapper = mainCb.closest('table'); wrapper.querySelectorAll('tbody .row-checkbox').forEach(cb => cb.checked = mainCb.checked); }
 
-        // ✨ OK TUŞLARI (▲/▼) İLE SATIR TAŞIMA MOTORU GERİ GELDİ ✨
+        function generateTableFromSelected() { 
+            const sel = Array.from(document.querySelectorAll("#staffPool input:checked")).map(cb => cb.value); 
+            if(sel.length===0) return alert("Lütfen havuzdan personel seçin!"); 
+            startNewSession(); 
+            generateTable(false, sel, "Yeni Tablo"); 
+        }
+
+        // ✨ SATIR TAŞIMA İÇİN ÖZEL OKLAR, DRAG DROP KALDIRILDI ✨
         function moveRow(btn, dir) {
             const row = btn.closest('tr');
             const tbody = row.parentElement;
@@ -1105,7 +1120,7 @@
         document.addEventListener('keydown', e => { if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
         
         // =========================================
-        // SEÇİM, SÜRÜKLE BIRAK VE KOPYALAMA MOTORU
+        // SEÇİM VE KOPYALAMA MOTORU (SÜRÜKLE BIRAK KALDIRILDI)
         // =========================================
         let isDraggingCells = false; let startSelectCell = null;
         document.addEventListener('mousedown', e => {
