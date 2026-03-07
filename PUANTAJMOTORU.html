@@ -175,15 +175,27 @@
             .selected-cell { box-shadow: none !important; outline: none !important; background-color: inherit !important; } 
             .fm-var { background: transparent !important; border: none !important; color: black !important; font-size: 11px !important; font-weight: bold !important; padding: 0 !important; } 
         }
+
+        /* YENİ EKLENEN VİTRİN CSS EFEKTLERİ */
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050b14; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; transition: opacity 0.6s ease; perspective: 1000px; }
+        .splash-hospital { font-size: 20px; color: #38bdf8; letter-spacing: 5px; margin-bottom: 40px; font-weight: 900; text-align: center; text-shadow: 0 0 25px #0284c7; opacity: 0; animation: fadeUp 1s forwards 0.2s; }
+        .splash-logo { width: 160px; height: 160px; background: linear-gradient(135deg, #38bdf8, #0284c7); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 60px rgba(56, 189, 248, 0.3), inset 5px 5px 15px rgba(255,255,255,0.4), inset -5px -5px 15px rgba(0,0,0,0.4); margin-bottom: 30px; opacity: 0; animation: logoDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s; }
+        @keyframes logoDrop { from { transform: scale(0) rotate(-180deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
+<div id="splash">
+    <div class="splash-hospital" id="dynamicSplashTitle">SİSTEM YÜKLENİYOR...</div>
+    <div class="splash-logo"><svg viewBox="0 0 24 24" width="80" fill="#0f172a"><path d="M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z"/></svg></div>
+</div>
 
 <div id="mainContent">
     <div class="hero-search">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:15px;">
             <button onclick="window.history.back()" style="background:var(--dark); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1);">🔙 VARDİYA PANELİNE DÖN</button>
-            <button onclick="logout()" style="background:var(--red); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(239,68,68,0.2);">🚪 ÇIKIŞ YAP</button>
+            <button onclick="cikisYap()" style="background:var(--red); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(239,68,68,0.2);">🚪 ÇIKIŞ YAP</button>
         </div>
         
         <h1 class="hero-title" id="puantajBaslik">📋 HIZLI PUANTAJ KONSOLU</h1>
@@ -275,12 +287,12 @@
 </div>
 
 <script>
+// =========================================
+// 1. FİREBASE BAĞLANTISI VE SAAS GÜVENLİĞİ
+// =========================================
 const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-// =========================================
-// SAAS İZOLASYON (GÜVENLİK) MOTORU (TEK SEFER)
-// =========================================
 const tenantId = localStorage.getItem('sm_current_tenant');
 if (!tenantId) window.location.href = 'index.html';
 
@@ -291,12 +303,22 @@ db.ref = function(path) {
     return originalRef("kurumlar/" + tenantId);
 };
 
-// DİNAMİK BAŞLIK AYARLAMASI
+// =========================================
+// 2. DİNAMİK AÇILIŞ (VİTRİN) VE KONTROLLER
+// =========================================
 document.addEventListener('DOMContentLoaded', function() {
-    let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
+    let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "KURUM BİLGİSİ YOK";
+    
+    // Açılış Ekranı ve Başlıkları Dinamik Yap
     if(aktifKurum && aktifKurum !== "null") {
+        document.getElementById('dynamicSplashTitle').innerHTML = aktifKurum.toUpperCase() + "<br>PUANTAJ YÖNETİMİ";
         document.getElementById('puantajBaslik').innerHTML = `📋 ${aktifKurum.toUpperCase()} PUANTAJ KONSOLU`;
     }
+
+    setTimeout(() => {
+        document.getElementById('splash').style.opacity = '0';
+        setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 600);
+    }, 1500);
 
     let bugun = new Date();
     let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
@@ -308,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
     bulutBaglantisiniKur();
 });
 
-function logout() {
+function cikisYap() {
     localStorage.removeItem('sm_current_tenant');
     localStorage.removeItem('sm_current_kurum_adi');
     localStorage.removeItem('sm_role');
@@ -378,39 +400,44 @@ let appData = { gruplar: [], vardiyalar: null };
 
 function ilkKurulumuYap() {
     appData = { gruplar: [], vardiyalar: DEFAULT_VARDIYALAR };
-    const genelListe = [
-        "10006543166 - NEJLA NİLİ", "10580422338 - TAYYİP DOĞAN", "11620640910 - ZELİHA ERSOY", "12547486254 - MEHMET OĞUZ DÖĞÜN", 
-        "13097253044 - ORHAN KAHRAMAN", "14671540086 - GÜLBAHAR ÜNVER", "15097363778 - MERVE ÖZ", "15958477590 - NAZMİYE DURAN", 
-        "16015509254 - SONGÜL ERDOĞAN", "16709091126 - GÜLLÜ TOSUN", "16900491572 - SONGÜL DİLEK", "19589057206 - SEDA YILMAZ", 
-        "19741371508 - ÖZLEM DURSUN", "21283980216 - ŞAHABETTİN ORHAN", "22918496584 - HATİCE YILDIRIM", "24475058656 - ZEYNEP BOZAN", 
-        "25282186846 - BURCU DERELİOĞLU", "25624852712 - SONGÜL ÖZTÜRK", "26872123876 - HURİYE ELMAS", "27091143096 - KADİR GAMSIZ", 
-        "28543103354 - AYŞE BOZKAYA", "29386066998 - SAFİYE DENECİ", "30163049264 - ADEM KÖMÜR", "30623331236 - SADIK MACİT", 
-        "30937798466 - ALİ GENÇEL", "37927835576 - HALİL VAR", "40186499618 - DENİZ USLU", "45925910836 - ENES ABDULLAH ALTUN", 
-        "53164244964 - MAKBULE DENK", "58708122418 - MUSTAFA DİK", "61585026564 - FATMA ÇALIŞKAN", "10588692368 - ÜMİT YİĞİT", 
-        "21604545568 - NUSRETTİN ÖZSOY", "23665254878 - ÜMMÜ KURU", "26542158924 - HAFİSE DİKMEN", "29056059848 - FATMA IŞIK", 
-        "30328031684 - BURAK TURAN", "32827531146 - HATİCE KARAKUŞ", "00000000000 - FATMA KOÇAR", "10546692058 - HAFİZE ÖNAL", 
-        "23467244800 - FUNDA POYRAZ", "62074286230 - BETÜL ŞİMŞEK"
-    ];
-    appData.gruplar = [{ id: "g_1", ad: "DÖŞEMEALTI DEVLET HASTANESİ", kisiler: genelListe }];
+    
+    // GÜVENLİK: SADECE ÜMİT ABİ GİRİNCE HASTANE PERSONELİ YÜKLENSİN
+    if (tenantId === "addh") {
+        const genelListe = [
+            "10006543166 - NEJLA NİLİ", "10580422338 - TAYYİP DOĞAN", "11620640910 - ZELİHA ERSOY", "12547486254 - MEHMET OĞUZ DÖĞÜN", 
+            "13097253044 - ORHAN KAHRAMAN", "14671540086 - GÜLBAHAR ÜNVER", "15097363778 - MERVE ÖZ", "15958477590 - NAZMİYE DURAN", 
+            "16015509254 - SONGÜL ERDOĞAN", "16709091126 - GÜLLÜ TOSUN", "16900491572 - SONGÜL DİLEK", "19589057206 - SEDA YILMAZ", 
+            "19741371508 - ÖZLEM DURSUN", "21283980216 - ŞAHABETTİN ORHAN", "22918496584 - HATİCE YILDIRIM", "24475058656 - ZEYNEP BOZAN", 
+            "25282186846 - BURCU DERELİOĞLU", "25624852712 - SONGÜL ÖZTÜRK", "26872123876 - HURİYE ELMAS", "27091143096 - KADİR GAMSIZ", 
+            "28543103354 - AYŞE BOZKAYA", "29386066998 - SAFİYE DENECİ", "30163049264 - ADEM KÖMÜR", "30623331236 - SADIK MACİT", 
+            "30937798466 - ALİ GENÇEL", "37927835576 - HALİL VAR", "40186499618 - DENİZ USLU", "45925910836 - ENES ABDULLAH ALTUN", 
+            "53164244964 - MAKBULE DENK", "58708122418 - MUSTAFA DİK", "61585026564 - FATMA ÇALIŞKAN", "10588692368 - ÜMİT YİĞİT", 
+            "21604545568 - NUSRETTİN ÖZSOY", "23665254878 - ÜMMÜ KURU", "26542158924 - HAFİSE DİKMEN", "29056059848 - FATMA IŞIK", 
+            "30328031684 - BURAK TURAN", "32827531146 - HATİCE KARAKUŞ", "00000000000 - FATMA KOÇAR", "10546692058 - HAFİZE ÖNAL", 
+            "23467244800 - FUNDA POYRAZ", "62074286230 - BETÜL ŞİMŞEK"
+        ];
+        appData.gruplar = [{ id: "g_1", ad: "DÖŞEMEALTI DEVLET HASTANESİ", kisiler: genelListe }];
+    } else {
+        // DİĞER KURUMLAR İÇİN BOŞ VE KENDİ İSİMLERİNDE GRUP
+        let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "YENİ KURUM";
+        appData.gruplar = [{ id: "g_1", ad: aktifKurum.toUpperCase(), kisiler: [] }];
+    }
+    
     veriKaydet(); 
 }
 
 function bulutBaglantisiniKur() {
-    db.ref("puantaj_v115_zorunlu_gecis").once("value", snap => {
-        if(!snap.val()) {
-            ilkKurulumuYap(); db.ref("puantaj_v115_zorunlu_gecis").set(true);
-            arayuzCiz(); vardiyaArayuzCiz();
-        } else {
-            db.ref("puantaj_motoru_ayarlar").on("value", snap => {
-                let data = snap.val();
-                if(data) {
-                    appData = data;
-                    if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
-                    if (!appData.gruplar || appData.gruplar.length === 0) appData.gruplar = [{ id: "g_1", ad: "HASTANE PERSONELİ", kisiler: [] }];
-                    arayuzCiz(); vardiyaArayuzCiz(); anaEkranaButonlariCiz(); 
-                } else { ilkKurulumuYap(); }
-            });
-        }
+    db.ref("puantaj_motoru_ayarlar").on("value", snap => {
+        let data = snap.val();
+        if(data) {
+            appData = data;
+            if (!appData.vardiyalar) appData.vardiyalar = DEFAULT_VARDIYALAR;
+            if (!appData.gruplar || appData.gruplar.length === 0) {
+                let aktifKurum = localStorage.getItem('sm_current_kurum_adi') || "YENİ KURUM";
+                appData.gruplar = [{ id: "g_1", ad: aktifKurum.toUpperCase(), kisiler: [] }];
+            }
+            arayuzCiz(); vardiyaArayuzCiz(); anaEkranaButonlariCiz(); 
+        } else { ilkKurulumuYap(); }
     });
 }
 
@@ -738,6 +765,10 @@ function raporuOlustur(filtreParam, pShiftleri) {
         document.getElementById('btnExceleKopyala').style.display = "none"; return;
     }
 
+    // DİNAMİK EXCEL KURUM BAŞLIĞI
+    let kurumAdi = localStorage.getItem('sm_current_kurum_adi') || "KURUM BİLGİSİ YOK";
+    let ustBaslik = tenantId === "addh" ? "ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ" : kurumAdi.toUpperCase();
+
     for(let gAd in gArr) {
         let fullList = gArr[gAd].sort((a,b) => {
             let isimA = a.n.includes("-") ? a.n.split("-")[1].trim() : a.n;
@@ -755,7 +786,7 @@ function raporuOlustur(filtreParam, pShiftleri) {
             days.forEach((d, idx)=>{ h+=`<col class="c-gun">`; if(d.getDay()===0 || idx === days.length - 1) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
             HDR.forEach(()=>h+=`<col class="c-gun">`); h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
             <tr>
-                <td colspan="5" class="stick-1" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white; z-index:40;">${gAd.toUpperCase()}</td>
+                <td colspan="5" class="stick-1" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white; z-index:40;">${ustBaslik}</td>
                 <td colspan="${toplamSutun - 5}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white;">${gAd.toUpperCase()} PUANTAJ BİLDİRİMİ</td>
             </tr>
             <tr>
