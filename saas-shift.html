@@ -356,6 +356,7 @@
         function openExcelModal() { document.getElementById("excelInput").value = ""; document.getElementById('excelModal').style.display = 'flex'; setTimeout(() => document.getElementById('excelModal').classList.add('show'), 10); document.getElementById('excelModal').setAttribute('data-target', 'new'); }
         function openExcelModalForTable(btn) { document.getElementById("excelInput").value = ""; const modal = document.getElementById('excelModal'); modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10); modal.setAttribute('data-target', 'append'); window.currentTableWrapperForExcel = btn.closest('.table-wrapper'); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 300); }
+       function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; window.currentArchiveNode = "arsivlenmis_shiftler"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
 
