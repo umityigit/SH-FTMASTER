@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PUANTAJ MOTORU v141.0 (AKILLI MENÜ & SIFIR-MESAİ DESTEĞİ)</title>
+    <title>PUANTAJ MOTORU (SAAS ENTEGRELİ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -117,7 +117,6 @@
         .dik-yazi { writing-mode: vertical-lr; transform: rotate(180deg); font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; pointer-events: none; }
         .selected-cell { background-color: #dbeafe !important; box-shadow: inset 0 0 0 2px #2563eb !important; z-index: 5; }
         
-        /* ✨ KÜÇÜLTÜLMÜŞ AMA BELİRGİN KIRMIZI FAZLA MESAİ VURGUSU ✨ */
         .fm-var { color: #dc2626; font-size: 13px; font-weight: 900; background: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px solid #f87171; display: inline-block;}
 
         #tableContextMenu { font-family: 'Roboto', sans-serif; min-width: 180px; border-radius: 12px; padding: 5px; }
@@ -174,7 +173,6 @@
             tfoot { display: table-footer-group; }
             tr { page-break-inside: avoid; }
             .selected-cell { box-shadow: none !important; outline: none !important; background-color: inherit !important; } 
-            /* Çıktıda fazla mesai düz çıksın, kutu içine girmesin */
             .fm-var { background: transparent !important; border: none !important; color: black !important; font-size: 11px !important; font-weight: bold !important; padding: 0 !important; } 
         }
     </style>
@@ -183,7 +181,12 @@
 
 <div id="mainContent">
     <div class="hero-search">
-        <h1 class="hero-title">📋 HIZLI PUANTAJ KONSOLU</h1>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:15px;">
+            <button onclick="window.history.back()" style="background:var(--dark); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1);">🔙 VARDİYA PANELİNE DÖN</button>
+            <button onclick="logout()" style="background:var(--red); color:white; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; box-shadow:0 4px 10px rgba(239,68,68,0.2);">🚪 ÇIKIŞ YAP</button>
+        </div>
+        
+        <h1 class="hero-title" id="puantajBaslik">📋 HIZLI PUANTAJ KONSOLU</h1>
         <p class="hero-desc">Puantajını oluşturmak istediğiniz personelleri işaretleyin. İster tek kişi, ister tüm birimi anında hazırlayın.<br><em>Ekranda oluşan tabloda <b>Sağ Tıklayarak</b> vardiya atayabilir, <b>CTRL+Z</b> ile geri alabilir, <b>CTRL+S</b> ile buluta kaydedebilirsiniz.</em></p>
         
         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
@@ -274,35 +277,44 @@
 <script>
 const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
 firebase.initializeApp(firebaseConfig); const db = firebase.database();
-    // =========================================
-        // SAAS İZOLASYON (GÜVENLİK) MOTORU
-        // =========================================
-        const tenantId = localStorage.getItem('sm_current_tenant');
-        if (!tenantId) window.location.href = 'index.html';
 
-        const originalRef = db.ref.bind(db);
-        db.ref = function(path) {
-            if (tenantId === "addh") return originalRef(path); // Ümit Abi (Ana Kasa)
-            if (path) return originalRef("kurumlar/" + tenantId + "/" + path); // Diğer Müşteriler
-            return originalRef("kurumlar/" + tenantId);
-        };
-    // --- SAAS VERİ İZOLASYON MOTORU BAŞLANGICI ---
-    const tenantId = localStorage.getItem('sm_current_tenant');
+// =========================================
+// SAAS İZOLASYON (GÜVENLİK) MOTORU (TEK SEFER)
+// =========================================
+const tenantId = localStorage.getItem('sm_current_tenant');
+if (!tenantId) window.location.href = 'index.html';
+
+const originalRef = db.ref.bind(db);
+db.ref = function(path) {
+    if (tenantId === "addh") return originalRef(path); // Ümit Abi (Ana Kasa)
+    if (path) return originalRef("kurumlar/" + tenantId + "/" + path); // Diğer Müşteriler
+    return originalRef("kurumlar/" + tenantId);
+};
+
+// DİNAMİK BAŞLIK AYARLAMASI
+document.addEventListener('DOMContentLoaded', function() {
+    let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
+    if(aktifKurum && aktifKurum !== "null") {
+        document.getElementById('puantajBaslik').innerHTML = `📋 ${aktifKurum.toUpperCase()} PUANTAJ KONSOLU`;
+    }
+
+    let bugun = new Date();
+    let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
+    let bit = new Date(bugun.getFullYear(), bugun.getMonth() + 1, 14);
     
-    if (!tenantId) { window.location.href = 'index.html'; }
+    document.getElementById('inpTarihBas').value = `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
+    document.getElementById('inpTarihBit').value = `${bit.getFullYear()}-${String(bit.getMonth()+1).padStart(2,'0')}-${String(bit.getDate()).padStart(2,'0')}`;
+    
+    bulutBaglantisiniKur();
+});
 
-    const originalRef = db.ref.bind(db);
-
-    db.ref = function(path) {
-        // ÜMİT ABİ'NİN VIP GİRİŞİ:
-        if (tenantId === "addh") {
-            return originalRef(path); 
-        }
-        
-        if (path) { return originalRef("kurumlar/" + tenantId + "/" + path); } 
-        else { return originalRef("kurumlar/" + tenantId); }
-    };
-    // --- SAAS VERİ İZOLASYON MOTORU BİTİŞİ ---
+function logout() {
+    localStorage.removeItem('sm_current_tenant');
+    localStorage.removeItem('sm_current_kurum_adi');
+    localStorage.removeItem('sm_role');
+    localStorage.removeItem('sm_active_user');
+    window.location.href = 'index.html';
+}
 
 // === ÇİFT YÖNLÜ SENKRON DEĞİŞKENLERİ ===
 window.firebaseCellPaths = {}; 
@@ -354,17 +366,6 @@ function bulutaKalıcıKaydet() {
         setTimeout(() => { resetUnsaved(); btn.innerHTML = "💾"; btn.style.background = "#10b981"; btn.style.pointerEvents = "auto"; }, 2000);
     }).catch(err => { alert("Hata: " + err); btn.innerHTML = "💾"; btn.style.pointerEvents = "auto"; });
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    let bugun = new Date();
-    let bas = new Date(bugun.getFullYear(), bugun.getMonth(), 15);
-    let bit = new Date(bugun.getFullYear(), bugun.getMonth() + 1, 14);
-    
-    document.getElementById('inpTarihBas').value = `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
-    document.getElementById('inpTarihBit').value = `${bit.getFullYear()}-${String(bit.getMonth()+1).padStart(2,'0')}-${String(bit.getDate()).padStart(2,'0')}`;
-    
-    bulutBaglantisiniKur();
-});
 
 const DEFAULT_VARDIYALAR = { 
     "08:00-18:00":{t:9,g:0, tip:"calisma"}, "08:00-20:00":{t:11,g:0, tip:"calisma"}, "08:00-16:00":{t:7.5,g:0, tip:"calisma"}, 
@@ -487,7 +488,6 @@ function anaEkranaButonlariCiz() {
             });
         }
         
-        // ✨ EKSİK OLAN +EKLE BUTONU YENİ TASARIMIYLA GERİ GELDİ ✨
         html += `
             <div class="personel-card">
                 <label onclick="anaEkrandanPersonelEkle('${grup.id}')" style="background: #f8fafc; border: 2px dashed var(--green); color: var(--green); display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 12px; font-weight: 900; font-size: 13px; cursor: pointer; transition: all 0.3s;">
@@ -561,7 +561,6 @@ function tarihGuncelle(){
 }
 function getKey(d){return d.getFullYear()+(d.getMonth()+1).toString().padStart(2,'0')+d.getDate().toString().padStart(2,'0');}
 
-// ==== YENİ GÜN & FAZLA MESAİ HESAPLAMA MANTIĞI ====
 function satirHesapla(td) {
     if (!td) return; const tr = td.closest('tr'); if (!tr) return;
     let tAg = 0, n_rt = 0, n_ht = 0, n_r = 0, n_i = 0, n_rtc = 0, n_htc = 0, tAge = 0;
@@ -603,15 +602,10 @@ function satirHesapla(td) {
             }
         }
         
-        // ✨ SIFIR YAZMA VE KIRMIZI MESAİ EFEKTİ ✨
         if (c.classList.contains('bg-hafta')) {
             const type = c.getAttribute('data-type');
-            if (type === 'h-gun') { 
-                c.innerText = wHg > 0 ? wHg : "0"; 
-            } 
-            else if (type === 'h-saat') { 
-                c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "0"; 
-            } 
+            if (type === 'h-gun') { c.innerText = wHg > 0 ? wHg : "0"; } 
+            else if (type === 'h-saat') { c.innerText = wHs > 0 ? Number(wHs.toFixed(2)) : "0"; } 
             else if (type === 'h-fm') { 
                 if(currentWeekFmTotal > 0) {
                     c.innerHTML = `<div class="fm-var">${Number(currentWeekFmTotal.toFixed(2))}</div>`;
@@ -629,7 +623,6 @@ function satirHesapla(td) {
     update('.s-fm', tFM_Gunduz); update('.s-gecefm', tFM_Gece); update('.s-gece', tAge);       
 }
 
-// ==== SEÇİLEN KİŞİLERİ ALMA YARDIMCILARI ====
 function secilileriOlustur() {
     let secilenler = Array.from(document.querySelectorAll('.kisi-secici:checked')).map(cb => cb.value);
     if(secilenler.length === 0) return alert("Lütfen listeden en az bir kişi seçin!");
@@ -728,7 +721,6 @@ function raporuOlustur(filtreParam, pShiftleri) {
     let gArr = Object.values(people).reduce((acc, p) => { 
         let tamAd = p.n.toUpperCase('tr');
         
-        // FİLTRELEME
         if (filtreDizisi.length > 0) {
             let normalizeAd = tamAd.replace(/İ/g,'I').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U').replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G');
             let found = filtreDizisi.some(aranan => {
@@ -763,11 +755,11 @@ function raporuOlustur(filtreParam, pShiftleri) {
             days.forEach((d, idx)=>{ h+=`<col class="c-gun">`; if(d.getDay()===0 || idx === days.length - 1) h+=`<col class="c-gun"><col class="c-gun"><col class="c-gun">`; });
             HDR.forEach(()=>h+=`<col class="c-gun">`); h+=`<col class="c-gun"><col class="c-gun"></colgroup><thead>
             <tr>
-                <td colspan="5" class="stick-1" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white; z-index:40;">ANTALYA İL SAĞLIK MÜDÜRLÜĞÜ</td>
-                <td colspan="${toplamSutun - 5}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white;">${gAd.toUpperCase()} SÜREKLİ İŞÇİ PERSONEL PUANTAJ BİLDİRİMİ</td>
+                <td colspan="5" class="stick-1" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white; z-index:40;">${gAd.toUpperCase()}</td>
+                <td colspan="${toplamSutun - 5}" style="border: none !important; padding: 10px 0; text-align: left; font-size: 14px; font-weight: bold; background: white;">${gAd.toUpperCase()} PUANTAJ BİLDİRİMİ</td>
             </tr>
             <tr>
-                <td colspan="5" class="stick-1" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px; background: white; z-index:40;">BİRİM ADI    :   TEMİZLİK</td>
+                <td colspan="5" class="stick-1" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px; background: white; z-index:40;"></td>
                 <td colspan="${toplamSutun - 5}" style="border: none !important; text-align: left; font-weight: bold; font-size: 11px; padding-bottom: 5px; background: white;">${str}</td>
             </tr>`;
 
@@ -824,9 +816,9 @@ function raporuOlustur(filtreParam, pShiftleri) {
                 <tr><td colspan="${toplamSutun}" style="border: none; text-align: center; font-weight: bold; font-size: 11px; padding: 2px 0;">AÇIKLAMALAR</td></tr>
                 <tr><td colspan="${toplamSutun}" style="border: 1px solid #000; text-align: left; font-size: 10px; padding: 4px;" contenteditable="true"><strong>1-</strong> (Açıklamalarınızı buraya yazın...)</td></tr>
                 <tr>
-                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Düzenleyen</strong><br>TEMİZLİK BİRİM SORUMLUSU<br><br><br>...................</td>
-                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Kontrol Eden</strong><br>İDARİ VE MALİ İŞLER MÜDÜR YARDIMCISI<br><br><br>...................</td>
-                    <td colspan="${toplamSutun - 2*Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Onaylayan</strong><br>İDARİ VE MALİ İŞLER MÜDÜRÜ<br><br><br>...................</td>
+                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Düzenleyen</strong><br>BİRİM SORUMLUSU<br><br><br>...................</td>
+                    <td colspan="${Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Kontrol Eden</strong><br>İLGİLİ MÜDÜR YARDIMCISI<br><br><br>...................</td>
+                    <td colspan="${toplamSutun - 2*Math.floor(toplamSutun/3)}" style="border: none; text-align: center; font-size: 11px; padding-top: 15px;" contenteditable="true"><strong>Onaylayan</strong><br>BİRİM MÜDÜRÜ<br><br><br>...................</td>
                 </tr>
             </tfoot>
             </table></div>`;
@@ -838,7 +830,6 @@ function raporuOlustur(filtreParam, pShiftleri) {
     document.getElementById('btnExceleKopyala').style.display = "block";
 }
 
-// ==== SAĞ TIK MENÜSÜ & TOPLU SEÇİM ====
 let isSelecting = false; let startCell = null; let selectedCells = [];
 function getRowIdx(td) { return Array.from(td.parentNode.parentNode.children).indexOf(td.parentNode); }
 function getColIdx(td) { let tr = td.parentNode; let idx = 0; for (let i = 0; i < tr.children.length; i++) { if (tr.children[i] === td) return idx; idx += parseInt(tr.children[i].getAttribute('colspan') || 1); } return idx; }
@@ -942,13 +933,8 @@ function exceleSifirKayipsizIndir() {
     });
     combinedHtml += "</body></html>";
     const blob = new Blob(['\ufeff' + combinedHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Hastane_Puantaj_Listesi.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Puantaj_Listesi.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 </script>
 </body>
 </html>
-
-
-
-
-
