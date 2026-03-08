@@ -1018,6 +1018,62 @@
                 });
             }
         }
+        // 🔥 TABLOYU KALICI DEPOYA ATMA FONKSİYONU 🔥
+        function sendSingleTableToArchive(btn) {
+            if(!confirm("Bu tabloyu 'Kalıcı Depo'ya (Geçmiş Aylar Arşivi) göndermek istediğinize emin misiniz?")) return;
+            
+            const wrapper = btn.closest('.table-wrapper');
+            let tName = wrapper.getAttribute("data-tablename");
+            let sDate = wrapper.getAttribute("data-startdt");
+            let colCount = wrapper.getAttribute("data-colcount");
+            
+            // Ekrandaki verileri topla
+            const rowsData = [];
+            wrapper.querySelectorAll("tbody tr").forEach(tr => { 
+                let nameEl = tr.querySelector(".editable-name"); 
+                if (!nameEl) return; 
+                let name = nameEl.innerText.trim(); 
+                let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
+                    text: td.innerText.replace(/[\n\r]/g, ""), 
+                    bg: td.style.background || "transparent", 
+                    pin: td.getAttribute("data-pin") || "" 
+                })); 
+                rowsData.push({ name: name, shifts: shifts }); 
+            });
+            
+            let notesElement = wrapper.querySelector(".table-notes"); 
+            let notesVal = notesElement ? notesElement.value : "";
+            
+            // Tablo objesi oluştur
+            const tableObj = { 
+                tableName: tName, 
+                startDate: sDate, 
+                colCount: colCount, 
+                data: rowsData, 
+                notes: notesVal 
+            };
+            
+            // Kalıcı depoya (Geçmiş Aylara) kaydet
+            const saveData = { 
+                name: tName + " (Tekli Kayıt)", 
+                date: new Date().toLocaleString('tr-TR'), 
+                tables: [tableObj] 
+            };
+            
+            db.ref("kalici_depo").push(saveData).then(() => {
+                showToast("📦 Tablo Kalıcı Depoya Gönderildi!");
+                logAction(`'${tName}' kalıcı depoya atıldı.`);
+                
+                // Depoya atılan tabloyu ekrandan temizle
+                wrapper.remove();
+                if(document.querySelectorAll('.table-wrapper').length === 0) {
+                    closeModal('tableModalOverlay');
+                }
+            }).catch(err => {
+                alert("Hata oluştu: " + err.message);
+            });
+        }
     </script>
 </body>
 </html>
+
