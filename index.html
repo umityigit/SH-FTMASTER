@@ -17,6 +17,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#050b14">
+
     <style>
         * { max-width: 100%; box-sizing: border-box; }
         body { overflow-x: hidden; margin: 0; padding: 0; display: flex; height: 100vh; font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; overflow: hidden; }
@@ -203,6 +206,9 @@
         <div style="margin-top: 20px; font-size: 11px; color: #475569; font-weight: 600;">
             POWERED BY GOOGLE CLOUD & FIREBASE
         </div>
+        <button id="btnInstallApp" onclick="installApp()" style="display:none; width: 100%; max-width: 420px; padding: 12px; border: 1px solid var(--accent); border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; background: rgba(56, 189, 248, 0.1); color: var(--accent); transition: all 0.3s; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);">
+            ⬇️ SHIFTMASTER'I CİHAZINA KUR (MASAÜSTÜ/MOBİL)
+        </button>
 
         <div class="seo-footer">
             <h3>ShiftMaster Hakkında</h3>
@@ -271,7 +277,7 @@
 
             if(!kod || !sifre) return alert("Lütfen Kurum Kodunu ve Şifrenizi girin!");
 
-            // 🔥 SÜPER PATRON (GOD MODE) GİZLİ GİRİŞİ 🔥
+            // 🔥 BOSS MODU GİZLİ GİRİŞİ 🔥
             if (kod === "patron" && sifre === "8648") {
                 localStorage.setItem('sm_current_tenant', 'patron_base'); // Geçici yönetim üssü
                 localStorage.setItem('sm_active_user', 'SİSTEM KURUCUSU');
@@ -315,6 +321,32 @@
                 });
             });
         }
-    </script>
+
+        // 🔥 PWA (CİHAZA KURMA) MOTORU BURAYA EKLENDİ 🔥
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Kurulum destekleyen bir cihazsa butonu görünür yap
+            document.getElementById('btnInstallApp').style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Kullanıcı kurulumu onayladı');
+                        document.getElementById('btnInstallApp').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+</script>
 </body>
 </html>
