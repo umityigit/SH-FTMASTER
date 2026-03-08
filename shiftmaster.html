@@ -129,8 +129,13 @@
         table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; table-layout: auto; padding: 5px; }
         th, td { border-radius: 6px; padding: 12px 8px; text-align: center; font-size: 13px; font-weight: 700; position: relative; transition: all 0.2s; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 2px 2px 5px rgba(0,0,0,0.4); }
         th { background: linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)); color: var(--accent); position: sticky; top: 0; z-index: 20; border: 1px solid var(--glass-border); text-shadow: 1px 1px 2px #000; }
-        table tbody td:first-child { position: sticky; left: 0; z-index: 20; background: linear-gradient(90deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9)); border: 1px solid var(--glass-border); }
-        table thead th:first-child { position: sticky; left: 0; top: 0; z-index: 30; background: rgba(15,23,42,1); }
+        
+        /* 🔥 CERRAH MÜDAHALESİ: PERSONEL İSİMLERİNİ BAŞA SABİTLEDİK 🔥 */
+        /* 1. Sütun (Oklar) artık sabit DEĞİL */
+        table tbody td:first-child, table thead th:first-child { position: static; z-index: 1; }
+        /* 2. Sütun (Personel İsimleri) artık SABİT! */
+        table tbody td:nth-child(2) { position: sticky; left: 0; z-index: 30; background: linear-gradient(90deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9)); border: 1px solid var(--glass-border); box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
+        table thead th:nth-child(2) { position: sticky; left: 0; top: 0; z-index: 40; background: rgba(15,23,42,1); border: 1px solid var(--glass-border); box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
         
         .shift-cell { cursor: crosshair; color: #fff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
         .shift-cell:hover { box-shadow: inset 0 0 20px rgba(255,255,255,0.5), 0 5px 15px rgba(0,0,0,0.6); transform: scale(1.08); z-index: 999 !important; border: 1px solid #fff; }
@@ -434,7 +439,6 @@
             const isim = currentUser;
 
             if (role === 'admin') {
-                // Patron Firebase Auth kullanır
                 const user = firebase.auth().currentUser;
                 if (user) {
                     let yeniSifre = prompt(`Sayın Patron (${isim}), lütfen YENİ ŞİFRENİZİ girin:`);
@@ -449,7 +453,6 @@
                     alert("Oturum bulunamadı! Lütfen tekrar giriş yapın.");
                 }
             } else {
-                // Personel / Yönetici (Veritabanı Kullanır)
                 let eskiSifre = prompt(`Merhaba ${isim}, lütfen MEVCUT (ESKİ) ŞİFRENİZİ girin:`);
                 if (!eskiSifre) return;
                 
@@ -619,8 +622,54 @@
 
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; window.currentArchiveNode = "arsivlenmis_shiftler"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
         function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll(".staff-chip.selected")).map(el => el.innerText.split('×')[0].trim()); if(sel.length===0) return alert("Seçim yapmadınız!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); }
-        function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") { const cols = customColCount || parseInt(document.getElementById("colCount").value); let startDt = customStartDt; if (!(startDt instanceof Date) || isNaN(startDt.getTime())) { let dVal = document.getElementById("startDate").value; startDt = dVal ? new Date(dVal) : new Date(); } let h = `<table><thead><tr><th style="width: 40px; background: rgba(15,23,42,0.9); border: none;">↕️</th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border:none; background:rgba(15,23,42,0.9);"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox" style="width:18px;height:18px;"> PERSONEL</th>`; for(let i=0; i<cols; i++) { let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; if(i === cols - 1) lastUsedEndDate = new Date(d); } h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`; if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); }); else data.forEach(n => { h += createRowHtml(n, cols, startDt); }); h += '</tbody></table>'; const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); saveHistory(); updateAllStats(); openModal('tableModalOverlay'); }
-        function createRowHtml(name, colCount, startDt, savedShifts = null) { let cells = `<td style="width: 40px; background: rgba(15,23,42,0.6); border-right: none;"><div class="nav-box" style="pointer-events:auto;"><button class="mini-btn" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" onclick="moveRow(this,1)">▼</button></div></td>`; cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: none;"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`; let shiftIdx = 0; for(let i=0; i<colCount; i++) { let d = new Date(startDt); d.setDate(startDt.getDate() + i); const txt = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].text : ""; const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent"; const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : ""; const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; shiftIdx++; if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; } cells += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td>`; return `<tr>${cells}</tr>`; }
+        
+        function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") { 
+            const cols = customColCount || parseInt(document.getElementById("colCount").value); 
+            let startDt = customStartDt; 
+            if (!(startDt instanceof Date) || isNaN(startDt.getTime())) { 
+                let dVal = document.getElementById("startDate").value; 
+                startDt = dVal ? new Date(dVal) : new Date(); 
+            } 
+            // 🔥 CERRAH MÜDAHALESİ: TH'LERE NO-EXPORT EKLENDİ
+            let h = `<table><thead><tr><th class="no-export" style="width: 30px; background: transparent; border: none; box-shadow: none;"></th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border-left:none;"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox" style="width:18px;height:18px;"> PERSONEL</th>`; 
+            for(let i=0; i<cols; i++) { 
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
+                let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; 
+                h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; 
+                if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; 
+                if(i === cols - 1) lastUsedEndDate = new Date(d); 
+            } 
+            h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`; 
+            if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); }); 
+            else data.forEach(n => { h += createRowHtml(n, cols, startDt); }); 
+            h += '</tbody></table>'; 
+            
+            const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; 
+            wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); 
+            wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; 
+            if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); 
+            saveHistory(); updateAllStats(); openModal('tableModalOverlay'); 
+        }
+        
+        function createRowHtml(name, colCount, startDt, savedShifts = null) { 
+            // 🔥 CERRAH MÜDAHALESİ: TD'LERE NO-EXPORT EKLENDİ VE TASARIM ŞEFFAF YAPILDI
+            let cells = `<td class="no-export" style="width: 30px; background: transparent !important; border: none !important; box-shadow: none !important;"><div class="nav-box" style="pointer-events:auto; display:flex; flex-direction:column; gap:2px;"><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,1)">▼</button></div></td>`; 
+            cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: 1px solid var(--glass-border);"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`; 
+            let shiftIdx = 0; 
+            for(let i=0; i<colCount; i++) { 
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
+                const txt = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].text : ""; 
+                const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent"; 
+                const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : ""; 
+                const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; 
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; 
+                shiftIdx++; 
+                if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; 
+            } 
+            cells += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td>`; 
+            return `<tr>${cells}</tr>`; 
+        }
+
         function toggleCheckboxFromCell(e, cell) { if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return; const cb = cell.querySelector('.row-checkbox'); if(cb && e.target !== cb) cb.checked = !cb.checked; }
         function toggleAllRows(mainCb) { const wrapper = mainCb.closest('table'); wrapper.querySelectorAll('tbody .row-checkbox').forEach(cb => cb.checked = mainCb.checked); }
         function moveRow(btn, dir) { const row = btn.closest('tr'); const tbody = row.parentElement; if (dir === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling); else if (dir === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row); saveHistory(); }
@@ -628,7 +677,40 @@
         function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
         function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); const names = Array.from(wrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, null, wrapper); } }
         function safeAppendTable() { const wrappers = document.querySelectorAll(".table-wrapper"); if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); saveHistory(); const lastWrapper = wrappers[wrappers.length - 1]; const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate); } }
-        function takeFullScreenshot(btn) { const wrapper = btn.closest('.table-wrapper'); const captureArea = wrapper.querySelector(".scroll-area"); const table = wrapper.querySelector("table"); let oldText = btn.innerHTML; btn.innerHTML = "⏳ FOTO ALINIYOR..."; let oldOverflow = captureArea.style.overflow; let oldMaxHeight = captureArea.style.maxHeight; captureArea.style.overflow = 'visible'; captureArea.style.maxHeight = 'none'; html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, windowWidth: table.scrollWidth + 50 }).then(canvas => { const link = document.createElement("a"); link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; link.href = canvas.toDataURL(); link.click(); btn.innerHTML = oldText; captureArea.style.overflow = oldOverflow; captureArea.style.maxHeight = oldMaxHeight; logAction("Fotoğraf aldı."); }); }
+        
+        // 🔥 CERRAH MÜDAHALESİ: FOTOĞRAF ÇEKERKEN OKLARI GİZLİYORUZ 🔥
+        function takeFullScreenshot(btn) { 
+            const wrapper = btn.closest('.table-wrapper'); 
+            const captureArea = wrapper.querySelector(".scroll-area"); 
+            const table = wrapper.querySelector("table"); 
+            
+            let oldText = btn.innerHTML; 
+            btn.innerHTML = "⏳ FOTO ALINIYOR..."; 
+            
+            const hiddenElements = table.querySelectorAll('.no-export');
+            hiddenElements.forEach(el => el.style.display = 'none');
+
+            let oldOverflow = captureArea.style.overflow; 
+            let oldMaxHeight = captureArea.style.maxHeight; 
+            captureArea.style.overflow = 'visible'; 
+            captureArea.style.maxHeight = 'none'; 
+            
+            html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, windowWidth: table.scrollWidth + 50 }).then(canvas => { 
+                const link = document.createElement("a"); 
+                link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; 
+                link.href = canvas.toDataURL(); 
+                link.click(); 
+                
+                btn.innerHTML = oldText; 
+                captureArea.style.overflow = oldOverflow; 
+                captureArea.style.maxHeight = oldMaxHeight; 
+                
+                hiddenElements.forEach(el => el.style.display = '');
+
+                logAction("Fotoğraf aldı."); 
+            }); 
+        }
+
         function splitRowFromCell() { if(!activeCell) return; const cell = activeCell; const row = cell.closest('tr'); const tbody = row.parentElement; const allShiftCells = Array.from(row.querySelectorAll('.shift-cell')); const cellIndex = allShiftCells.indexOf(cell); if(cellIndex === -1) return; saveHistory(); const newRow = row.cloneNode(true); const origName = row.querySelector('.editable-name').innerText; newRow.querySelector('.editable-name').innerText = origName + " (Devamı)"; for(let i = cellIndex; i < allShiftCells.length; i++) { allShiftCells[i].innerText = ""; allShiftCells[i].style.background = "transparent"; allShiftCells[i].removeAttribute("data-pin"); } const newShiftCells = Array.from(newRow.querySelectorAll('.shift-cell')); for(let i = 0; i < cellIndex; i++) { newShiftCells[i].innerText = ""; newShiftCells[i].style.background = "transparent"; newShiftCells[i].removeAttribute("data-pin"); } tbody.insertBefore(newRow, row.nextSibling); updateAllStats(); document.getElementById("contextMenu").style.display = "none"; showToast("Satır bölündü! ✂️"); logAction("Satır böldü."); }
         function toggleTableCollapse(header, e) { if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return; header.closest('.table-wrapper').classList.toggle('collapsed'); }
         function moveTableWrapper(btn, dir, e) { e.stopPropagation(); const wrapper = btn.closest('.table-wrapper'); if(dir === -1 && wrapper.previousElementSibling) wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling); else if (dir === 1 && wrapper.nextElementSibling) wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper); }
@@ -697,9 +779,9 @@
         document.addEventListener('mousedown', e => {
             if(e.button !== 0) return; if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; 
             const cell = e.target.closest('td, th');
-            if(cell && cell.closest('table') && !cell.closest('.table-header')) { isDraggingCells = true; startSelectCell = cell; document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); cell.classList.add('selected-cell'); if (cell.classList.contains('shift-cell')) activeCell = cell; } else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn') && !e.target.closest('.mini-swatch') && e.target.id !== "customColorInput") { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
+            if(cell && cell.closest('table') && !cell.closest('.table-header') && !cell.classList.contains('no-export')) { isDraggingCells = true; startSelectCell = cell; document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); cell.classList.add('selected-cell'); if (cell.classList.contains('shift-cell')) activeCell = cell; } else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn') && !e.target.closest('.mini-swatch') && e.target.id !== "customColorInput") { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
         });
-        document.addEventListener('mouseover', e => { if(isDraggingCells) { const cell = e.target.closest('td, th'); if(cell && cell.closest('table') === startSelectCell.closest('table')) selectCellRange(startSelectCell, cell); } });
+        document.addEventListener('mouseover', e => { if(isDraggingCells) { const cell = e.target.closest('td, th'); if(cell && cell.closest('table') === startSelectCell.closest('table') && !cell.classList.contains('no-export')) selectCellRange(startSelectCell, cell); } });
         document.addEventListener('mouseup', () => { isDraggingCells = false; });
         document.addEventListener('selectstart', e => { if(isDraggingCells) e.preventDefault(); }); 
         
@@ -707,14 +789,14 @@
             document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
             const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tr')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').querySelectorAll('th, td')).indexOf(start); const endColIdx = Array.from(end.closest('tr').querySelectorAll('th, td')).indexOf(end);
             const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx);
-            for(let r = minRow; r <= maxRow; r++) { const trCells = Array.from(rows[r].querySelectorAll('th, td')); for(let c = minCol; c <= maxCol; c++) { if(trCells[c]) trCells[c].classList.add('selected-cell'); } }
+            for(let r = minRow; r <= maxRow; r++) { const trCells = Array.from(rows[r].querySelectorAll('th, td')); for(let c = minCol; c <= maxCol; c++) { if(trCells[c] && !trCells[c].classList.contains('no-export')) trCells[c].classList.add('selected-cell'); } }
         }
 
         // =========================================
         // 13. KUSURSUZ EXCEL KOPYALAMA MOTORU
         // =========================================
         function getCleanCellText(cell) { 
-            if (cell.classList.contains('hidden-by-snipper')) return null;
+            if (cell.classList.contains('hidden-by-snipper') || cell.classList.contains('no-export')) return null;
             if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
             if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
             let text = (cell.textContent || "").replace(/\n/g, " ").trim(); 
@@ -723,7 +805,7 @@
         }
 
         function getExcelCellHtml(cell) {
-            if(cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
+            if(cell.classList.contains('no-export') || cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
             
             let text = getCleanCellText(cell);
             let bg = '#ffffff'; let color = '#000000';
