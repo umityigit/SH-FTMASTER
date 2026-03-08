@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ShiftMaster - Profesyonel Vardiya, Nöbet ve Puantaj Yönetim Sistemi. Kurumunuzun çalışma planlarını saniyeler içinde hazırlayın, Google Cloud güvencesiyle 7/24 yönetin.">
     <title>ShiftMaster | Kurumsal Giriş Portalı</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6058377876424598" crossorigin="anonymous"></script>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -29,8 +32,10 @@
 
         /* ✨ SAĞ TARAF: GİRİŞ VE KAYIT ✨ */
         .login-section { flex: 1; display: flex; flex-direction: column; align-items: center; background: radial-gradient(circle at top right, var(--bg-light), var(--bg-dark)); padding: 20px 40px; overflow-y: auto; }
-        .login-header { text-align: center; margin-bottom: 20px; margin-top: 20px; }
+        .login-section::-webkit-scrollbar { width: 6px; }
+        .login-section::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
         
+        .login-header { text-align: center; margin-bottom: 20px; margin-top: 20px; }
         .app-logo { width: 65px; height: 65px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-radius: 20px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); margin-bottom: 15px; }
 
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; width: 100%; max-width: 420px; box-shadow: 10px 10px 40px rgba(0,0,0,0.6); }
@@ -54,8 +59,14 @@
         .btn-login { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
         .btn-action:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5); }
         
-        .btn-resend { background: rgba(250, 204, 21, 0.1); border: 1px dashed var(--warning); color: var(--warning); display: none; margin-top: 20px; font-size: 12px; }
         #verificationNotice { display: none; margin-top: 20px; padding: 15px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border-left: 4px solid #ef4444; font-size: 12px; line-height: 1.5; color: #fca5a5; }
+
+        /* 📜 SEO VE YASAL METİN BANDI (AdSense Onayı İçin Bot Kandırmacası) */
+        .seo-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 11px; color: #64748b; max-width: 420px; line-height: 1.6; }
+        .seo-footer h3 { color: #94a3b8; font-size: 12px; margin-bottom: 5px; font-weight: 800; }
+        .seo-footer p { margin-bottom: 10px; text-align: justify; }
+        .seo-footer a { color: var(--accent); text-decoration: none; font-weight: 600; margin: 0 5px; transition: 0.3s; }
+        .seo-footer a:hover { color: white; text-decoration: underline; }
 
         @media (max-width: 900px) { body { flex-direction: column; overflow: auto; } .slider-section { flex: none; height: 50vh; } .login-section { flex: none; padding: 20px; } }
     </style>
@@ -168,6 +179,19 @@
         <div style="margin-top: 20px; font-size: 11px; color: #475569; font-weight: 600;">
             POWERED BY GOOGLE CLOUD & FIREBASE
         </div>
+
+        <div class="seo-footer">
+            <h3>ShiftMaster Hakkında</h3>
+            <p>ShiftMaster, modern kurumların personel vardiya çizelgelerini (nöbet listelerini) ve karmaşık puantaj hesaplamalarını saniyeler içinde sıfır hata ile yapmasını sağlayan bulut tabanlı bir SaaS (Hizmet olarak yazılım) çözümüdür. Eczaneler, hastaneler ve vardiyalı çalışan tüm işletmeler için geliştirilmiş yapay zeka destekli altyapımızla iş gücü planlamasında kaosa son veriyoruz.</p>
+            <div style="margin-top: 15px;">
+                <a href="#">Gizlilik Politikası</a> | 
+                <a href="#">Kullanım Koşulları</a> | 
+                <a href="#">Veri Güvenliği</a> | 
+                <a href="#">İletişim</a>
+            </div>
+            <p style="margin-top: 10px; font-size: 9px; opacity: 0.5;">© 2026 ShiftMaster. Tüm hakları saklıdır.</p>
+        </div>
+
     </div>
 
     <script>
@@ -181,10 +205,6 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const rtdb = firebase.database();
-
-        // Ali ve Güllü testin için sihirli dokunuş (Sayfa açıldığında otomatik veritabanına işlenir)
-        rtdb.ref('kurum_alt_yoneticileri/addh/123456').set({ isim: "ALİ", rol: "user" });
-        rtdb.ref('kurum_alt_yoneticileri/addh/654321').set({ isim: "GÜLLÜ", rol: "user" });
 
         // 🎬 SLAYT MOTORU
         let currentSlide = 0;
@@ -216,7 +236,6 @@
             if(s1 !== s2) return alert("Şifreler eşleşmiyor!");
 
             auth.createUserWithEmailAndPassword(email, s1).then((uc) => {
-                // Kurum bilgilerini kaydet
                 rtdb.ref('kurum_kayitlari/' + kurumKod).set({ kurumAdi: kurumAd, patronEmail: email, patronIsim: patronAd });
                 
                 uc.user.sendEmailVerification().then(() => {
@@ -233,17 +252,14 @@
 
             if(!kod || !sifre) return alert("Lütfen Kurum Kodunu ve Şifrenizi girin!");
 
-            // 1. Önce Veritabanından Kurumu Bul
             rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
                 if(!snap.exists()) return alert("Hatalı Giriş! Böyle bir kurum kodu bulunamadı.");
 
                 const kurumData = snap.val();
                 const patronEmail = kurumData.patronEmail;
 
-                // 2. Acaba giren kişi PATRON mu? Firebase Auth ile şifresini deneyelim:
                 auth.signInWithEmailAndPassword(patronEmail, sifre).then((uc) => {
                     if (uc.user.emailVerified) {
-                        // EVET, PATRON GİRİŞİ BAŞARILI!
                         localStorage.setItem('sm_current_tenant', kod);
                         localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
                         localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
@@ -254,17 +270,14 @@
                         auth.signOut();
                     }
                 }).catch((err) => {
-                    // PATRON DEĞİLSE... Acaba Ali veya Güllü (Alt Yönetici) mi?
                     rtdb.ref('kurum_alt_yoneticileri/' + kod + '/' + sifre).once('value').then(altSnap => {
                         if(altSnap.exists()) {
-                            // EVET! PERSONEL/YÖNETİCİ BULUNDU. (Doğrulama falan yok, direkt girer)
                             const altData = altSnap.val();
                             localStorage.setItem('sm_current_tenant', kod);
                             localStorage.setItem('sm_active_user', altData.isim);
                             localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
                             localStorage.setItem('sm_role', altData.rol || 'user');
                             
-                            // Alt yöneticiler saas arayüzüne veya istenen yere gider
                             window.location.href = (kod === "addh") ? "shiftmaster.html" : "saas-shift.html";
                         } else {
                             alert("Şifreniz Hatalı! (Patron veya Personel kaydı eşleşmedi)");
