@@ -1073,7 +1073,26 @@
                 alert("Hata oluştu: " + err.message);
             });
         }
+        // 🔥 TARİH BAŞLIKLARI SAĞ TIK MENÜSÜ TETİKLEYİCİSİ 🔥
+        document.addEventListener('contextmenu', e => {
+            const th = e.target.closest('th[data-date]');
+            if(th) {
+                e.preventDefault(); // Tarayıcının kendi menüsünü engelle
+                activeHeaderCell = th;
+                const menu = document.getElementById("headerContextMenu");
+                menu.style.display = "block";
+                
+                // Menünün ekranın sağına taşıp kaybolmasını önleyen akıllı hizalama
+                let x = e.pageX;
+                let y = e.pageY;
+                if (x + 280 > window.innerWidth) x = window.innerWidth - 290; 
+                
+                menu.style.left = x + "px";
+                menu.style.top = y + "px";
+            }
+        });
     </script>
 </body>
 </html>
+
 
