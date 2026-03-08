@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="ShiftMaster - Profesyonel Vardiya, Nöbet ve Puantaj Yönetim Sistemi. Kurumunuzun çalışma planlarını saniyeler içinde hazırlayın, Google Cloud güvencesiyle 7/24 yönetin.">
     <title>ShiftMaster | Kurumsal Giriş Portalı</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&display=swap" rel="stylesheet">
@@ -14,6 +14,13 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+        * {
+    max-width: 100%;
+    box-sizing: border-box; /* Yazıların dışarı taşmasını önler */
+}
+body {
+    overflow-x: hidden; /* Sağa kaymayı tamamen yasaklar */
+}
         :root { --bg-dark: #050b14; --bg-light: #0f172a; --accent: #38bdf8; --accent-glow: #0284c7; --glass-bg: rgba(15, 23, 42, 0.6); --glass-border: rgba(255, 255, 255, 0.1); --warning: #facc15; --success: #10b981; }
         body { margin: 0; padding: 0; display: flex; height: 100vh; font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; overflow: hidden; }
 
