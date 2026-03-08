@@ -1177,11 +1177,11 @@
                                     if(["HT", "İ", "R", "Yİ", "Nİ", "RT", "RAPOR", "İZİN"].includes(shiftVal)) {
                                         listOff.innerHTML += itemHtml; offCount++;
                                     } 
-                                    // Gece Nöbeti Ayrımı (İçinde 20, 16, 24 geçiyorsa veya NÖBET kelimesi varsa)
-                                    else if(shiftVal.includes("20:") || shiftVal.includes("16:") || shiftVal.includes("24:") || shiftVal.includes("NÖBET")) {
+                                    // Gece Nöbeti Ayrımı (BAŞLANGIÇ saati 16, 20, 24 olanlar veya NÖBET kelimesi içerenler)
+                                    else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET") || shiftVal === "N") {
                                         listNight.innerHTML += itemHtml; nightCount++;
                                     } 
-                                    // Geri kalan herkes Gündüz Çalışanı
+                                    // Geri kalan herkes (08:00 ile başlayanlar dahil) Gündüz Çalışanı
                                     else {
                                         listDay.innerHTML += itemHtml; dayCount++;
                                     }
@@ -1205,3 +1205,4 @@
     </script>
 </body>
 </html>
+
