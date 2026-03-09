@@ -626,6 +626,40 @@ inactivityTime();
                         loadNews();
                         logAction("Sisteme giriş yaptı.");
                         
+                       // SİSTEM AÇILIŞ (SPLASH) VE YETKİ KONTROL MOTORU
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                if (splash) splash.style.opacity = '0';
+                
+                setTimeout(() => {
+                    if (splash) splash.style.display = 'none';
+                    
+                    let activeUsr = localStorage.getItem('sm_active_user');
+                    let activeRole = localStorage.getItem('sm_role');
+
+                    if(activeUsr) {
+                        currentUser = activeUsr; 
+                        document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
+                        const appSelector = document.getElementById("appSelector");
+                        if(appSelector) appSelector.style.display = "flex";
+
+                        const btnSorumlu = document.getElementById('btnSorumluAta');
+                        
+                        // Orijinal ve Sorunsuz Yetki Kontrolü
+                        if (activeRole === 'admin' || activeRole === 'superadmin') {
+                            if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
+                            if(typeof loadSorumlular === 'function') loadSorumlular(); 
+                        } else {
+                            if (btnSorumlu) btnSorumlu.style.display = 'none';
+                        }
+
+                        // Sayfayı Çizen Asıl Komutlar
+                        if(typeof loadStaffPool === 'function') loadStaffPool(); 
+                        if(typeof loadArchives === 'function') loadArchives(); 
+                        if(typeof loadPermanentArchives === 'function') loadPermanentArchives(); 
+                        if(typeof loadNews === 'function') loadNews();
+                        if(typeof logAction === 'function') logAction("Sisteme giriş yaptı.");
+                        
                         // Hareketsizlik kilidini başlat (Eğer eklediysen çalışır)
                         if(typeof inactivityTime === 'function') inactivityTime();
 
@@ -1277,6 +1311,7 @@ inactivityTime();
     </script>
 </body>
 </html>
+
 
 
 
