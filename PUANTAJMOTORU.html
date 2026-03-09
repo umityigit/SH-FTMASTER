@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
     <style>
@@ -362,26 +363,52 @@ function ekraniTemizle() {
 
 // 🔥 ORTAK ŞİFRE DOĞRULAMA (ZERO TRUST) 🔥
 function sifreDogrula(islemCallback) {
-    let sifre = prompt("🛡️ GÜVENLİK DUVARI\nPersonel TC Kimlik verilerini görmek için Kurum Kodunuzu veya Yönetici Şifrenizi girin:");
+    let sifre = prompt("🛡️ GÜVENLİK DUVARI\nKilitleri açmak için SİSTEME GİRİŞ ŞİFRENİZİ yazın:");
     if(!sifre) return;
-    
     sifre = sifre.trim();
-    let gecerliKurumKodu = localStorage.getItem('sm_current_tenant') || "";
-    
-    // Patron/SüperAdmin kontrolü (Kurum Kodu veya Master Şifre ile girer)
-    if(sifre === "8648" || sifre.toLowerCase() === gecerliKurumKodu.toLowerCase()) {
-        islemCallback();
-    } 
-    // Alt Yönetici Kontrolü (Giriş yaparken kullandığı özel kod ile girer)
-    else {
-        db.ref("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).once("value").then(snap => {
-            if(snap.exists()) {
-                islemCallback();
+
+    let aktifRol = localStorage.getItem('sm_role');
+    let tenant = localStorage.getItem('sm_current_tenant');
+    let aktifKullanici = localStorage.getItem('sm_active_user');
+
+    // 1. Süper Patron (Kurucu Master Key)
+    if (aktifRol === 'superadmin' && sifre === "8648") {
+        return islemCallback();
+    }
+
+    // 2. Kurum Patronu (Admin - Firebase Auth Şifresiyle Girer)
+    if (aktifRol === 'admin') {
+        if (sifre === "8648") return islemCallback(); // Kurucu Master Key daima geçerli
+        
+        db.ref('kurum_kayitlari/' + tenant).once('value').then(snap => {
+            if(snap.exists() && snap.val().patronEmail) {
+                let email = snap.val().patronEmail;
+                // Adamın asıl giriş yaptığı şifreyi arka planda Google'a soruyoruz
+                firebase.auth().signInWithEmailAndPassword(email, sifre)
+                    .then(() => { islemCallback(); })
+                    .catch(err => { alert("⛔ Şifreniz Hatalı! Kilit açılamadı."); });
             } else {
-                alert("⛔ Hatalı Şifre veya Yetkisiz Erişim!");
+                alert("⛔ Kurum kaydı bulunamadı!");
             }
         });
+        return;
     }
+
+    // 3. Alt Yönetici (Personel - Kendi Pin Koduyla Girer)
+    db.ref("kurum_alt_yoneticileri/" + tenant + "/" + sifre).once("value").then(snap => {
+        if(snap.exists()) {
+            let yetkiliIsim = snap.val().isim;
+            // Kendi şifresini mi girdi yoksa başkasınınkini mi çalmış?
+            if (yetkiliIsim === aktifKullanici) {
+                islemCallback();
+            } else {
+                alert("⛔ Bu şifre size ait değil, yetkiniz reddedildi!");
+            }
+        } else {
+            if (sifre === "8648") return islemCallback(); // Kurucu Master Key daima geçerli
+            alert("⛔ Hatalı Şifre!");
+        }
+    });
 }
 
 // 🔥 TEKİL TC KİLİDİ AÇMA/KAPAMA 🔥
