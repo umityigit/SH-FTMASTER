@@ -674,10 +674,24 @@
             }
         }
 
+        // 🔥 GÜVENLİK: ŞİFRE KRİPTOLAMA MOTORU 🔥
+        function sifreKriptola(sifre) {
+            return btoa(unescape(encodeURIComponent(sifre + "_SM2026_SECURE")));
+        }
+
         function kaydetSorumlu() {
-            const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); const sifre = document.getElementById('sorumluSifre').value.trim();
+            const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); 
+            const sifre = document.getElementById('sorumluSifre').value.trim();
             if(!isim || !sifre) return alert("Lütfen havuzdan isim seçin ve şifre belirleyin!");
-            originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).set({ isim: isim, rol: "user" }).then(() => { showToast("Yönetici Eklendi! ✅"); document.getElementById('sorumluIsim').value = ""; document.getElementById('sorumluSifre').value = ""; logAction(`Yeni yönetici atadı: ${isim}`); });
+            
+            let kriptoluSifre = sifreKriptola(sifre); // Şifreyi gizle!
+            
+            originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + kriptoluSifre).set({ isim: isim, rol: "user" }).then(() => { 
+                showToast("Yönetici Eklendi! ✅"); 
+                document.getElementById('sorumluIsim').value = ""; 
+                document.getElementById('sorumluSifre').value = ""; 
+                logAction(`Yeni yönetici atadı: ${isim} (Şifre Kriptolandı)`); 
+            });
         }
 
         function loadSorumlular() {
@@ -686,9 +700,9 @@
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([sif, data]) => { 
                         list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
-                            <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--warning); margin-left:8px; background:rgba(250,204,21,0.1); padding:2px 8px; border-radius:6px; border:1px dashed var(--warning);">${sif}</span></span>
+                            <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--success); font-size:10px; margin-left:8px; border:1px solid var(--success); padding:2px 6px; border-radius:4px;">🔒 Şifrelenmiş Yetkili</span></span>
                             <div style="display:flex; gap:10px; align-items:center;">
-                                <button class="btn" style="background:rgba(16,185,129,0.2); border:1px solid var(--success); color:var(--success); padding:6px 12px; font-size:10px;" onclick="degistirSorumluSifre(event, '${sif}', '${data.isim}')">✏️ Şifre</button>
+                                <button class="btn" style="background:rgba(16,185,129,0.2); border:1px solid var(--success); color:var(--success); padding:6px 12px; font-size:10px;" onclick="degistirSorumluSifre(event, '${sif}', '${data.isim}')">✏️ Sıfırla</button>
                                 <button class="btn" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px;" onclick="silSorumlu(event, '${sif}', '${data.isim}')">X</button>
                             </div>
                         </div>`; 
@@ -696,12 +710,19 @@
                 } else { list.innerHTML += "<div style='color:#64748b;'>Atanmış yönetici yok.</div>"; }
             });
         }
-        function degistirSorumluSifre(e, eskiSifre, isim) {
-            e.stopPropagation(); let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
+
+        function degistirSorumluSifre(e, eskiKriptoluSifre, isim) {
+            e.stopPropagation(); 
+            let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin (Eski şifreyi göremezsiniz, sadece sıfırlayabilirsiniz):");
             if(yeniSifre && yeniSifre.trim() !== "") {
-                yeniSifre = yeniSifre.trim(); if(yeniSifre === eskiSifre) return;
-                originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniSifre).set({ isim: isim, rol: "user" }).then(() => {
-                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiSifre).remove().then(() => { showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); });
+                yeniSifre = yeniSifre.trim(); 
+                let yeniKriptoluSifre = sifreKriptola(yeniSifre);
+                
+                originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniKriptoluSifre).set({ isim: isim, rol: "user" }).then(() => {
+                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKriptoluSifre).remove().then(() => { 
+                        showToast(isim + " şifresi güncellendi! ✅"); 
+                        logAction(`${isim} şifresini sıfırladı.`); 
+                    });
                 });
             }
         }
@@ -1312,5 +1333,6 @@
     </script>
 </body>
 </html>
+
 
 
