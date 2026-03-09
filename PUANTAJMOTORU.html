@@ -301,6 +301,33 @@
 </div>
 
 <script>
+// 🔥 HAREKETSİZLİK KİLİDİ (10 DAKİKA AUTO-LOGOUT) 🔥
+let inactivityTime = function () {
+    let time;
+    // 10 dakika = 600.000 milisaniye
+    const logoutZamani = 600000;
+
+    // Ekranda herhangi bir hareket olursa sayacı sıfırla
+    window.onload = resetTimer;
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+    document.onclick = resetTimer;
+    document.onscroll = resetTimer;
+
+    function logout() {
+        alert("🔒 GÜVENLİK DUVARI:\n\nSistemde 10 dakika boyunca işlem yapılmadığı için oturumunuz otomatik olarak kapatılmıştır.");
+        // Çıkış yap fonksiyonunu çağır (Sayfalarında cikisYap() fonksiyonu var)
+        cikisYap(); 
+    }
+
+    function resetTimer() {
+        clearTimeout(time);
+        time = setTimeout(logout, logoutZamani);
+    }
+};
+// Sistemi başlat
+inactivityTime();
+    
 // =========================================
 // 1. FİREBASE & GÜVENLİK (SAAS)
 // =========================================
@@ -1274,6 +1301,7 @@ function closeLegalModal() {
 </script>
 </body>
 </html>
+
 
 
 
