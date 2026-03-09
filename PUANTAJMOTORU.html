@@ -132,13 +132,12 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* 🔥 KURUMSAL SÖZLEŞME MODAL CSS 🔥 */
+        /* 🔥 MODAL CSS 🔥 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 9999999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease; }
         .modal-overlay.show { opacity: 1; }
         .modal-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 600px; transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-overlay.show .modal-box { transform: scale(1); }
         
-        /* 🔥 KURUMSAL FOOTER CSS 🔥 */
         .seo-footer { margin-top: 40px; padding: 20px; border-top: 1px solid #cbd5e1; text-align: center; font-size: 13px; color: #64748b; font-weight: 600; }
         .seo-footer a { color: var(--blue); text-decoration: none; margin: 0 10px; transition: 0.3s; }
         .seo-footer a:hover { color: var(--dark); text-decoration: underline; }
@@ -261,7 +260,6 @@
 </div>
 
 <button id="btnExceleKopyala" onclick="copyTableToClipboard()">📥 EXCEL İÇİN KOPYALA (KAYIPSIZ)</button>
-
 <button id="btnSaveToCloud" onclick="bulutaKalıcıKaydet()" title="Değişiklikleri ShiftMaster'a Kaydet">💾</button>
 
 <div id="tableContextMenu" style="display:none; position:absolute; background:white; border:1px solid #cbd5e1; box-shadow:0 15px 35px rgba(0,0,0,0.2); z-index:99999; border-radius:12px; overflow:hidden;">
@@ -275,6 +273,20 @@
 </div>
 
 <div id="toast">İşlem Başarılı!</div>
+
+<div id="passwordModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 400px; text-align: center; border: 2px solid var(--orange); box-shadow:0 0 40px rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, #0f172a, #1e293b);">
+        <h3 style="margin-top:0; color:var(--orange); font-size:24px; font-weight:900;">🛡️ GÜVENLİK DUVARI</h3>
+        <p id="passwordModalMessage" style="font-size:13px; color:#cbd5e1; margin-bottom:20px;">Yetkili şifrenizi girin:</p>
+        
+        <input type="password" id="modalPasswordInput" class="modern-input" style="width:100%; text-align:center; font-size:24px; font-weight:900; letter-spacing:8px; margin-bottom:25px; padding:15px; border-radius:12px; border:2px solid var(--orange); background:#f8fafc; color:#000;" placeholder="******">
+        
+        <div style="display:flex; gap:15px;">
+            <button class="btn-secili-dokum" style="flex:1; justify-content:center; padding:15px; font-size:15px; background:var(--green); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);" onclick="submitPasswordModal()">KİLİDİ AÇ 🔓</button>
+            <button class="btn-secili-dokum" style="padding:15px 25px; font-size:15px; background:var(--red); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);" onclick="closePasswordModal()">İPTAL</button>
+        </div>
+    </div>
+</div>
 
 <div id="legalModal" class="modal-overlay" onclick="if(event.target.id==='legalModal') closeLegalModal()">
     <div class="modal-box" style="max-width: 600px; text-align: left; background: var(--dark); border: 1px solid var(--blue); box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);">
@@ -361,53 +373,87 @@ function ekraniTemizle() {
     document.getElementById('topluKilitAlani').style.display='none';
 }
 
+// 🔥 YENİ: YILDIZLI ŞİFRE KUTUSU (MODAL) YÖNETİMİ 🔥
+let currentPasswordCallback = null;
+
+function openPasswordModal(msg, callback) {
+    document.getElementById('passwordModalMessage').innerText = msg;
+    document.getElementById('modalPasswordInput').value = "";
+    currentPasswordCallback = callback;
+    let modal = document.getElementById('passwordModal');
+    modal.style.display = 'flex';
+    setTimeout(() => { 
+        modal.classList.add('show'); 
+        document.getElementById('modalPasswordInput').focus(); 
+    }, 10);
+}
+
+function closePasswordModal() {
+    let modal = document.getElementById('passwordModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 400);
+    currentPasswordCallback = null;
+}
+
+function submitPasswordModal() {
+    let pwd = document.getElementById('modalPasswordInput').value.trim();
+    if(!pwd) { showToast("⛔ Şifre boş olamaz!"); return; }
+    if(currentPasswordCallback) {
+        currentPasswordCallback(pwd);
+    }
+    closePasswordModal();
+}
+
+document.getElementById('modalPasswordInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') submitPasswordModal();
+});
+
+
 // 🔥 ORTAK ŞİFRE DOĞRULAMA (ZERO TRUST) 🔥
 function sifreDogrula(islemCallback) {
-    let sifre = prompt("🛡️ GÜVENLİK DUVARI\nKilitleri açmak için SİSTEME GİRİŞ ŞİFRENİZİ yazın:");
-    if(!sifre) return;
-    sifre = sifre.trim();
+    openPasswordModal("Personel TC Kimlik verilerini görmek için SİSTEME GİRİŞ ŞİFRENİZİ yazın:", function(sifre) {
+        let aktifRol = localStorage.getItem('sm_role');
+        let tenant = localStorage.getItem('sm_current_tenant');
+        let aktifKullanici = localStorage.getItem('sm_active_user');
 
-    let aktifRol = localStorage.getItem('sm_role');
-    let tenant = localStorage.getItem('sm_current_tenant');
-    let aktifKullanici = localStorage.getItem('sm_active_user');
+        // 1. Süper Patron (Kurucu Master Key)
+        if (aktifRol === 'superadmin' && sifre === "8648") {
+            return islemCallback();
+        }
 
-    // 1. Süper Patron (Kurucu Master Key)
-    if (aktifRol === 'superadmin' && sifre === "8648") {
-        return islemCallback();
-    }
+        // 2. Kurum Patronu (Admin - Firebase Auth Şifresiyle Girer)
+        if (aktifRol === 'admin') {
+            if (sifre === "8648") return islemCallback(); // Kurucu Master Key daima geçerli
+            
+            db.ref('kurum_kayitlari/' + tenant).once('value').then(snap => {
+                if(snap.exists() && snap.val().patronEmail) {
+                    let email = snap.val().patronEmail;
+                    // Adamın asıl giriş yaptığı şifreyi arka planda Google'a soruyoruz
+                    firebase.auth().signInWithEmailAndPassword(email, sifre)
+                        .then(() => { islemCallback(); })
+                        .catch(err => { alert("⛔ Şifreniz Hatalı! Kilit açılamadı."); });
+                } else {
+                    alert("⛔ Kurum kaydı bulunamadı!");
+                }
+            });
+            return;
+        }
 
-    // 2. Kurum Patronu (Admin - Firebase Auth Şifresiyle Girer)
-    if (aktifRol === 'admin') {
-        if (sifre === "8648") return islemCallback(); // Kurucu Master Key daima geçerli
-        
-        db.ref('kurum_kayitlari/' + tenant).once('value').then(snap => {
-            if(snap.exists() && snap.val().patronEmail) {
-                let email = snap.val().patronEmail;
-                // Adamın asıl giriş yaptığı şifreyi arka planda Google'a soruyoruz
-                firebase.auth().signInWithEmailAndPassword(email, sifre)
-                    .then(() => { islemCallback(); })
-                    .catch(err => { alert("⛔ Şifreniz Hatalı! Kilit açılamadı."); });
+        // 3. Alt Yönetici (Personel - Kendi Pin Koduyla Girer)
+        db.ref("kurum_alt_yoneticileri/" + tenant + "/" + sifre).once("value").then(snap => {
+            if(snap.exists()) {
+                let yetkiliIsim = snap.val().isim;
+                // Kendi şifresini mi girdi yoksa başkasınınkini mi çalmış?
+                if (yetkiliIsim === aktifKullanici) {
+                    islemCallback();
+                } else {
+                    alert("⛔ Bu şifre size ait değil, yetkiniz reddedildi!");
+                }
             } else {
-                alert("⛔ Kurum kaydı bulunamadı!");
+                if (sifre === "8648") return islemCallback(); // Kurucu Master Key daima geçerli
+                alert("⛔ Hatalı Şifre!");
             }
         });
-        return;
-    }
-
-    // 3. Alt Yönetici (Personel - Kendi Pin Koduyla Girer)
-    db.ref("kurum_alt_yoneticileri/" + tenant + "/" + sifre).once("value").then(snap => {
-        if(snap.exists()) {
-            let yetkiliIsim = snap.val().isim;
-            // Kendi şifresini mi girdi yoksa başkasınınkini mi çalmış?
-            if (yetkiliIsim === aktifKullanici) {
-                islemCallback();
-            } else {
-                alert("⛔ Bu şifre size ait değil, yetkiniz reddedildi!");
-            }
-        } else {
-            if (sifre === "8648") return islemCallback(); // Kurucu Master Key daima geçerli
-            alert("⛔ Hatalı Şifre!");
-        }
     });
 }
 
