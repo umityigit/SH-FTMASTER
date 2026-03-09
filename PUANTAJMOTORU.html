@@ -145,7 +145,7 @@
         @media print {
             @page { size: A4 landscape; margin: 5mm; } 
             body { zoom: 50%; margin: 0; padding: 0; background: white; } 
-            .hero-search, details, #tableContextMenu, #btnExceleKopyala, #btnSaveToCloud, #toast, .seo-footer { display: none !important; }
+            .hero-search, details, #tableContextMenu, #btnExceleKopyala, #btnSaveToCloud, #toast, .seo-footer, #topluKilitAlani { display: none !important; }
             #mainContent { display: block !important; overflow: visible; padding:0; margin:0;}
             .sayfa-container { overflow: visible !important; width: 100%; padding:0; max-height: none !important; border: none; box-shadow: none;}
             thead, .stick-1, .stick-2, .stick-3, .stick-4 { position: static !important; box-shadow: none !important; }
@@ -190,7 +190,7 @@
         <div class="islem-butonlari">
             <button onclick="secilileriOlustur()" class="btn-secili-dokum">✨ SEÇİLİ KİŞİLERİN DÖKÜMÜNÜ AL</button>
             <button onclick="tamDokumOlustur()" class="btn-tam-dokum">📄 LİSTEDEKİ HERKESİN DÖKÜMÜNÜ AL</button>
-            <button onclick="document.getElementById('raporAlani').innerHTML=''; document.getElementById('btnExceleKopyala').style.display='none';" class="btn-tam-dokum" style="background:#ef4444; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);">🧹 EKRANDAKİ TABLOLARI SİL</button>
+            <button onclick="ekraniTemizle()" class="btn-tam-dokum" style="background:#ef4444; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);">🧹 EKRANDAKİ TABLOLARI SİL</button>
         </div>
         
         <div style="margin-top: 15px;">
@@ -239,6 +239,12 @@
             <textarea id="inpExcel" style="display:none;"></textarea>
         </div>
     </details>
+
+    <div id="topluKilitAlani" style="display:none; text-align:right; margin: 10px auto; width: 95%; max-width: 1200px;">
+        <button onclick="topluTCAc()" style="background:var(--dark); color:var(--orange); padding:10px 20px; border-radius:8px; border:1px solid var(--orange); font-weight:900; box-shadow:0 5px 15px rgba(0,0,0,0.2); cursor:pointer; transition:0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            🛡️ TÜM TC KİLİTLERİNİ AÇ / KAPA
+        </button>
+    </div>
 
     <div class="sayfa-container" id="raporScrollNoktasi">
         <div id="raporAlani"></div>
@@ -348,35 +354,81 @@ function cikisYap() {
     window.location.href = 'index.html';
 }
 
-// 🔥 SIFIR GÜVEN (ZERO TRUST) TC KİLİDİ AÇMA FONKSİYONU 🔥
+function ekraniTemizle() {
+    document.getElementById('raporAlani').innerHTML=''; 
+    document.getElementById('btnExceleKopyala').style.display='none';
+    document.getElementById('topluKilitAlani').style.display='none';
+}
+
+// 🔥 ORTAK ŞİFRE DOĞRULAMA (ZERO TRUST) 🔥
+function sifreDogrula(islemCallback) {
+    let sifre = prompt("🛡️ GÜVENLİK DUVARI\nPersonel TC Kimlik verilerini görmek için Kurum Kodunuzu veya Yönetici Şifrenizi girin:");
+    if(!sifre) return;
+    
+    sifre = sifre.trim();
+    let gecerliKurumKodu = localStorage.getItem('sm_current_tenant') || "";
+    
+    // Patron/SüperAdmin kontrolü (Kurum Kodu veya Master Şifre ile girer)
+    if(sifre === "8648" || sifre.toLowerCase() === gecerliKurumKodu.toLowerCase()) {
+        islemCallback();
+    } 
+    // Alt Yönetici Kontrolü (Giriş yaparken kullandığı özel kod ile girer)
+    else {
+        db.ref("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).once("value").then(snap => {
+            if(snap.exists()) {
+                islemCallback();
+            } else {
+                alert("⛔ Hatalı Şifre veya Yetkisiz Erişim!");
+            }
+        });
+    }
+}
+
+// 🔥 TEKİL TC KİLİDİ AÇMA/KAPAMA 🔥
 function toggleTC(btn) {
     let span = btn.previousElementSibling;
     let realTc = span.getAttribute('data-real');
     let maskedTc = span.getAttribute('data-masked');
 
+    // Eğer kapalıysa şifre sor, açıksa direkt kapat
     if(span.innerText === maskedTc) {
-        let sifre = prompt("🛡️ GÜVENLİK DUVARI\nPersonel TC Kimlik numarasını görüntülemek için yetkili şifrenizi girin:");
-        if(!sifre) return;
-        
-        // Eğer giren kişi süper admin (patron) ise veya patron şifresini biliyorsa direkt aç
-        if(sifre === "8648" || localStorage.getItem('sm_role') === 'superadmin') {
+        sifreDogrula(() => {
             span.innerText = realTc; btn.innerText = "🙈"; btn.title = "Gizle"; showToast("Kilit Açıldı 🔓");
-        } else {
-            // Eğer alt yönetici ise Firebase'e sor
-            db.ref("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).once("value").then(snap => {
-                if(snap.exists()) {
-                    span.innerText = realTc; btn.innerText = "🙈"; btn.title = "Gizle"; showToast("Kilit Açıldı 🔓");
-                } else {
-                    alert("⛔ Yetkisiz Erişim veya Hatalı Şifre!");
-                }
-            });
-        }
+        });
     } else {
-        // Zaten açıksa geri gizle
-        span.innerText = maskedTc;
-        btn.innerText = "👁️";
-        btn.title = "Kilidi Aç";
+        span.innerText = maskedTc; btn.innerText = "👁️"; btn.title = "Kilidi Aç";
     }
+}
+
+// 🔥 TOPLU TC KİLİDİ AÇMA/KAPAMA 🔥
+function topluTCAc() {
+    let kilitliVarMi = false;
+    document.querySelectorAll('.tc-text').forEach(span => {
+        if(span.innerText === span.getAttribute('data-masked')) kilitliVarMi = true;
+    });
+
+    if(!kilitliVarMi) {
+        // Zaten hepsi açıksa, şifre sormadan hemen geri kilitle
+        document.querySelectorAll('.tc-text').forEach(span => {
+            span.innerText = span.getAttribute('data-masked');
+            let btn = span.nextElementSibling;
+            if(btn) { btn.innerText = "👁️"; btn.title = "Kilidi Aç"; }
+        });
+        showToast("Tüm TC'ler Gizlendi 🔒");
+        document.querySelector('#topluKilitAlani button').innerHTML = "🛡️ TÜM TC KİLİTLERİNİ AÇ / KAPA";
+        return;
+    }
+
+    // Kilitli TC varsa şifre sor ve hepsini aç
+    sifreDogrula(() => {
+        document.querySelectorAll('.tc-text').forEach(span => {
+            span.innerText = span.getAttribute('data-real');
+            let btn = span.nextElementSibling;
+            if(btn) { btn.innerText = "🙈"; btn.title = "Gizle"; }
+        });
+        showToast("Tüm Kilitler Açıldı 🔓");
+        document.querySelector('#topluKilitAlani button').innerHTML = "🔒 TÜM TC'LERİ GİZLE";
+    });
 }
 
 // === ÇİFT YÖNLÜ SENKRON ===
@@ -762,6 +814,7 @@ function raporuOlustur(filtreParam, pShiftleri) {
     if(Object.keys(gArr).length === 0) {
         document.getElementById('raporAlani').innerHTML = `<h3 style="color:var(--red); font-size: 20px; padding: 30px; background: white; border-radius: 10px; margin-top:20px; text-align:center;">Seçtiğiniz kriterlere uygun veri bulunamadı.</h3>`;
         document.getElementById('btnExceleKopyala').style.display = "none";
+        document.getElementById('topluKilitAlani').style.display = "none";
         document.body.style.cursor = "default";
         return;
     }
@@ -889,6 +942,7 @@ function raporuOlustur(filtreParam, pShiftleri) {
             setTimeout(processNextChunk, 10);
         } else {
             document.getElementById('btnExceleKopyala').style.display = "block";
+            document.getElementById('topluKilitAlani').style.display = "block";
             document.body.style.cursor = "default";
             showToast("Puantaj Başarıyla Oluşturuldu! ✅");
             document.getElementById("raporScrollNoktasi").scrollIntoView({behavior: "smooth"});
