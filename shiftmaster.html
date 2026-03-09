@@ -671,7 +671,9 @@ inactivityTime();
             
             const colorGrid = document.getElementById('quickColorGrid'); 
             if(colorGrid) colors.forEach(c => { colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; });
+            
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
+            
         };
 
         function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
@@ -1311,6 +1313,7 @@ inactivityTime();
     </script>
 </body>
 </html>
+
 
 
 
