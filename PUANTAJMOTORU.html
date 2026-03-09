@@ -1104,22 +1104,13 @@ function unmergeSelectedCells() {
 
 // 🔥 YENİ NESİL EXCEL KOPYALAMA MOTORU 🔥
 // 🔥 YENİ NESİL EXCEL KOPYALAMA MOTORU (DİKEY YAZI VE TC KORUMALI) 🔥
+// 🔥 YENİ NESİL EXCEL KOPYALAMA MOTORU (GARANTİLİ DİK YAZI) 🔥
 function copyTableToClipboard() {
     const tablolar = document.querySelectorAll('.veri-tablosu'); 
     if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
     
-    // Excel'in kendi anadilinde "Bozulmaz" HTML şablonu. CSS ayarları Excel için özel.
-    let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-        <meta charset="utf-8">
-        <style>
-            table { border-collapse: collapse; font-family: Arial, sans-serif; font-size: 10px; }
-            td, th { border: 0.5pt solid windowtext; vertical-align: middle; text-align: center; white-space: nowrap; }
-            .tc-format { mso-number-format: "\\@"; } /* TC'yi metin yap */
-            .dikey-yazi { mso-rotate: 90; height: 85pt; white-space: nowrap; } /* Excel Dikey Yazı Kodu */
-        </style>
-    </head><body>`;
-    
+    // Excel'in hata vermesini engelleyen evrensel şablon
+    let html = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
     let tsv = "";
 
     tablolar.forEach((tablo, tIndex) => {
@@ -1127,7 +1118,7 @@ function copyTableToClipboard() {
         
         if(tIndex > 0) { html += "<br><br>"; tsv += "\n\n"; }
 
-        html += "<table>";
+        html += "<table border='1' style='border-collapse:collapse; font-family:Arial, sans-serif; font-size:11px;'>";
 
         tablo.querySelectorAll("tr").forEach(tr => {
             let trHtml = "<tr>"; let rowData = [];
@@ -1137,24 +1128,24 @@ function copyTableToClipboard() {
                 let text = "";
                 let dikeyMi = false;
 
-                // 1. TC MASKELEME VE GERÇEK VERİ YAKALAMA
+                // 1. Hücrenin DİK olup olmayacağını tespit et
+                if (cell.querySelector('.dik-yazi') || cell.querySelector('.baslik-dik') || cell.querySelector('.baslik-dik-kucuk') || cell.classList.contains('veri-hucre')) {
+                    dikeyMi = true;
+                }
+                if (cell.hasAttribute('data-tarih') || cell.hasAttribute('data-gun')) {
+                    dikeyMi = true;
+                }
+
+                // 2. TC Maskelemesini Çöz ve Gerçek Veriyi Al
                 let tcSpan = cell.querySelector('.tc-text');
                 if (tcSpan) {
                     text = tcSpan.getAttribute('data-real');
+                } else if (cell.hasAttribute('data-tarih') && cell.tagName === 'TH') {
+                    text = cell.getAttribute('data-tarih');
+                } else if (cell.hasAttribute('data-gun')) {
+                    text = cell.getAttribute('data-gun');
                 } else {
-                    // İçinde dik yazı class'ı var mı?
-                    if(cell.querySelector('.dik-yazi') || cell.querySelector('.baslik-dik') || cell.querySelector('.baslik-dik-kucuk')) {
-                        dikeyMi = true;
-                    }
-                    if (cell.hasAttribute('data-tarih') && cell.tagName === 'TH') {
-                        text = cell.getAttribute('data-tarih');
-                        dikeyMi = true;
-                    } else if (cell.hasAttribute('data-gun')) {
-                        text = cell.getAttribute('data-gun');
-                        dikeyMi = true;
-                    } else {
-                        text = cell.innerText || cell.textContent || "";
-                    }
+                    text = cell.innerText || cell.textContent || "";
                 }
                 
                 text = text.replace(/\n/g, " ").trim();
@@ -1165,30 +1156,30 @@ function copyTableToClipboard() {
                 let bg = '#ffffff'; let color = '#000000'; let fw = 'normal';
                 if(cell.tagName === 'TH' || cell.classList.contains('kalin-yatay') || cell.classList.contains('isim-yatay')) fw = 'bold';
                 
-                if(cell.classList.contains('bg-hafta')) bg = '#dcfce7'; // Açık yeşil
-                else if(cell.classList.contains('bg-genel')) bg = '#fef9c3'; // Açık sarı
-                else if(cell.classList.contains('bg-gece')) bg = '#f3e8ff'; // Açık mor
-                else if(cell.classList.contains('hucre-izin')) { bg = '#fee2e2'; color = '#dc2626'; } // Açık kırmızı
-                else if(cell.classList.contains('hucre-haftasonu')) bg = '#f1f5f9'; // Gri
+                if(cell.classList.contains('bg-hafta')) bg = '#dcfce7'; 
+                else if(cell.classList.contains('bg-genel')) bg = '#fef9c3'; 
+                else if(cell.classList.contains('bg-gece')) bg = '#f3e8ff'; 
+                else if(cell.classList.contains('hucre-izin')) { bg = '#fee2e2'; color = '#dc2626'; } 
+                else if(cell.classList.contains('hucre-haftasonu')) bg = '#f1f5f9'; 
                 else if(cell.tagName === 'TH') bg = '#eeeeee';
 
                 let align = cell.classList.contains('isim-yatay') ? 'left' : 'center';
-                let styleStr = `background-color:${bg}; color:${color}; font-weight:${fw}; text-align:${align};`;
-                let ekClass = "";
-
-                // Dikey yazılacaksa Excel komutlarını ekle
+                
+                // 🔥 SİHİR BURADA: EXCEL İÇİN İNLİNE (ZIMBALANMIŞ) STİLLER 🔥
+                let extraStyles = "";
                 if (dikeyMi) {
-                    ekClass = ' class="dikey-yazi"';
+                    // Excel'i zorla dik yazdırma ve sütunu daraltma kodları
+                    extraStyles += "mso-rotate: 90; height: 90pt; width: 25pt; white-space: nowrap;";
                 }
-
-                // TC Kimlik formatını bozmaması için ekstra önlem (Başına görünmez karakter ekleriz)
                 if (text.length === 11 && !isNaN(text)) {
-                    ekClass = ' class="tc-format"';
-                    text = "&#8203;" + text; // Görünmez boşluk, Excel'i kandırır!
+                    // TC'yi matematiğe çevirmemesi için kilit
+                    extraStyles += "mso-number-format:'\\@';"; 
                 }
 
-                trHtml += `<td${colspan}${rowspan}${ekClass} style="${styleStr}">${text}</td>`;
-                rowData.push(text.replace("&#8203;", "")); // TSV içine temiz atıyoruz
+                let styleStr = `background-color:${bg}; color:${color}; font-weight:${fw}; text-align:${align}; border:0.5pt solid windowtext; padding:3px; ${extraStyles}`;
+
+                trHtml += `<td${colspan}${rowspan} style="${styleStr}">${text}</td>`;
+                rowData.push(text);
             });
             trHtml += "</tr>"; html += trHtml; tsv += rowData.join("\t") + "\n";
         });
@@ -1197,7 +1188,6 @@ function copyTableToClipboard() {
     
     html += "</body></html>";
 
-    // Modern Pano Kopyalama (Hatasız)
     if (navigator.clipboard && window.ClipboardItem) {
         const typeText = "text/plain";
         const typeHtml = "text/html";
@@ -1215,7 +1205,6 @@ function copyTableToClipboard() {
     }
 }
 
-// Eski sistemler için yedek
 function fallbackCopyExcel(html, tsv) {
     const container = document.createElement('div');
     container.innerHTML = html;
@@ -1229,10 +1218,13 @@ function fallbackCopyExcel(html, tsv) {
         document.execCommand('copy'); 
         showToast("Excel'e Birebir Kopyalandı! 📋"); 
     } catch(e) { 
-        navigator.clipboard.writeText(tsv).then(() => showToast("Panoya Metin Kopyalandı! 📋")); 
+        navigator.clipboard.writeText(tsv).then(() => showToast("Sadece Metin Kopyalandı! 📋")); 
     }
+    
     selection.removeAllRanges(); document.body.removeChild(container);
 }
+
+function exceleSifirKayipsizIndir() { copyTableToClipboard(); }
 
 // 🔥 KURUMSAL SÖZLEŞME ÇALIŞTIRMA FONKSİYONU 🔥
 const legalTexts = {
@@ -1259,5 +1251,6 @@ function closeLegalModal() {
 </script>
 </body>
 </html>
+
 
 
