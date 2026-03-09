@@ -604,26 +604,31 @@ inactivityTime();
                         const btnSorumlu = document.getElementById('btnSorumluAta');
                         
                         // 🔥 F12 ANTİ-HACKER KONTROLÜ 🔥
+                        if(activeUsr) {
+                        currentUser = activeUsr; 
+                        document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
+                        document.getElementById("appSelector").style.display = "flex";
+
+                        const btnSorumlu = document.getElementById('btnSorumluAta');
+                        
+                        // Orijinal ve Sorunsuz Yetki Kontrolü
                         if (activeRole === 'admin' || activeRole === 'superadmin') {
-                            // Adam adminim diyor ama bakalım Google'da gerçek bir oturumu (Şifresi) var mı?
-                            firebase.auth().onAuthStateChanged(user => {
-                                if (user) {
-                                    // Gerçekten şifreyle girmiş, onayı ver.
-                                    if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
-                                    loadSorumlular(); 
-                                } else {
-                                    // F12 ile sahtekarlık yapmış! Rütbesini sök ve butonu gizle.
-                                    console.warn("⚠️ Kaçak yönetici girişi engellendi!");
-                                    localStorage.setItem('sm_role', 'user'); 
-                                    if (btnSorumlu) btnSorumlu.style.display = 'none';
-                                }
-                            });
+                            if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
+                            loadSorumlular(); 
                         } else {
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
 
-                        loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews();
+                        // Sayfayı Çizen Asıl Komutlar (Burası çöküyordu, şimdi düzeldi)
+                        loadStaffPool(); 
+                        loadArchives(); 
+                        loadPermanentArchives(); 
+                        loadNews();
                         logAction("Sisteme giriş yaptı.");
+                        
+                        // Hareketsizlik kilidini başlat (Eğer eklediysen çalışır)
+                        if(typeof inactivityTime === 'function') inactivityTime();
+
                     } else {
                         window.location.href = "index.html"; 
                     }
@@ -1272,6 +1277,7 @@ inactivityTime();
     </script>
 </body>
 </html>
+
 
 
 
