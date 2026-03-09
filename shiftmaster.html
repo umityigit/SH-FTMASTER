@@ -575,9 +575,22 @@
                         document.getElementById("appSelector").style.display = "flex";
 
                         const btnSorumlu = document.getElementById('btnSorumluAta');
-                        if (activeRole === 'admin') {
-                            if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
-                            loadSorumlular(); 
+                        
+                        // 🔥 F12 ANTİ-HACKER KONTROLÜ 🔥
+                        if (activeRole === 'admin' || activeRole === 'superadmin') {
+                            // Adam adminim diyor ama bakalım Google'da gerçek bir oturumu (Şifresi) var mı?
+                            firebase.auth().onAuthStateChanged(user => {
+                                if (user) {
+                                    // Gerçekten şifreyle girmiş, onayı ver.
+                                    if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
+                                    loadSorumlular(); 
+                                } else {
+                                    // F12 ile sahtekarlık yapmış! Rütbesini sök ve butonu gizle.
+                                    console.warn("⚠️ Kaçak yönetici girişi engellendi!");
+                                    localStorage.setItem('sm_role', 'user'); 
+                                    if (btnSorumlu) btnSorumlu.style.display = 'none';
+                                }
+                            });
                         } else {
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
@@ -1232,6 +1245,7 @@
     </script>
 </body>
 </html>
+
 
 
 
