@@ -41,8 +41,8 @@
         .tech-textarea::placeholder { color: rgba(56,189,248,0.4); }
         .tech-textarea:focus { border-color: var(--accent); box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8), 0 0 15px rgba(56, 189, 248, 0.2); }
         /* =========================================
-           ✨ GEMINI 3D GLASSMORPHISM & NEON TEMA ✨
-           ========================================= */
+            ✨ GEMINI 3D GLASSMORPHISM & NEON TEMA ✨
+            ========================================= */
         :root { 
             --bg-dark: #050b14; 
             --bg-light: #0f172a;
@@ -163,7 +163,6 @@
 
         .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 2px solid transparent; font-weight: 800; padding: 4px; border-radius: 4px; }
         
-        /* 🔥 1. YENİLİK: ANİMASYONLU OK İŞARETİ 🔥 */
         .select-icon { background: linear-gradient(135deg, var(--accent), #0284c7); color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s; }
         .select-icon:hover { transform: scale(1.15); box-shadow: 0 0 15px var(--accent); }
         .select-icon.open { transform: rotate(180deg) scale(1.1); background: linear-gradient(135deg, var(--warning), #b45309); box-shadow: 0 0 15px var(--warning); }
@@ -173,7 +172,6 @@
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .menu-item-wrapper { position: relative; width: 100%; display: inline-block; }
         
-        /* 🔥 2. YENİLİK: MENÜ LİSTESİNDE CANLI HOVER EFEKTİ 🔥 */
         .menu-item { width: 100%; padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 900; font-size: 12px; border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; box-sizing: border-box; transition: all 0.2s ease-in-out; }
         .menu-item:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)) !important; transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.6); border-color: #fff; z-index: 2; position: relative; }
         
@@ -190,7 +188,6 @@
         .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: 2px; right: 2px; font-size: 14px; z-index: 10; animation: pinPulse 1.5s infinite; }
         @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.4) rotate(20deg); } 100% { transform: scale(1); } }
 
-        /* 🔥 3. YENİLİK: EKRANIN TAM ORTASINDA AÇILAN DEVASA İĞNE (NOT) KUTUSU 🔥 */
         #centralPinTooltip { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.95)); border: 2px solid var(--warning); color: var(--warning); padding: 25px 40px; border-radius: 20px; font-size: 18px; font-weight: 900; white-space: pre-wrap; width: max-content; max-width: 500px; z-index: 9999999; box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 40px rgba(250, 204, 21, 0.4); text-align:center; pointer-events:none; animation: popCenter 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popCenter { from { opacity:0; transform:translate(-50%, -40%) scale(0.8); } to { opacity:1; transform:translate(-50%, -50%) scale(1); } }
 
@@ -446,33 +443,27 @@
     </div>
 
     <script>
-// 🔥 HAREKETSİZLİK KİLİDİ (10 DAKİKA AUTO-LOGOUT) 🔥
-let inactivityTime = function () {
-    let time;
-    // 1 dakika = 60000 milisaniye
-    const logoutZamani = 60000;
+        // 🔥 HAREKETSİZLİK KİLİDİ (10 DAKİKA AUTO-LOGOUT) 🔥
+        let inactivityTime = function () {
+            let time;
+            const logoutZamani = 600000; // 10 dakika = 600.000 ms
 
-    // Ekranda herhangi bir hareket olursa sayacı sıfırla
-    window.onload = resetTimer;
-    document.onmousemove = resetTimer;
-    document.onkeypress = resetTimer;
-    document.onclick = resetTimer;
-    document.onscroll = resetTimer;
+            window.onload = resetTimer;
+            document.onmousemove = resetTimer;
+            document.onkeypress = resetTimer;
+            document.onclick = resetTimer;
+            document.onscroll = resetTimer;
 
-    function logout() {
-        alert("🔒 GÜVENLİK DUVARI:\n\nSistemde 10 dakika boyunca işlem yapılmadığı için oturumunuz otomatik olarak kapatılmıştır.");
-        // Çıkış yap fonksiyonunu çağır (Sayfalarında cikisYap() fonksiyonu var)
-        cikisYap(); 
-    }
+            function logout() {
+                alert("🔒 GÜVENLİK DUVARI:\n\nSistemde 10 dakika boyunca işlem yapılmadığı için oturumunuz otomatik olarak kapatılmıştır.");
+                cikisYap(); 
+            }
+            function resetTimer() {
+                clearTimeout(time);
+                time = setTimeout(logout, logoutZamani);
+            }
+        };
 
-    function resetTimer() {
-        clearTimeout(time);
-        time = setTimeout(logout, logoutZamani);
-    }
-};
-// Sistemi başlat
-inactivityTime();
-        
         function openSupportModal() {
             document.getElementById('supportModal').style.display = 'flex';
             setTimeout(() => document.getElementById('supportModal').classList.add('show'), 10);
@@ -587,52 +578,22 @@ inactivityTime();
             } catch(e) {}
 
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
-            if (container) text.split("").forEach((char, idx) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + idx*0.1) + "s"; container.appendChild(span); });
+            if (container) {
+                text.split("").forEach((char, idx) => { 
+                    const span = document.createElement("span"); 
+                    span.innerText = char; 
+                    span.className = "splash-char"; 
+                    span.style.animationDelay = (0.2 + idx*0.1) + "s"; 
+                    container.appendChild(span); 
+                });
+            }
             
             setTimeout(() => { 
-                document.getElementById('splash').style.opacity = '0'; 
-                setTimeout(() => { 
-                    document.getElementById('splash').style.display = 'none'; 
-                    const activeUsr = localStorage.getItem('sm_active_user');
-                    const activeRole = localStorage.getItem('sm_role');
-                    
-                    if(activeUsr) {
-                        currentUser = activeUsr; 
-                        document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
-                        document.getElementById("appSelector").style.display = "flex";
-
-                        const btnSorumlu = document.getElementById('btnSorumluAta');
-                        
-                        // 🔥 F12 ANTİ-HACKER KONTROLÜ 🔥
-                        if(activeUsr) {
-                        currentUser = activeUsr; 
-                        document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
-                        document.getElementById("appSelector").style.display = "flex";
-
-                        const btnSorumlu = document.getElementById('btnSorumluAta');
-                        
-                        // Orijinal ve Sorunsuz Yetki Kontrolü
-                        if (activeRole === 'admin' || activeRole === 'superadmin') {
-                            if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
-                            loadSorumlular(); 
-                        } else {
-                            if (btnSorumlu) btnSorumlu.style.display = 'none';
-                        }
-
-                        // Sayfayı Çizen Asıl Komutlar (Burası çöküyordu, şimdi düzeldi)
-                        loadStaffPool(); 
-                        loadArchives(); 
-                        loadPermanentArchives(); 
-                        loadNews();
-                        logAction("Sisteme giriş yaptı.");
-                        
-                       // SİSTEM AÇILIŞ (SPLASH) VE YETKİ KONTROL MOTORU
-            setTimeout(() => {
                 const splash = document.getElementById('splash');
-                if (splash) splash.style.opacity = '0';
+                if (splash) splash.style.opacity = '0'; 
                 
-                setTimeout(() => {
-                    if (splash) splash.style.display = 'none';
+                setTimeout(() => { 
+                    if (splash) splash.style.display = 'none'; 
                     
                     let activeUsr = localStorage.getItem('sm_active_user');
                     let activeRole = localStorage.getItem('sm_role');
@@ -640,12 +601,12 @@ inactivityTime();
                     if(activeUsr) {
                         currentUser = activeUsr; 
                         document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
+                        
                         const appSelector = document.getElementById("appSelector");
                         if(appSelector) appSelector.style.display = "flex";
 
                         const btnSorumlu = document.getElementById('btnSorumluAta');
                         
-                        // Orijinal ve Sorunsuz Yetki Kontrolü
                         if (activeRole === 'admin' || activeRole === 'superadmin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
                             if(typeof loadSorumlular === 'function') loadSorumlular(); 
@@ -653,14 +614,11 @@ inactivityTime();
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
 
-                        // Sayfayı Çizen Asıl Komutlar
                         if(typeof loadStaffPool === 'function') loadStaffPool(); 
                         if(typeof loadArchives === 'function') loadArchives(); 
                         if(typeof loadPermanentArchives === 'function') loadPermanentArchives(); 
                         if(typeof loadNews === 'function') loadNews();
                         if(typeof logAction === 'function') logAction("Sisteme giriş yaptı.");
-                        
-                        // Hareketsizlik kilidini başlat (Eğer eklediysen çalışır)
                         if(typeof inactivityTime === 'function') inactivityTime();
 
                     } else {
@@ -673,11 +631,20 @@ inactivityTime();
             if(colorGrid) colors.forEach(c => { colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; });
             
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
-            
         };
 
         function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
-        function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
+        
+        function cikisYap() { 
+            currentUser = ""; 
+            try { smMusic.pause(); } catch(e) {} 
+            localStorage.removeItem('sm_current_tenant'); 
+            localStorage.removeItem('sm_current_kurum_adi'); 
+            localStorage.removeItem('sm_role'); 
+            localStorage.removeItem('sm_active_user'); 
+            window.location.href = 'index.html'; 
+        }
+        function logout() { cikisYap(); } // Alias for cikisYap
 
         function bireyselSifreDegistir() {
             const role = localStorage.getItem('sm_role'); const isim = currentUser;
@@ -729,7 +696,6 @@ inactivityTime();
                 } else { list.innerHTML += "<div style='color:#64748b;'>Atanmış yönetici yok.</div>"; }
             });
         }
-
         function degistirSorumluSifre(e, eskiSifre, isim) {
             e.stopPropagation(); let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
             if(yeniSifre && yeniSifre.trim() !== "") {
@@ -1117,7 +1083,6 @@ inactivityTime();
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // Kurulum destekleyen bir cihazsa ve Chrome onay verdiyse butonu üst menüde göster
             let installBtn = document.getElementById('btnInstallApp');
             if(installBtn) installBtn.style.display = 'inline-block';
         });
@@ -1210,7 +1175,6 @@ inactivityTime();
             }
         });
 
-        // 🔥 BUGÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
         // 🔥 GÜN GÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
         function showTodaySummary(selectedDateStr = null) {
             openModal('todaySummaryModal');
@@ -1313,12 +1277,3 @@ inactivityTime();
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
