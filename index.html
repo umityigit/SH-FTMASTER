@@ -340,8 +340,15 @@
             }).catch(e => alert("Hata: " + e.message));
         }
 
+        // 🔥 GÜVENLİK: ŞİFRE KRİPTOLAMA MOTORU (BASE64 + SALT) 🔥
+        function sifreKriptola(sifre) {
+            // Şifreyi tanınmaz hale getirir. (Örn: 1010 -> MDEwMF9TTTIwMjZfU0VDVVJF)
+            return btoa(unescape(encodeURIComponent(sifre + "_SM2026_SECURE")));
+        }
+
+        // 🔥 YENİ NESİL LİSANSLI VE KRİPTOLU GİRİŞ SİSTEMİ 🔥
         function sihirliGirisYap() {
-            if (!guvenlikKontroluYap()) return; // Adam blokluysa kodu durdur!
+            if (!guvenlikKontroluYap()) return; // Brute-force koruması
 
             const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
             const sifre = document.getElementById("loginSifre").value;
@@ -351,10 +358,10 @@
             // 🔥 BOSS MODU GİZLİ GİRİŞİ 🔥
             if (kod === "patron" && sifre === "8648") {
                 basariliGirisTemizligi();
-                localStorage.setItem('sm_current_tenant', 'patron_base'); // Geçici yönetim üssü
+                localStorage.setItem('sm_current_tenant', 'patron_base');
                 localStorage.setItem('sm_active_user', 'SİSTEM KURUCUSU');
                 localStorage.setItem('sm_current_kurum_adi', 'YÖNETİM MERKEZİ');
-                localStorage.setItem('sm_role', 'superadmin'); // Yetkiyi en tepeye aldık
+                localStorage.setItem('sm_role', 'superadmin');
                 window.location.href = "shiftmaster.html";
                 return;
             }
@@ -362,11 +369,18 @@
             // Normal Kullanıcı Girişi
             rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
                 if(!snap.exists()) {
-                    hataliGirisTetikle(); // Kurum kodu yanlışsa hakkı düşür
+                    hataliGirisTetikle();
                     return;
                 }
 
                 const kurumData = snap.val();
+
+                // 💰 LİSANS (PAYWALL) KONTROLÜ BURADA YAPILIYOR 💰
+                if (kurumData.lisansBitis && Date.now() > kurumData.lisansBitis) {
+                    alert("⛔ DİKKAT: Kurumunuzun Lisans / Deneme Süresi Dolmuştur!\n\nSistemi kullanmaya devam etmek için lütfen yöneticiyle (destek@shiftmaster.com.tr) iletişime geçip lisansınızı yenileyin.");
+                    return; // Kodun devamını okuma, adamı içeri alma!
+                }
+
                 const patronEmail = kurumData.patronEmail;
 
                 auth.signInWithEmailAndPassword(patronEmail, sifre).then((uc) => {
@@ -382,8 +396,9 @@
                         auth.signOut();
                     }
                 }).catch((err) => {
-                    // Patron şifresi değilse, alt yönetici şifresi mi diye bak
-                    rtdb.ref('kurum_alt_yoneticileri/' + kod + '/' + sifre).once('value').then(altSnap => {
+                    // Patron şifresi değilse, alt yönetici şifresi mi diye bak (KRİPTOLU ARAMA YAPAR)
+                    let kriptoluSifre = sifreKriptola(sifre);
+                    rtdb.ref('kurum_alt_yoneticileri/' + kod + '/' + kriptoluSifre).once('value').then(altSnap => {
                         if(altSnap.exists()) {
                             basariliGirisTemizligi();
                             const altData = altSnap.val();
