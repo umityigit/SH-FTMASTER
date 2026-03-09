@@ -348,6 +348,37 @@ function cikisYap() {
     window.location.href = 'index.html';
 }
 
+// 🔥 SIFIR GÜVEN (ZERO TRUST) TC KİLİDİ AÇMA FONKSİYONU 🔥
+function toggleTC(btn) {
+    let span = btn.previousElementSibling;
+    let realTc = span.getAttribute('data-real');
+    let maskedTc = span.getAttribute('data-masked');
+
+    if(span.innerText === maskedTc) {
+        let sifre = prompt("🛡️ GÜVENLİK DUVARI\nPersonel TC Kimlik numarasını görüntülemek için yetkili şifrenizi girin:");
+        if(!sifre) return;
+        
+        // Eğer giren kişi süper admin (patron) ise veya patron şifresini biliyorsa direkt aç
+        if(sifre === "8648" || localStorage.getItem('sm_role') === 'superadmin') {
+            span.innerText = realTc; btn.innerText = "🙈"; btn.title = "Gizle"; showToast("Kilit Açıldı 🔓");
+        } else {
+            // Eğer alt yönetici ise Firebase'e sor
+            db.ref("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).once("value").then(snap => {
+                if(snap.exists()) {
+                    span.innerText = realTc; btn.innerText = "🙈"; btn.title = "Gizle"; showToast("Kilit Açıldı 🔓");
+                } else {
+                    alert("⛔ Yetkisiz Erişim veya Hatalı Şifre!");
+                }
+            });
+        }
+    } else {
+        // Zaten açıksa geri gizle
+        span.innerText = maskedTc;
+        btn.innerText = "👁️";
+        btn.title = "Kilidi Aç";
+    }
+}
+
 // === ÇİFT YÖNLÜ SENKRON ===
 window.firebaseCellPaths = {}; 
 let historyStack = []; 
@@ -790,9 +821,17 @@ function raporuOlustur(filtreParam, pShiftleri) {
                     let parts = p.n.split("-"); tcNo = parts[0].trim(); let tamIsim = parts[1].trim(); let isimParcalari = tamIsim.split(" ");
                     if(isimParcalari.length > 1) { soyad = isimParcalari.pop(); ad = isimParcalari.join(" "); } else { ad = tamIsim; }
                 }
+
+                // 🔥 TC MASKELEME MANTIĞI 🔥
+                let tcHtml = tcNo;
+                if (tcNo && tcNo.length >= 5) {
+                    let maskedTc = tcNo.substring(0, 2) + "*******" + tcNo.substring(tcNo.length - 2);
+                    tcHtml = `<span class="tc-text" data-real="${tcNo}" data-masked="${maskedTc}">${maskedTc}</span> <span style="cursor:pointer; font-size:12px; margin-left:3px; user-select:none;" onclick="toggleTC(this)" title="Kilidi Aç">👁️</span>`;
+                }
+
                 h+=`<tr>
                     <td class="kalin-yatay stick-1" contenteditable="true">${globalIndex++}</td>
-                    <td class="kalin-yatay stick-2" contenteditable="true">${tcNo}</td>
+                    <td class="kalin-yatay stick-2" style="white-space:nowrap;">${tcHtml}</td>
                     <td class="isim-yatay stick-3" contenteditable="true">${ad}</td>
                     <td class="isim-yatay stick-4" contenteditable="true">${soyad}</td>
                     <td class="kalin-yatay" contenteditable="true">0</td>`;
@@ -952,10 +991,17 @@ function copyTableToClipboard() {
             tr.querySelectorAll("th, td").forEach(cell => {
                 if (cell.style.display === 'none') return;
                 
-                let text = cell.innerText || cell.textContent || "";
-                text = text.replace(/\n/g, " ").trim();
-                if (cell.hasAttribute('data-tarih') && cell.tagName === 'TH') text = cell.getAttribute('data-tarih');
-                else if (cell.hasAttribute('data-gun')) text = cell.getAttribute('data-gun');
+                let text = "";
+                // 🔥 MASKELEMEYİ EXCELDE KALDIR, GERÇEK TC GÖNDER 🔥
+                let tcSpan = cell.querySelector('.tc-text');
+                if (tcSpan) {
+                    text = tcSpan.getAttribute('data-real');
+                } else {
+                    text = cell.innerText || cell.textContent || "";
+                    text = text.replace(/\n/g, " ").trim();
+                    if (cell.hasAttribute('data-tarih') && cell.tagName === 'TH') text = cell.getAttribute('data-tarih');
+                    else if (cell.hasAttribute('data-gun')) text = cell.getAttribute('data-gun');
+                }
                 
                 let colspan = cell.getAttribute('colspan') ? ` colspan="${cell.getAttribute('colspan')}"` : "";
                 let rowspan = cell.getAttribute('rowspan') ? ` rowspan="${cell.getAttribute('rowspan')}"` : "";
@@ -1020,4 +1066,3 @@ function closeLegalModal() {
 </script>
 </body>
 </html>
-
