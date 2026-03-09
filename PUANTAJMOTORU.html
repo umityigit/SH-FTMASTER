@@ -1102,16 +1102,22 @@ function unmergeSelectedCells() {
     if(selectedCells.length > 0) satirHesapla(selectedCells[0]); clearSelection();
 }
 
+// 🔥 YENİ NESİL EXCEL KOPYALAMA MOTORU 🔥
 function copyTableToClipboard() {
-    const tablolar = document.querySelectorAll('.veri-tablosu'); if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
+    const tablolar = document.querySelectorAll('.veri-tablosu'); 
+    if (tablolar.length === 0) return alert("Lütfen önce tabloyu oluşturun.");
     
-    let html = "<table border='1' style='border-collapse:collapse; text-align:center; font-family:sans-serif; font-size:11px;'>";
+    // Excel'in kendi anadilinde "Bozulmaz" HTML şablonu
+    let html = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
     let tsv = "";
 
     tablolar.forEach((tablo, tIndex) => {
         if(tablo.closest('.sayfa').style.display === 'none') return;
         
-        if(tIndex > 0) { html += "<tr><td colspan='10'></td></tr><tr><td colspan='10'></td></tr>"; tsv += "\n\n"; }
+        // Tablolar arası boşluğu <br> ile veriyoruz ki tablo mimarisi bozulmasın
+        if(tIndex > 0) { html += "<br><br>"; tsv += "\n\n"; }
+
+        html += "<table border='1' style='border-collapse:collapse; text-align:center; font-family:sans-serif; font-size:11px;'>";
 
         tablo.querySelectorAll("tr").forEach(tr => {
             let trHtml = "<tr>"; let rowData = [];
@@ -1143,15 +1149,40 @@ function copyTableToClipboard() {
                 else if(cell.classList.contains('hucre-haftasonu')) bg = '#f2f2f2';
                 else if(cell.tagName === 'TH') bg = '#eeeeee';
 
-                trHtml += `<td${colspan}${rowspan} style="background-color:${bg}; color:${color}; font-weight:${fw}; border:0.5pt solid black; padding:5px;">${text}</td>`;
+                // 🔥 TC Kimliklerin Excel'de bozulmasını (1.23E+10 olmasını) engelleyen sihirli kod
+                let msoFormat = "";
+                if(text.length === 11 && !isNaN(text)) msoFormat = ` mso-number-format:"\\@";`;
+
+                trHtml += `<td${colspan}${rowspan} style="background-color:${bg}; color:${color}; font-weight:${fw}; border:0.5pt solid black; padding:5px;${msoFormat}">${text}</td>`;
                 rowData.push(text);
             });
             trHtml += "</tr>"; html += trHtml; tsv += rowData.join("\t") + "\n";
         });
+        html += "</table>"; // Her sayfayı ayrı tablo yapıp kapatıyoruz ki Excel hata vermesin
     });
     
-    html += "</table>";
+    html += "</body></html>";
 
+    // Modern Kopyalama Sistemi (Tarayıcı destekliyorsa bunu kullanır, sorunsuz çalışır)
+    if (navigator.clipboard && window.ClipboardItem) {
+        const typeText = "text/plain";
+        const typeHtml = "text/html";
+        const blobText = new Blob([tsv], { type: typeText });
+        const blobHtml = new Blob([html], { type: typeHtml });
+        const data = [new ClipboardItem({ [typeText]: blobText, [typeHtml]: blobHtml })];
+
+        navigator.clipboard.write(data).then(() => {
+            showToast("Excel İçin Panoya Kopyalandı! 📋");
+        }).catch(err => {
+            fallbackCopyExcel(html, tsv);
+        });
+    } else {
+        fallbackCopyExcel(html, tsv);
+    }
+}
+
+// Eski tarayıcılar için yedek kopyalama fonksiyonu
+function fallbackCopyExcel(html, tsv) {
     const container = document.createElement('div');
     container.innerHTML = html;
     container.style.position = 'fixed'; container.style.top = '-9999px'; container.style.pointerEvents = 'none';
@@ -1160,8 +1191,12 @@ function copyTableToClipboard() {
     const selection = window.getSelection(); const range = document.createRange();
     range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range);
     
-    try { document.execCommand('copy'); showToast("Excel İçin Panoya Kopyalandı! 📋"); } 
-    catch(e) { navigator.clipboard.writeText(tsv).then(() => showToast("Panoya Metin Olarak Kopyalandı! 📋")); }
+    try { 
+        document.execCommand('copy'); 
+        showToast("Excel İçin Panoya Kopyalandı! 📋"); 
+    } catch(e) { 
+        navigator.clipboard.writeText(tsv).then(() => showToast("Panoya Metin Olarak Kopyalandı! 📋")); 
+    }
     
     selection.removeAllRanges(); document.body.removeChild(container);
 }
@@ -1193,3 +1228,4 @@ function closeLegalModal() {
 </script>
 </body>
 </html>
+
