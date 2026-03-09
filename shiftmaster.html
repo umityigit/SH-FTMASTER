@@ -443,10 +443,10 @@
     </div>
 
     <script>
-        // 🔥 HAREKETSİZLİK KİLİDİ (10 DAKİKA AUTO-LOGOUT) 🔥
+        // 🔥 HAREKETSİZLİK KİLİDİ (1 DAKİKA AUTO-LOGOUT) 🔥
         let inactivityTime = function () {
             let time;
-            const logoutZamani = 600000; // 10 dakika = 600.000 ms
+            const logoutZamani = 60000; // 1 dakika = 60000 ms
 
             window.onload = resetTimer;
             document.onmousemove = resetTimer;
@@ -455,7 +455,7 @@
             document.onscroll = resetTimer;
 
             function logout() {
-                alert("🔒 GÜVENLİK DUVARI:\n\nSistemde 10 dakika boyunca işlem yapılmadığı için oturumunuz otomatik olarak kapatılmıştır.");
+                alert("🔒 GÜVENLİK DUVARI:\n\nSistemde 1 dakika boyunca işlem yapılmadığı için oturumunuz otomatik olarak kapatılmıştır.");
                 cikisYap(); 
             }
             function resetTimer() {
@@ -1312,4 +1312,5 @@
     </script>
 </body>
 </html>
+
 
