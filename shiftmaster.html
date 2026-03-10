@@ -345,6 +345,7 @@
                     <button class="btn btn-cyan" onclick="exportAllToExcel()">📋 TÜMÜNÜ EXCEL'E KOPYALA</button>
                     <button class="btn btn-green" style="box-shadow:0 0 20px rgba(16,185,129,0.5);" onclick="saveMasterArchive()">💾 PANODA KAYDET</button>
                     <span style="width:2px; height:25px; background:rgba(255,255,255,0.2); margin:0 5px;"></span>
+                    <button class="btn" style="background:linear-gradient(135deg, #8b5cf6, #6d28d9); border:1px solid #a855f7; color:white; font-weight:900; box-shadow:0 0 15px rgba(139,92,246,0.5);" onclick="openModal('aiGeneratorModal')">🪄 SİHİRLİ DAĞITIM (YAPAY ZEKA)</button>
                     <button class="btn btn-purple" onclick="safeAppendTable()">➕ YENİ TABLO EKLE</button>
                     <button class="btn btn-red" onclick="closeModal('tableModalOverlay')">❌ EKRANI KAPAT</button>
                 </div>
@@ -385,6 +386,7 @@
             </div>
         </div>
     </div>
+    
     <div id="bossConsoleModal" class="full-modal-overlay">
         <div class="full-modal-content" style="border-color: #ef4444; background: radial-gradient(circle at top right, #1a0505, #050b14);">
             <div class="modal-header-bar" style="background: rgba(127,29,29,0.3); border-bottom-color: #ef4444;">
@@ -399,6 +401,81 @@
             <div class="modal-body-area">
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;" id="bossKurumListesi">
                     </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiGeneratorModal" class="full-modal-overlay">
+        <div class="full-modal-content" style="max-width: 600px; margin: auto; height: auto; border-color: #8b5cf6; background: radial-gradient(circle at top right, #2e1065, #050b14);">
+            <div class="modal-header-bar" style="background: rgba(109,40,217,0.3); border-bottom-color: #8b5cf6;">
+                <div style="font-size:20px; font-weight:900; color:#fff; text-shadow:0 0 15px #8b5cf6;">
+                    🪄 AKILLI VARDİYA ASİSTANI
+                </div>
+                <button class="btn btn-red" onclick="closeModal('aiGeneratorModal')">❌</button>
+            </div>
+            
+            <div class="modal-body-area" style="padding: 20px;">
+                <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px dashed #a855f7; margin-bottom: 20px; font-size: 12px; color: #cbd5e1;">
+                    ℹ️ <b>BİLGİ:</b> Bu asistan ekrandaki <u>açık olan tabloyu</u> baz alır. Kuralları belirleyin, sistem boşlukları doldursun. Beğenmezseniz kaydetmeden sayfayı yenileyebilirsiniz. Veritabanına doğrudan kayıt yapmaz!
+                </div>
+
+                <h4 style="color: #a855f7; margin-top: 0; border-bottom: 1px solid rgba(168,85,247,0.3); padding-bottom: 5px;">1️⃣ Vardiya Kodları</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 10px; color: #94a3b8;">GÜNDÜZ KODU (Örn: G veya 08:00)</label>
+                        <input type="text" id="aiDayCode" class="glass-input" value="G" style="padding: 8px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 10px; color: #94a3b8;">GECE KODU (Örn: N veya 16:00)</label>
+                        <input type="text" id="aiNightCode" class="glass-input" value="N" style="padding: 8px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 10px; color: #94a3b8;">İZİN/İSTİRAHAT (Örn: İ veya HT)</label>
+                        <input type="text" id="aiOffCode" class="glass-input" value="HT" style="padding: 8px;">
+                    </div>
+                </div>
+
+                <h4 style="color: #a855f7; border-bottom: 1px solid rgba(168,85,247,0.3); padding-bottom: 5px;">2️⃣ Günlük Kadro İhtiyacı</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 11px; font-weight: bold; color: #38bdf8; margin-bottom: 10px;">HAFTA İÇİ</div>
+                        <label style="font-size: 10px; color: #94a3b8;">Gündüz Kişi Sayısı</label>
+                        <input type="number" id="aiDayReqWd" class="glass-input" value="3" min="1" style="padding: 5px; margin-bottom: 5px;">
+                        <label style="font-size: 10px; color: #94a3b8;">Gece Kişi Sayısı</label>
+                        <input type="number" id="aiNightReqWd" class="glass-input" value="2" min="1" style="padding: 5px;">
+                    </div>
+                    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 11px; font-weight: bold; color: #facc15; margin-bottom: 10px;">HAFTA SONU</div>
+                        <label style="font-size: 10px; color: #94a3b8;">Gündüz Kişi Sayısı</label>
+                        <input type="number" id="aiDayReqWe" class="glass-input" value="2" min="1" style="padding: 5px; margin-bottom: 5px;">
+                        <label style="font-size: 10px; color: #94a3b8;">Gece Kişi Sayısı</label>
+                        <input type="number" id="aiNightReqWe" class="glass-input" value="2" min="1" style="padding: 5px;">
+                    </div>
+                </div>
+
+                <h4 style="color: #a855f7; border-bottom: 1px solid rgba(168,85,247,0.3); padding-bottom: 5px;">3️⃣ Dağıtım Kuralları</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 10px; color: #94a3b8;">PEŞ PEŞE MAKSİMUM ÇALIŞMA</label>
+                        <select id="aiMaxConsecutive" class="glass-input" style="padding: 8px;">
+                            <option value="3">3 Gün</option>
+                            <option value="4" selected>4 Gün</option>
+                            <option value="5">5 Gün</option>
+                            <option value="6">6 Gün</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 10px; color: #94a3b8;">GECE ÇIKIŞI DİNLENME</label>
+                        <select id="aiRestAfterNight" class="glass-input" style="padding: 8px;">
+                            <option value="1">Ertesi Gün İzinli (1 Gün)</option>
+                            <option value="2">2 Gün İzinli</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 15px; font-size: 16px; font-weight: 900; box-shadow: 0 5px 15px rgba(16,185,129,0.4);" onclick="startAiDistribution()">
+                    ⚡ TABLOYU OTOMATİK DOLDUR
+                </button>
             </div>
         </div>
     </div>
@@ -1213,7 +1290,6 @@
             }
         });
 
-        // 🔥 BUGÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
         // 🔥 GÜN GÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
         function showTodaySummary(selectedDateStr = null) {
             openModal('todaySummaryModal');
@@ -1399,13 +1475,12 @@
                 }
             }, 1000);
         });
+
+        // 🔥 AI MOTORU BAŞLATICISI (AŞAMA 1) 🔥
+        function startAiDistribution() {
+            alert("Aşama 1 (Vitrin) başarıyla kuruldu! 🚀 \nŞimdi Aşama 2'ye geçip bu butonun arkasındaki o devasa 'Sudoku Çözücü' yapay zeka algoritmasını yazacağız!");
+        }
+
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
