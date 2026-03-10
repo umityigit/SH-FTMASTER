@@ -1560,8 +1560,8 @@
             openModal('aiGeneratorModal');
         }
 
-     // ============================================================================
-// 🧠 SHIFTMASTER A.I. CORE V12 (ÜMİT ABİ ÖZEL - 4 GÜN & KUSURSUZ RİTİM) 🧠
+    // ============================================================================
+// 🧠 SHIFTMASTER A.I. CORE V13 (ÜMİT ABİ NİHAİ RİTM & KUSURSUZ KİMLİK) 🧠
 // ============================================================================
 function startAiDistribution() {
     let dayCode = document.getElementById('aiDayShiftSelect').value;
@@ -1612,31 +1612,25 @@ function startAiDistribution() {
             tr: tr,
             cells: tr.querySelectorAll('.shift-cell'),
             restNeeded: 0,
-            consecutive: 0,
-            weeklyWorkDays: 0, // Haftalık gün sayacı
-            weeklyHours: 0,
+            consecutive: 0,         // Toplam peş peşe çalışma
+            dayConsecutive: 0,      // Peş peşe Gündüz sayısı
+            nightConsecutive: 0,    // Peş peşe Gece sayısı
+            weeklyWorkDays: 0,
             totalHours: 0,
-            nightCount: 0,
-            fixedShift: null
+            nightCount: 0
         }));
-
-        extras.filter(e => e.type === 'fixed').forEach(fe => {
-            for(let i=0; i<fe.count; i++) {
-                let cand = staff.find(s => s.fixedShift === null);
-                if(cand) cand.fixedShift = fe;
-            }
-        });
 
         let dailySummary = [];
 
+        // 🗓️ GÜN GÜN DAĞITIM
         for(let c = 0; c < colCount; c++) {
             let d = new Date(startDt);
             d.setDate(d.getDate() + c);
             let dow = d.getDay();
             let reqIndex = dow === 0 ? 7 : dow;
 
-            // PAZARTESİ RESETLEMESİ
-            if(dow === 1) staff.forEach(s => { s.weeklyWorkDays = 0; s.weeklyHours = 0; });
+            // Her Pazartesi haftalık sınırları sıfırla
+            if(dow === 1) staff.forEach(s => { s.weeklyWorkDays = 0; });
 
             let cReqG = reqG[reqIndex];
             let cReqN = reqN[reqIndex];
@@ -1644,40 +1638,43 @@ function startAiDistribution() {
 
             staff.forEach(s => { s.assignedToday = null; s.assignedHours = 0; });
 
-            // 1. ADIM: ZORUNLU DİNLENME (Nöbet çıkışı veya 4 gün dolumu)
+            // 1. ADIM: ZORUNLU İZİNLER (Nöbet çıkışı, 4 gün sınırı veya Peş Peşe 3 gün sınırı)
             staff.forEach(s => {
-                if (s.restNeeded > 0 || s.weeklyWorkDays >= 4) {
+                if (s.restNeeded > 0 || s.weeklyWorkDays >= 4 || s.consecutive >= 3) {
                     s.assignedToday = offCode;
                     if(s.restNeeded > 0) s.restNeeded--;
                 }
             });
 
-            // 2. ADIM: GECE NÖBETİ (Ritm Korumalı)
-            let poolN = staff.filter(s => !s.assignedToday && s.weeklyWorkDays < 4 && s.consecutive < 3);
+            // 2. ADIM: GECE NÖBETİ (2 gece üst üste yasak!)
+            let poolN = staff.filter(s => !s.assignedToday && s.weeklyWorkDays < 4 && s.consecutive < 3 && s.nightConsecutive < 1);
             poolN.sort((a,b) => (a.nightCount - b.nightCount) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
             for (let i = 0; i < Math.min(cReqN, poolN.length); i++) {
                 poolN[i].assignedToday = nightCode;
                 poolN[i].assignedHours = nightHours;
                 poolN[i].nightCount++;
-                poolN[i].restNeeded = 1; 
+                poolN[i].nightConsecutive++;
+                poolN[i].dayConsecutive = 0; // Geceye geçtiği için gündüz serisi bozuldu
+                poolN[i].restNeeded = 1; // Yarın dinlenecek
             }
 
-            // 3. ADIM: EKSTRA VE ANA GÜNDÜZLER (3+1 ve 4'e ASLA İZİN VERME)
+            // 3. ADIM: GÜNDÜZ VARDİYALARI (3 gündüz üst üste yasak!)
             let allDayTasks = [];
             cRandomExtras.forEach(re => { for(let i=0; i<re.count; i++) allDayTasks.push(re); });
             for(let i=0; i<cReqG; i++) allDayTasks.push({code: dayCode, hours: dayHours});
 
             allDayTasks.forEach(task => {
-                // Taze adam: Hem haftalık 4 günü dolmamış, hem peş peşe 3'ü geçmemiş
-                let pool = staff.filter(s => !s.assignedToday && s.weeklyWorkDays < 4 && s.consecutive < 3);
+                let pool = staff.filter(s => !s.assignedToday && s.weeklyWorkDays < 4 && s.consecutive < 3 && s.dayConsecutive < 2);
                 pool.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
                 if(pool.length > 0) {
                     pool[0].assignedToday = task.code;
                     pool[0].assignedHours = task.hours;
+                    pool[0].dayConsecutive++;
+                    pool[0].nightConsecutive = 0; // Gündüze geçtiği için gece serisi bozuldu
                 }
             });
 
-            // 4. ADIM: TABLOYA BAS VE ANALİZ YAP
+            // 4. ADIM: TABLOYA İŞLEME VE SAYAÇ TEMİZLİĞİ
             let dStat = 0, nStat = 0;
             staff.forEach(s => {
                 let cell = s.cells[c];
@@ -1687,14 +1684,17 @@ function startAiDistribution() {
                     s.assignedToday = offCode;
                     s.assignedHours = 0;
                     s.consecutive = 0;
+                    s.dayConsecutive = 0;
+                    s.nightConsecutive = 0;
                 } else {
-                    if (s.assignedToday !== offCode) {
+                    if (s.assignedToday === offCode) {
+                        s.consecutive = 0;
+                        s.dayConsecutive = 0;
+                        s.nightConsecutive = 0;
+                    } else {
                         s.consecutive++;
                         s.weeklyWorkDays++;
-                        s.weeklyHours += s.assignedHours;
                         s.totalHours += s.assignedHours;
-                    } else {
-                        s.consecutive = 0;
                     }
                 }
 
@@ -1702,13 +1702,14 @@ function startAiDistribution() {
                 let rule = shiftRules[s.assignedToday.replace(/\./g, ':')] || shiftRules[s.assignedToday];
                 cell.style.background = rule ? rule.color : "transparent";
 
+                // Footer Sayacı
                 let isNight = (s.assignedToday === nightCode) || s.assignedToday.startsWith('16:') || s.assignedToday.startsWith('20:') || s.assignedToday.startsWith('24:');
                 if (isNight) nStat++; else if (s.assignedToday !== offCode) dStat++;
             });
             dailySummary[c] = `${dStat} / ${nStat}`;
         }
 
-        // ÖZET SATIRI
+        // ALT ÖZET SATIRI
         let summaryRow = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
         for(let c = 0; c < colCount; c++) {
             summaryRow += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;">${dailySummary[c]}</td>`;
@@ -1720,11 +1721,12 @@ function startAiDistribution() {
     });
 
     updateAllStats();
-    showToast("🚀 V12: ÜMİT ABİ DENGESİ KURULDU!");
+    showToast("🚀 V13: NİHAİ ÜMİT ABİ RİTMİ AKTİF!");
 }
     </script>
 </body>
 </html>
+
 
 
 
