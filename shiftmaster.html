@@ -1561,17 +1561,7 @@
         }
 
         // 🔥 AI MOTORU BAŞLATICISI (AŞAMA 2 İÇİN HAZIRLIK) 🔥
-        function startAiDistribution() {
-            let selectedDayShift = document.getElementById('aiDayShiftSelect').value;
-            let selectedNightShift = document.getElementById('aiNightShiftSelect').value;
-            
-            if(!selectedDayShift || !selectedNightShift) {
-                return alert("Lütfen yukarıdan Gündüz ve Gece vardiya kodlarını seçiniz!");
-            }
-            
-            alert(`Aşama 1 (Devasa Vitrin) Başarıyla Kuruldu! 😎\n\nSeçilen Gündüz: ${selectedDayShift}\nSeçilen Gece: ${selectedNightShift}\n\nHer şey mükemmel çalışıyor. Şimdi Sudoku Çözücü beyin kodlarını yazma zamanı geldi!`);
-        }
-        // 🔥 EKSTRA VARDİYA SATIRI EKLEME MOTORU 🔥
+       // 🔥 EKSTRA VARDİYA SATIRI EKLEME MOTORU (GELİŞTİRİLDİ) 🔥
         function addExtraShiftRow() {
             const list = document.getElementById('extraShiftsList');
             const rowId = 'extra_' + Date.now();
@@ -1584,23 +1574,62 @@
             div.style.gap = '10px';
             div.style.marginBottom = '10px';
             div.style.alignItems = 'center';
+            div.style.background = 'rgba(0,0,0,0.3)'; // Kutuya arka plan verdim daha net dursun
+            div.style.padding = '10px';
+            div.style.borderRadius = '10px';
+            div.style.border = '1px solid rgba(56,189,248,0.2)';
             div.id = rowId;
             
             div.innerHTML = `
                 <select class="glass-input ai-extra-shift-select" style="flex: 2; padding: 8px; font-size: 12px;">${options}</select>
-                <div style="display:flex; align-items:center; gap:5px; flex:1;">
-                    <span style="font-size:10px; color:#94a3b8;">Günde:</span>
-                    <input type="number" class="glass-input ai-extra-shift-count" value="1" min="1" style="width:100%; padding: 8px; font-size: 12px; text-align:center;">
+                
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <input type="number" class="glass-input ai-extra-shift-count" value="1" min="1" style="width:60px; padding: 8px; font-size: 13px; text-align:center; font-weight:900; color:var(--accent);">
                     <span style="font-size:10px; color:#94a3b8;">Kişi</span>
                 </div>
+
+                <select class="glass-input ai-extra-shift-type" style="flex: 1.5; padding: 8px; font-size: 11px; cursor:pointer;">
+                    <option value="random">Değişken (Ekibe Dağıt)</option>
+                    <option value="fixed">Sabit (Aynı Kişi)</option>
+                </select>
+
                 <button class="btn btn-red" style="padding: 8px 12px; border-radius:8px;" onclick="document.getElementById('${rowId}').remove()">X</button>
             `;
             list.appendChild(div);
         }
 
+        // 🔥 AI MOTORU BAŞLATICISI (SİSTEMİN GÖZÜ AÇILDI) 🔥
+        function startAiDistribution() {
+            let selectedDayShift = document.getElementById('aiDayShiftSelect').value;
+            let selectedNightShift = document.getElementById('aiNightShiftSelect').value;
+            
+            if(!selectedDayShift || !selectedNightShift) {
+                return alert("Lütfen yukarıdan Gündüz ve Gece vardiya kodlarını seçiniz!");
+            }
+
+            // Ekstra Vardiyaları Toplayan Sensör
+            let extraShifts = [];
+            document.querySelectorAll('#extraShiftsList > div').forEach(row => {
+                let sVal = row.querySelector('.ai-extra-shift-select').value;
+                let cVal = row.querySelector('.ai-extra-shift-count').value;
+                let tVal = row.querySelector('.ai-extra-shift-type').value;
+                
+                if(sVal) {
+                    let typeText = tVal === 'fixed' ? '📌 Sabit Kişiye' : '🔀 Ekibe Dağıtılacak';
+                    extraShifts.push(`\n- ${sVal} (${cVal} Kişi, ${typeText})`);
+                }
+            });
+            
+            let extraText = extraShifts.length > 0 ? `\n\n➕ Ekstra İstenen Vardiyalar:${extraShifts.join('')}` : "\n\n➕ Ekstra Vardiya: Eklenmedi";
+
+            // Sistemi Test Etmek İçin Rapor Ver
+            alert(`✅ AŞAMA 1 (VİTRİN) KUSURSUZ ÇALIŞIYOR!\n\n☀️ Gündüz: ${selectedDayShift}\n🌙 Gece: ${selectedNightShift}${extraText}\n\nSistem artık eklediğin her şeyi, kişi sayısını ve dağıtım tipini görüyor. Asıl Yapay Zeka kodunu yazmaya hazırım komutanım! 🚀`);
+        }
+
     </script>
 </body>
 </html>
+
 
 
 
