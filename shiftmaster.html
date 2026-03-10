@@ -40,6 +40,7 @@
         .tech-textarea { width: 100%; height: 100px; background: rgba(0,0,0,0.6); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; font-family: monospace; font-size: 14px; resize: none; padding: 15px; border-radius: 10px; outline: none; transition: 0.3s; box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8); }
         .tech-textarea::placeholder { color: rgba(56,189,248,0.4); }
         .tech-textarea:focus { border-color: var(--accent); box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8), 0 0 15px rgba(56, 189, 248, 0.2); }
+        
        /* ALT BİLGİ (FOOTER) STİLİ */
         .footer-links {
             text-align: center; padding: 20px; color: #64748b; font-size: 12px;
@@ -62,7 +63,7 @@
         .modal-sm-close { float: right; font-size: 28px; cursor: pointer; color: #94a3b8; }
         .modal-sm h2 { color: var(--accent); margin-bottom: 20px; }
         
-/* =========================================
+        /* =========================================
             ✨ GEMINI 3D GLASSMORPHISM & NEON TEMA ✨
             ========================================= */
         :root { 
@@ -317,6 +318,13 @@
                 </summary>
                 <div id="permanentArchiveList" class="archive-grid" style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;"></div>
             </details>
+            <div class="footer-links">
+                <a onclick="openSMModal('privacy')">Gizlilik Politikası</a> | 
+                <a onclick="openSMModal('terms')">Kullanım Koşulları</a> | 
+                <a onclick="openSMModal('security')">Veri Güvenliği</a> | 
+                <a onclick="openSMModal('contact')">İletişim</a>
+                <p style="margin-top:10px;">© 2026 ShiftMaster - Tüm Hakları Saklıdır.</p>
+            </div>
         </div>
     </div>
 
@@ -451,7 +459,6 @@
     <div id="staffSelectMenu" class="custom-menu" style="max-height:350px; overflow-y:auto; width:220px; border-color:var(--accent);"></div>
     
     <div id="centralPinTooltip"></div>
-
     <div id="toast">İşlem Başarılı!</div>
 
     <div class="sm-player" id="sm-player">
@@ -464,8 +471,15 @@
         </div>
     </div>
 
+    <div id="smCommonModal" class="modal-sm">
+        <div class="modal-sm-content">
+            <span class="modal-sm-close" onclick="closeSMModal()">&times;</span>
+            <div id="modalBodyContent"></div>
+        </div>
+    </div>
+
     <script>
-const modalTexts = {
+        const modalTexts = {
             privacy: "<h2>Gizlilik Politikası</h2><p>Verileriniz 256-bit şifreleme ile korunmaktadır. Personel isimleri ve vardiya bilgileri asla üçüncü taraflarla paylaşılmaz. Sistemimiz GDPR ve KVKK standartlarına tam uyumludur.</p>",
             terms: "<h2>Kullanım Koşulları</h2><p>ShiftMaster, kurum içi vardiya yönetimini kolaylaştırmak için sunulan bir yazılımdır. Veri girişi ve doğruluğu kurum yöneticisinin sorumluluğundadır.</p>",
             security: "<h2>Veri Güvenliği</h2><p>Tüm veriler Google Cloud altyapısında (Firebase) saklanmaktadır. Şifreleriniz kriptolanarak kaydedilir; patron veya sistem kurucusu bile şifrelerinizi göremez.</p>",
@@ -481,16 +495,15 @@ const modalTexts = {
             document.getElementById('smCommonModal').style.display = 'none';
         }
 
-        // Pencere dışına tıklayınca kapatma
         window.onclick = function(event) {
             let m = document.getElementById('smCommonModal');
             if (event.target == m) closeSMModal();
+            // Aynı zamanda context menü kapatma kuralları buraya kaydırılabilir veya event listener ile devam edilebilir.
         }
         
-        // 🔥 HAREKETSİZLİK KİLİDİ (1 DAKİKA AUTO-LOGOUT) 🔥
         let inactivityTime = function () {
             let time;
-            const logoutZamani = 60000; // 1 dakika = 60000 ms
+            const logoutZamani = 60000;
 
             window.onload = resetTimer;
             document.onmousemove = resetTimer;
@@ -529,7 +542,7 @@ const modalTexts = {
                 user: currentUser,
                 text: val,
                 time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'numeric'}),
-                status: 'Bekliyor', // Bekliyor, İnceleniyor, Çözüldü
+                status: 'Bekliyor', 
                 adminReply: ''
             }).then(() => {
                 document.getElementById('ticketInput').value = '';
@@ -676,225 +689,410 @@ const modalTexts = {
             
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
         };
-
         function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
+
         
+
         function cikisYap() { 
+
             currentUser = ""; 
+
             try { smMusic.pause(); } catch(e) {} 
+
             localStorage.removeItem('sm_current_tenant'); 
+
             localStorage.removeItem('sm_current_kurum_adi'); 
+
             localStorage.removeItem('sm_role'); 
+
             localStorage.removeItem('sm_active_user'); 
+
             window.location.href = 'index.html'; 
+
         }
-        function logout() { cikisYap(); } // Alias for cikisYap
+
+        function logout() { cikisYap(); } 
+
+
 
         function bireyselSifreDegistir() {
+
             const role = localStorage.getItem('sm_role'); const isim = currentUser;
+
             if (role === 'admin') {
+
                 const user = firebase.auth().currentUser;
+
                 if (user) {
+
                     let yeniSifre = prompt(`Sayın Patron (${isim}), lütfen YENİ ŞİFRENİZİ girin:`);
+
                     if (yeniSifre && yeniSifre.trim() !== "") {
+
                         user.updatePassword(yeniSifre).then(() => { showToast("Patron şifreniz güncellendi! ✅"); logAction("Patron şifresini değiştirdi."); }).catch(err => { alert("Güvenlik gereği çıkış yapıp tekrar giriş yapmanız gerekiyor. Lütfen giriş yapıp tekrar deneyin. Hata: " + err.message); });
+
                     }
+
                 } else { alert("Oturum bulunamadı! Lütfen tekrar giriş yapın."); }
+
             } else {
+
                 let eskiSifre = prompt(`Merhaba ${isim}, lütfen MEVCUT (ESKİ) ŞİFRENİZİ girin:`); if (!eskiSifre) return;
+
                 let yeniSifre = prompt("Lütfen YENİ ŞİFRENİZİ girin:"); if (!yeniSifre || yeniSifre.trim() === "") return;
+
                 eskiSifre = eskiSifre.trim(); yeniSifre = yeniSifre.trim();
+
                 if (eskiSifre === yeniSifre) return alert("Yeni şifreniz eskisiyle aynı olamaz!");
+
                 const eskiRef = originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + eskiSifre);
+
                 eskiRef.once('value').then(snap => {
+
                     if (snap.exists() && snap.val().isim === isim) {
+
                         const personelVerisi = snap.val();
+
                         originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniSifre).once('value').then(yeniSnap => {
+
                             if (yeniSnap.exists()) return alert("Bu şifre zaten kullanımda, lütfen başka bir şifre seçin!");
+
                             originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniSifre).set(personelVerisi).then(() => { eskiRef.remove().then(() => { alert("Şifreniz başarıyla değiştirildi! Güvenliğiniz için çıkış yapılıyor, lütfen yeni şifrenizle tekrar girin."); logout(); }); });
+
                         });
+
                     } else { alert("Eski şifrenizi hatalı girdiniz!"); }
+
                 });
+
             }
+
         }
 
-        // 🔥 GÜVENLİK: ŞİFRE KRİPTOLAMA MOTORU 🔥
-        function sifreKriptola(sifre) {
-            return btoa(unescape(encodeURIComponent(sifre + "_SM2026_SECURE")));
-        }
+
+
+        function sifreKriptola(sifre) { return btoa(unescape(encodeURIComponent(sifre + "_SM2026_SECURE"))); }
+
+
 
         function kaydetSorumlu() {
+
             const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); 
+
             const sifre = document.getElementById('sorumluSifre').value.trim();
+
             if(!isim || !sifre) return alert("Lütfen havuzdan isim seçin ve şifre belirleyin!");
-            
-            let kriptoluSifre = sifreKriptola(sifre); // Şifreyi gizle!
-            
+
+            let kriptoluSifre = sifreKriptola(sifre); 
+
             originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + kriptoluSifre).set({ isim: isim, rol: "user" }).then(() => { 
+
                 showToast("Yönetici Eklendi! ✅"); 
+
                 document.getElementById('sorumluIsim').value = ""; 
+
                 document.getElementById('sorumluSifre').value = ""; 
+
                 logAction(`Yeni yönetici atadı: ${isim} (Şifre Kriptolandı)`); 
+
             });
+
         }
+
+
 
         function loadSorumlular() {
+
             originalRef("kurum_alt_yoneticileri/" + tenantId).on('value', snap => {
+
                 const list = document.getElementById('sorumluListesi'); if(!list) return; list.innerHTML = "";
+
                 if(snap.val()) {
+
                     Object.entries(snap.val()).forEach(([sif, data]) => { 
+
                         list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
+
                             <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--success); font-size:10px; margin-left:8px; border:1px solid var(--success); padding:2px 6px; border-radius:4px;">🔒 Şifrelenmiş Yetkili</span></span>
+
                             <div style="display:flex; gap:10px; align-items:center;">
+
                                 <button class="btn" style="background:rgba(16,185,129,0.2); border:1px solid var(--success); color:var(--success); padding:6px 12px; font-size:10px;" onclick="degistirSorumluSifre(event, '${sif}', '${data.isim}')">✏️ Sıfırla</button>
+
                                 <button class="btn" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px;" onclick="silSorumlu(event, '${sif}', '${data.isim}')">X</button>
+
                             </div>
+
                         </div>`; 
+
                     });
+
                 } else { list.innerHTML += "<div style='color:#64748b;'>Atanmış yönetici yok.</div>"; }
+
             });
+
         }
+
+
 
         function degistirSorumluSifre(e, eskiKriptoluSifre, isim) {
+
             e.stopPropagation(); 
+
             let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin (Eski şifreyi göremezsiniz, sadece sıfırlayabilirsiniz):");
+
             if(yeniSifre && yeniSifre.trim() !== "") {
+
                 yeniSifre = yeniSifre.trim(); 
+
                 let yeniKriptoluSifre = sifreKriptola(yeniSifre);
-                
+
                 originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniKriptoluSifre).set({ isim: isim, rol: "user" }).then(() => {
+
                     originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKriptoluSifre).remove().then(() => { 
-                        showToast(isim + " şifresi güncellendi! ✅"); 
-                        logAction(`${isim} şifresini sıfırladı.`); 
+
+                        showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini sıfırladı.`); 
+
                     });
+
                 });
+
             }
+
         }
+
         
+
         function silSorumlu(e, sifre, isim) { e.stopPropagation(); if(confirm(isim + " adlı yetkiyi silmek istediğinize emin misiniz?")) { originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).remove(); logAction(`Yetki kaldırdı: ${isim}`); } }
 
+
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
+
         function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 400); }
+
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
 
+
+
         function loadNews() { 
+
             db.ref("haberler").on("value", snap => { 
+
                 const l = document.getElementById("newsList"); l.innerHTML = ""; 
+
                 if(snap.val()) { 
+
                     Object.entries(snap.val()).reverse().forEach(([id, val]) => { 
+
                         let repliesHtml = ''; 
+
                         if(val.replies) { 
+
                             repliesHtml = '<div class="replies-container">'; 
+
                             Object.entries(val.replies).forEach(([rId, rVal]) => { repliesHtml += `<div class="reply-item"><strong style="color:var(--accent);">${rVal.user}:</strong> <span style="color:#e2e8f0; margin-left:5px;">${rVal.text}</span> <span style="font-size:9px; color:#64748b; display:block; margin-top:5px;">${rVal.time}</span></div>`; }); 
+
                             repliesHtml += '</div>'; 
+
                         } 
+
                         const quickEmojis = ['👍', '🔥', '❤️', '😂', '🎉']; let reactionsHtml = ''; const reactions = val.reactions || {}; 
+
                         quickEmojis.forEach(emoji => { const count = reactions[emoji] ? Object.keys(reactions[emoji]).length : 0; const hasReacted = (reactions[emoji] && reactions[emoji][currentUser]) ? 'active' : ''; if(count > 0 || hasReacted) reactionsHtml += `<div class="reaction-btn ${hasReacted}" onclick="toggleReaction('${id}', '${emoji}')">${emoji} <span style="font-weight:900; margin-left:3px;">${count}</span></div>`; }); 
+
                         
+
                         l.innerHTML += `
+
                         <div class="news-item">
+
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+
                                 <div><div style="font-size:12px; color:var(--accent); font-weight:800; margin-bottom:5px;">👤 ${val.user || 'Sistem'}</div><div class="news-text">${val.text}</div></div>
+
                                 ${currentUser === val.user || localStorage.getItem('sm_role') === 'admin' ? `<span onclick="deleteNews('${id}')" style="color:var(--danger);cursor:pointer; font-weight:900; font-size:16px; padding:5px; background:rgba(239,68,68,0.1); border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center;">×</span>` : ''}
+
                             </div>
+
                             <div class="news-time">🕒 ${val.time}</div>${repliesHtml}
+
                             <div class="news-actions">${reactionsHtml}
+
                                 <div class="emoji-picker-wrapper"><div class="reaction-btn" onclick="toggleEmojiPicker('${id}')" style="border-radius:50%; width:28px; height:28px; justify-content:center; padding:0; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.3);">➕</div>
+
                                     <div id="emoji-picker-${id}" class="emoji-picker"><span class="emoji-item" onclick="toggleReaction('${id}', '👍')">👍</span><span class="emoji-item" onclick="toggleReaction('${id}', '❤️')">❤️</span><span class="emoji-item" onclick="toggleReaction('${id}', '😂')">😂</span><span class="emoji-item" onclick="toggleReaction('${id}', '🔥')">🔥</span><span class="emoji-item" onclick="toggleReaction('${id}', '🎉')">🎉</span><span class="emoji-item" onclick="toggleReaction('${id}', '👏')">👏</span></div>
+
                                 </div><button class="reply-btn" onclick="toggleReplyBox('${id}')">↩️ Yanıtla</button>
+
                             </div>
+
                             <div id="reply-box-${id}" class="reply-input-box"><input type="text" id="reply-input-${id}" class="glass-input" style="flex:1; padding:10px 15px; font-size:12px;" placeholder="Cevabınızı yazın..." onkeydown="if(event.key==='Enter') sendReply('${id}')"><button class="btn btn-green" style="padding:10px 20px;" onclick="sendReply('${id}')">Gönder</button></div>
+
                         </div>`; 
+
                     }); 
+
                 } else { l.innerHTML = `<div style="text-align:center; color:#64748b; margin-top:20px; font-size:12px;">Henüz mesaj yok.</div>`; }
+
             }); 
+
         }
+
         function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) }); logAction(`Panoya yeni not bıraktı.`); i.value = ""; } }
+
         function deleteNews(id) { if(confirm("Mesajı silmek istiyor musun?")) db.ref("haberler").child(id).remove(); }
+
         function toggleReplyBox(id) { const box = document.getElementById(`reply-box-${id}`); box.classList.toggle('active'); if(box.classList.contains('active')) document.getElementById(`reply-input-${id}`).focus(); }
+
         function sendReply(newsId) { const input = document.getElementById(`reply-input-${newsId}`); const text = input.value.trim(); if(text) { db.ref(`haberler/${newsId}/replies`).push({ text: text, user: currentUser, time: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) }); input.value = ''; toggleReplyBox(newsId); logAction("Bir mesaja yanıt verdi."); } }
+
         function toggleEmojiPicker(id) { document.querySelectorAll('.emoji-picker.active').forEach(p => { if(p.id !== `emoji-picker-${id}`) p.classList.remove('active'); }); document.getElementById(`emoji-picker-${id}`).classList.toggle('active'); }
+
         function toggleReaction(newsId, emoji) { if(!currentUser) return; const ref = db.ref(`haberler/${newsId}/reactions/${emoji}/${currentUser}`); ref.once('value', snap => { if(snap.exists()) ref.remove(); else ref.set(true); }); const picker = document.getElementById(`emoji-picker-${newsId}`); if(picker) picker.classList.remove('active'); }
+
         
-       // 🔥 YENİ NESİL DETAYLI CANLI İŞLEM LOGU (KİM, NE ZAMAN, NE YAPTI?) 🔥
+
         function logAction(actionText, detay = "") { 
+
             if(!currentUser) return; 
+
             const now = new Date();
+
             db.ref("islem_loglari").push({ 
-                user: currentUser, 
-                action: actionText, 
-                detay: detay,
+
+                user: currentUser, action: actionText, detay: detay,
+
                 time: now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
+
                 date: now.toLocaleDateString('tr-TR', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+
                 timestamp: firebase.database.ServerValue.TIMESTAMP
+
             }); 
+
         }
+
+
 
         db.ref("islem_loglari").orderByChild("timestamp").limitToLast(50).on("value", snap => { 
-            const l = document.getElementById("logList"); 
-            l.innerHTML = ""; 
+
+            const l = document.getElementById("logList"); l.innerHTML = ""; 
+
             if(snap.val()) { 
-                let logs = [];
-                snap.forEach(child => { logs.push(child.val()); });
+
+                let logs = []; snap.forEach(child => { logs.push(child.val()); });
+
                 logs.reverse().forEach(val => { 
+
                     l.innerHTML += `
+
                     <div style="background: linear-gradient(90deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border-left: 4px solid var(--warning); padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);">
+
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 5px;">
+
                             <span style="color:var(--warning); font-weight:900; font-size:12px; text-shadow: 0 0 5px rgba(250,204,21,0.4);">👤 ${val.user.toUpperCase()}</span>
+
                             <span style="color:#64748b; font-size:10px; font-family:monospace;">📅 ${val.date || ''} - 🕒 ${val.time}</span>
+
                         </div>
-                        <div style="color:#e2e8f0; font-size:13px; font-weight:500;">
-                            <span style="color:#38bdf8;">▶</span> ${val.action}
-                        </div>
+
+                        <div style="color:#e2e8f0; font-size:13px; font-weight:500;"><span style="color:#38bdf8;">▶</span> ${val.action}</div>
+
                         ${val.detay ? `<div style="color:#475569; font-size:10px; margin-top:5px; font-family:monospace;">[DETAY]: ${val.detay}</div>` : ''}
+
                     </div>`; 
+
                 }); 
-            } else {
-                l.innerHTML = "<div style='color:#64748b; text-align:center; padding:20px; font-size:12px; font-style:italic;'>Sistemde henüz bir işlem kaydı yok.</div>";
-            }
+
+            } else { l.innerHTML = "<div style='color:#64748b; text-align:center; padding:20px; font-size:12px; font-style:italic;'>Sistemde henüz bir işlem kaydı yok.</div>"; }
+
         });
 
+
+
         function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; let count = 0; staffList = []; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); } document.getElementById("staffCounter").innerText = count; }); }
+
         function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; const lines = raw.split('\n'); lines.forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction(`${lines.length} personel ekledi.`); inp.value = ""; }
+
         function removeStaff(e, id) { e.stopPropagation(); if(confirm("Kişiyi havuzdan sil?")) db.ref("personel_havuzu").child(id).remove(); }
+
         function clearStaffPool() { if(confirm("Tüm havuzu sil?")) db.ref("personel_havuzu").remove(); }
 
+
+
         function openExcelModal() { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'new'); }
+
         function openExcelModalForTable(btn) { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'append'); window.currentTableWrapperForExcel = btn.closest('.table-wrapper'); }
+
         function cleanExcelRows(raw) { let rows = raw.split("\n").filter(r => r.trim() !== ""); while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; } return rows; }
+
         function importFromExcel() { const text = document.getElementById("excelInput").value; if(!text.trim()) return alert("Veri yapıştırın!"); const targetMode = document.getElementById('excelModal').getAttribute('data-target'); const rows = cleanExcelRows(text); if(targetMode === 'new') { const colsCount = rows[0].split("\t").length - 1; document.getElementById("colCount").value = colsCount > 0 ? colsCount : 30; startNewSession(); generateTable(true, rows.map(r => { const c = r.split("\t"); return { name: c[0] ? c[0].trim() : "İsimsiz", shifts: c.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }) }; }), "İçe Aktarılan Liste", new Date(), colsCount); } else if (targetMode === 'append' && window.currentTableWrapperForExcel) { const wrapper = window.currentTableWrapperForExcel; const tbody = wrapper.querySelector('tbody'); const colCount = parseInt(wrapper.getAttribute("data-colcount")); const startDt = new Date(wrapper.getAttribute("data-startdt")); rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }); tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); }); updateAllStats(); showToast("Veriler Tabloya Eklendi!"); } closeModal('excelModal'); }
 
+
+
         db.ref("vardiya_kurallari").on('value', snap => { if(snap.val()) shiftRules = snap.val(); else shiftRules = defaultRules; renderContextMenu(); });
+
         function renderContextMenu() { const grid = document.getElementById("dynamicMenuGrid"); grid.innerHTML = ""; Object.keys(shiftRules).forEach(sName => { let r = shiftRules[sName]; grid.innerHTML += `<div class="menu-item-wrapper"><div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div><div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div></div>`; }); grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; }
+
         function deleteShiftRule(key, e) { e.stopPropagation(); if(confirm(`Vardiyayı sil?`)) db.ref("vardiya_kurallari/" + key).remove(); }
+
         function applyColorToCell(colorOrGradient) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); let targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell; if(!targetCell) return; let val = targetCell.innerText.trim(); if(val === "") return alert("Önce vardiya adını yazın."); let safeKey = val.replace(/\./g, ':'); let existingRule = shiftRules[safeKey]; let defaultW = existingRule ? existingRule.w : "7.5"; let defaultN = existingRule ? existingRule.n : "0"; let wStr = prompt(`Gündüz Saati:`, defaultW); if(wStr === null) return; let nStr = prompt(`Gece Saati (Yoksa 0):`, defaultN); if(nStr === null) return; db.ref("vardiya_kurallari/" + safeKey).set({ w: parseFloat(wStr.replace(',', '.')) || 0, n: parseFloat(nStr.replace(',', '.')) || 0, color: colorOrGradient }); if (selectedCells.length > 0) { selectedCells.forEach(cell => { if(cell.innerText.trim() === val) cell.style.background = colorOrGradient; }); } else { activeCell.style.background = colorOrGradient; } updateAllStats(); document.getElementById("contextMenu").style.display = "none"; }
+
         function applyCustomColorFromWheel(hexColor) { applyColorToCell(hexColor); }
+
         function addGhostPinToCell() { if(!activeCell) return; let current = activeCell.getAttribute("data-pin") || ""; let n = prompt("Notunuz:", current); if(n !== null) { if(n.trim() === "") activeCell.removeAttribute("data-pin"); else activeCell.setAttribute("data-pin", n); saveHistory(); } document.getElementById("contextMenu").style.display="none"; }
+
         function removeGhostPinFromCell() { if(!activeCell) return; activeCell.removeAttribute("data-pin"); saveHistory(); document.getElementById("contextMenu").style.display="none"; }
 
+
+
         function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; window.currentArchiveNode = "arsivlenmis_shiftler"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
+
         function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll(".staff-chip.selected")).map(el => el.innerText.split('×')[0].trim()); if(sel.length===0) return alert("Seçim yapmadınız!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); }
+
         
+
         function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") { 
+
             const cols = customColCount || parseInt(document.getElementById("colCount").value); 
+
             let startDt = customStartDt; 
+
             if (!(startDt instanceof Date) || isNaN(startDt.getTime())) { let dVal = document.getElementById("startDate").value; startDt = dVal ? new Date(dVal) : new Date(); } 
+
             
+
             let h = `<table><thead><tr><th class="no-export" style="width: 30px; background: transparent; border: none; box-shadow: none;"></th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border-left:none;"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox" style="width:18px;height:18px;"> PERSONEL</th>`; 
+
             for(let i=0; i<cols; i++) { 
+
                 let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
+
                 let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; 
+
                 h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; 
+
                 if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; 
+
                 if(i === cols - 1) lastUsedEndDate = new Date(d); 
+
             } 
+
             h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`; 
+
             if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); }); 
+
             else data.forEach(n => { h += createRowHtml(n, cols, startDt); }); 
+
             h += '</tbody></table>'; 
+
             
+
             const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; 
+
             wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); 
+
             wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; 
             if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); 
             saveHistory(); updateAllStats(); openModal('tableModalOverlay'); 
@@ -921,10 +1119,6 @@ const modalTexts = {
         function toggleCheckboxFromCell(e, cell) { if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return; const cb = cell.querySelector('.row-checkbox'); if(cb && e.target !== cb) cb.checked = !cb.checked; }
         function toggleAllRows(mainCb) { const wrapper = mainCb.closest('table'); wrapper.querySelectorAll('tbody .row-checkbox').forEach(cb => cb.checked = mainCb.checked); }
         function moveRow(btn, dir) { const row = btn.closest('tr'); const tbody = row.parentElement; if (dir === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling); else if (dir === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row); saveHistory(); }
-        function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let pName = prompt("Tablo adı:", wrapper.getAttribute("data-tablename")); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } }
-        function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
-        function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); const names = Array.from(wrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, null, wrapper); } }
-        function safeAppendTable() { const wrappers = document.querySelectorAll(".table-wrapper"); if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); saveHistory(); const lastWrapper = wrappers[wrappers.length - 1]; const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate); } }
         
         function takeFullScreenshot(btn) { 
             const wrapper = btn.closest('.table-wrapper'); 
@@ -940,459 +1134,86 @@ const modalTexts = {
             }); 
         }
 
-        function splitRowFromCell() { if(!activeCell) return; const cell = activeCell; const row = cell.closest('tr'); const tbody = row.parentElement; const allShiftCells = Array.from(row.querySelectorAll('.shift-cell')); const cellIndex = allShiftCells.indexOf(cell); if(cellIndex === -1) return; saveHistory(); const newRow = row.cloneNode(true); const origName = row.querySelector('.editable-name').innerText; newRow.querySelector('.editable-name').innerText = origName + " (Devamı)"; for(let i = cellIndex; i < allShiftCells.length; i++) { allShiftCells[i].innerText = ""; allShiftCells[i].style.background = "transparent"; allShiftCells[i].removeAttribute("data-pin"); } const newShiftCells = Array.from(newRow.querySelectorAll('.shift-cell')); for(let i = 0; i < cellIndex; i++) { newShiftCells[i].innerText = ""; newShiftCells[i].style.background = "transparent"; newShiftCells[i].removeAttribute("data-pin"); } tbody.insertBefore(newRow, row.nextSibling); updateAllStats(); document.getElementById("contextMenu").style.display = "none"; showToast("Satır bölündü! ✂️"); logAction("Satır böldü."); }
-        function toggleTableCollapse(header, e) { if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return; header.closest('.table-wrapper').classList.toggle('collapsed'); }
-        function moveTableWrapper(btn, dir, e) { e.stopPropagation(); const wrapper = btn.closest('.table-wrapper'); if(dir === -1 && wrapper.previousElementSibling) wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling); else if (dir === 1 && wrapper.nextElementSibling) wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper); }
-        function toggleSnippingMode(btn) { const table = btn.closest('.table-wrapper').querySelector('table'); table.classList.toggle('snipping-mode'); if(table.classList.contains('snipping-mode')) { btn.innerHTML = "🔴 KESİM AÇIK"; btn.classList.replace('btn-pink', 'btn-red'); } else { btn.innerHTML = "✂️ SÜTUN KES"; btn.classList.replace('btn-red', 'btn-pink'); } }
-        function showAllColumns(btn) { saveHistory(); const table = btn.closest('.table-wrapper').querySelector('table'); table.querySelectorAll('.hidden-by-snipper').forEach(el => el.classList.remove('hidden-by-snipper')); }
-        
-        let activeHeaderCell = null;
-        function editColumnDate() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); if(newVal && newVal.trim() !== "") { saveHistory(); activeHeaderCell.setAttribute("data-date", newVal); let parts = newVal.split("."); if(parts.length === 3) { let d = new Date(parts[2], parts[1]-1, parts[0]); activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); } } }
-        function insertColumn(dir) { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; saveHistory(); const theadTr = activeHeaderCell.parentElement; const table = activeHeaderCell.closest('table'); const tbodyRows = table.querySelectorAll('tbody tr'); const insertIndex = dir === 'after' ? Array.from(theadTr.children).indexOf(activeHeaderCell) + 1 : Array.from(theadTr.children).indexOf(activeHeaderCell); let p = activeHeaderCell.getAttribute("data-date").split("."); let baseDate = new Date(p[2], p[1]-1, p[0]); if(dir === 'after') baseDate.setDate(baseDate.getDate() + 1); let newTh = document.createElement('th'); let fullDateStr = `${String(baseDate.getDate()).padStart(2,'0')}.${String(baseDate.getMonth()+1).padStart(2,'0')}.${baseDate.getFullYear()}`; newTh.setAttribute('data-date', fullDateStr); newTh.innerHTML = `${String(baseDate.getDate()).padStart(2,'0')}.${String(baseDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${baseDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; theadTr.insertBefore(newTh, theadTr.children[insertIndex]); tbodyRows.forEach(tr => { let newTd = document.createElement('td'); newTd.className = "shift-cell"; newTd.contentEditable = "true"; newTd.style.background = "transparent"; newTd.setAttribute("oncontextmenu", "openShiftMenu(event, this)"); newTd.setAttribute("oninput", "updateAllStats()"); tr.insertBefore(newTd, tr.children[insertIndex]); }); table.closest('.table-wrapper').setAttribute("data-colcount", parseInt(table.closest('.table-wrapper').getAttribute("data-colcount")) + 1); if(confirm("Sağdaki günleri 1 gün kaydıralım mı?")) recalculateDatesFrom(newTh, baseDate); updateAllStats(); showToast("Gün Eklendi!"); }
-        function recalculateDatesFrom(startTh, startDate) { let currentTh = startTh.nextElementSibling; let currentDate = new Date(startDate); while(currentTh) { if(currentTh.hasAttribute("data-date")) { currentDate.setDate(currentDate.getDate() + 1); let fullDateStr = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}.${currentDate.getFullYear()}`; currentTh.setAttribute('data-date', fullDateStr); currentTh.innerHTML = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${currentDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; } currentTh = currentTh.nextElementSibling; } showToast("Tarihler güncellendi!"); }
-        function deleteColumn() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; if(!confirm("Sütunu silmek istediğinize emin misiniz?")) return; saveHistory(); const targetIndex = Array.from(activeHeaderCell.parentElement.children).indexOf(activeHeaderCell); activeHeaderCell.closest('table').querySelectorAll('tbody tr').forEach(tr => { if(tr.children[targetIndex]) tr.children[targetIndex].remove(); }); activeHeaderCell.closest('.table-wrapper').setAttribute("data-colcount", parseInt(activeHeaderCell.closest('.table-wrapper').getAttribute("data-colcount")) - 1); activeHeaderCell.remove(); updateAllStats(); showToast("Sütun Silindi!"); }
+        // 🔥 REHBER (ONBOARDING) MOTORU 🔥
+        let currentStep = 0;
+        const steps = [
+            { element: "staffPool", text: "1. ADIM: Önce 'Personel Havuzu'na isimleri ekle. Kimlerin vardiyasını yazacaksan onları sol tarafta tanımlıyoruz.", btn: "Ekledim, devam!" },
+            { element: "startDate", text: "2. ADIM: Şimdi sağ üstten vardiyanın hangi tarihte başlayacağını seç. Takvimi buna göre hazırlayacağım.", btn: "Tarihi seçtim!" },
+            { element: "colCount", text: "3. ADIM: Kaç günlük bir liste yapmak istiyorsun? (Örn: 30 gün). Buraya sayıyı yaz.", btn: "Yazdım, oluştur!" },
+            { element: "btnGenerateTable", text: "4. ADIM: 'Tabloyu Oluştur' butonuna bas ve sihrin gerçekleşmesini izle!", btn: "Tablo hazır!" }
+        ];
 
-        function loadArchives() { db.ref("arsivlenmis_shiftler").on("value", snap => { const l = document.getElementById("archiveList"); l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', false)"><b style="color:var(--accent); font-size:16px; text-shadow:0 0 10px var(--glass-glow);">📁 ${val.name || 'İsimsiz'}</b><br><small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-orange" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button><button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } }); }
-        function loadPermanentArchives() { db.ref("kalici_depo").on("value", snap => { const l = document.getElementById("permanentArchiveList"); if(!l) return; l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.style.border = "1px dashed rgba(255,255,255,0.2)"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', true)"><b style="color:#94a3b8; font-size:16px;">📦 ${val.name || 'İsimsiz'}</b><br><small style="color:#64748b; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button><button class="btn btn-red" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } else { l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Geçmiş ayların deposu şu an boş...</div>"; } }); }
-        function sendToPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Depoya kaldır?")) { db.ref("arsivlenmis_shiftler").child(id).once("value", snap => { if(snap.val()) db.ref("kalici_depo").child(id).set(snap.val()).then(() => db.ref("arsivlenmis_shiftler").child(id).remove()); }); } }
-        function restoreFromPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Panoya geri al?")) { db.ref("kalici_depo").child(id).once("value", snap => { if(snap.val()) db.ref("arsivlenmis_shiftler").child(id).set(snap.val()).then(() => db.ref("kalici_depo").child(id).remove()); }); } }
-        function delPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Kalıcı olarak sil?")) db.ref("kalici_depo").child(id).remove(); }
-        function delArchive(e, id) { e.stopPropagation(); if(confirm("Klasörü sil?")) db.ref("arsivlenmis_shiftler").child(id).remove(); }
-        function renameMasterArchive() { let mName = prompt("Klasör adı ne olsun?", currentMasterArchiveName); if(mName && mName.trim() !== "") { currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = (window.currentArchiveNode==="kalici_depo"?"📦 ":"📁 ") + currentMasterArchiveName; if(currentMasterArchiveId) db.ref(window.currentArchiveNode).child(currentMasterArchiveId).update({name: currentMasterArchiveName}); } }
-        function openArchive(id, name, isPermanent = false) { const sourceNode = isPermanent ? "kalici_depo" : "arsivlenmis_shiftler"; db.ref(sourceNode).child(id).once("value", snap => { const val = snap.val(); if(!val) return; currentMasterArchiveId = id; currentMasterArchiveName = name; window.currentArchiveNode = sourceNode; document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; document.getElementById("tablesContainer").innerHTML = ""; if(val.tables) { val.tables.forEach(t => { let sDate = t.startDate ? new Date(t.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(t.colCount) || 30; generateTable(true, t.data || [], t.tableName || "Tablo", sDate, cols, null, t.notes || ""); }); } else if(val.data) { let sDate = val.startDate ? new Date(val.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(val.colCount) || 30; generateTable(true, val.data, val.name || "Tablo", sDate, cols); } }); }
-
-        function saveMasterArchive() {
-            try {
-                if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { let mName = prompt("ANA KLASÖR adını girin:", "Vardiya Klasörü"); if(!mName) return; currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; }
-                const tables = document.querySelectorAll('.table-wrapper'); if(tables.length === 0) return alert("Kaydedilecek Tablo yok!");
-                const tablesData = [];
-                tables.forEach((wrapper, index) => {
-                    let tName = wrapper.getAttribute("data-tablename");
-                    if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { let pName = prompt((index+1) + ". Tablo adı:", tName); if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } }
-                    const rowsData = []; wrapper.querySelectorAll("tbody tr").forEach(tr => { let nameEl = tr.querySelector(".editable-name"); if (!nameEl) return; let name = nameEl.innerText.trim(); let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText.replace(/[\n\r]/g, ""), bg: td.style.background || "transparent", pin: td.getAttribute("data-pin") || "" })); rowsData.push({ name: name, shifts: shifts }); });
-                    let notesElement = wrapper.querySelector(".table-notes"); let notesVal = notesElement ? notesElement.value : ""; tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
-                });
-                const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData }; let targetNode = window.currentArchiveNode || "arsivlenmis_shiftler";
-                if(currentMasterArchiveId) { db.ref(targetNode).child(currentMasterArchiveId).update(saveData).then(() => { showToast("✅ Kaydedildi!"); logAction(`'${currentMasterArchiveName}' güncellendi.`); }); } 
-                else { const ref = db.ref("arsivlenmis_shiftler").push(); ref.set(saveData).then(() => { currentMasterArchiveId = ref.key; window.currentArchiveNode = "arsivlenmis_shiftler"; showToast("✅ Kaydedildi!"); }); }
-            } catch (error) { alert("Hata: " + error.message); }
+        function startTutorial() {
+            // Asistan kutusunu görünür yap
+            const asistan = document.getElementById('sm-assistant');
+            if(asistan) asistan.style.display = 'block';
+            showStep();
         }
 
-        // =========================================
-        // 12. HÜCRE İŞLEMLERİ 
-        // =========================================
-        function updateAllStats() {
-            document.querySelectorAll("table tbody tr").forEach(row => {
-                const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0;
-                cells.forEach(td => {
-                    if(td.classList.contains("shift-cell") && !td.classList.contains("hidden-by-snipper")) {
-                        const val = td.innerText.trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
-                        if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(val === "") { td.style.background = "transparent"; }
-                    }
-                    if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
-                    if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
-                });
-            });
-        }
-
-        function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
-        function openShiftMenu(e, c) { e.preventDefault(); if (!c.classList.contains('selected-cell')) { document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); c.classList.add('selected-cell'); } activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
-        
-        // 🔥 OK İŞARETİ AÇILIŞ ANİMASYONU VE LİSTE 🔥
-        function openStaffQuickMenu(e, btn) { 
-            e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; 
+        function showStep() {
+            const step = steps[currentStep];
+            const el = document.getElementById(step.element);
             
-            // Diğer açık olan okları kapat, tıklananı aç
-            document.querySelectorAll('.select-icon.open').forEach(el => { if(el !== btn) el.classList.remove('open'); });
-            btn.classList.add('open');
-
-            const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; 
-            const poolNames = Array.from(document.querySelectorAll("#staffPool input")).map(i => i.value); 
-            poolNames.forEach(n => { 
-                const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; 
-                d.onclick = () => { 
-                    saveHistory(); activeCell.innerText = n; m.style.display = "none"; btn.classList.remove('open'); 
-                }; 
-                m.appendChild(d); 
-            }); 
-            m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; 
-        }
-
-        function saveHistory() { const cont = document.getElementById("tablesContainer").innerHTML; historyStack.push(cont); if(historyStack.length > 25) historyStack.shift(); }
-        function undo() { if(historyStack.length > 0) { document.getElementById("tablesContainer").innerHTML = historyStack.pop(); updateAllStats(); } }
-        document.addEventListener('keydown', e => { if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
-
-        let isDraggingCells = false; let startSelectCell = null;
-        document.addEventListener('mousedown', e => {
-            if(e.button !== 0) return; if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; 
-            const cell = e.target.closest('td, th');
-            if(cell && cell.closest('table') && !cell.closest('.table-header') && !cell.classList.contains('no-export')) { isDraggingCells = true; startSelectCell = cell; document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); cell.classList.add('selected-cell'); if (cell.classList.contains('shift-cell')) activeCell = cell; } else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn') && !e.target.closest('.mini-swatch') && e.target.id !== "customColorInput") { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
-        });
-        
-        // 🔥 EKRANIN ORTASINDA AÇILAN DEVASA İĞNE (NOT) SİSTEMİ 🔥
-        document.addEventListener('mouseover', e => { 
-            if(isDraggingCells) { const cell = e.target.closest('td, th'); if(cell && cell.closest('table') === startSelectCell.closest('table') && !cell.classList.contains('no-export')) selectCellRange(startSelectCell, cell); } 
+            // Tüm vurguları (spotlight) temizle
+            document.querySelectorAll('.tutorial-highlight').forEach(e => e.classList.remove('tutorial-highlight'));
             
-            const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]');
-            const tooltip = document.getElementById('centralPinTooltip');
-            if(shiftCellWithPin && tooltip) {
-                tooltip.innerText = shiftCellWithPin.getAttribute('data-pin');
-                tooltip.style.display = 'block';
+            // Yeni hedefi vurgula
+            if (el) { 
+                el.classList.add('tutorial-highlight'); 
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
             }
-        });
-        document.addEventListener('mouseout', e => {
-            const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]');
-            const tooltip = document.getElementById('centralPinTooltip');
-            if(shiftCellWithPin && tooltip) { tooltip.style.display = 'none'; }
-        });
-
-        document.addEventListener('mouseup', () => { isDraggingCells = false; });
-        document.addEventListener('selectstart', e => { if(isDraggingCells) e.preventDefault(); }); 
-        
-        function selectCellRange(start, end) {
-            document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
-            const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tr')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').querySelectorAll('th, td')).indexOf(start); const endColIdx = Array.from(end.closest('tr').querySelectorAll('th, td')).indexOf(end);
-            const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx);
-            for(let r = minRow; r <= maxRow; r++) { const trCells = Array.from(rows[r].querySelectorAll('th, td')); for(let c = minCol; c <= maxCol; c++) { if(trCells[c] && !trCells[c].classList.contains('no-export')) trCells[c].classList.add('selected-cell'); } }
+            
+            const textEl = document.getElementById('assistant-text');
+            const btnEl = document.getElementById('assistant-btn');
+            if(textEl) textEl.innerText = step.text;
+            if(btnEl) btnEl.innerText = step.btn;
         }
 
-        // =========================================
-        // 13. KUSURSUZ EXCEL KOPYALAMA MOTORU
-        // =========================================
-        function getCleanCellText(cell) { 
-            if (cell.classList.contains('hidden-by-snipper') || cell.classList.contains('no-export')) return null;
-            if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
-            if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
-            let text = (cell.textContent || "").replace(/\n/g, " ").trim(); 
-            if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; 
-            return text; 
-        }
-
-        function getExcelCellHtml(cell) {
-            if(cell.classList.contains('no-export') || cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
-            let text = getCleanCellText(cell); let bg = '#ffffff'; let color = '#000000';
-            if(cell.tagName === 'TH') { bg = '#d1d5db'; color = '#000000'; return { html: `<th style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px; font-weight: bold;">${text}</th>`, text: text }; } 
-            else { let cellBg = cell.style.background || cell.style.backgroundColor; if(cellBg && !cellBg.includes('transparent')) { let match = cellBg.match(/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})/); if(match) { bg = match[0]; color = '#ffffff'; } } return { html: `<td style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px;">${text}</td>`, text: text }; }
-        }
-
-        function generateExcelClipboardData(selectedCellsOrRows, isRowMode) {
-            let html = "<table border='1' style='border-collapse:collapse; font-family:sans-serif; text-align:center;'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
-            if (isRowMode) {
-                let table = selectedCellsOrRows[0].closest('table'); html += "<thead><tr>";
-                table.querySelectorAll('thead th').forEach(th => { let cd = getExcelCellHtml(th); if(cd.html) { html += cd.html; tsv += cd.text + "\t"; } });
-                html += "</tr></thead><tbody>\n"; tsv += "\n";
-                selectedCellsOrRows.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rData = []; tr.querySelectorAll('td').forEach(td => { let cd = getExcelCellHtml(td); if(cd.html) { html += cd.html; rData.push(cd.text); } }); html += "</tr>"; tsv += rData.join("\t") + "\n"; });
-                html += "</tbody>";
+        function nextStep() {
+            currentStep++;
+            if (currentStep < steps.length) { 
+                showStep(); 
             } else {
-                selectedCellsOrRows.forEach(cell => {
-                    const cellRow = cell.closest('tr');
-                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
-                    let cd = getExcelCellHtml(cell); if(cd.html) { trHtml += cd.html; rowData.push(cd.text); }
-                });
-                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; }
+                // Rehber tamamlandı
+                const asistan = document.getElementById('sm-assistant');
+                if(asistan) asistan.style.display = 'none';
+                document.querySelectorAll('.tutorial-highlight').forEach(e => e.classList.remove('tutorial-highlight'));
+                
+                // Sisteme "Bu adam rehberi bitirdi" diye not düş (bir daha açılmaz)
+                localStorage.setItem('tutorial_completed', 'true');
+                showToast("Harikasın! Artık sistemi kullanmaya hazırsın. 🎉");
             }
-            html += "</table>"; return { html, tsv };
         }
 
-        function executeExcelCopy(html, tsv) {
-            const container = document.createElement('div'); container.innerHTML = html; container.style.position = 'fixed'; container.style.top = '-9999px'; container.style.pointerEvents = 'none'; document.body.appendChild(container);
-            const selection = window.getSelection(); const range = document.createRange(); range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range);
-            try { document.execCommand('copy'); showToast("Panoya Kopyalandı! 📋"); } catch(e) { navigator.clipboard.writeText(tsv).then(() => showToast("Sadece metin kopyalandı! 📋")); }
-            selection.removeAllRanges(); document.body.removeChild(container);
-        }
-
-        function copyTableRows(btn) {
-            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
-            const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
-            if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) { const { html, tsv } = generateExcelClipboardData(selectedCells, false); executeExcelCopy(html, tsv); } 
-            else if(cbs.length > 0) { const { html, tsv } = generateExcelClipboardData(cbs, true); executeExcelCopy(html, tsv); } 
-            else { alert("Lütfen tablodan mavi bir alan seçin veya personel kutucuklarını işaretleyin!"); }
-        }
-
-        function exportTableToExcel(btn) {
-            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
-            let html = "<table border='1' style='border-collapse:collapse; text-align:center; font-family:sans-serif;'>"; let tsv = "";
-            table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); 
-            html += "</table>"; executeExcelCopy(html, tsv);
-        }
-
-        function exportAllToExcel() {
-            const wrappers = document.querySelectorAll('.table-wrapper'); if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
-            let html = ""; let tsv = "";
-            wrappers.forEach(wrapper => {
-                let tableName = wrapper.getAttribute("data-tablename"); html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse:collapse; text-align:center; font-family:sans-serif;">`; tsv += `${tableName}\n`;
-                const table = wrapper.querySelector('table');
-                table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); 
-                html += "</table><br><br>"; tsv += "\n\n";
-            });
-            executeExcelCopy(html, tsv); logAction("Tüm tabloları kopyaladı.");
-        }
-
-        document.addEventListener('copy', e => {
-            const selected = document.querySelectorAll('.selected-cell');
-            if(selected.length > 0) { e.preventDefault(); const { html, tsv } = generateExcelClipboardData(selected, false); if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Seçili alan kopyalandı! 📋"); } }
-        });
-
-        document.addEventListener('paste', e => {
-            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
-            const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
-            if(selected.length > 0) {
-                e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = cleanExcelRows(pasteData);
-                if (rows.length === 1 && rows[0].split('\t').length === 1) {
-                    let val = rows[0].trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
-                    selected.forEach(cell => { if(cell.classList.contains('hidden-by-snipper')) return; let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); cell.style.background = r ? r.color : "transparent"; });
-                } else {
-                    let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); let rowCells = Array.from(tr.querySelectorAll('td')); let startColIdx = rowCells.indexOf(startCell);
-                    for (let i = 0; i < rows.length; i++) {
-                        if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentTrCells = Array.from(currentTr.querySelectorAll('td'));
-                        for (let j = 0; j < cols.length; j++) {
-                            if (startColIdx + j >= currentTrCells.length) break; let targetCell = currentTrCells[startColIdx + j];
-                            if (targetCell.classList.contains('shift-cell') && !targetCell.classList.contains('hidden-by-snipper')) {
-                                let val = cols[j].trim(); let oldPin = targetCell.getAttribute("data-pin"); targetCell.innerText = val; if(oldPin) targetCell.setAttribute("data-pin", oldPin); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; targetCell.style.background = r ? r.color : "transparent";
-                            }
-                        }
-                    }
-                }
-                updateAllStats(); showToast("Yapıştırıldı! ✅");
+        // Sayfa yüklendiğinde Rehberi otomatik başlat (Sadece ilk girişse)
+        window.addEventListener('load', () => {
+            if(!localStorage.getItem('tutorial_completed')) { 
+                setTimeout(startTutorial, 2500); // Ekran açıldıktan 2.5 saniye sonra çıksın
             }
         });
 
-        function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); } }
-        function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); }
-        function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) closeModal('tableModalOverlay'); } }
-
-        document.addEventListener('click', e => { 
-            const th = e.target.closest('th'); if(th && th.closest('table.snipping-mode')) { const table = th.closest('table'); const tr = th.parentNode; let colIndex = Array.from(tr.children).indexOf(th); if(colIndex > 1) { saveHistory(); table.querySelectorAll('tr').forEach(row => { if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper'); }); } } 
-        });
-
-        window.onclick = (e) => { 
-            if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { 
-                document.getElementById("contextMenu").style.display = "none"; 
-                document.getElementById("staffSelectMenu").style.display = "none"; 
-                if(document.getElementById("headerContextMenu")) document.getElementById("headerContextMenu").style.display = "none"; 
-                document.querySelectorAll('.select-icon.open').forEach(icon => icon.classList.remove('open'));
-            } 
+        // 🔥 FOOTER MODAL (AÇILIR PENCERE) MOTORU 🔥
+        const modalTexts = {
+            privacy: "<h2>Gizlilik Politikası</h2><p>Verileriniz 256-bit şifreleme ile korunmaktadır. Personel isimleri ve vardiya bilgileri asla üçüncü taraflarla paylaşılmaz. Sistemimiz GDPR ve KVKK standartlarına tam uyumludur.</p>",
+            terms: "<h2>Kullanım Koşulları</h2><p>ShiftMaster, kurum içi vardiya yönetimini kolaylaştırmak için sunulan bir yazılımdır. Veri girişi ve doğruluğu kurum yöneticisinin sorumluluğundadır.</p>",
+            security: "<h2>Veri Güvenliği</h2><p>Tüm veriler Google Cloud altyapısında (Firebase) saklanmaktadır. Şifreleriniz kriptolanarak kaydedilir; patron veya sistem kurucusu bile şifrelerinizi göremez.</p>",
+            contact: "<h2>İletişim</h2><p>Destek ve sorularınız için:<br><b>E-posta:</b> destek@shiftmaster.com.tr<br><b>WhatsApp:</b> +90 (5xx) xxx xx xx</p>"
         };
-        
-        // 🔥 PWA (CİHAZA KURMA) MOTORU 🔥
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
 
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            let installBtn = document.getElementById('btnInstallApp');
-            if(installBtn) installBtn.style.display = 'inline-block';
-        });
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Kullanıcı kurulumu onayladı');
-                        document.getElementById('btnInstallApp').style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                });
+        function openSMModal(type) {
+            let body = document.getElementById('modalBodyContent');
+            let modal = document.getElementById('smCommonModal');
+            if(body && modal) {
+                body.innerHTML = modalTexts[type];
+                modal.style.display = 'block';
             }
         }
 
-        // 🔥 TABLOYU KALICI DEPOYA ATMA FONKSİYONU 🔥
-        function sendSingleTableToArchive(btn) {
-            if(!confirm("Bu tabloyu 'Kalıcı Depo'ya (Geçmiş Aylar Arşivi) göndermek istediğinize emin misiniz?")) return;
-            
-            const wrapper = btn.closest('.table-wrapper');
-            let tName = wrapper.getAttribute("data-tablename");
-            let sDate = wrapper.getAttribute("data-startdt");
-            let colCount = wrapper.getAttribute("data-colcount");
-            
-            // Ekrandaki verileri topla
-            const rowsData = [];
-            wrapper.querySelectorAll("tbody tr").forEach(tr => { 
-                let nameEl = tr.querySelector(".editable-name"); 
-                if (!nameEl) return; 
-                let name = nameEl.innerText.trim(); 
-                let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
-                    text: td.innerText.replace(/[\n\r]/g, ""), 
-                    bg: td.style.background || "transparent", 
-                    pin: td.getAttribute("data-pin") || "" 
-                })); 
-                rowsData.push({ name: name, shifts: shifts }); 
-            });
-            
-            let notesElement = wrapper.querySelector(".table-notes"); 
-            let notesVal = notesElement ? notesElement.value : "";
-            
-            // Tablo objesi oluştur
-            const tableObj = { 
-                tableName: tName, 
-                startDate: sDate, 
-                colCount: colCount, 
-                data: rowsData, 
-                notes: notesVal 
-            };
-            
-            // Kalıcı depoya (Geçmiş Aylara) kaydet
-            const saveData = { 
-                name: tName + " (Tekli Kayıt)", 
-                date: new Date().toLocaleString('tr-TR'), 
-                tables: [tableObj] 
-            };
-            
-            db.ref("kalici_depo").push(saveData).then(() => {
-                showToast("📦 Tablo Kalıcı Depoya Gönderildi!");
-                logAction(`'${tName}' kalıcı depoya atıldı.`);
-                
-                // Depoya atılan tabloyu ekrandan temizle
-                wrapper.remove();
-                if(document.querySelectorAll('.table-wrapper').length === 0) {
-                    closeModal('tableModalOverlay');
-                }
-            }).catch(err => {
-                alert("Hata oluştu: " + err.message);
-            });
+        function closeSMModal() {
+            let modal = document.getElementById('smCommonModal');
+            if(modal) modal.style.display = 'none';
         }
 
-        // 🔥 TARİH BAŞLIKLARI SAĞ TIK MENÜSÜ TETİKLEYİCİSİ 🔥
-        document.addEventListener('contextmenu', e => {
-            const th = e.target.closest('th[data-date]');
-            if(th) {
-                e.preventDefault(); // Tarayıcının kendi menüsünü engelle
-                activeHeaderCell = th;
-                const menu = document.getElementById("headerContextMenu");
-                menu.style.display = "block";
-                
-                // Menünün ekranın sağına taşıp kaybolmasını önleyen akıllı hizalama
-                let x = e.pageX;
-                let y = e.pageY;
-                if (x + 280 > window.innerWidth) x = window.innerWidth - 290; 
-                
-                menu.style.left = x + "px";
-                menu.style.top = y + "px";
-            }
-        });
-
-        // 🔥 GÜN GÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
-        function showTodaySummary(selectedDateStr = null) {
-            openModal('todaySummaryModal');
-            
-            let targetDate = new Date();
-            const datePicker = document.getElementById('summaryDatePicker');
-            
-            // Zaman dilimi hatasını önlemek için güvenli formatlama
-            const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
-            const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
-
-            if (selectedDateStr) {
-                // Eğer takvimden yeni bir tarih seçildiyse
-                targetDate = new Date(selectedDateStr);
-            } else {
-                // Eğer butonla ilk kez açılıyorsa (Takvimde bugünü ayarla)
-                if(!datePicker.value) {
-                    datePicker.value = localISOTime;
-                } else {
-                    targetDate = new Date(datePicker.value);
-                }
-            }
-            
-            targetDate.setHours(0,0,0,0);
-            
-            const todayStr = `${String(targetDate.getDate()).padStart(2,'0')}.${String(targetDate.getMonth()+1).padStart(2,'0')}.${targetDate.getFullYear()}`;
-            const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-            document.getElementById('todaySummaryDateText').innerText = `Seçilen Gün: ${todayStr} - ${dayNames[targetDate.getDay()]}`;
-            
-            const listDay = document.getElementById('listDay');
-            const listNight = document.getElementById('listNight');
-            const listOff = document.getElementById('listOff');
-            
-            listDay.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>';
-            listNight.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>';
-            listOff.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>';
-            
-            // Tüm aktif panoları buluttan çek
-            db.ref("arsivlenmis_shiftler").once("value").then(snap => {
-                listDay.innerHTML = ''; listNight.innerHTML = ''; listOff.innerHTML = '';
-                let dayCount = 0, nightCount = 0, offCount = 0;
-                
-                if(snap.val()) {
-                    Object.values(snap.val()).forEach(archive => {
-                        let tables = archive.tables ? archive.tables : (archive.data ? [archive] : []);
-                        
-                        tables.forEach(t => {
-                            let startDt = t.startDate ? new Date(t.startDate) : null;
-                            if(!startDt) return;
-                            
-                            startDt.setHours(0,0,0,0);
-                            
-                            // Seçilen tarih, bu tablonun kaçıncı gününe (sütununa) denk geliyor?
-                            let timeDiff = targetDate.getTime() - startDt.getTime();
-                            let dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
-                            
-                            // Eğer seçilen tarih bu tablonun içindeyse
-                            if(dayDiff >= 0 && dayDiff < (t.colCount || 30)) {
-                                t.data.forEach(row => {
-                                    if(!row.shifts || !row.shifts[dayDiff]) return;
-                                    let shiftVal = row.shifts[dayDiff].text.trim().toUpperCase();
-                                    
-                                    if(shiftVal === "" || shiftVal === "0") return; // Boşsa geç
-                                    
-                                    // İsim ve Vardiya etiketini şık bir tasarımla hazırla
-                                    let itemHtml = `<div style="padding:10px 5px; border-bottom:1px dashed rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;">
-                                        <span style="font-weight:700; color:#e2e8f0;">👤 ${row.name}</span> 
-                                        <strong style="background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; color:#fff; border:1px solid rgba(255,255,255,0.2);">${shiftVal}</strong>
-                                    </div>`;
-                                    
-                                    // İzinli/Raporlu Ayrımı
-                                    if(["HT", "İ", "R", "Yİ", "Nİ", "RT", "RAPOR", "İZİN"].includes(shiftVal)) {
-                                        listOff.innerHTML += itemHtml; offCount++;
-                                    } 
-                                    // Gece Nöbeti Ayrımı (BAŞLANGIÇ saati 16, 20, 24 olanlar veya NÖBET kelimesi içerenler)
-                                    else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET") || shiftVal === "N") {
-                                        listNight.innerHTML += itemHtml; nightCount++;
-                                    } 
-                                    // Geri kalan herkes (08:00 ile başlayanlar dahil) Gündüz Çalışanı
-                                    else {
-                                        listDay.innerHTML += itemHtml; dayCount++;
-                                    }
-                                });
-                            }
-                        });
-                    });
-                }
-                
-                // Sayıları güncelle
-                document.getElementById('cDay').innerText = dayCount;
-                document.getElementById('cNight').innerText = nightCount;
-                document.getElementById('cOff').innerText = offCount;
-                
-                // Eğer kimse yoksa
-                if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gündüz mesaisinde kimse bulunamadı.</div>';
-                if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gece nöbetinde kimse bulunamadı.</div>';
-                if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli/raporlu kimse bulunamadı.</div>';
-            });
-        }
-        <div class="footer-links">
-        <a onclick="openSMModal('privacy')">Gizlilik Politikası</a> | 
-        <a onclick="openSMModal('terms')">Kullanım Koşulları</a> | 
-        <a onclick="openSMModal('security')">Veri Güvenliği</a> | 
-        <a onclick="openSMModal('contact')">İletişim</a>
-        <p style="margin-top:10px;">© 2026 ShiftMaster - Tüm Hakları Saklıdır.</p>
-    </div>
-
-    <div id="smCommonModal" class="modal-sm">
-        <div class="modal-sm-content">
-            <span class="modal-sm-close" onclick="closeSMModal()">&times;</span>
-            <div id="modalBodyContent">
-                </div>
-        </div>
-    </div>
     </script>
 </body>
 </html>
-
-
-
-
