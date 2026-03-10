@@ -1534,11 +1534,41 @@
         });
 
         // 🔥 AI MOTORU BAŞLATICISI (AŞAMA 1) 🔥
+        // 🔥 AI MOTORU AÇILIŞ VE DİNAMİK VARDİYA OKUMA 🔥
+        function openAiModal() {
+            const daySel = document.getElementById('aiDayShiftSelect');
+            const nightSel = document.getElementById('aiNightShiftSelect');
+            const offSel = document.getElementById('aiOffShiftSelect');
+
+            let optionsHtml = '<option value="" style="color:black;">-- Lütfen Seçiniz --</option>';
+            
+            // shiftRules objesinden senin kaydettiğin tüm vardiyaları çekip kutulara koyar
+            Object.keys(shiftRules).forEach(key => {
+                optionsHtml += `<option value="${key}" style="color:black;">${key} (G:${shiftRules[key].w} / Gc:${shiftRules[key].n})</option>`;
+            });
+
+            daySel.innerHTML = optionsHtml;
+            nightSel.innerHTML = optionsHtml;
+            offSel.innerHTML = optionsHtml;
+
+            // Ekranda modalı aç
+            openModal('aiGeneratorModal');
+        }
+
+        // 🔥 AI MOTORU BAŞLATICISI (AŞAMA 2 İÇİN HAZIRLIK) 🔥
         function startAiDistribution() {
-            alert("Aşama 1 (Vitrin) başarıyla kuruldu! 🚀 \nŞimdi Aşama 2'ye geçip bu butonun arkasındaki o devasa 'Sudoku Çözücü' yapay zeka algoritmasını yazacağız!");
+            let selectedDayShift = document.getElementById('aiDayShiftSelect').value;
+            let selectedNightShift = document.getElementById('aiNightShiftSelect').value;
+            
+            if(!selectedDayShift || !selectedNightShift) {
+                return alert("Lütfen yukarıdan Gündüz ve Gece vardiya kodlarını seçiniz!");
+            }
+            
+            alert(`Aşama 1 (Devasa Vitrin) Başarıyla Kuruldu! 😎\n\nSeçilen Gündüz: ${selectedDayShift}\nSeçilen Gece: ${selectedNightShift}\n\nHer şey mükemmel çalışıyor. Şimdi Sudoku Çözücü beyin kodlarını yazma zamanı geldi!`);
         }
 
     </script>
 </body>
 </html>
+
 
