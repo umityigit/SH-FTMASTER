@@ -1042,109 +1042,108 @@
 
         document.addEventListener('contextmenu', e => { const th = e.target.closest('th[data-date]'); if(th) { e.preventDefault(); activeHeaderCell = th; const menu = document.getElementById("headerContextMenu"); menu.style.display = "block"; let x = e.pageX; let y = e.pageY; if (x + 280 > window.innerWidth) x = window.innerWidth - 290; menu.style.left = x + "px"; menu.style.top = y + "px"; } });
 
-       // 🔥 GÜN GÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU (ORİJİNAL VE STABİL VERSİYON) 🔥
-        // 🔥 GÜN GÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) ÇELİK YELEKLİ MOTOR 🔥
+      // 🔥 GÜN GÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
         function showTodaySummary(selectedDateStr = null) {
-            try {
-                openModal('todaySummaryModal');
-                let targetDate = new Date();
-                const datePicker = document.getElementById('summaryDatePicker');
-                
-                // Tarih kaymalarını önlemek için saat farkı düzeltmesi
-                const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
-                const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
+            openModal('todaySummaryModal');
+            
+            let targetDate = new Date();
+            const datePicker = document.getElementById('summaryDatePicker');
+            
+            // Zaman dilimi hatasını önlemek için güvenli formatlama
+            const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
+            const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
 
-                if (selectedDateStr) { 
-                    targetDate = new Date(selectedDateStr); 
-                } else { 
-                    if(!datePicker.value) { 
-                        datePicker.value = localISOTime; 
-                    } else { 
-                        targetDate = new Date(datePicker.value); 
-                    } 
+            if (selectedDateStr) {
+                // Eğer takvimden yeni bir tarih seçildiyse
+                targetDate = new Date(selectedDateStr);
+            } else {
+                // Eğer butonla ilk kez açılıyorsa (Takvimde bugünü ayarla)
+                if(!datePicker.value) {
+                    datePicker.value = localISOTime;
+                } else {
+                    targetDate = new Date(datePicker.value);
                 }
-                targetDate.setHours(0,0,0,0);
+            }
+            
+            targetDate.setHours(0,0,0,0);
+            
+            const todayStr = `${String(targetDate.getDate()).padStart(2,'0')}.${String(targetDate.getMonth()+1).padStart(2,'0')}.${targetDate.getFullYear()}`;
+            const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+            document.getElementById('todaySummaryDateText').innerText = `Seçilen Gün: ${todayStr} - ${dayNames[targetDate.getDay()]}`;
+            
+            const listDay = document.getElementById('listDay');
+            const listNight = document.getElementById('listNight');
+            const listOff = document.getElementById('listOff');
+            
+            listDay.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>';
+            listNight.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>';
+            listOff.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>';
+            
+            // Tüm aktif panoları buluttan çek
+            db.ref("arsivlenmis_shiftler").once("value").then(snap => {
+                listDay.innerHTML = ''; listNight.innerHTML = ''; listOff.innerHTML = '';
+                let dayCount = 0, nightCount = 0, offCount = 0;
                 
-                const todayStr = `${String(targetDate.getDate()).padStart(2,'0')}.${String(targetDate.getMonth()+1).padStart(2,'0')}.${targetDate.getFullYear()}`;
-                const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-                document.getElementById('todaySummaryDateText').innerText = `Seçilen Gün: ${todayStr} - ${dayNames[targetDate.getDay()]}`;
-                
-                const listDay = document.getElementById('listDay'); 
-                const listNight = document.getElementById('listNight'); 
-                const listOff = document.getElementById('listOff');
-                
-                listDay.innerHTML = '<span style="color:#64748b;">Taranıyor... ⏳</span>'; 
-                listNight.innerHTML = '<span style="color:#64748b;">Taranıyor... ⏳</span>'; 
-                listOff.innerHTML = '<span style="color:#64748b;">Taranıyor... ⏳</span>';
-                
-                db.ref("arsivlenmis_shiftler").once("value").then(snap => {
-                    listDay.innerHTML = ''; listNight.innerHTML = ''; listOff.innerHTML = '';
-                    let dayCount = 0, nightCount = 0, offCount = 0;
-                    
-                    if(snap.val()) {
-                        Object.values(snap.val()).forEach(archive => {
-                            try {
-                                let tables = archive.tables ? archive.tables : (archive.data ? [archive] : []);
-                                
-                                tables.forEach(t => {
-                                    let startDt = t.startDate ? new Date(t.startDate) : null;
-                                    // Eğer tarih bozuksa tabloyu atla
-                                    if(!startDt || isNaN(startDt.getTime())) return;
-                                    startDt.setHours(0,0,0,0);
+                if(snap.val()) {
+                    Object.values(snap.val()).forEach(archive => {
+                        let tables = archive.tables ? archive.tables : (archive.data ? [archive] : []);
+                        
+                        tables.forEach(t => {
+                            let startDt = t.startDate ? new Date(t.startDate) : null;
+                            if(!startDt) return;
+                            
+                            startDt.setHours(0,0,0,0);
+                            
+                            // Seçilen tarih, bu tablonun kaçıncı gününe (sütununa) denk geliyor?
+                            let timeDiff = targetDate.getTime() - startDt.getTime();
+                            let dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+                            
+                            // Eğer seçilen tarih bu tablonun içindeyse
+                            if(dayDiff >= 0 && dayDiff < (t.colCount || 30)) {
+                                t.data.forEach(row => {
+                                    if(!row.shifts || !row.shifts[dayDiff]) return;
+                                    let shiftVal = row.shifts[dayDiff].text.trim().toUpperCase();
                                     
-                                    // Tarih farkını gün bazında hesaplama
-                                    let timeDiff = targetDate.getTime() - startDt.getTime();
-                                    let dayDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+                                    if(shiftVal === "" || shiftVal === "0") return; // Boşsa geç
                                     
-                                    if(dayDiff >= 0 && dayDiff < (t.colCount || 30)) {
-                                        // 🔥 Çökme Koruması: Eğer tablo verisi bozuk/eksik kaydedildiyse atla! 🔥
-                                        if(t.data && Array.isArray(t.data)) { 
-                                            t.data.forEach(row => {
-                                                if(!row.shifts || row.shifts[dayDiff] === undefined) return;
-                                                
-                                                // ESKİ VE YENİ VERİ UYUMU (KİLİDİ AÇAN KISIM BURASI)
-                                                let rawShift = row.shifts[dayDiff];
-                                                let shiftVal = typeof rawShift === 'object' ? (rawShift.text || "") : String(rawShift || "");
-                                                shiftVal = shiftVal.trim().toUpperCase();
-                                                
-                                                if(shiftVal === "" || shiftVal === "0") return; 
-                                                
-                                                let itemHtml = `<div style="padding:10px 5px; border-bottom:1px dashed rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; color:#e2e8f0;">👤 ${row.name || 'İsimsiz'}</span> <strong style="background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; color:#fff; border:1px solid rgba(255,255,255,0.2);">${shiftVal}</strong></div>`;
-                                                
-                                                if(["HT", "İ", "R", "Yİ", "Nİ", "RT", "RAPOR", "İZİN"].includes(shiftVal)) { 
-                                                    listOff.innerHTML += itemHtml; offCount++; 
-                                                } else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET") || shiftVal === "N") { 
-                                                    listNight.innerHTML += itemHtml; nightCount++; 
-                                                } else { 
-                                                    listDay.innerHTML += itemHtml; dayCount++; 
-                                                }
-                                            });
-                                        }
+                                    // İsim ve Vardiya etiketini şık bir tasarımla hazırla
+                                    let itemHtml = `<div style="padding:10px 5px; border-bottom:1px dashed rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;">
+                                        <span style="font-weight:700; color:#e2e8f0;">👤 ${row.name}</span> 
+                                        <strong style="background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; color:#fff; border:1px solid rgba(255,255,255,0.2);">${shiftVal}</strong>
+                                    </div>`;
+                                    
+                                    // İzinli/Raporlu Ayrımı
+                                    if(["HT", "İ", "R", "Yİ", "Nİ", "RT", "RAPOR", "İZİN"].includes(shiftVal)) {
+                                        listOff.innerHTML += itemHtml; offCount++;
+                                    } 
+                                    // Gece Nöbeti Ayrımı (BAŞLANGIÇ saati 16, 20, 24 olanlar veya NÖBET kelimesi içerenler)
+                                    else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET") || shiftVal === "N") {
+                                        listNight.innerHTML += itemHtml; nightCount++;
+                                    } 
+                                    // Geri kalan herkes (08:00 ile başlayanlar dahil) Gündüz Çalışanı
+                                    else {
+                                        listDay.innerHTML += itemHtml; dayCount++;
                                     }
                                 });
-                            } catch(innerErr) {
-                                console.error("Bir arşiv tablosu okunamadı, atlandı.", innerErr);
                             }
                         });
-                    }
-                    
-                    document.getElementById('cDay').innerText = dayCount; 
-                    document.getElementById('cNight').innerText = nightCount; 
-                    document.getElementById('cOff').innerText = offCount;
-                    
-                    if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Gündüz mesaisinde kimse yok.</div>';
-                    if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Gece nöbetinde kimse yok.</div>';
-                    if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">İzinli/raporlu kimse yok.</div>';
-                    
-                }).catch(err => {
-                    alert("Veri çekilirken bir hata oluştu: " + err.message);
-                });
-            } catch(e) {
-                console.error("Ana fonksiyon hatası: ", e);
-            }
+                    });
+                }
+                
+                // Sayıları güncelle
+                document.getElementById('cDay').innerText = dayCount;
+                document.getElementById('cNight').innerText = nightCount;
+                document.getElementById('cOff').innerText = offCount;
+                
+                // Eğer kimse yoksa
+                if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gündüz mesaisinde kimse bulunamadı.</div>';
+                if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gece nöbetinde kimse bulunamadı.</div>';
+                if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli/raporlu kimse bulunamadı.</div>';
+            });
         }
     </script>
 </body>
 </html>
+
 
 
