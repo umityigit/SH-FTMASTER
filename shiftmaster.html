@@ -625,24 +625,40 @@
 
         async function bireyselSifreDegistir() {
             const role = localStorage.getItem('sm_role'); const isim = currentUser;
-            if (role === 'admin' || role === 'superadmin') {
+            if (role === 'admin') {
                 const user = firebase.auth().currentUser;
                 if (user) {
                     let yeniSifre = prompt(`Sayın Patron (${isim}), lütfen YENİ ŞİFRENİZİ girin:`);
                     if (yeniSifre && yeniSifre.trim() !== "") {
                         user.updatePassword(yeniSifre).then(() => { showToast("Patron şifreniz güncellendi! ✅"); logAction("Patron şifresini değiştirdi."); }).catch(err => { alert("Güvenlik gereği çıkış yapıp tekrar giriş yapmanız gerekiyor. Lütfen giriş yapıp tekrar deneyin. Hata: " + err.message); });
                     }
-                } else if (role === 'superadmin') {
-                    // Sistem kurucusu için özel şifre değiştirme (Auth olmadan)
-                    let yeniSifre = prompt(`Sistem Kurucusu, lütfen YENİ ŞİFRENİZİ girin:`);
-                    if (yeniSifre && yeniSifre.trim() !== "") {
-                        let yeniKripto = await sifreKriptola(yeniSifre.trim());
-                        originalRef('kurum_alt_yoneticileri/patron_base/' + yeniKripto).set({ isim: "SİSTEM KURUCUSU", rol: "superadmin" }).then(() => {
-                            alert("Kurucu şifreniz güncellendi! Güvenlik için çıkış yapılıyor."); logout();
-                        });
-                    }
                 } else { alert("Oturum bulunamadı! Lütfen tekrar giriş yapın."); }
+            } else if (role === 'superadmin') {
+                // 👑 SİSTEM KURUCUSU ŞİFRE DEĞİŞTİRME MOTORU 👑
+                let eskiSifre = prompt(`Sistem Kurucusu, güvenliğiniz için lütfen MEVCUT ŞİFRENİZİ girin:`);
+                if(!eskiSifre) return;
+                
+                let yeniSifre = prompt(`Lütfen YENİ ZOR ŞİFRENİZİ girin:`);
+                if (yeniSifre && yeniSifre.trim() !== "") {
+                    let eskiKripto = await sifreKriptola(eskiSifre.trim());
+                    let yeniKripto = await sifreKriptola(yeniSifre.trim());
+                    
+                    originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).once('value').then(snap => {
+                        if(snap.exists()) {
+                            // Yeni şifreyi kaydet, eskisini yok et!
+                            originalRef('kurum_alt_yoneticileri/patron_base/' + yeniKripto).set({ isim: "SİSTEM KURUCUSU", rol: "superadmin" }).then(() => {
+                                originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).remove().then(() => {
+                                    alert("Kurucu şifreniz başarıyla güncellendi! Güvenlik için sistemden çıkış yapılıyor. Lütfen yeni şifrenizle girin."); 
+                                    logout();
+                                });
+                            });
+                        } else {
+                            alert("Mevcut (Eski) şifrenizi yanlış girdiniz! İşlem iptal edildi.");
+                        }
+                    });
+                }
             } else {
+                // Alt Yönetici Şifre Değiştirme
                 let eskiSifre = prompt(`Merhaba ${isim}, lütfen MEVCUT (ESKİ) ŞİFRENİZİ girin:`); if (!eskiSifre) return;
                 let yeniSifre = prompt("Lütfen YENİ ŞİFRENİZİ girin:"); if (!yeniSifre || yeniSifre.trim() === "") return;
                 eskiSifre = eskiSifre.trim(); yeniSifre = yeniSifre.trim();
@@ -1386,6 +1402,7 @@
     </script>
 </body>
 </html>
+
 
 
 
