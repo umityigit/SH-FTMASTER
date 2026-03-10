@@ -738,8 +738,24 @@
         function toggleEmojiPicker(id) { document.querySelectorAll('.emoji-picker.active').forEach(p => { if(p.id !== `emoji-picker-${id}`) p.classList.remove('active'); }); document.getElementById(`emoji-picker-${id}`).classList.toggle('active'); }
         function toggleReaction(newsId, emoji) { if(!currentUser) return; const ref = db.ref(`haberler/${newsId}/reactions/${emoji}/${currentUser}`); ref.once('value', snap => { if(snap.exists()) ref.remove(); else ref.set(true); }); const picker = document.getElementById(`emoji-picker-${newsId}`); if(picker) picker.classList.remove('active'); }
         
-        function logAction(actionText) { if(!currentUser) return; db.ref("islem_loglari").push({ user: currentUser, action: actionText, time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}) }); }
-        db.ref("islem_loglari").limitToLast(30).on("value", snap => { const l = document.getElementById("logList"); l.innerHTML = ""; if(snap.val()) { Object.values(snap.val()).reverse().forEach(val => { l.innerHTML += `<div class="log-item"><span class="log-user">${val.user}</span> <span style="flex:1; margin-left:10px;">${val.action}</span> <span style="color:#64748b; font-size:10px;">${val.time}</span></div>`; }); } });
+        // 🔥 GÜNCEL İŞLEM LOGU (HAYALET MODU KORUMALI) 🔥
+        function logAction(actionText, detay = "") { 
+            if(!currentUser) return; 
+            
+            // EĞER İÇERİ SIZAN KİŞİ PATRON İSE (HAYALET MODU AÇIKSA), SİSTEME İZ BIRAKMA!
+            if(localStorage.getItem('sm_ghost_mode') === 'true') {
+                console.log("Hayalet Modu İşlemi: " + actionText); // Sadece sen F12'de görürsün
+                return; // Müşterinin loguna yazmadan işlemi iptal et
+            }
+
+            const now = new Date();
+            db.ref("islem_loglari").push({ 
+                user: currentUser, action: actionText, detay: detay,
+                time: now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
+                date: now.toLocaleDateString('tr-TR', {day: '2-digit', month: '2-digit', year: 'numeric'}),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }); 
+        }
 
         function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; let count = 0; staffList = []; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); } document.getElementById("staffCounter").innerText = count; }); }
         function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; const lines = raw.split('\n'); lines.forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction(`${lines.length} personel ekledi.`); inp.value = ""; }
@@ -1266,6 +1282,7 @@
     </script>
 </body>
 </html>
+
 
 
 
