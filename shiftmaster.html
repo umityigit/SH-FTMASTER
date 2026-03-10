@@ -241,6 +241,7 @@
                         </div>
                     </button>
                     <button id="btnSorumluAta" class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); display:none; border-color:#facc15; font-size:13px; padding:12px 25px;" onclick="openModal('sorumluModal')">👑 YÖNETİCİ ATA</button>
+                    <button id="btnBossConsole" class="btn" style="display:none; background:linear-gradient(135deg, #ef4444, #7f1d1d); border-color:#fca5a5; font-size:13px; padding:12px 25px; box-shadow:0 0 15px rgba(239,68,68,0.5);" onclick="openBossConsole()">👁️ KONTROL MERKEZİ</button>
                     <button id="btnSifreDegistir" class="btn" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); font-size:13px; padding:12px 25px;" onclick="bireyselSifreDegistir()">🔑 ŞİFREMİ DEĞİŞTİR</button>
                     
                     <button class="btn" style="background:linear-gradient(135deg, #a855f7, #7e22ce); font-size:13px; padding:12px 25px; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);" onclick="showTodaySummary()">📍 BUGÜN KİMLER VAR?</button>
@@ -381,6 +382,23 @@
             <div style="display:flex; gap:15px;">
                 <button class="btn btn-green" style="flex:1; justify-content:center; padding:15px; font-size:14px;" onclick="importFromExcel()">VERİLERİ İŞLE VE TABLOYU KUR</button>
                 <button class="btn btn-red" style="padding:15px 30px; font-size:14px;" onclick="closeModal('excelModal')">İPTAL</button>
+            </div>
+        </div>
+    </div>
+    <div id="bossConsoleModal" class="full-modal-overlay">
+        <div class="full-modal-content" style="border-color: #ef4444; background: radial-gradient(circle at top right, #1a0505, #050b14);">
+            <div class="modal-header-bar" style="background: rgba(127,29,29,0.3); border-bottom-color: #ef4444;">
+                <div style="font-size:26px; font-weight:900; color:#fff; text-shadow:0 0 15px #ef4444;">
+                    👁️ SİSTEM KONTROL MERKEZİ <span style="font-size:12px; color:#fca5a5; font-weight:normal; letter-spacing:2px;">(Sadece Kurucuya Özel)</span>
+                </div>
+                <div style="display:flex; gap:12px;">
+                    <input type="text" id="bossSearchInput" class="glass-input" style="width:300px; padding:10px 15px; font-size:13px; border-color:#ef4444;" placeholder="🔍 Kurum Ara (Eczane, Hastane...)" onkeyup="filterBossList()">
+                    <button class="btn btn-red" onclick="closeModal('bossConsoleModal')">❌ KAPAT</button>
+                </div>
+            </div>
+            <div class="modal-body-area">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;" id="bossKurumListesi">
+                    </div>
             </div>
         </div>
     </div>
@@ -1282,6 +1300,7 @@
     </script>
 </body>
 </html>
+
 
 
 
