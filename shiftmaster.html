@@ -1562,44 +1562,7 @@
 
         // 🔥 AI MOTORU BAŞLATICISI (AŞAMA 2 İÇİN HAZIRLIK) 🔥
        // 🔥 EKSTRA VARDİYA SATIRI EKLEME MOTORU (GELİŞTİRİLDİ) 🔥
-        function addExtraShiftRow() {
-            const list = document.getElementById('extraShiftsList');
-            const rowId = 'extra_' + Date.now();
-            
-            // Ana select kutusunun içindeki seçenekleri (Müşterinin vardiyalarını) kopyala
-            const options = document.getElementById('aiDayShiftSelect').innerHTML;
-            
-            const div = document.createElement('div');
-            div.style.display = 'flex';
-            div.style.gap = '10px';
-            div.style.marginBottom = '10px';
-            div.style.alignItems = 'center';
-            div.style.background = 'rgba(0,0,0,0.3)'; // Kutuya arka plan verdim daha net dursun
-            div.style.padding = '10px';
-            div.style.borderRadius = '10px';
-            div.style.border = '1px solid rgba(56,189,248,0.2)';
-            div.id = rowId;
-            
-            div.innerHTML = `
-                <select class="glass-input ai-extra-shift-select" style="flex: 2; padding: 8px; font-size: 12px;">${options}</select>
-                
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <input type="number" class="glass-input ai-extra-shift-count" value="1" min="1" style="width:60px; padding: 8px; font-size: 13px; text-align:center; font-weight:900; color:var(--accent);">
-                    <span style="font-size:10px; color:#94a3b8;">Kişi</span>
-                </div>
-
-                <select class="glass-input ai-extra-shift-type" style="flex: 1.5; padding: 8px; font-size: 11px; cursor:pointer;">
-                    <option value="random">Değişken (Ekibe Dağıt)</option>
-                    <option value="fixed">Sabit (Aynı Kişi)</option>
-                </select>
-
-                <button class="btn btn-red" style="padding: 8px 12px; border-radius:8px;" onclick="document.getElementById('${rowId}').remove()">X</button>
-            `;
-            list.appendChild(div);
-        }
-
-
-       function startAiDistribution() {
+        function startAiDistribution() {
     let dayCode = document.getElementById('aiDayShiftSelect').value;
     let nightCode = document.getElementById('aiNightShiftSelect').value;
     let offCode = document.getElementById('aiOffShiftSelect').value;
@@ -1633,8 +1596,8 @@
         });
     });
 
+    // Gece sonrası izin şartı (1 gün)
     let nightRest = 1;
-    document.querySelectorAll('.ai-pattern-cb[data-type="night"]:checked').forEach(cb => nightRest = Math.max(nightRest, parseInt(cb.value)));
 
     let maxCons = 4;
     document.querySelectorAll('.ai-pattern-cb[data-type="day"]:checked').forEach(cb => maxCons = Math.max(maxCons, parseInt(cb.value)));
@@ -1686,11 +1649,11 @@
 
             staff.forEach(s => { s.assignedToday = null; s.assignedHours = 0; });
 
-            // ADIM 1: Zorunlu izinler
+            // ADIM 1: Gece sonrası izin kontrolü
             staff.forEach(s => {
                 if (s.restNeeded > 0) {
                     s.assignedToday = offCode;
-                    s.restNeeded--;
+                    s.restNeeded--; // izin borcunu düş
                 } else if (s.consecutive >= maxCons) {
                     s.assignedToday = offCode;
                 }
@@ -1713,7 +1676,7 @@
             for (let i = 0; i < nightSlots; i++) {
                 poolNight[i].assignedToday = nightCode;
                 poolNight[i].assignedHours = nightHours;
-                poolNight[i].restNeeded = nightRest;
+                poolNight[i].restNeeded = nightRest; // ertesi gün izin şartı
                 poolNight[i].nightCount++;
             }
 
@@ -1778,8 +1741,16 @@
             let d = new Date(startDt);
             d.setDate(d.getDate() + c);
             summaryRowHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 0 5px var(--accent); border-top: 2px solid var(--accent); text-align:center;">${dailySummary[c] || '-'}</td>`;
-            if(d.getDay() === 0) summaryRowHtml += `<td class="week-summary-cell" style="background:rgba(            if(d.getDay() === 0) {
-                summaryRowHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;  
+            if(d.getDay() === 0) summaryRowHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !        // ALT ÖZET
+        let summaryRowHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);">
+            <td class="no-export" style="background: transparent; border: none;"></td>
+            <td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
+        for(let c = 0; c < colCount; c++) {
+            let d = new Date(startDt);
+            d.setDate(d.getDate() + c);
+            summaryRowHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 0 5px var(--accent); border-top: 2px solid var(--accent); text-align:center;">${dailySummary[c] || '-'}</td>`;
+            if(d.getDay() === 0) {
+                summaryRowHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
             }
         }
         summaryRowHtml += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td></tr>`;
@@ -1794,6 +1765,7 @@
     </script>
 </body>
 </html>
+
 
 
 
