@@ -1297,9 +1297,96 @@
                 if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli/raporlu kimse bulunamadı.</div>';
             });
         }
+        // =========================================
+        // 🔥 BOSS PANEL (KONTROL MERKEZİ) MOTORLARI 🔥
+        // =========================================
+        function openBossConsole() {
+            openModal('bossConsoleModal');
+            loadBossKurumlar();
+        }
+
+        function loadBossKurumlar() {
+            const list = document.getElementById("bossKurumListesi");
+            list.innerHTML = '<div style="color:#ef4444; font-weight:800; text-align:center; padding:20px; grid-column: 1 / -1;">Kurumlar Taranıyor... ⏳</div>';
+            
+            // Sistemdeki tüm kurumları ana dizinden çekiyoruz
+            originalRef("kurum_kayitlari").once("value").then(snap => {
+                list.innerHTML = "";
+                if(snap.val()) {
+                    Object.entries(snap.val()).forEach(([kod, data]) => {
+                        list.innerHTML += `
+                        <div class="boss-card" data-name="${(data.kurumAdi || "").toLowerCase()} ${(kod).toLowerCase()}" style="background:linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border:1px solid rgba(239,68,68,0.3); padding:20px; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;">
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px dashed rgba(239,68,68,0.3); padding-bottom:10px; margin-bottom:10px;">
+                                <span style="color:#ef4444; font-weight:900; font-size:16px;">🏢 ${data.kurumAdi}</span>
+                                <span style="background:#ef4444; color:#fff; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:900; height: max-content;">${kod.toUpperCase()}</span>
+                            </div>
+                            <div style="font-size:12px; color:#cbd5e1; margin-bottom:15px; line-height:1.6;">
+                                👤 Yönetici: <b>${data.patronIsim || 'Bilinmiyor'}</b><br>
+                                ✉️ E-Posta: ${data.patronEmail || 'Bilinmiyor'}
+                            </div>
+                            <button class="btn" style="width:100%; background:rgba(239,68,68,0.1); border:1px solid #ef4444; color:#ef4444; justify-content:center;" onclick="sizIceri('${kod}', '${(data.kurumAdi||"").replace(/'/g, "\\'")}')">👻 HAYALET GİBİ SIZ</button>
+                        </div>`;
+                    });
+                } else {
+                    list.innerHTML = "<div style='color:#64748b; padding:20px; grid-column: 1 / -1; text-align:center;'>Sistemde henüz kayıtlı kurum yok.</div>";
+                }
+            });
+        }
+
+        function filterBossList() {
+            const val = document.getElementById("bossSearchInput").value.toLowerCase();
+            document.querySelectorAll(".boss-card").forEach(card => {
+                if(card.getAttribute("data-name").includes(val)) card.style.display = "block";
+                else card.style.display = "none";
+            });
+        }
+
+        function sizIceri(kurumKod, kurumAdi) {
+            if(confirm("DİKKAT: " + kurumAdi + " paneline hayalet olarak sızıyorsunuz.\n\nYaptığınız işlemler loglanmayacak ve onlara görünmeyeceksiniz. Onaylıyor musunuz?")) {
+                localStorage.setItem('sm_ghost_mode', 'true');
+                localStorage.setItem('sm_current_tenant', kurumKod);
+                localStorage.setItem('sm_current_kurum_adi', kurumAdi);
+                window.location.reload(); // Sayfayı yenile, o kurumun verileriyle açılsın.
+            }
+        }
+
+        function hayaletModdanCik() {
+            localStorage.removeItem('sm_ghost_mode');
+            localStorage.setItem('sm_current_tenant', 'patron_base');
+            localStorage.setItem('sm_current_kurum_adi', 'YÖNETİM MERKEZİ');
+            window.location.reload();
+        }
+
+        // =========================================
+        // 🔥 OTOMATİK SENSÖRLER (Ekran Yüklenince Çalışır) 🔥
+        // =========================================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                // 1. Kurucu Girişi Kontrolü (Butonu Göster)
+                const role = localStorage.getItem('sm_role');
+                if (role === 'superadmin') {
+                    const btnBoss = document.getElementById('btnBossConsole');
+                    if (btnBoss) btnBoss.style.display = 'inline-flex';
+                }
+
+                // 2. Hayalet Modu Sensörü (İçerideysen Kırmızı Alarm Şeridi Çıkar)
+                if (localStorage.getItem('sm_ghost_mode') === 'true') {
+                    const banner = document.createElement('div');
+                    banner.innerHTML = `
+                        <div style="background:linear-gradient(90deg, #ef4444, #7f1d1d); color:white; text-align:center; padding:10px; font-weight:900; font-size:13px; z-index:999999; position:fixed; top:0; left:0; width:100%; box-shadow:0 5px 15px rgba(239,68,68,0.5); display:flex; justify-content:center; align-items:center; gap:15px; border-bottom: 2px solid #fca5a5;">
+                            <span>👻 HAYALET MODU AKTİF: Müşteri [${localStorage.getItem('sm_current_kurum_adi')}] İçindesiniz (İz Bırakmıyorsunuz)</span>
+                            <button onclick="hayaletModdanCik()" style="background:white; color:#ef4444; border:none; padding:5px 15px; border-radius:6px; font-weight:900; cursor:pointer; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">ANA ÜSSE DÖN 🚀</button>
+                        </div>
+                    `;
+                    document.body.prepend(banner);
+                    document.body.style.paddingTop = "40px"; // Sayfa içeriğini kırmızı şeridin altına iter
+                }
+            }, 1000);
+        });
     </script>
 </body>
 </html>
+
 
 
 
