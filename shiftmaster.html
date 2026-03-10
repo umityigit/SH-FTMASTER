@@ -1599,208 +1599,202 @@
         }
 
 
-        // ============================================================================
-        // 🧠 SHIFTMASTER A.I. CORE V10 (NİHAİ KUSURSUZLUK - KOTA VE ADALET MOTORU) 🧠
-        // ============================================================================
-        function startAiDistribution() {
-            let dayCode = document.getElementById('aiDayShiftSelect').value;
-            let nightCode = document.getElementById('aiNightShiftSelect').value;
-            let offCode = document.getElementById('aiOffShiftSelect').value;
-            
-            if(!dayCode || !nightCode || !offCode) return alert("Lütfen Gündüz, Gece ve İzin kodlarını seçiniz!");
+       function startAiDistribution() {
+    let dayCode = document.getElementById('aiDayShiftSelect').value;
+    let nightCode = document.getElementById('aiNightShiftSelect').value;
+    let offCode = document.getElementById('aiOffShiftSelect').value;
+    
+    if(!dayCode || !nightCode || !offCode) return alert("Lütfen Gündüz, Gece ve İzin kodlarını seçiniz!");
 
-            // 🔥 Dinamik Saat Hesaplayıcı (Senin belirlediğin kural listesinden çeker)
-            function getShiftHours(code) {
-                let safeCode = code.replace(/\./g, ':');
-                let rule = shiftRules[safeCode] || shiftRules[code];
-                if(rule) return parseFloat(rule.w || 0) + parseFloat(rule.n || 0);
-                return 0; // Bulamazsa 0 sayar
+    function getShiftHours(code) {
+        let safeCode = code.replace(/\./g, ':');
+        let rule = shiftRules[safeCode] || shiftRules[code];
+        if(rule) return parseFloat(rule.w || 0) + parseFloat(rule.n || 0);
+        return 0;
+    }
+
+    let dayHours = getShiftHours(dayCode);
+    let nightHours = getShiftHours(nightCode);
+
+    // Kotaları oku
+    let reqG = [], reqN = [];
+    for(let i=1; i<=7; i++) {
+        reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
+        reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
+    }
+
+    let extras = [];
+    document.querySelectorAll('#extraShiftsList > div').forEach(row => {
+        extras.push({
+            code: row.querySelector('.ai-extra-shift-select').value,
+            count: parseInt(row.querySelector('.ai-extra-shift-count').value) || 1,
+            type: row.querySelector('.ai-extra-shift-type').value,
+            hours: getShiftHours(row.querySelector('.ai-extra-shift-select').value)
+        });
+    });
+
+    let nightRest = 1;
+    document.querySelectorAll('.ai-pattern-cb[data-type="night"]:checked').forEach(cb => nightRest = Math.max(nightRest, parseInt(cb.value)));
+
+    let maxCons = 4;
+    document.querySelectorAll('.ai-pattern-cb[data-type="day"]:checked').forEach(cb => maxCons = Math.max(maxCons, parseInt(cb.value)));
+
+    let tables = document.querySelectorAll('.table-wrapper');
+    if(tables.length === 0) return alert("Ekranda doldurulacak açık bir tablo yok!");
+
+    saveHistory();
+    document.getElementById('aiGeneratorModal').classList.remove('show');
+    setTimeout(() => document.getElementById('aiGeneratorModal').style.display = 'none', 400);
+
+    tables.forEach(wrapper => {
+        let colCount = parseInt(wrapper.getAttribute("data-colcount"));
+        let startDt = new Date(wrapper.getAttribute("data-startdt"));
+
+        wrapper.querySelectorAll('.summary-row').forEach(e => e.remove());
+        let trs = Array.from(wrapper.querySelectorAll("tbody tr")).filter(tr => !tr.classList.contains('summary-row'));
+
+        let staff = trs.map(tr => ({
+            tr: tr,
+            name: tr.querySelector('.editable-name').innerText.trim(),
+            cells: tr.querySelectorAll('.shift-cell'),
+            restNeeded: 0,
+            consecutive: 0,
+            totalHours: 0,
+            nightCount: 0,
+            fixedShift: null
+        }));
+
+        let fixedExtras = extras.filter(e => e.type === 'fixed');
+        fixedExtras.forEach(fe => {
+            for(let i=0; i<fe.count; i++) {
+                let cand = staff.find(s => s.fixedShift === null);
+                if(cand) cand.fixedShift = fe;
             }
+        });
 
-            let dayHours = getShiftHours(dayCode);
-            let nightHours = getShiftHours(nightCode);
+        let dailySummary = [];
 
-            // 1. KOTALARI VE EKSTRALARI TOPLA (KOTA KRALDIR)
-            let reqG = [], reqN = [];
-            for(let i=1; i<=7; i++) {
-                reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
-                reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
-            }
+        for(let c = 0; c < colCount; c++) {
+            let d = new Date(startDt);
+            d.setDate(d.getDate() + c);
+            let dow = d.getDay();
+            let reqIndex = dow === 0 ? 7 : dow;
 
-            let extras = [];
-            document.querySelectorAll('#extraShiftsList > div').forEach(row => {
-                extras.push({
-                    code: row.querySelector('.ai-extra-shift-select').value,
-                    count: parseInt(row.querySelector('.ai-extra-shift-count').value) || 1,
-                    type: row.querySelector('.ai-extra-shift-type').value,
-                    hours: getShiftHours(row.querySelector('.ai-extra-shift-select').value)
-                });
+            let cReqG = reqG[reqIndex];
+            let cReqN = reqN[reqIndex];
+            let cRandomExtras = extras.filter(e => e.type === 'random');
+
+            staff.forEach(s => { s.assignedToday = null; s.assignedHours = 0; });
+
+            // ADIM 1: Zorunlu izinler
+            staff.forEach(s => {
+                if (s.restNeeded > 0) {
+                    s.assignedToday = offCode;
+                    s.restNeeded--;
+                } else if (s.consecutive >= maxCons) {
+                    s.assignedToday = offCode;
+                }
             });
 
-            // 2. KURALLAR
-            let nightRest = 1;
-            document.querySelectorAll('.ai-pattern-cb[data-type="night"]:checked').forEach(cb => nightRest = Math.max(nightRest, parseInt(cb.value)));
-            
-            let maxCons = 4;
-            document.querySelectorAll('.ai-pattern-cb[data-type="day"]:checked').forEach(cb => maxCons = Math.max(maxCons, parseInt(cb.value)));
-
-            let tables = document.querySelectorAll('.table-wrapper');
-            if(tables.length === 0) return alert("Ekranda doldurulacak açık bir tablo yok!");
-
-            saveHistory();
-            document.getElementById('aiGeneratorModal').classList.remove('show');
-            setTimeout(() => document.getElementById('aiGeneratorModal').style.display = 'none', 400);
-            
-            tables.forEach(wrapper => {
-                let colCount = parseInt(wrapper.getAttribute("data-colcount"));
-                let startDt = new Date(wrapper.getAttribute("data-startdt"));
-                
-                wrapper.querySelectorAll('.summary-row').forEach(e => e.remove());
-                let trs = Array.from(wrapper.querySelectorAll("tbody tr")).filter(tr => !tr.classList.contains('summary-row'));
-                
-                // 🧠 PERSONEL HAFIZASI
-                let staff = trs.map(tr => ({
-                    tr: tr,
-                    name: tr.querySelector('.editable-name').innerText.trim(),
-                    cells: tr.querySelectorAll('.shift-cell'),
-                    restNeeded: 0,
-                    consecutive: 0,
-                    totalHours: 0,
-                    nightCount: 0,
-                    fixedShift: null
-                }));
-
-                // Sabit Ekstraları Zimmetle
-                let fixedExtras = extras.filter(e => e.type === 'fixed');
-                fixedExtras.forEach(fe => {
-                    for(let i=0; i<fe.count; i++) {
-                        let cand = staff.find(s => s.fixedShift === null);
-                        if(cand) cand.fixedShift = fe;
-                    }
-                });
-
-                let dailySummary = [];
-
-                // 🗓️ GÜN GÜN MATRİSİ ÇÖZ
-                for(let c = 0; c < colCount; c++) {
-                    let d = new Date(startDt);
-                    d.setDate(d.getDate() + c);
-                    let dow = d.getDay();
-                    let reqIndex = dow === 0 ? 7 : dow;
-
-                    // O günkü ihtiyaçlar (KOTA KRALDIR)
-                    let cReqG = reqG[reqIndex];
-                    let cReqN = reqN[reqIndex];
-                    let cRandomExtras = extras.filter(e => e.type === 'random');
-
-                    // Günü sıfırla
-                    staff.forEach(s => { s.assignedToday = null; s.assignedHours = 0; });
-
-                    // 🛑 ADIM 1: ZORUNLU İZİNLER
-                    staff.forEach(s => {
-                        if (s.restNeeded > 0) {
-                            s.assignedToday = offCode; // Nöbet çıkışı kesin dinlenme
-                            s.restNeeded--;
-                        } else if (s.consecutive >= maxCons) {
-                            s.assignedToday = offCode; // Peş peşe kuralı doldu, dinlen
-                        }
-                    });
-
-                    // 📌 ADIM 2: SABİT VARDİYALARI YAZ VE KOTADAN DÜŞ
-                    staff.forEach(s => {
-                        if(!s.assignedToday && s.fixedShift) {
-                            s.assignedToday = s.fixedShift.code;
-                            s.assignedHours = s.fixedShift.hours;
-                            if (s.fixedShift.code === dayCode) cReqG = Math.max(0, cReqG - 1);
-                            if (s.fixedShift.code === nightCode) cReqN = Math.max(0, cReqN - 1);
-                        }
-                    });
-
-                    // 🌙 ADIM 3: GECE NÖBETLERİNİ DAĞIT
-                    let poolNight = staff.filter(s => !s.assignedToday);
-                    // Önce az gece tutanlar, eşitse toplam saati az olanlar, eşitse kura
-                    poolNight.sort((a,b) => (a.nightCount - b.nightCount) || (a.totalHours - b.totalHours) || (0.5 - Math.random())); 
-                    for (let i = 0; i < poolNight.length && i < cReqN; i++) {
-                        poolNight[i].assignedToday = nightCode;
-                        poolNight[i].assignedHours = nightHours;
-                        poolNight[i].restNeeded = nightRest; // Yarına dinlenme borcu
-                        poolNight[i].nightCount++;
-                    }
-
-                    // 🔀 ADIM 4: DEĞİŞKEN EKSTRALARI DAĞIT
-                    cRandomExtras.forEach(re => {
-                        let poolExtra = staff.filter(s => !s.assignedToday);
-                        poolExtra.sort((a,b) => a.totalHours - b.totalHours);
-                        for(let i=0; i<poolExtra.length && i<re.count; i++) {
-                            poolExtra[i].assignedToday = re.code;
-                            poolExtra[i].assignedHours = re.hours;
-                        }
-                    });
-
-                    // ☀️ ADIM 5: ANA GÜNDÜZ KOTASINI DOLDUR
-                    let poolDay = staff.filter(s => !s.assignedToday);
-                    // Saati az olana öncelik (Kusursuz Adalet)
-                    poolDay.sort((a,b) => a.totalHours - b.totalHours); 
-                    for (let i = 0; i < poolDay.length && i < cReqG; i++) {
-                        poolDay[i].assignedToday = dayCode;
-                        poolDay[i].assignedHours = dayHours;
-                    }
-
-                    // 🏖️ ADIM 6: KOTA DOLDU, GERİ KALANLARI ZORLA İZNE (HT) ÇIKAR!
-                    staff.forEach(s => {
-                        if (!s.assignedToday) {
-                            s.assignedToday = offCode;
-                            s.assignedHours = 0;
-                        }
-                    });
-
-                    // 📊 ADIM 7: TABLOYA YAZDIR, PEŞ PEŞE SAYACINI GÜNCELLE VE SAY
-                    let dayStat = 0, nightStat = 0;
-                    staff.forEach(s => {
-                        let cell = s.cells[c];
-                        if(!cell || cell.classList.contains('hidden-by-snipper')) return;
-
-                        // Peş peşe çalışma durumunu güncelle
-                        if(s.assignedToday === offCode) {
-                            s.consecutive = 0; // Dinlendi, sayaç sıfırlandı
-                        } else {
-                            s.consecutive++; // Çalıştı, sayaç arttı
-                        }
-
-                        s.totalHours += s.assignedHours;
-                        cell.innerText = s.assignedToday;
-                        
-                        let safeVal = s.assignedToday.replace(/\./g, ':'); 
-                        let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
-                        cell.style.background = r ? r.color : "transparent";
-                        
-                        let isNightShift = (s.assignedToday === nightCode) || s.assignedToday.startsWith('16:') || s.assignedToday.startsWith('20:') || s.assignedToday.startsWith('24:') || s.assignedToday.includes('NÖBET');
-                        if (isNightShift) nightStat++;
-                        else if (s.assignedToday !== offCode) dayStat++;
-                    });
-                    
-                    dailySummary[c] = `${dayStat} / ${nightStat}`;
+            // ADIM 2: Sabit vardiyalar
+            staff.forEach(s => {
+                if(!s.assignedToday && s.fixedShift) {
+                    s.assignedToday = s.fixedShift.code;
+                    s.assignedHours = s.fixedShift.hours;
+                    if (s.fixedShift.code === dayCode) cReqG = Math.max(0, cReqG - 1);
+                    if (s.fixedShift.code === nightCode) cReqN = Math.max(0, cReqN - 1);
                 }
-
-                // 8. ALT BİLGİ ÖZETİ
-                let summaryRowHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export" style="background: transparent; border: none;"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
-                for(let c = 0; c < colCount; c++) {
-                    let d = new Date(startDt);
-                    d.setDate(d.getDate() + c);
-                    summaryRowHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 0 5px var(--accent); border-top: 2px solid var(--accent); text-align:center;">${dailySummary[c] || '-'}</td>`;
-                    if(d.getDay() === 0) summaryRowHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; 
-                }
-                summaryRowHtml += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td></tr>`;
-                wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', summaryRowHtml);
             });
-            
-            updateAllStats();
-            showToast("✨ AI V10: NİHAİ KUSURSUZLUK VE ADALET ✨");
-            logAction("Yapay Zeka ile matrisi saat ve kota uyumlu doldurdu.");
+
+            // ADIM 3: Gece dağıtımı
+            let poolNight = staff.filter(s => !s.assignedToday);
+            poolNight.sort((a,b) => (a.nightCount - b.nightCount) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));  
+            let nightSlots = Math.min(cReqN, poolNight.length);
+            for (let i = 0; i < nightSlots; i++) {
+                poolNight[i].assignedToday = nightCode;
+                poolNight[i].assignedHours = nightHours;
+                poolNight[i].restNeeded = nightRest;
+                poolNight[i].nightCount++;
+            }
+
+            // ADIM 4: Rastgele ekstralar
+            cRandomExtras.forEach(re => {
+                let poolExtra = staff.filter(s => !s.assignedToday);
+                poolExtra.sort((a,b) => a.totalHours - b.totalHours);
+                let extraSlots = Math.min(re.count, poolExtra.length);
+                for(let i=0; i<extraSlots; i++) {
+                    poolExtra[i].assignedToday = re.code;
+                    poolExtra[i].assignedHours = re.hours;
+                }
+            });
+
+            // ADIM 5: Gündüz dağıtımı
+            let poolDay = staff.filter(s => !s.assignedToday);
+            poolDay.sort((a,b) => a.totalHours - b.totalHours); 
+            let daySlots = Math.min(cReqG, poolDay.length);
+            for (let i = 0; i < daySlots; i++) {
+                poolDay[i].assignedToday = dayCode;
+                poolDay[i].assignedHours = dayHours;
+            }
+
+            // ADIM 6: Geri kalan izin
+            staff.forEach(s => {
+                if (!s.assignedToday) {
+                    s.assignedToday = offCode;
+                    s.assignedHours = 0;
+                }
+            });
+
+            // ADIM 7: Tabloya yaz
+            let dayStat = 0, nightStat = 0;
+            staff.forEach(s => {
+                let cell = s.cells[c];
+                if(!cell || cell.classList.contains('hidden-by-snipper')) return;
+
+                if(s.assignedToday === offCode) {
+                    s.consecutive = 0;
+                } else {
+                    s.consecutive++;
+                }
+
+                s.totalHours += s.assignedHours;
+                cell.innerText = s.assignedToday;
+
+                let safeVal = s.assignedToday.replace(/\./g, ':'); 
+                let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
+                cell.style.background = r ? r.color : "transparent";
+
+                let isNightShift = (s.assignedToday === nightCode) || s.assignedToday.startsWith('16:') || s.assignedToday.startsWith('20:') || s.assignedToday.startsWith('24:') || s.assignedToday.includes('NÖBET');
+                if (isNightShift) nightStat++;
+                else if (s.assignedToday !== offCode) dayStat++;
+            });
+
+            dailySummary[c] = `${dayStat} / ${nightStat}`;
         }
+
+        // ALT ÖZET
+        let summaryRowHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export" style="background: transparent; border: none;"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
+        for(let c = 0; c < colCount; c++) {
+            let d = new Date(startDt);
+            d.setDate(d.getDate() + c);
+            summaryRowHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 0 5px var(--accent); border-top: 2px solid var(--accent); text-align:center;">${dailySummary[c] || '-'}</td>`;
+            if(d.getDay() === 0) summaryRowHtml += `<td class="week-summary-cell" style="background:rgba(            if(d.getDay() === 0) {
+                summaryRowHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;  
+            }
+        }
+        summaryRowHtml += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td></tr>`;
+        wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', summaryRowHtml);
+    });
+
+    // Final dokunuşlar
+    updateAllStats();
+    showToast("✨ AI V10: NİHAİ KUSURSUZLUK VE ADALET ✨");
+    logAction("Yapay Zeka ile matrisi saat ve kota uyumlu doldurdu.");
+}
     </script>
 </body>
 </html>
+
 
 
 
