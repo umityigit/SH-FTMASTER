@@ -40,7 +40,29 @@
         .tech-textarea { width: 100%; height: 100px; background: rgba(0,0,0,0.6); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; font-family: monospace; font-size: 14px; resize: none; padding: 15px; border-radius: 10px; outline: none; transition: 0.3s; box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8); }
         .tech-textarea::placeholder { color: rgba(56,189,248,0.4); }
         .tech-textarea:focus { border-color: var(--accent); box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8), 0 0 15px rgba(56, 189, 248, 0.2); }
-        /* =========================================
+       /* ALT BİLGİ (FOOTER) STİLİ */
+        .footer-links {
+            text-align: center; padding: 20px; color: #64748b; font-size: 12px;
+            border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px;
+        }
+        .footer-links a {
+            color: #94a3b8; text-decoration: none; margin: 0 10px; transition: 0.3s; cursor: pointer;
+        }
+        .footer-links a:hover { color: var(--accent); }
+
+        /* AÇILIR PENCERE (MODAL) SİSTEMİ */
+        .modal-sm {
+            display: none; position: fixed; z-index: 20000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+        }
+        .modal-sm-content {
+            background: #1e293b; margin: 5% auto; padding: 30px; border: 1px solid var(--accent);
+            width: 60%; max-height: 80vh; overflow-y: auto; border-radius: 15px; color: #e2e8f0; line-height: 1.6;
+        }
+        .modal-sm-close { float: right; font-size: 28px; cursor: pointer; color: #94a3b8; }
+        .modal-sm h2 { color: var(--accent); margin-bottom: 20px; }
+        
+/* =========================================
             ✨ GEMINI 3D GLASSMORPHISM & NEON TEMA ✨
             ========================================= */
         :root { 
@@ -443,6 +465,28 @@
     </div>
 
     <script>
+const modalTexts = {
+            privacy: "<h2>Gizlilik Politikası</h2><p>Verileriniz 256-bit şifreleme ile korunmaktadır. Personel isimleri ve vardiya bilgileri asla üçüncü taraflarla paylaşılmaz. Sistemimiz GDPR ve KVKK standartlarına tam uyumludur.</p>",
+            terms: "<h2>Kullanım Koşulları</h2><p>ShiftMaster, kurum içi vardiya yönetimini kolaylaştırmak için sunulan bir yazılımdır. Veri girişi ve doğruluğu kurum yöneticisinin sorumluluğundadır.</p>",
+            security: "<h2>Veri Güvenliği</h2><p>Tüm veriler Google Cloud altyapısında (Firebase) saklanmaktadır. Şifreleriniz kriptolanarak kaydedilir; patron veya sistem kurucusu bile şifrelerinizi göremez.</p>",
+            contact: "<h2>İletişim</h2><p>Destek ve sorularınız için:<br><b>E-posta:</b> destek@shiftmaster.com.tr<br><b>WhatsApp:</b> +90 (5xx) xxx xx xx</p>"
+        };
+
+        function openSMModal(type) {
+            document.getElementById('modalBodyContent').innerHTML = modalTexts[type];
+            document.getElementById('smCommonModal').style.display = 'block';
+        }
+
+        function closeSMModal() {
+            document.getElementById('smCommonModal').style.display = 'none';
+        }
+
+        // Pencere dışına tıklayınca kapatma
+        window.onclick = function(event) {
+            let m = document.getElementById('smCommonModal');
+            if (event.target == m) closeSMModal();
+        }
+        
         // 🔥 HAREKETSİZLİK KİLİDİ (1 DAKİKA AUTO-LOGOUT) 🔥
         let inactivityTime = function () {
             let time;
@@ -1330,9 +1374,25 @@
                 if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli/raporlu kimse bulunamadı.</div>';
             });
         }
+        <div class="footer-links">
+        <a onclick="openSMModal('privacy')">Gizlilik Politikası</a> | 
+        <a onclick="openSMModal('terms')">Kullanım Koşulları</a> | 
+        <a onclick="openSMModal('security')">Veri Güvenliği</a> | 
+        <a onclick="openSMModal('contact')">İletişim</a>
+        <p style="margin-top:10px;">© 2026 ShiftMaster - Tüm Hakları Saklıdır.</p>
+    </div>
+
+    <div id="smCommonModal" class="modal-sm">
+        <div class="modal-sm-content">
+            <span class="modal-sm-close" onclick="closeSMModal()">&times;</span>
+            <div id="modalBodyContent">
+                </div>
+        </div>
+    </div>
     </script>
 </body>
 </html>
+
 
 
 
