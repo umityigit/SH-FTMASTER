@@ -371,14 +371,10 @@
             let kriptoluSifre = await sifreKriptola(sifre);
 
             // 👑 BOSS MODU (Patron Şifresi Artık Veritabanında Şifreli Saklanıyor) 👑
+            // 👑 BOSS MODU (Tamamen Zırhlı, Kodda Şifre Yok) 👑
             if (kod === "patron") {
-                // Şifre ilk defa giriliyorsa ve 8648 ise, anında kriptolayıp gizli odaya hapseder.
                 rtdb.ref('kurum_alt_yoneticileri/patron_base/' + kriptoluSifre).once('value').then(snap => {
-                    if (snap.exists() || sifre === "8648") { 
-                        if (sifre === "8648") {
-                            // Sistemi kurduğumuz an bu şifre kriptolanarak DB'ye işlenir. Hacker kodda göremez!
-                            rtdb.ref('kurum_alt_yoneticileri/patron_base/' + kriptoluSifre).set({ isim: "SİSTEM KURUCUSU", rol: "superadmin" });
-                        }
+                    if (snap.exists()) { 
                         basariliGirisTemizligi();
                         localStorage.setItem('sm_current_tenant', 'patron_base');
                         localStorage.setItem('sm_active_user', 'SİSTEM KURUCUSU');
