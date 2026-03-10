@@ -415,50 +415,55 @@
             </div>
             
             <div class="modal-body-area" style="padding: 30px; overflow-y: auto;">
-                <div style="background: rgba(0,0,0,0.4); padding: 15px 20px; border-radius: 12px; border: 1px dashed #a855f7; margin-bottom: 25px; font-size: 13px; color: #cbd5e1; line-height: 1.6;">
-                    ℹ️ <b>SİSTEM NASIL ÇALIŞIR?</b> Sisteminizdeki kayıtlı vardiyaları otomatik çeker. Aşağıdaki 7 günlük kadro ihtiyacınızı ve çalışma/dinlenme kurallarınızı belirleyin. Motor, ekrandaki açık tablonuzun boş hücrelerini Sudoku mantığıyla, adaleti ve saat sınırlarını gözeterek doldurur.
-                </div>
-
                 <div style="display: flex; gap: 30px; flex-wrap: wrap;">
                     
-                    <div style="flex: 1; min-width: 300px;">
+                    <div style="flex: 1; min-width: 350px;">
                         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.3); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
-                            <h4 style="color: #a855f7; margin-top: 0; font-size: 16px;">1️⃣ Kullanılacak Vardiyalar</h4>
-                            <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">☀️ GÜNDÜZ VARDİYASI</label>
+                            <h4 style="color: #a855f7; margin-top: 0; font-size: 16px;">1️⃣ Temel Vardiyalar & İzinler</h4>
+                            <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">☀️ GÜNDÜZ ANA VARDİYASI</label>
                             <select id="aiDayShiftSelect" class="glass-input" style="width: 100%; padding: 10px; margin-bottom: 15px; font-size: 14px; cursor: pointer;"></select>
                             
-                            <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">🌙 GECE NÖBETİ (Ya da 24 Saat)</label>
+                            <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">🌙 GECE NÖBETİ (Ana)</label>
                             <select id="aiNightShiftSelect" class="glass-input" style="width: 100%; padding: 10px; margin-bottom: 15px; font-size: 14px; cursor: pointer;"></select>
                             
                             <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">🏖️ OTOMATİK İZİN KODU</label>
                             <select id="aiOffShiftSelect" class="glass-input" style="width: 100%; padding: 10px; font-size: 14px; cursor: pointer;"></select>
+
+                            <div id="extraShiftsWrapper" style="margin-top: 15px; border-top: 1px dashed rgba(168,85,247,0.3); padding-top: 15px;">
+                                <h5 style="color: #38bdf8; margin: 0 0 10px 0; font-size: 12px; display:flex; justify-content:space-between; align-items:center;">
+                                    <span>➕ EKSTRA GÜNLÜK VARDİYALAR</span>
+                                    <button class="btn" style="background:rgba(56,189,248,0.1); border:1px solid #38bdf8; color:#38bdf8; padding:5px 10px; font-size:10px;" onclick="addExtraShiftRow()">EKLE</button>
+                                </h5>
+                                <div id="extraShiftsList"></div>
+                            </div>
                         </div>
 
                         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.3); border-radius: 15px; padding: 20px;">
                             <h4 style="color: #a855f7; margin-top: 0; font-size: 16px;">2️⃣ Çalışma & Dinlenme Kombinasyonları</h4>
+                            <p style="font-size:10px; color:#cbd5e1; margin-top:-10px; line-height:1.4;">Seçtiğiniz kurallar arasında sistem adil bir karma yapar. (Örn: Hem 3+1 hem 4+1 seçilirse, personele karışık dağıtır).</p>
+                            
                             <div style="display: flex; gap: 15px;">
-                                <div style="flex: 1;">
-                                    <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">☀️ GÜNDÜZ DÜZENİ</label>
-                                    <select id="aiDayPattern" class="glass-input" style="width: 100%; padding: 10px; margin-top: 5px; font-size: 13px;">
-                                        <option value="1">1 Çalış + 1 İzin (1+1)</option>
-                                        <option value="2">2 Çalış + 1 İzin (2+1)</option>
-                                        <option value="3">3 Çalış + 1 İzin (3+1)</option>
-                                        <option value="4" selected>4 Çalış + 1 İzin (4+1)</option>
-                                        <option value="5">5 Çalış + 2 İzin (Hafta Sonu)</option>
-                                        <option value="6">6 Çalış + 1 İzin (Max)</option>
-                                    </select>
+                                <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
+                                    <label style="font-size: 11px; color: #38bdf8; font-weight: 800; display:block; margin-bottom:10px; border-bottom:1px solid #38bdf8; padding-bottom:5px;">☀️ GÜNDÜZ DÜZENİ</label>
+                                    <div style="display:flex; flex-direction:column; gap:8px; font-size:12px; color:#cbd5e1;">
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="1"> 1 Çalış + 1 İzin (1+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="2"> 2 Çalış + 1 İzin (2+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="3" checked> 3 Çalış + 1 İzin (3+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="4" checked> 4 Çalış + 1 İzin (4+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="5"> 5 Çalış + 2 İzin</label>
+                                    </div>
                                 </div>
-                                <div style="flex: 1;">
-                                    <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">🌙 GECE ÇIKIŞI DÜZENİ</label>
-                                    <select id="aiNightPattern" class="glass-input" style="width: 100%; padding: 10px; margin-top: 5px; font-size: 13px;">
-                                        <option value="1" selected>1 Nöbet + 1 Gün İzin</option>
-                                        <option value="2">1 Nöbet + 2 Gün İzin</option>
-                                        <option value="3">1 Nöbet + 3 Gün İzin</option>
-                                    </select>
+                                <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
+                                    <label style="font-size: 11px; color: #facc15; font-weight: 800; display:block; margin-bottom:10px; border-bottom:1px solid #facc15; padding-bottom:5px;">🌙 GECE ÇIKIŞI</label>
+                                    <div style="display:flex; flex-direction:column; gap:8px; font-size:12px; color:#cbd5e1;">
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="night" value="1" checked> Nöbet + 1 Gün İzin</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="night" value="2" checked> Nöbet + 2 Gün İzin</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="night" value="3"> Nöbet + 3 Gün İzin</label>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                            <div style="display: flex; gap: 15px; margin-top: 20px;">
                                 <div style="flex: 1;">
                                     <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">📉 HAFTALIK MİN. SAAT</label>
                                     <input type="number" id="aiMinHours" class="glass-input" value="40" style="width: 100%; padding: 10px; margin-top: 5px; font-size: 14px; text-align: center;">
@@ -471,8 +476,9 @@
                         </div>
                     </div>
 
-                    <div style="flex: 2; min-width: 400px; background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.3); border-radius: 15px; padding: 20px;">
+                    <div style="flex: 2; min-width: 450px; background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.3); border-radius: 15px; padding: 20px;">
                         <h4 style="color: #a855f7; margin-top: 0; font-size: 16px;">3️⃣ Günlük İhtiyaç Matrisi (Kişi Sayısı)</h4>
+                        <p style="font-size:10px; color:#cbd5e1; margin-top:-10px;">Her gün için Ana Gündüz ve Ana Gece sayılarını girin. Ekstra vardiyalar tüm günlere eşit uygulanır.</p>
                         
                         <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px;">
                             <div style="background: rgba(0,0,0,0.5); border: 1px solid #334155; border-radius: 10px; padding: 10px; text-align: center;">
@@ -536,7 +542,6 @@
             </div>
         </div>
     </div>
-
     <div id="sorumluModal" class="modal-overlay" onclick="if(event.target.id==='sorumluModal') closeModal('sorumluModal')">
         <div class="modal-box" style="max-width: 450px; text-align: center; border: 2px solid var(--warning); box-shadow:0 0 40px rgba(250,204,21,0.3);">
             <h3 style="margin-top:0; color:var(--warning); font-size:26px; text-shadow:0 0 15px rgba(250,204,21,0.5);">👑 YÖNETİCİ ATA</h3>
@@ -1566,9 +1571,36 @@
             
             alert(`Aşama 1 (Devasa Vitrin) Başarıyla Kuruldu! 😎\n\nSeçilen Gündüz: ${selectedDayShift}\nSeçilen Gece: ${selectedNightShift}\n\nHer şey mükemmel çalışıyor. Şimdi Sudoku Çözücü beyin kodlarını yazma zamanı geldi!`);
         }
+        // 🔥 EKSTRA VARDİYA SATIRI EKLEME MOTORU 🔥
+        function addExtraShiftRow() {
+            const list = document.getElementById('extraShiftsList');
+            const rowId = 'extra_' + Date.now();
+            
+            // Ana select kutusunun içindeki seçenekleri (Müşterinin vardiyalarını) kopyala
+            const options = document.getElementById('aiDayShiftSelect').innerHTML;
+            
+            const div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.gap = '10px';
+            div.style.marginBottom = '10px';
+            div.style.alignItems = 'center';
+            div.id = rowId;
+            
+            div.innerHTML = `
+                <select class="glass-input ai-extra-shift-select" style="flex: 2; padding: 8px; font-size: 12px;">${options}</select>
+                <div style="display:flex; align-items:center; gap:5px; flex:1;">
+                    <span style="font-size:10px; color:#94a3b8;">Günde:</span>
+                    <input type="number" class="glass-input ai-extra-shift-count" value="1" min="1" style="width:100%; padding: 8px; font-size: 12px; text-align:center;">
+                    <span style="font-size:10px; color:#94a3b8;">Kişi</span>
+                </div>
+                <button class="btn btn-red" style="padding: 8px 12px; border-radius:8px;" onclick="document.getElementById('${rowId}').remove()">X</button>
+            `;
+            list.appendChild(div);
+        }
 
     </script>
 </body>
 </html>
+
 
 
