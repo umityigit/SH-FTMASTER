@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ShiftMaster | Kurumsal Vardiya Portalı</title>
     
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'%3E%3Cpath d='M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7v-2H5V9h14v3h2V5a2 2 0 0 0-2-2zm0 4H5V5h14v2z'/%3E%3Cpath d='M21.7 13.35l-1-1a1 1 0 0 0-1.42 0l-1.6 1.6 2.42 2.41 1.6-1.6a1 1 0 0 0 0-1.41zM17.1 14.53l-5.6 5.61V22.5h2.36l5.65-5.56-2.41-2.41z'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -16,7 +15,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#050b14">
+
     <style>
+        /* 🔥 ÇÖZÜM MERKEZİ (TICKET SİSTEMİ) TASARIMI 🔥 */
+        .btn-support { background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid var(--accent); color: white; display: inline-flex; align-items: center; padding: 8px 18px; border-radius: 12px; transition: 0.3s; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
+        .btn-support:hover { transform: translateY(-3px); border-color: #fff; box-shadow: 0 0 25px var(--accent-glow); background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); }
+        
+        .tech-modal { border: 1px solid var(--accent); background: radial-gradient(circle at center, #0f172a, #050b14); box-shadow: 0 0 50px rgba(2, 132, 199, 0.4), inset 0 0 20px rgba(56, 189, 248, 0.1); position: relative; }
+        .tech-modal::before { content:''; position:absolute; top:0; left:0; width:100%; height:3px; background:linear-gradient(90deg, transparent, var(--accent), transparent); }
+        
+        .ticket-scroll-area { max-height: 300px; overflow-y: auto; margin-bottom: 20px; padding-right: 10px; display: flex; flex-direction: column; gap: 15px; }
+        .ticket-scroll-area::-webkit-scrollbar { width: 5px; } .ticket-scroll-area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 5px; }
+        
+        .ticket-item { background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,255,255,0.15); border-left: 3px solid var(--accent); padding: 15px; border-radius: 10px; position: relative; }
+        .ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
+        .ticket-body { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
+        .ticket-time { font-size: 9px; color: #64748b; margin-top: 10px; text-align: right; font-family: monospace; }
+        
+        .admin-reply { margin-top: 12px; background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--success); padding: 10px; border-radius: 6px; font-size: 12px; color: #a7f3d0; }
+        
+        .tech-textarea { width: 100%; height: 100px; background: rgba(0,0,0,0.6); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; font-family: monospace; font-size: 14px; resize: none; padding: 15px; border-radius: 10px; outline: none; transition: 0.3s; box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8); }
+        .tech-textarea::placeholder { color: rgba(56,189,248,0.4); }
+        .tech-textarea:focus { border-color: var(--accent); box-shadow: inset 2px 2px 10px rgba(0,0,0,0.8), 0 0 15px rgba(56, 189, 248, 0.2); }
+        /* =========================================
+           ✨ GEMINI 3D GLASSMORPHISM & NEON TEMA ✨
+           ========================================= */
         :root { 
             --bg-dark: #050b14; 
             --bg-light: #0f172a;
@@ -41,13 +66,11 @@
             padding-bottom: 90px; 
         }
 
-        /* YÜKLEME VE MENÜ EKRANLARI */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; transition: opacity 0.6s ease; perspective: 1000px; }
         .splash-hospital { font-size: 20px; color: var(--accent); letter-spacing: 5px; margin-bottom: 40px; font-weight: 900; text-align: center; text-shadow: 0 0 25px var(--accent-glow); opacity: 0; animation: fadeUp 1s forwards 0.2s; }
         .splash-logo { width: 160px; height: 160px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-radius: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 60px var(--glass-glow), inset 5px 5px 15px rgba(255,255,255,0.4), inset -5px -5px 15px rgba(0,0,0,0.4); margin-bottom: 30px; opacity: 0; animation: logoDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s; }
         .splash-text-container { display: flex; gap: 5px; margin-bottom: 15px; }
         .splash-char { font-size: 64px; font-weight: 900; color: var(--text); text-shadow: 0 10px 20px #000, 0 0 30px var(--accent-glow); opacity: 0; transform: rotateY(90deg) translateY(50px); display: inline-block; animation: letterReveal 0.8s forwards; }
-        
         @keyframes logoDrop { from { transform: scale(0) rotate(-180deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
         @keyframes letterReveal { to { opacity: 1; transform: rotateY(0) translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -59,122 +82,127 @@
         #mainContent { display: none; opacity: 0; animation: fadeIn 1.2s forwards; } 
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* GENEL TASARIM */
         .container { max-width: 1450px; margin: 0 auto; }
-        .card { background: var(--glass-bg); backdrop-filter: blur(20px); padding: 30px; border-radius: 25px; border-top: 1px solid var(--glass-border); border-left: 1px solid var(--glass-border); border-bottom: 1px solid rgba(0,0,0,0.5); border-right: 1px solid rgba(0,0,0,0.5); margin-bottom: 25px; box-shadow: 10px 10px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02); position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        
+        .card { background: var(--glass-bg); backdrop-filter: blur(20px); padding: 30px; border-radius: 25px; border-top: 1px solid var(--glass-border); border-left: 1px solid var(--glass-border); border-bottom: 1px solid rgba(0,0,0,0.5); border-right: 1px solid rgba(0,0,0,0.5); margin-bottom: 25px; box-shadow: 10px 10px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02); position: relative; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card:hover { box-shadow: 15px 15px 40px rgba(0,0,0,0.7), 0 0 30px var(--glass-glow); transform: translateY(-3px); }
         .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7, var(--success)); box-shadow: 0 0 15px var(--accent); }
         
         .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .btn { padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 12px; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; color: white; border: 1px solid rgba(255,255,255,0.1); }
-        .btn:hover { transform: translateY(-4px) scale(1.03); filter: brightness(1.2); }
-        .btn-cyan { background: linear-gradient(135deg, #0ea5e9, #0284c7); } .btn-green { background: linear-gradient(135deg, #10b981, #059669); } .btn-orange { background: linear-gradient(135deg, #f59e0b, #d97706); } .btn-purple { background: linear-gradient(135deg, #a855f7, #7e22ce); } .btn-red { background: linear-gradient(135deg, #ef4444, #b91c1c); } .btn-pink { background: linear-gradient(135deg, #ec4899, #be185d); }
-        .glass-input { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(0,0,0,0.6); border-bottom: 1px solid var(--glass-border); color: white; padding: 14px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; transition: 0.3s; }
-        .glass-input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--glass-glow); background: rgba(15, 23, 42, 0.8); }
 
-        /* HABERLER VE LOGLAR */
+        .btn { padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; color: white; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), inset -3px -3px 8px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.5); text-shadow: 1px 1px 3px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); }
+        .btn:hover { transform: translateY(-4px) scale(1.03); filter: brightness(1.2); box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4), inset -3px -3px 8px rgba(0,0,0,0.2), 0 8px 25px rgba(0,0,0,0.6); }
+        .btn-cyan { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+        .btn-green { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-purple { background: linear-gradient(135deg, #a855f7, #7e22ce); }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .btn-pink { background: linear-gradient(135deg, #ec4899, #be185d); }
+
+        .glass-input { background: rgba(15, 23, 42, 0.5); border-top: 1px solid rgba(0,0,0,0.6); border-left: 1px solid rgba(0,0,0,0.6); border-bottom: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); color: white; padding: 14px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 500; transition: 0.3s; box-shadow: inset 3px 3px 8px rgba(0,0,0,0.6), inset -2px -2px 5px rgba(255,255,255,0.05); }
+        .glass-input:focus { border-color: var(--accent); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 0 0 15px var(--glass-glow); background: rgba(15, 23, 42, 0.8); }
+
         .top-panels { display: flex; gap: 25px; margin-bottom: 30px; flex-wrap: wrap; }
         .news-container, .log-container { flex: 1; min-width: 320px; display: flex; flex-direction: column; }
         .news-list, .log-list { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-right: 10px; }
-        .news-item { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); border-left: 5px solid var(--accent); padding: 18px; border-radius: 15px; transition: 0.3s; border-top: 1px solid var(--glass-border); }
-        .news-text { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.6; }
-        .news-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; flex-wrap: wrap; }
-        .reaction-btn { background: rgba(15, 23, 42, 0.8); border: 1px solid #475569; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; color: #cbd5e1; }
-        .reaction-btn.active { background: linear-gradient(135deg, #0ea5e9, #0284c7); border-color: var(--accent); color: #fff; }
-        .reply-btn { background: transparent; border: none; color: var(--success); font-size: 12px; cursor: pointer; font-weight: 800; margin-left: auto; text-transform: uppercase; }
-        .log-item { background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(15,23,42,0.8)); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 10px; font-size: 12px; display: flex; justify-content: space-between; color: #cbd5e1; }
-        .log-user { color: var(--warning); font-weight: 800; }
+        .news-list::-webkit-scrollbar, .log-list::-webkit-scrollbar, .scroll-area::-webkit-scrollbar { width: 8px; height: 8px; }
+        .news-list::-webkit-scrollbar-track, .log-list::-webkit-scrollbar-track, .scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
+        .news-list::-webkit-scrollbar-thumb, .log-list::-webkit-scrollbar-thumb, .scroll-area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4); }
 
-        /* ARŞİV KARTLARI */
-        .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-height: 280px; overflow-y: auto; padding: 10px; }
-        .archive-card { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
-        .archive-card:hover { transform: translateY(-8px) scale(1.03); border-color: var(--accent); box-shadow: 0 0 20px var(--glass-glow); }
-
-        /* MODALLAR (AÇILIR PENCERELER) */
-        .full-modal-overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(15px); z-index: 10005; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.4s; }
-        .full-modal-content { background: var(--bg-light); width: 98%; height: 98%; border-radius: 30px; border: 2px solid var(--accent); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9); transition: 0.4s; }
-        .full-modal-overlay.show, .modal-overlay.show { opacity: 1; }
-        .full-modal-overlay.show .full-modal-content { transform: scale(1); }
-        .modal-box { background: linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.98)); padding: 40px; border-radius: 30px; border: 1px solid var(--glass-border); width: 90%; max-width: 500px; transform: scale(0.8); transition: 0.4s; }
-        .modal-overlay.show .modal-box { transform: scale(1); }
-        .modal-header-bar { padding: 25px 35px; background: rgba(15,23,42,0.8); border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .modal-body-area { padding: 30px; flex: 1; overflow-y: auto; }
-
-        /* VARDİYA MATRİSİ (TABLO) CSS */
-        .table-wrapper { background: rgba(30,41,59,0.4); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; margin-bottom: 40px; }
-        .table-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 15px; cursor: pointer; }
-        .scroll-area { overflow: auto; max-height: 65vh; border-radius: 15px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); }
-        table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; padding: 5px; }
-        th, td { border-radius: 6px; padding: 12px 8px; text-align: center; font-size: 13px; font-weight: 700; transition: 0.2s; }
-        th { background: linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)); color: var(--accent); position: sticky; top: 0; z-index: 20; border: 1px solid var(--glass-border); }
-        table tbody td:nth-child(2) { position: sticky; left: 0; z-index: 30; background: linear-gradient(90deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9)); border: 1px solid var(--glass-border); }
-        table thead th:nth-child(2) { position: sticky; left: 0; top: 0; z-index: 40; background: rgba(15,23,42,1); border: 1px solid var(--glass-border); }
-        .shift-cell { cursor: crosshair; color: #fff !important; }
-        .shift-cell:hover { transform: scale(1.08); z-index: 999 !important; border: 1px solid #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
-        .selected-cell { background: linear-gradient(135deg, rgba(56, 189, 248, 0.6), rgba(2, 132, 199, 0.8)) !important; outline: 2px solid #fff !important; z-index: 10; box-shadow: 0 0 20px var(--accent) !important; }
-        .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 2px solid transparent; font-weight: 800; padding: 4px; }
-        .select-icon { background: linear-gradient(135deg, var(--accent), #0284c7); color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: 900; }
+        .news-item { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); border-left: 5px solid var(--accent); padding: 18px; border-radius: 15px; transition: 0.3s; box-shadow: 4px 4px 10px rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); }
+        .news-item:hover { transform: translateX(5px) scale(1.02); box-shadow: 8px 8px 20px rgba(0,0,0,0.6), -2px 0 15px var(--glass-glow); border-left-color: var(--success); }
+        .news-text { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.6; text-shadow: 1px 1px 2px #000; }
+        .news-time { font-size: 11px; color: var(--accent); font-weight: 700; margin-top: 5px; }
         
-        /* SAĞ TIK MENÜLERİ */
-        .custom-menu { display: none; position: absolute; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; z-index: 100010; padding: 20px; box-shadow: 0 30px 70px rgba(0,0,0,0.9); }
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .menu-item { width: 100%; padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 900; font-size: 12px; border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; transition: 0.2s; }
-        .menu-item:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)) !important; transform: translateY(-3px) scale(1.03); }
-        .mini-swatch { height: 28px; border-radius: 50%; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.2); }
-        .stat-sub { display: inline-block; width: 45%; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; padding: 5px 0; border-radius: 6px; margin: 1px; background: rgba(0,0,0,0.5); }
+        .news-actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; flex-wrap: wrap; }
+        .reaction-btn { background: rgba(15, 23, 42, 0.8); border: 1px solid #475569; padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; color: #cbd5e1; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 2px 2px 5px rgba(0,0,0,0.4); }
+        .reaction-btn.active { background: linear-gradient(135deg, #0ea5e9, #0284c7); border-color: var(--accent); color: #fff; text-shadow: 1px 1px 2px #000; }
+        .reply-btn { background: transparent; border: none; color: var(--success); font-size: 12px; cursor: pointer; font-weight: 800; margin-left: auto; text-transform: uppercase; transition: 0.3s; }
+        .replies-container { margin-top: 12px; padding-left: 15px; border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 8px; }
+        .reply-item { background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 12px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .reply-input-box { display: none; gap: 10px; margin-top: 15px; } .reply-input-box.active { display: flex; }
+        .emoji-picker-wrapper { position: relative; }
+        .emoji-picker { display: none; position: absolute; bottom: 130%; left: 0; background: var(--bg-dark); border: 1px solid var(--accent); padding: 10px; border-radius: 20px; z-index: 100; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 20px var(--glass-glow); }
+        .emoji-picker.active { display: flex; }
+        .emoji-item { cursor: pointer; font-size: 22px; transition: 0.2s; } .emoji-item:hover { transform: scale(1.5) translateY(-3px); }
 
-        /* PERSONEL HAVUZU */
+        .log-item { background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(15,23,42,0.8)); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 10px; font-size: 12px; display: flex; justify-content: space-between; color: #cbd5e1; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+        .log-user { color: var(--warning); font-weight: 800; text-shadow: 0 0 5px rgba(250, 204, 21, 0.5); }
+
+        .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-height: 280px; overflow-y: auto; padding: 10px; }
+        .archive-card { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 1px 1px 3px rgba(255,255,255,0.1); position: relative; }
+        .archive-card::before { content: '📂'; position: absolute; font-size: 80px; opacity: 0.05; right: 10px; bottom: -10px; transform: rotate(-15deg); transition: 0.3s; }
+        .archive-card:hover { transform: translateY(-8px) scale(1.03); border-color: var(--accent); box-shadow: 10px 15px 25px rgba(0,0,0,0.6), 0 0 20px var(--glass-glow); }
+
+        .full-modal-overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(15px); z-index: 10005; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.4s; }
+        .full-modal-content { background: var(--bg-light); width: 98%; height: 98%; border-radius: 30px; border: 2px solid var(--accent); box-shadow: 0 0 80px rgba(0,0,0,0.9), inset 0 0 30px var(--glass-glow); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(50px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .full-modal-overlay.show, .modal-overlay.show { opacity: 1; }
+        .full-modal-overlay.show .full-modal-content { transform: scale(1) translateY(0); }
+        .modal-box { background: linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.98)); padding: 40px; border-radius: 30px; border: 1px solid var(--glass-border); width: 90%; max-width: 500px; transform: scale(0.8) rotateX(-10deg); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 60px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.1); }
+        .modal-overlay.show .modal-box { transform: scale(1) rotateX(0); }
+        .modal-header-bar { padding: 25px 35px; background: rgba(15,23,42,0.8); backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 10; }
+        .modal-body-area { padding: 30px; flex: 1; overflow-y: auto; background: radial-gradient(circle at center, rgba(30,41,59,0.3), transparent); }
+
+        .table-wrapper { background: rgba(30,41,59,0.4); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+        .table-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 15px; cursor: pointer; }
+        .table-title { font-size: 20px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px var(--glass-glow); }
+        .scroll-area { overflow: auto; max-height: 65vh; border-radius: 15px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); }
+        
+        table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; table-layout: auto; padding: 5px; }
+        th, td { border-radius: 6px; padding: 12px 8px; text-align: center; font-size: 13px; font-weight: 700; position: relative; transition: all 0.2s; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 2px 2px 5px rgba(0,0,0,0.4); }
+        th { background: linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)); color: var(--accent); position: sticky; top: 0; z-index: 20; border: 1px solid var(--glass-border); text-shadow: 1px 1px 2px #000; }
+        
+        table tbody td:first-child, table thead th:first-child { position: static; z-index: 1; }
+        table tbody td:nth-child(2) { position: sticky; left: 0; z-index: 30; background: linear-gradient(90deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9)); border: 1px solid var(--glass-border); box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
+        table thead th:nth-child(2) { position: sticky; left: 0; top: 0; z-index: 40; background: rgba(15,23,42,1); border: 1px solid var(--glass-border); box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
+        
+        .shift-cell { cursor: crosshair; color: #fff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
+        .shift-cell:hover { box-shadow: inset 0 0 20px rgba(255,255,255,0.5), 0 5px 15px rgba(0,0,0,0.6); transform: scale(1.08); z-index: 999 !important; border: 1px solid #fff; }
+        .selected-cell { background: linear-gradient(135deg, rgba(56, 189, 248, 0.6), rgba(2, 132, 199, 0.8)) !important; outline: 2px solid #fff !important; z-index: 10; box-shadow: 0 0 20px var(--accent) !important; }
+
+        .editable-name { flex: 1; text-align: left; outline: none; border-bottom: 2px solid transparent; font-weight: 800; padding: 4px; border-radius: 4px; }
+        
+        /* 🔥 1. YENİLİK: ANİMASYONLU OK İŞARETİ 🔥 */
+        .select-icon { background: linear-gradient(135deg, var(--accent), #0284c7); color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s; }
+        .select-icon:hover { transform: scale(1.15); box-shadow: 0 0 15px var(--accent); }
+        .select-icon.open { transform: rotate(180deg) scale(1.1); background: linear-gradient(135deg, var(--warning), #b45309); box-shadow: 0 0 15px var(--warning); }
+
+        .custom-menu { display: none; position: absolute; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; z-index: 100010; width: 400px; padding: 20px; box-shadow: 0 30px 70px rgba(0,0,0,0.9), inset 0 0 20px var(--glass-glow); animation: menuPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes menuPop { from { transform: scale(0.5) translateY(50px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .menu-item-wrapper { position: relative; width: 100%; display: inline-block; }
+        
+        /* 🔥 2. YENİLİK: MENÜ LİSTESİNDE CANLI HOVER EFEKTİ 🔥 */
+        .menu-item { width: 100%; padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 900; font-size: 12px; border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; box-sizing: border-box; transition: all 0.2s ease-in-out; }
+        .menu-item:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)) !important; transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.6); border-color: #fff; z-index: 2; position: relative; }
+        
+        .delete-custom-btn { position: absolute; top: -6px; right: -6px; background: linear-gradient(135deg, var(--danger), #991b1b); color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid rgba(255,255,255,0.4); }
+        
+        .mini-swatch { height: 28px; border-radius: 50%; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.2); }
+        .stat-sub { display: inline-block; width: 45%; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; padding: 5px 0; border-radius: 6px; margin: 1px; font-weight: 900; background: rgba(0,0,0,0.5); }
+
         .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; } 
         .staff-chip { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; color: #e2e8f0; }
         .staff-chip.selected { border-color: var(--success); background: linear-gradient(145deg, rgba(16, 185, 129, 0.3), rgba(15, 23, 42, 0.9)); color: white; }
-        .staff-del { margin-left: auto; color: var(--danger); font-size: 20px; font-weight: 900; cursor: pointer; }
+        .staff-del { margin-left: auto; color: var(--danger); font-size: 20px; font-weight: 900; cursor: pointer; padding: 2px 8px; border-radius: 8px; }
 
-        /* NOT/İĞNE VE TOAST */
         .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: 2px; right: 2px; font-size: 14px; z-index: 10; animation: pinPulse 1.5s infinite; }
         @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.4) rotate(20deg); } 100% { transform: scale(1); } }
-        #centralPinTooltip { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.95)); border: 2px solid var(--warning); color: var(--warning); padding: 25px 40px; border-radius: 20px; font-size: 18px; font-weight: 900; z-index: 9999999; box-shadow: 0 0 40px rgba(250, 204, 21, 0.4); text-align:center; pointer-events:none; }
-        #toast { visibility: hidden; min-width: 280px; background: linear-gradient(135deg, var(--success), #047857); color: #fff; text-align: center; border-radius: 50px; padding: 18px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 40px; font-weight: 900; transform: translateX(-50%); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+
+        /* 🔥 3. YENİLİK: EKRANIN TAM ORTASINDA AÇILAN DEVASA İĞNE (NOT) KUTUSU 🔥 */
+        #centralPinTooltip { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.95)); border: 2px solid var(--warning); color: var(--warning); padding: 25px 40px; border-radius: 20px; font-size: 18px; font-weight: 900; white-space: pre-wrap; width: max-content; max-width: 500px; z-index: 9999999; box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 40px rgba(250, 204, 21, 0.4); text-align:center; pointer-events:none; animation: popCenter 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popCenter { from { opacity:0; transform:translate(-50%, -40%) scale(0.8); } to { opacity:1; transform:translate(-50%, -50%) scale(1); } }
+
+        #toast { visibility: hidden; min-width: 280px; background: linear-gradient(135deg, var(--success), #047857); color: #fff; text-align: center; border-radius: 50px; padding: 18px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 40px; font-size: 15px; font-weight: 900; transform: translateX(-50%); box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px; }
         #toast.show { visibility: visible; animation: popUp 0.5s forwards, fadeout 0.5s 2.5s forwards; }
-        @keyframes popUp { from { bottom: -50px; opacity: 0; } to { bottom: 40px; opacity: 1; } }
+        @keyframes popUp { from { bottom: -50px; opacity: 0; transform: translateX(-50%) scale(0.5); } to { bottom: 40px; opacity: 1; transform: translateX(-50%) scale(1); } }
         @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
 
-        /* MÜZİK ÇALAR */
         .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; }
         .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        /* 🔥 YENİ: ASİSTAN (REHBER) VE FOOTER CSS 🔥 */
-        #sm-assistant { position: fixed; bottom: 20px; right: 20px; width: 280px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid var(--accent); border-radius: 15px; padding: 15px; color: white; z-index: 10000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-size: 13px; display: none; animation: slideIn 0.5s ease-out; }
-        @keyframes slideIn { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .tutorial-highlight { position: relative; z-index: 9999 !important; box-shadow: 0 0 0 9999px rgba(0,0,0,0.7), 0 0 15px var(--accent) !important; pointer-events: auto !important; }
-        #sm-assistant button { background: var(--accent); border: none; color: white; padding: 8px 10px; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: bold; width: 100%; }
-
-        .footer-links { text-align: center; padding: 20px; color: #64748b; font-size: 12px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; }
-        .footer-links a { color: #94a3b8; text-decoration: none; margin: 0 10px; transition: 0.3s; cursor: pointer; }
-        .footer-links a:hover { color: var(--accent); }
-        
-        .modal-sm { display: none; position: fixed; z-index: 20000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
-        .modal-sm-content { background: #1e293b; margin: 5% auto; padding: 30px; border: 1px solid var(--accent); width: 60%; max-height: 80vh; overflow-y: auto; border-radius: 15px; color: #e2e8f0; line-height: 1.6; }
-        .modal-sm-close { float: right; font-size: 28px; cursor: pointer; color: #94a3b8; }
-        .modal-sm h2 { color: var(--accent); margin-bottom: 20px; }
-        
-        /* ÇÖZÜM MERKEZİ */
-        .btn-support { background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid var(--accent); color: white; display: inline-flex; align-items: center; padding: 8px 18px; border-radius: 12px; transition: 0.3s; }
-        .btn-support:hover { transform: translateY(-3px); box-shadow: 0 0 25px var(--accent-glow); }
-        .ticket-scroll-area { max-height: 300px; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .ticket-item { background: rgba(0,0,0,0.4); border-left: 3px solid var(--accent); padding: 15px; border-radius: 10px; }
-        .tech-textarea { width: 100%; height: 100px; background: rgba(0,0,0,0.6); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; padding: 15px; border-radius: 10px; outline: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
-
-    <div id="sm-assistant">
-        <div style="display:flex; align-items:center; margin-bottom:10px;">
-            <span style="font-size:24px; margin-right:10px;">🤖</span>
-            <strong id="assistant-title">ShiftMaster Rehber</strong>
-        </div>
-        <p id="assistant-text">Hoş geldin! Sana sistemi 1 dakikada öğreteyim mi?</p>
-        <button id="assistant-btn" onclick="nextStep()">Hadi Başlayalım!</button>
-    </div>
 
     <div id="splash">
         <div class="splash-hospital" id="dynamicSplashTitle">SİSTEM YÜKLENİYOR...</div>
@@ -184,12 +212,12 @@
 
     <div id="appSelector">
         <div class="selector-card" onclick="openShiftMaster()">
-            <div style="font-size:80px; margin-bottom:20px;">📅</div>
+            <div style="font-size:80px; margin-bottom:20px; text-shadow: 0 0 20px var(--accent);">📅</div>
             <h3 style="color:var(--accent); font-size:22px; font-weight:900;">VARDİYA PANELİ</h3>
             <p style="font-size:13px; color:#cbd5e1;">Personel nöbet ve çalışma çizelgesi oluşturun.</p>
         </div>
         <div class="selector-card" onclick="window.location.href='PUANTAJMOTORU.html'">
-            <div style="font-size:80px; margin-bottom:20px;">💰</div>
+            <div style="font-size:80px; margin-bottom:20px; text-shadow: 0 0 20px var(--success);">💰</div>
             <h3 style="color:var(--success); font-size:22px; font-weight:900;">PUANTAJ MOTORU</h3>
             <p style="font-size:13px; color:#cbd5e1;">Maaş, mesai ve hakediş hesaplamalarını yapın.</p>
         </div>
@@ -200,103 +228,117 @@
             <div class="main-header card" style="margin-bottom:30px; padding:20px 30px;">
                 <div style="font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--accent);" id="welcomeText">👋 HOŞ GELDİN</div>
                 <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    
+                    <button id="btnInstallApp" onclick="installApp()" style="display:none; background: linear-gradient(135deg, #38bdf8, #0284c7); color: white; padding: 12px 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-weight: 900; font-size: 13px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); font-family: 'Poppins', sans-serif;">
+                        📱 UYGULAMAYI İNDİR
+                    </button>
+                    
                     <button class="btn-support" onclick="openSupportModal()">
-                        <span style="font-size:26px; margin-right:12px;">🎧</span>
+                        <span style="font-size:26px; margin-right:12px; text-shadow: 0 0 10px var(--accent);">🎧</span>
                         <div style="display:flex; flex-direction:column; text-align:left; line-height:1.1;">
-                            <span style="font-size:9px; color:#94a3b8; font-weight:800;">SHIFTMASTER</span>
+                            <span style="font-size:9px; color:#94a3b8; letter-spacing:2px; font-weight:800;">SHIFTMASTER</span>
                             <span style="font-size:16px; font-weight:900; color:white;">ÇÖZÜM MERKEZİ</span>
                         </div>
                     </button>
-                    <button id="btnSorumluAta" class="btn btn-orange" style="display:none;" onclick="openModal('sorumluModal')">👑 YÖNETİCİ ATA</button>
-                    <button class="btn btn-cyan" onclick="bireyselSifreDegistir()">🔑 ŞİFREMİ DEĞİŞTİR</button>
-                    <button class="btn btn-purple" onclick="showTodaySummary()">📍 BUGÜN KİMLER VAR?</button>
-                    <button class="btn btn-green" onclick="window.location.href='PUANTAJMOTORU.html'">💰 PUANTAJ AL</button>
-                    <button class="btn btn-red" onclick="logout()">🚪 ÇIKIŞ YAP</button>
+                    <button id="btnSorumluAta" class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); display:none; border-color:#facc15; font-size:13px; padding:12px 25px;" onclick="openModal('sorumluModal')">👑 YÖNETİCİ ATA</button>
+                    <button id="btnSifreDegistir" class="btn" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); font-size:13px; padding:12px 25px;" onclick="bireyselSifreDegistir()">🔑 ŞİFREMİ DEĞİŞTİR</button>
+                    
+                    <button class="btn" style="background:linear-gradient(135deg, #a855f7, #7e22ce); font-size:13px; padding:12px 25px; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);" onclick="showTodaySummary()">📍 BUGÜN KİMLER VAR?</button>
+                    
+                    <button class="btn btn-green" style="font-size:13px; padding:12px 25px; box-shadow: 0 0 15px rgba(16,185,129,0.5);" onclick="window.location.href='PUANTAJMOTORU.html'">💰 PUANTAJ AL</button>
+                    <button class="btn btn-red" style="font-size:13px; padding:12px 25px;" onclick="logout()">🚪 ÇIKIŞ YAP</button>
                 </div>
             </div>
 
             <div class="top-panels">
                 <div class="news-container card">
-                    <h4 style="margin:0 0 20px 0; color:var(--accent); font-size:18px;">📢 HABERLEŞME PANOSU</h4>
+                    <h4 style="margin:0 0 20px 0; color:var(--accent); font-size:18px; text-shadow:0 0 10px var(--glass-glow); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📢 HABERLEŞME PANOSU</h4>
                     <div style="display:flex; gap:12px; margin-bottom:20px;">
-                        <input type="text" id="newsInput" class="glass-input" style="flex:1;" placeholder="Ekibe bir duyuru veya not bırak..." onkeydown="if(event.key==='Enter') addNews()">
-                        <button class="btn btn-cyan" onclick="addNews()">GÖNDER</button>
+                        <input type="text" id="newsInput" class="glass-input" style="flex:1; font-size:14px;" placeholder="Ekibe bir duyuru veya not bırak..." onkeydown="if(event.key==='Enter') addNews()">
+                        <button class="btn btn-cyan" style="padding:15px 30px; font-size:14px;" onclick="addNews()">GÖNDER</button>
                     </div>
                     <div id="newsList" class="news-list"></div>
                 </div>
+
                 <div class="log-container card">
-                    <h4 style="margin:0 0 20px 0; color:var(--warning); font-size:18px;">🕵️‍♂️ CANLI İŞLEM LOGLARI</h4>
+                    <h4 style="margin:0 0 20px 0; color:var(--warning); font-size:18px; text-shadow:0 0 10px rgba(250,204,21,0.3); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">🕵️‍♂️ CANLI İŞLEM LOGLARI</h4>
                     <div id="logList" class="log-list"></div>
                 </div>
             </div>
 
             <div class="card">
-                <h4 style="margin:0 0 20px 0; color:#fff; font-size:18px;">📁 AKTİF ÇALIŞMA PLANLARI</h4>
+                <h4 style="margin:0 0 20px 0; color:#fff; font-size:18px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📁 AKTİF ÇALIŞMA PLANLARI (PANODAKİLER)</h4>
                 <div id="archiveList" class="archive-grid"></div>
             </div>
 
-            <div class="card" style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end;">
-                <div><label style="color:var(--accent); font-weight:900;">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input"></div>
-                <div><label style="color:var(--accent); font-weight:900;">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:80px;"></div>
-                <button id="btnGenerateTable" class="btn btn-cyan" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
-                <button class="btn btn-green" onclick="openExcelModal()">📥 EXCEL'DEN ÇEK</button>
+            <div class="card" style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; background:linear-gradient(145deg, rgba(15,23,42,0.8), rgba(2,6,23,0.9));">
+                <div><label style="font-size:11px; color:var(--accent); font-weight:900; margin-left:5px; text-shadow:0 0 5px var(--accent);">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input" style="font-size:14px; padding:10px 15px;"></div>
+                <div><label style="font-size:11px; color:var(--accent); font-weight:900; margin-left:5px; text-shadow:0 0 5px var(--accent);">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:80px; text-align:center; font-size:16px; font-weight:900; padding:10px;"></div>
+                <button class="btn btn-cyan" style="padding:15px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
+                <button class="btn btn-green" style="padding:15px 30px; font-size: 14px;" onclick="openExcelModal()">📥 EXCEL'DEN ÇEK</button>
             </div>
 
-            <div class="card" id="staffPoolSection">
-                <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+            <div class="card">
+                <div class="pool-header" style="display:flex; align-items:center; gap:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px; margin-bottom:20px;">
                     <h4 style="margin:0; font-size:18px;">👥 PERSONEL HAVUZU</h4>
-                    <span id="staffCounter" style="background:var(--accent); color:#000; padding:2px 10px; border-radius:10px; font-weight:900;">0</span>
+                    <span id="staffCounter" style="background:var(--accent); color:#000; padding:2px 10px; border-radius:10px; font-weight:900; font-size:16px; box-shadow:0 0 15px var(--accent);">0</span>
                 </div>
                 <div id="staffPool" class="pool-grid" style="margin-bottom: 25px;"></div>
-                <div style="display:flex; gap:15px;">
-                    <input type="text" id="staffInput" placeholder="Tek isim yaz veya Excel'den kopyalayıp yapıştır..." class="glass-input" style="flex:1;" onkeydown="if(event.key==='Enter') addStaff()">
-                    <button class="btn btn-cyan" onclick="addStaff()">EKLE / YÜKLE</button>
-                    <button class="btn btn-red" onclick="clearStaffPool()">💣 BOŞALT</button>
+                <div style="display:flex; gap:15px; background:rgba(0,0,0,0.3); padding:20px; border-radius:15px; border:1px dashed var(--glass-border);">
+                    <input type="text" id="staffInput" placeholder="Tek isim yaz veya Excel'den listeyi kopyalayıp buraya yapıştır..." class="glass-input" style="flex:1; font-size:14px;" onkeydown="if(event.key==='Enter') addStaff()">
+                    <button class="btn btn-cyan" style="padding:15px 30px; font-size:13px;" onclick="addStaff()">EKLE / YÜKLE</button>
+                    <button class="btn btn-red" style="padding:15px 30px; font-size:13px;" onclick="clearStaffPool()">💣 HAVUZU BOŞALT</button>
                 </div>
             </div>
             
-            <details class="card">
-                <summary style="font-size: 20px; font-weight: 900; color: #94a3b8; cursor: pointer;">📦 KALICI DEPO (Geçmiş Ayların Arşivi)</summary>
-                <div id="permanentArchiveList" class="archive-grid" style="margin-top: 25px;"></div>
+            <details class="card" style="margin-top: 50px; background: rgba(2,6,23,0.8); border: 2px dashed #475569;">
+                <summary style="font-size: 20px; font-weight: 900; color: #94a3b8; cursor: pointer; outline:none; text-shadow:0 0 10px rgba(255,255,255,0.2);">
+                    📦 KALICI DEPO (Geçmiş Ayların Arşivi) <span style="font-size:12px; font-weight:normal; opacity:0.6;">(Görmek için tıkla)</span>
+                </summary>
+                <div id="permanentArchiveList" class="archive-grid" style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;"></div>
             </details>
-
-            <div class="footer-links">
-                <a onclick="openSMModal('privacy')">Gizlilik Politikası</a> | 
-                <a onclick="openSMModal('terms')">Kullanım Koşulları</a> | 
-                <a onclick="openSMModal('security')">Veri Güvenliği</a> | 
-                <a onclick="openSMModal('contact')">İletişim</a>
-                <p style="margin-top:10px;">© 2026 ShiftMaster - Tüm Hakları Saklıdır.</p>
-            </div>
         </div>
     </div>
 
     <div id="todaySummaryModal" class="modal-overlay" onclick="if(event.target.id==='todaySummaryModal') closeModal('todaySummaryModal')">
-        <div class="modal-box" style="max-width: 900px; border-color: #a855f7;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(168, 85, 247, 0.3); padding-bottom: 15px; margin-bottom: 20px;">
-                <h3 style="color:#a855f7; font-size:26px; margin:0;">📍 OPERASYON ÖZETİ</h3>
-                <input type="date" id="summaryDatePicker" class="glass-input" onchange="showTodaySummary(this.value)">
+        <div class="modal-box" style="max-width: 900px; background: radial-gradient(circle at top right, #0f172a, #050b14); border: 2px solid #a855f7; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);">
+            <h3 style="color:#a855f7; font-size:26px; margin-top:0; text-shadow:0 0 15px rgba(168,85,247,0.5);">📍 CANLI OPERASYON ÖZETİ</h3>
+            <h4 id="todaySummaryDate" style="color:#cbd5e1; margin-top:-10px; font-weight:500;">Tarih Yükleniyor...</h4>
+            
+            <div style="display: flex; gap: 20px; margin-top: 25px; flex-wrap: wrap;">
+                <div style="flex:1; min-width:250px; background:rgba(16,185,129,0.05); border:1px solid var(--success); border-radius:15px; padding:20px; box-shadow:inset 0 0 20px rgba(16,185,129,0.1);">
+                    <h4 style="color:var(--success); margin-top:0; border-bottom:1px dashed var(--success); padding-bottom:10px;">☀️ ŞU AN ÇALIŞANLAR (GÜNDÜZ) <span id="cDay" style="float:right; background:var(--success); color:#fff; padding:2px 8px; border-radius:10px;">0</span></h4>
+                    <div id="listDay" style="max-height:250px; overflow-y:auto; font-size:13px; padding-right:5px;"></div>
+                </div>
+                
+                <div style="flex:1; min-width:250px; background:rgba(245,158,11,0.05); border:1px solid var(--warning); border-radius:15px; padding:20px; box-shadow:inset 0 0 20px rgba(245,158,11,0.1);">
+                    <h4 style="color:var(--warning); margin-top:0; border-bottom:1px dashed var(--warning); padding-bottom:10px;">🌙 AKŞAMA GELECEKLER (NÖBET) <span id="cNight" style="float:right; background:var(--warning); color:#000; padding:2px 8px; border-radius:10px;">0</span></h4>
+                    <div id="listNight" style="max-height:250px; overflow-y:auto; font-size:13px; padding-right:5px;"></div>
+                </div>
+                
+                <div style="flex:1; min-width:250px; background:rgba(239,68,68,0.05); border:1px solid var(--danger); border-radius:15px; padding:20px; box-shadow:inset 0 0 20px rgba(239,68,68,0.1);">
+                    <h4 style="color:var(--danger); margin-top:0; border-bottom:1px dashed var(--danger); padding-bottom:10px;">🏖️ İZİNLİ / RAPORLU OLANLAR <span id="cOff" style="float:right; background:var(--danger); color:#fff; padding:2px 8px; border-radius:10px;">0</span></h4>
+                    <div id="listOff" style="max-height:250px; overflow-y:auto; font-size:13px; padding-right:5px;"></div>
+                </div>
             </div>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                <div style="flex:1; border:1px solid var(--success); padding:20px; border-radius:15px;"><h4 style="color:var(--success); margin-top:0;">☀️ GÜNDÜZ <span id="cDay">0</span></h4><div id="listDay"></div></div>
-                <div style="flex:1; border:1px solid var(--warning); padding:20px; border-radius:15px;"><h4 style="color:var(--warning); margin-top:0;">🌙 GECE <span id="cNight">0</span></h4><div id="listNight"></div></div>
-                <div style="flex:1; border:1px solid var(--danger); padding:20px; border-radius:15px;"><h4 style="color:var(--danger); margin-top:0;">🏖️ İZİNLİ <span id="cOff">0</span></h4><div id="listOff"></div></div>
-            </div>
-            <button class="btn" style="width:100%; margin-top:25px; justify-content:center;" onclick="closeModal('todaySummaryModal')">KAPAT</button>
+            
+            <button class="btn" style="width:100%; margin-top:25px; justify-content:center; padding:15px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);" onclick="closeModal('todaySummaryModal')">EKRANI KAPAT</button>
         </div>
     </div>
 
     <div id="tableModalOverlay" class="full-modal-overlay">
         <div class="full-modal-content">
             <div class="modal-header-bar">
-                <div style="font-size:26px; font-weight:900; color:#fff;">
+                <div style="font-size:26px; font-weight:900; color:#fff; text-shadow:0 0 15px var(--accent); display:flex; align-items:center; gap:15px;">
                     <span id="masterArchiveTitle">📁 Yeni Dosya</span>
-                    <button class="btn btn-orange" onclick="renameMasterArchive()">✏️ İSMİ DEĞİŞTİR</button>
+                    <button class="btn" style="background:rgba(255,255,255,0.1); color:var(--warning); border-color:transparent;" onclick="renameMasterArchive()">✏️ İSMİ DEĞİŞTİR</button>
                 </div>
-                <div style="display:flex; gap:12px;">
-                    <button class="btn btn-cyan" onclick="exportAllToExcel()">📋 EXCEL'E KOPYALA</button>
-                    <button class="btn btn-green" onclick="saveMasterArchive()">💾 KAYDET</button>
-                    <button class="btn btn-purple" onclick="safeAppendTable()">➕ YENİ TABLO</button>
-                    <button class="btn btn-red" onclick="closeModal('tableModalOverlay')">❌ KAPAT</button>
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <button class="btn btn-cyan" onclick="exportAllToExcel()">📋 TÜMÜNÜ EXCEL'E KOPYALA</button>
+                    <button class="btn btn-green" style="box-shadow:0 0 20px rgba(16,185,129,0.5);" onclick="saveMasterArchive()">💾 PANODA KAYDET</button>
+                    <span style="width:2px; height:25px; background:rgba(255,255,255,0.2); margin:0 5px;"></span>
+                    <button class="btn btn-purple" onclick="safeAppendTable()">➕ YENİ TABLO EKLE</button>
+                    <button class="btn btn-red" onclick="closeModal('tableModalOverlay')">❌ EKRANI KAPAT</button>
                 </div>
             </div>
             <div class="modal-body-area" id="tablesContainer"></div>
@@ -305,78 +347,191 @@
 
     <div id="supportModal" class="modal-overlay" onclick="if(event.target.id==='supportModal') closeSupportModal()">
         <div class="modal-box tech-modal" style="max-width: 550px;">
-            <h3 style="color:var(--accent);">🎧 ÇÖZÜM MERKEZİ</h3>
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom: 25px; border-bottom: 1px dashed rgba(56,189,248,0.3); padding-bottom: 15px;">
+                <span style="font-size:40px; text-shadow: 0 0 20px var(--accent);">🎧</span>
+                <div>
+                    <h3 style="margin:0; color:var(--accent); font-size:22px; text-shadow:0 0 10px rgba(56,189,248,0.5); letter-spacing:1px;">ÇÖZÜM MERKEZİ</h3>
+                    <span style="font-size:10px; color:#94a3b8; font-family:monospace;">SİSTEM YÖNETİCİSİ İLE DOĞRUDAN BAĞLANTI</span>
+                </div>
+            </div>
+            
             <div id="ticketList" class="ticket-scroll-area"></div>
-            <textarea id="ticketInput" class="tech-textarea" placeholder="Sorununuzu yazın..."></textarea>
-            <button class="btn btn-cyan" style="float:right; margin-top:15px;" onclick="sendTicket()">🚀 GÖNDER</button>
+            
+            <div style="margin-top: 15px;">
+                <textarea id="ticketInput" class="tech-textarea" placeholder=">_ Yaşadığınız sorunu veya talebinizi detaylıca yazın..."></textarea>
+                <div style="display:flex; justify-content:flex-end; margin-top:15px;">
+                    <button class="btn btn-cyan" style="padding:15px 30px; font-size:14px; box-shadow: 0 0 15px rgba(56,189,248,0.4);" onclick="sendTicket()">🚀 TALEBİ GÖNDER</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="excelModal" class="modal-overlay">
         <div class="modal-box">
-            <h3 style="color:var(--accent);">📥 Excel'den Veri Çek</h3>
-            <textarea id="excelInput" class="glass-input" style="width:100%; height:250px;"></textarea>
-            <div style="display:flex; gap:15px; margin-top:20px;">
-                <button class="btn btn-green" style="flex:1;" onclick="importFromExcel()">VERİLERİ İŞLE</button>
-                <button class="btn btn-red" onclick="closeModal('excelModal')">İPTAL</button>
+            <h3 style="margin-top:0; color:var(--accent); font-size:24px; text-shadow:0 0 15px var(--glass-glow);">📥 Excel'den Veri Çek</h3>
+            <p style="font-size:12px; color:#cbd5e1; margin-top:-10px; margin-bottom:20px;">Sadece veriyi yapıştırın. Sistem başlıkları, tarihleri ve gereksiz alanları otomatik temizler.</p>
+            <textarea id="excelInput" class="glass-input" style="width:100%; height:250px; font-family:monospace; font-size:12px; margin-bottom:20px; box-sizing:border-box;"></textarea>
+            <div style="display:flex; gap:15px;">
+                <button class="btn btn-green" style="flex:1; justify-content:center; padding:15px; font-size:14px;" onclick="importFromExcel()">VERİLERİ İŞLE VE TABLOYU KUR</button>
+                <button class="btn btn-red" style="padding:15px 30px; font-size:14px;" onclick="closeModal('excelModal')">İPTAL</button>
             </div>
         </div>
     </div>
 
     <div id="sorumluModal" class="modal-overlay" onclick="if(event.target.id==='sorumluModal') closeModal('sorumluModal')">
-        <div class="modal-box" style="max-width: 450px; text-align: center;">
-            <h3 style="color:var(--warning);">👑 YÖNETİCİ ATA</h3>
-            <select id="sorumluIsim" class="glass-input" style="width:100%; margin-bottom:15px;"><option value="">-- Personel Seçin --</option></select>
-            <input type="text" id="sorumluSifre" class="glass-input" style="width:100%; margin-bottom:25px;" placeholder="Giriş Şifresi (Örn: 1010)">
+        <div class="modal-box" style="max-width: 450px; text-align: center; border: 2px solid var(--warning); box-shadow:0 0 40px rgba(250,204,21,0.3);">
+            <h3 style="margin-top:0; color:var(--warning); font-size:26px; text-shadow:0 0 15px rgba(250,204,21,0.5);">👑 YÖNETİCİ ATA</h3>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:20px;">Havuzdaki bir personele sisteme giriş yetkisi verin.</p>
+            <select id="sorumluIsim" class="glass-input" style="width:100%; margin-bottom:15px; text-align:center; cursor:pointer; font-size:16px; font-weight:800; padding:15px;">
+                <option value="" style="color:black;">-- Havuzdan Personel Seçin --</option>
+            </select>
+            <input type="text" id="sorumluSifre" class="glass-input" style="width:100%; margin-bottom:25px; text-align:center; font-size:18px; font-weight:900; padding:15px; letter-spacing:3px;" placeholder="Giriş Şifresi (Örn: 1010)">
             <div style="display:flex; gap:15px;">
-                <button class="btn btn-green" style="flex:1;" onclick="kaydetSorumlu()">YETKİ VER</button>
-                <button class="btn btn-red" onclick="closeModal('sorumluModal')">İPTAL</button>
+                <button class="btn btn-green" style="flex:1; justify-content:center; padding:15px; font-size:15px;" onclick="kaydetSorumlu()">YETKİ VER / KAYDET</button>
+                <button class="btn btn-red" style="padding:15px 30px; font-size:15px;" onclick="closeModal('sorumluModal')">İPTAL</button>
             </div>
-            <div id="sorumluListesi" style="margin-top:20px; text-align:left;"></div>
+            <div style="margin-top: 30px; text-align: left; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px;">
+                <h4 style="color:#fff; margin-top:0; font-size:14px;">Mevcut Yöneticiler:</h4>
+                <div id="sorumluListesi" style="max-height: 180px; overflow-y: auto; padding-right:5px;"></div>
+            </div>
         </div>
     </div>
 
     <div id="headerContextMenu" class="custom-menu" style="width:280px; border-color:var(--warning);">
-        <div class="menu-item btn-cyan" onclick="editColumnDate()">✏️ TARİHİ DEĞİŞTİR</div>
-        <div class="menu-item btn-green" style="margin-top:10px;" onclick="insertColumn('after')">➕ GÜN EKLE</div>
-        <div class="menu-item btn-red" style="margin-top:10px;" onclick="deleteColumn()">🗑️ GÜNÜ SİL</div>
+        <div class="menu-item" style="background:linear-gradient(135deg, #0ea5e9, #0369a1); padding:15px;" onclick="editColumnDate()">✏️ TARİHİ MANUEL DEĞİŞTİR</div>
+        <div class="menu-item" style="background:linear-gradient(135deg, #10b981, #047857); margin-top:10px; padding:15px;" onclick="insertColumn('after')">➕ SAĞA YENİ GÜN (SÜTUN) EKLE</div>
+        <div class="menu-item" style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; color:#ef4444 !important; margin-top:10px; padding:15px;" onclick="deleteColumn()">🗑️ DİKKAT: BU GÜNÜ KOMPLE SİL</div>
     </div>
 
     <div id="contextMenu" class="custom-menu">
         <div class="menu-grid" id="dynamicMenuGrid"></div>
-        <div style="margin-top:20px; border-top:1px dashed #fff; padding-top:15px; text-align:center;">
-            <div id="quickColorGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 15px;"></div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-orange" style="flex:1;" onclick="addGhostPinToCell()">📍 NOT TAK</button>
-                <button class="btn btn-red" style="flex:1;" onclick="removeGhostPinFromCell()">🗑️ İĞNEYİ SİL</button>
+        <div style="margin-top:20px; padding-top:20px; border-top:1px dashed rgba(255,255,255,0.2); text-align:center;">
+            <span style="color:#94a3b8; font-size:11px; font-weight:800; letter-spacing:1px; display:block; margin-bottom:12px;">HÜCREYİ ÖZELLEŞTİR</span>
+            <div id="quickColorGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; padding: 5px;"></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <button class="btn" style="background:var(--warning); color:#000; padding:12px; justify-content:center;" onclick="addGhostPinToCell()">📍 İĞNE / NOT TAK</button>
+                <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:12px; justify-content:center;" onclick="removeGhostPinFromCell()">🗑️ İĞNEYİ SİL</button>
             </div>
-            <input type="color" id="customColorInput" style="margin-top:15px;" onchange="applyCustomColorFromWheel(this.value)">
+            <div style="text-align: center; margin-top:15px;">
+                <label for="customColorInput" style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(15,23,42,0.8)); padding: 12px; border-radius: 12px; border: 1px solid var(--accent); font-size: 13px; color: #fff; font-weight:800; transition:0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                    🎨 ÖZEL RENK ÇEMBERİNİ AÇ
+                </label>
+                <input type="color" id="customColorInput" style="opacity: 0; position: absolute; width: 0; height: 0;" onchange="applyCustomColorFromWheel(this.value)">
+            </div>
         </div>
     </div>
 
-    <div id="staffSelectMenu" class="custom-menu" style="max-height:350px; overflow-y:auto; width:220px;"></div>
+    <div id="staffSelectMenu" class="custom-menu" style="max-height:350px; overflow-y:auto; width:220px; border-color:var(--accent);"></div>
+    
     <div id="centralPinTooltip"></div>
+
     <div id="toast">İşlem Başarılı!</div>
 
     <div class="sm-player" id="sm-player">
         <button class="sm-btn" onclick="smMusic.prev()">⏮</button>
         <button class="sm-btn" onclick="smMusic.toggle()" id="sm-play-btn" style="font-size:1.5rem; width:50px; height:50px;">▶</button>
         <button class="sm-btn" onclick="smMusic.next()">⏭</button>
-        <div class="sm-track-info" style="display:flex; flex-direction:column; align-items:flex-start;">
-            <span class="sm-title" id="sm-title" style="font-size:12px; font-weight:800;">ShiftMaster Radyo</span>
+        <div class="sm-track-info">
+            <span class="sm-title" id="sm-title">ShiftMaster Radyo</span>
             <div style="display:flex; gap:3px; margin-top:5px; height:10px; align-items:flex-end;" id="sm-eq"></div>
         </div>
     </div>
 
-    <div id="smCommonModal" class="modal-sm">
-        <div class="modal-sm-content">
-            <span class="modal-sm-close" onclick="closeSMModal()">&times;</span>
-            <div id="modalBodyContent"></div>
-        </div>
-    </div>
-
     <script>
-        // MÜZİK MOTORU
+        function openSupportModal() {
+            document.getElementById('supportModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('supportModal').classList.add('show'), 10);
+            loadTickets();
+        }
+        function closeSupportModal() {
+            document.getElementById('supportModal').classList.remove('show');
+            setTimeout(() => document.getElementById('supportModal').style.display = 'none', 400);
+        }
+
+        function sendTicket() {
+            const val = document.getElementById('ticketInput').value.trim();
+            if(!val) return alert("Lütfen önce bir mesaj yazın!");
+            
+            const currentTenant = localStorage.getItem('sm_current_tenant') || "Bilinmiyor";
+            
+            originalRef("cozum_merkezi").push({
+                tenant: currentTenant,
+                user: currentUser,
+                text: val,
+                time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'numeric'}),
+                status: 'Bekliyor', // Bekliyor, İnceleniyor, Çözüldü
+                adminReply: ''
+            }).then(() => {
+                document.getElementById('ticketInput').value = '';
+                showToast("Talebiniz başarıyla iletildi! 🎧");
+                logAction("Çözüm Merkezine yeni talep gönderdi.");
+            });
+        }
+
+        function loadTickets() {
+            originalRef("cozum_merkezi").on('value', snap => {
+                const list = document.getElementById('ticketList');
+                list.innerHTML = "";
+                const currentTenant = localStorage.getItem('sm_current_tenant');
+                const isSuperAdmin = localStorage.getItem('sm_role') === 'superadmin';
+                let biletSayisi = 0;
+
+                if(snap.val()) {
+                    Object.entries(snap.val()).reverse().forEach(([id, t]) => {
+                        if (!isSuperAdmin && t.tenant !== currentTenant) return;
+                        
+                        biletSayisi++;
+                        let statusColor = t.status === 'Çözüldü' ? 'var(--success)' : (t.status === 'İnceleniyor' ? '#3b82f6' : 'var(--warning)');
+                        let replyHtml = t.adminReply ? `<div class="admin-reply"><strong>⚡ YETKİLİ CEVABI:</strong><br>${t.adminReply}</div>` : '';
+                        
+                        let patronButonu = ""; let kurumsalEtiket = "";
+                        if (isSuperAdmin) { 
+                            kurumsalEtiket = `<span style="color:#38bdf8; font-size:10px;">[${(t.tenant || "BİLİNMİYOR").toUpperCase()}]</span> `;
+                            patronButonu = `<button class="btn btn-green" style="margin-top:10px; padding:6px 12px; font-size:10px;" onclick="cevapYaz('${id}')">Cevapla & Çözüldü Yap</button>`;
+                        }
+
+                        list.innerHTML += `
+                            <div class="ticket-item">
+                                <div class="ticket-header">
+                                    <span style="color:var(--text); font-weight:800; font-size:12px;">👤 ${kurumsalEtiket}${t.user}</span>
+                                    <span style="color:${statusColor}; font-size:10px; border:1px solid ${statusColor}; padding:3px 8px; border-radius:12px; font-weight:800; background:rgba(0,0,0,0.5);">${t.status.toUpperCase()}</span>
+                                </div>
+                                <div class="ticket-body">${t.text}</div>
+                                ${replyHtml}
+                                ${patronButonu}
+                                <div class="ticket-time">Gönderim: ${t.time}</div>
+                            </div>
+                        `;
+                    });
+                }
+                if(biletSayisi === 0) {
+                    list.innerHTML = "<div style='text-align:center; color:#64748b; padding:30px; font-size:12px; font-family:monospace;'>SİSTEMDE KAYITLI TALEBİNİZ BULUNMAMAKTADIR.</div>";
+                }
+            });
+        }
+        
+        // =========================================
+        // 1. FİREBASE BAĞLANTISI VE GÜVENLİK
+        // =========================================
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        firebase.initializeApp(firebaseConfig); const db = firebase.database();
+
+        const tenantId = localStorage.getItem('sm_current_tenant');
+        if (!tenantId) window.location.href = 'index.html';
+
+        const originalRef = db.ref.bind(db);
+        db.ref = function(path) {
+            if (tenantId === "addh") return originalRef(path); 
+            if (path) return originalRef("kurumlar/" + tenantId + "/" + path);
+            return originalRef("kurumlar/" + tenantId);
+        };
+
+        let currentUser = ""; let activeCell = null; let staffList = []; let historyStack = []; let currentMasterArchiveId = null; let currentMasterArchiveName = "Yeni Dosya"; let lastUsedEndDate = null; 
+
+        let shiftRules = {};
+        const defaultRules = { '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' }, '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' }, '12:00-24:00': { w: 11, n: 4, color: 'linear-gradient(145deg, #f97316, #9a3412)' }, '08:00-16:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #0ea5e9, #0369a1)' }, '16:00-24:00': { w: 7.5, n: 4, color: 'linear-gradient(145deg, #3b82f6, #1d4ed8)' }, '24:00-08:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4338ca, #1e1b4b)' }, 'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' }, 'İ': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }, 'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' } };
+        const colors = ['#fca5a5','#f87171','#ef4444','#dc2626','#b91c1c','#991b1b','#7f1d1d','#fde047','#fbbf24','#f59e0b','#d97706','#b45309','#92400e','#78350f','#6ee7b7','#34d399','#10b981','#059669','#047857','#065f46','#064e3b','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87'];
+
         const smMusic = {
             audio: new Audio(), isPlaying: false, index: 0, playlist: [ { name: "Kral FM", url: "https://kralfmwmp.radyotvonline.net/;" }, { name: "Power Türk", url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio" } ],
             init() { this.audio.src = this.playlist[this.index].url; this.audio.volume = 0.5; document.getElementById('sm-title').innerText = this.playlist[this.index].name; },
@@ -387,124 +542,6 @@
             changeTrack() { this.audio.src = this.playlist[this.index].url; document.getElementById('sm-title').innerText = this.playlist[this.index].name; if (this.isPlaying) this.play(); }
         };
 
-        // FOOTER MODAL MOTORU
-        const modalTexts = {
-            privacy: "<h2>Gizlilik Politikası</h2><p>Verileriniz 256-bit şifreleme ile korunmaktadır. Personel isimleri ve vardiya bilgileri asla üçüncü taraflarla paylaşılmaz. Sistemimiz GDPR ve KVKK standartlarına tam uyumludur.</p>",
-            terms: "<h2>Kullanım Koşulları</h2><p>ShiftMaster, kurum içi vardiya yönetimini kolaylaştırmak için sunulan bir yazılımdır. Veri girişi ve doğruluğu kurum yöneticisinin sorumluluğundadır.</p>",
-            security: "<h2>Veri Güvenliği</h2><p>Tüm veriler Google Cloud altyapısında (Firebase) saklanmaktadır. Şifreleriniz kriptolanarak kaydedilir; patron veya sistem kurucusu bile şifrelerinizi göremez.</p>",
-            contact: "<h2>İletişim</h2><p>Destek ve sorularınız için:<br><b>E-posta:</b> destek@shiftmaster.com.tr<br><b>WhatsApp:</b> +90 (5xx) xxx xx xx</p>"
-        };
-
-        function openSMModal(type) {
-            document.getElementById('modalBodyContent').innerHTML = modalTexts[type];
-            document.getElementById('smCommonModal').style.display = 'block';
-        }
-
-        function closeSMModal() {
-            document.getElementById('smCommonModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            let m = document.getElementById('smCommonModal');
-            if (event.target == m) closeSMModal();
-            if(!event.target.closest('.custom-menu') && !event.target.closest('.select-icon')) { 
-                if(document.getElementById("contextMenu")) document.getElementById("contextMenu").style.display = "none"; 
-                if(document.getElementById("staffSelectMenu")) document.getElementById("staffSelectMenu").style.display = "none"; 
-                if(document.getElementById("headerContextMenu")) document.getElementById("headerContextMenu").style.display = "none"; 
-                document.querySelectorAll('.select-icon.open').forEach(icon => icon.classList.remove('open'));
-            } 
-        }
-
-        // HAREKETSİZLİK KİLİDİ
-        let inactivityTime = function () {
-            let time;
-            const logoutZamani = 600000; // 10 dakika
-
-            window.onload = resetTimer;
-            document.onmousemove = resetTimer;
-            document.onkeypress = resetTimer;
-            document.onclick = resetTimer;
-            document.onscroll = resetTimer;
-
-            function logout() {
-                alert("🔒 GÜVENLİK DUVARI:\n\nSistemde 10 dakika boyunca işlem yapılmadığı için oturumunuz otomatik olarak kapatılmıştır.");
-                cikisYap(); 
-            }
-            function resetTimer() {
-                clearTimeout(time);
-                time = setTimeout(logout, logoutZamani);
-            }
-        };
-
-        // FİREBASE BAĞLANTISI VE GÜVENLİK
-        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.database();
-        const auth = firebase.auth();
-
-        const tenantId = localStorage.getItem('sm_current_tenant');
-        if (!tenantId) window.location.href = 'index.html';
-
-        const originalRef = db.ref.bind(db);
-        db.ref = function(path) {
-            if (!path) return originalRef();
-            if (path.startsWith(".info")) return originalRef(path);
-            if (tenantId === "patron_base" || tenantId === "addh") return originalRef(path); 
-            return originalRef("kurumlar/" + tenantId + "/" + path);
-        };
-
-        let currentUser = ""; let activeCell = null; let staffList = []; let historyStack = []; let currentMasterArchiveId = null; let currentMasterArchiveName = "Yeni Dosya"; let lastUsedEndDate = null; 
-
-        let shiftRules = {};
-        const defaultRules = { '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' }, '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' }, '12:00-24:00': { w: 11, n: 4, color: 'linear-gradient(145deg, #f97316, #9a3412)' }, '08:00-16:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #0ea5e9, #0369a1)' }, '16:00-24:00': { w: 7.5, n: 4, color: 'linear-gradient(145deg, #3b82f6, #1d4ed8)' }, '24:00-08:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4338ca, #1e1b4b)' }, 'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' }, 'İ': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }, 'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' } };
-        const colors = ['#fca5a5','#f87171','#ef4444','#dc2626','#b91c1c','#991b1b','#7f1d1d','#fde047','#fbbf24','#f59e0b','#d97706','#b45309','#92400e','#78350f','#6ee7b7','#34d399','#10b981','#059669','#047857','#065f46','#064e3b','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87'];
-
-        // REHBER (ONBOARDING) MOTORU
-        let currentStep = 0;
-        const steps = [
-            { element: "staffPoolSection", text: "1. ADIM: Önce 'Personel Havuzu'na isimleri ekle. Kimlerin vardiyasını yazacaksan onları tanımlıyoruz.", btn: "Ekledim, devam!" },
-            { element: "startDate", text: "2. ADIM: Vardiyanın hangi tarihte başlayacağını seç.", btn: "Tarihi seçtim!" },
-            { element: "colCount", text: "3. ADIM: Kaç günlük bir liste yapmak istiyorsun? (Örn: 30 gün).", btn: "Yazdım!" },
-            { element: "btnGenerateTable", text: "4. ADIM: 'YENİ MATRİS OLUŞTUR' butonuna bas ve sihrin gerçekleşmesini izle!", btn: "Harika, anladım!" }
-        ];
-
-        function startTutorial() {
-            const asistan = document.getElementById('sm-assistant');
-            if(asistan) asistan.style.display = 'block';
-            showStep();
-        }
-
-        function showStep() {
-            const step = steps[currentStep];
-            const el = document.getElementById(step.element);
-            
-            document.querySelectorAll('.tutorial-highlight').forEach(e => e.classList.remove('tutorial-highlight'));
-            
-            if (el) { 
-                el.classList.add('tutorial-highlight'); 
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-            }
-            
-            const textEl = document.getElementById('assistant-text');
-            const btnEl = document.getElementById('assistant-btn');
-            if(textEl) textEl.innerText = step.text;
-            if(btnEl) btnEl.innerText = step.btn;
-        }
-
-        function nextStep() {
-            currentStep++;
-            if (currentStep < steps.length) { 
-                showStep(); 
-            } else {
-                const asistan = document.getElementById('sm-assistant');
-                if(asistan) asistan.style.display = 'none';
-                document.querySelectorAll('.tutorial-highlight').forEach(e => e.classList.remove('tutorial-highlight'));
-                localStorage.setItem('tutorial_completed', 'true');
-                showToast("Harikasın! Artık sistemi kullanmaya hazırsın. 🎉");
-            }
-        }
-
-        // AÇILIŞ DÖNGÜSÜ
         window.onload = () => {
             try {
                 let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
@@ -515,53 +552,30 @@
             } catch(e) {}
 
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
-            if (container) {
-                text.split("").forEach((char, idx) => { 
-                    const span = document.createElement("span"); 
-                    span.innerText = char; 
-                    span.className = "splash-char"; 
-                    span.style.animationDelay = (0.2 + idx*0.1) + "s"; 
-                    container.appendChild(span); 
-                });
-            }
+            if (container) text.split("").forEach((char, idx) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + idx*0.1) + "s"; container.appendChild(span); });
             
             setTimeout(() => { 
-                const splash = document.getElementById('splash');
-                if (splash) splash.style.opacity = '0'; 
-                
+                document.getElementById('splash').style.opacity = '0'; 
                 setTimeout(() => { 
-                    if (splash) splash.style.display = 'none'; 
+                    document.getElementById('splash').style.display = 'none'; 
+                    const activeUsr = localStorage.getItem('sm_active_user');
+                    const activeRole = localStorage.getItem('sm_role');
                     
-                    let activeUsr = localStorage.getItem('sm_active_user');
-                    let activeRole = localStorage.getItem('sm_role');
-
                     if(activeUsr) {
                         currentUser = activeUsr; 
                         document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
-                        
-                        const appSelector = document.getElementById("appSelector");
-                        if(appSelector) appSelector.style.display = "flex";
+                        document.getElementById("appSelector").style.display = "flex";
 
                         const btnSorumlu = document.getElementById('btnSorumluAta');
-                        if (activeRole === 'admin' || activeRole === 'superadmin') {
+                        if (activeRole === 'admin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
-                            if(typeof loadSorumlular === 'function') loadSorumlular(); 
+                            loadSorumlular(); 
                         } else {
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
 
-                        if(typeof loadStaffPool === 'function') loadStaffPool(); 
-                        if(typeof loadArchives === 'function') loadArchives(); 
-                        if(typeof loadPermanentArchives === 'function') loadPermanentArchives(); 
-                        if(typeof loadNews === 'function') loadNews();
-                        if(typeof logAction === 'function') logAction("Sisteme giriş yaptı.");
-                        if(typeof inactivityTime === 'function') inactivityTime();
-
-                        // EĞER REHBERİ BİTİRMEDİYSE BAŞLAT
-                        if(!localStorage.getItem('tutorial_completed')) { 
-                            setTimeout(startTutorial, 2500); 
-                        }
-
+                        loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews();
+                        logAction("Sisteme giriş yaptı.");
                     } else {
                         window.location.href = "index.html"; 
                     }
@@ -570,22 +584,11 @@
             
             const colorGrid = document.getElementById('quickColorGrid'); 
             if(colorGrid) colors.forEach(c => { colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; });
-            
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
         };
 
         function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
-
-        function cikisYap() { 
-            currentUser = ""; 
-            try { smMusic.pause(); } catch(e) {} 
-            localStorage.removeItem('sm_current_tenant'); 
-            localStorage.removeItem('sm_current_kurum_adi'); 
-            localStorage.removeItem('sm_role'); 
-            localStorage.removeItem('sm_active_user'); 
-            window.location.href = 'index.html'; 
-        }
-        function logout() { cikisYap(); } 
+        function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
 
         function bireyselSifreDegistir() {
             const role = localStorage.getItem('sm_role'); const isim = currentUser;
@@ -602,32 +605,23 @@
                 let yeniSifre = prompt("Lütfen YENİ ŞİFRENİZİ girin:"); if (!yeniSifre || yeniSifre.trim() === "") return;
                 eskiSifre = eskiSifre.trim(); yeniSifre = yeniSifre.trim();
                 if (eskiSifre === yeniSifre) return alert("Yeni şifreniz eskisiyle aynı olamaz!");
-                const eskiRef = originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + sifreKriptola(eskiSifre));
+                const eskiRef = originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + eskiSifre);
                 eskiRef.once('value').then(snap => {
                     if (snap.exists() && snap.val().isim === isim) {
                         const personelVerisi = snap.val();
-                        originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + sifreKriptola(yeniSifre)).once('value').then(yeniSnap => {
+                        originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniSifre).once('value').then(yeniSnap => {
                             if (yeniSnap.exists()) return alert("Bu şifre zaten kullanımda, lütfen başka bir şifre seçin!");
-                            originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + sifreKriptola(yeniSifre)).set(personelVerisi).then(() => { eskiRef.remove().then(() => { alert("Şifreniz başarıyla değiştirildi! Güvenliğiniz için çıkış yapılıyor, lütfen yeni şifrenizle tekrar girin."); logout(); }); });
+                            originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniSifre).set(personelVerisi).then(() => { eskiRef.remove().then(() => { alert("Şifreniz başarıyla değiştirildi! Güvenliğiniz için çıkış yapılıyor, lütfen yeni şifrenizle tekrar girin."); logout(); }); });
                         });
                     } else { alert("Eski şifrenizi hatalı girdiniz!"); }
                 });
             }
         }
 
-        function sifreKriptola(sifre) { return btoa(unescape(encodeURIComponent(sifre + "_SM2026_SECURE"))); }
-
         function kaydetSorumlu() {
-            const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); 
-            const sifre = document.getElementById('sorumluSifre').value.trim();
+            const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); const sifre = document.getElementById('sorumluSifre').value.trim();
             if(!isim || !sifre) return alert("Lütfen havuzdan isim seçin ve şifre belirleyin!");
-            let kriptoluSifre = sifreKriptola(sifre); 
-            originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + kriptoluSifre).set({ isim: isim, rol: "user" }).then(() => { 
-                showToast("Yönetici Eklendi! ✅"); 
-                document.getElementById('sorumluIsim').value = ""; 
-                document.getElementById('sorumluSifre').value = ""; 
-                logAction(`Yeni yönetici atadı: ${isim} (Şifre Kriptolandı)`); 
-            });
+            originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).set({ isim: isim, rol: "user" }).then(() => { showToast("Yönetici Eklendi! ✅"); document.getElementById('sorumluIsim').value = ""; document.getElementById('sorumluSifre').value = ""; logAction(`Yeni yönetici atadı: ${isim}`); });
         }
 
         function loadSorumlular() {
@@ -635,11 +629,11 @@
                 const list = document.getElementById('sorumluListesi'); if(!list) return; list.innerHTML = "";
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([sif, data]) => { 
-                        list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center;">
-                            <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--success); font-size:10px; margin-left:8px; border:1px solid var(--success); padding:2px 6px; border-radius:4px;">🔒 Kriptolu</span></span>
+                        list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
+                            <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--warning); margin-left:8px; background:rgba(250,204,21,0.1); padding:2px 8px; border-radius:6px; border:1px dashed var(--warning);">${sif}</span></span>
                             <div style="display:flex; gap:10px; align-items:center;">
-                                <button class="btn btn-green" style="padding:6px 12px; font-size:10px;" onclick="degistirSorumluSifre(event, '${sif}', '${data.isim}')">✏️ Sıfırla</button>
-                                <button class="btn btn-red" style="padding:6px 12px; font-size:10px;" onclick="silSorumlu(event, '${sif}', '${data.isim}')">X</button>
+                                <button class="btn" style="background:rgba(16,185,129,0.2); border:1px solid var(--success); color:var(--success); padding:6px 12px; font-size:10px;" onclick="degistirSorumluSifre(event, '${sif}', '${data.isim}')">✏️ Şifre</button>
+                                <button class="btn" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px;" onclick="silSorumlu(event, '${sif}', '${data.isim}')">X</button>
                             </div>
                         </div>`; 
                     });
@@ -647,16 +641,12 @@
             });
         }
 
-        function degistirSorumluSifre(e, eskiKriptoluSifre, isim) {
-            e.stopPropagation(); 
-            let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin (Eski şifreyi göremezsiniz, sadece sıfırlayabilirsiniz):");
+        function degistirSorumluSifre(e, eskiSifre, isim) {
+            e.stopPropagation(); let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
             if(yeniSifre && yeniSifre.trim() !== "") {
-                yeniSifre = yeniSifre.trim(); 
-                let yeniKriptoluSifre = sifreKriptola(yeniSifre);
-                originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniKriptoluSifre).set({ isim: isim, rol: "user" }).then(() => {
-                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKriptoluSifre).remove().then(() => { 
-                        showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini sıfırladı.`); 
-                    });
+                yeniSifre = yeniSifre.trim(); if(yeniSifre === eskiSifre) return;
+                originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniSifre).set({ isim: isim, rol: "user" }).then(() => {
+                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiSifre).remove().then(() => { showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); });
                 });
             }
         }
@@ -689,7 +679,7 @@
                             </div>
                             <div class="news-time">🕒 ${val.time}</div>${repliesHtml}
                             <div class="news-actions">${reactionsHtml}
-                                <div class="emoji-picker-wrapper"><div class="reaction-btn" onclick="toggleEmojiPicker('${id}')" style="border-radius:50%; width:28px; height:28px; justify-content:center; padding:0;">➕</div>
+                                <div class="emoji-picker-wrapper"><div class="reaction-btn" onclick="toggleEmojiPicker('${id}')" style="border-radius:50%; width:28px; height:28px; justify-content:center; padding:0; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.3);">➕</div>
                                     <div id="emoji-picker-${id}" class="emoji-picker"><span class="emoji-item" onclick="toggleReaction('${id}', '👍')">👍</span><span class="emoji-item" onclick="toggleReaction('${id}', '❤️')">❤️</span><span class="emoji-item" onclick="toggleReaction('${id}', '😂')">😂</span><span class="emoji-item" onclick="toggleReaction('${id}', '🔥')">🔥</span><span class="emoji-item" onclick="toggleReaction('${id}', '🎉')">🎉</span><span class="emoji-item" onclick="toggleReaction('${id}', '👏')">👏</span></div>
                                 </div><button class="reply-btn" onclick="toggleReplyBox('${id}')">↩️ Yanıtla</button>
                             </div>
@@ -706,62 +696,9 @@
         function toggleEmojiPicker(id) { document.querySelectorAll('.emoji-picker.active').forEach(p => { if(p.id !== `emoji-picker-${id}`) p.classList.remove('active'); }); document.getElementById(`emoji-picker-${id}`).classList.toggle('active'); }
         function toggleReaction(newsId, emoji) { if(!currentUser) return; const ref = db.ref(`haberler/${newsId}/reactions/${emoji}/${currentUser}`); ref.once('value', snap => { if(snap.exists()) ref.remove(); else ref.set(true); }); const picker = document.getElementById(`emoji-picker-${newsId}`); if(picker) picker.classList.remove('active'); }
         
-        function logAction(actionText, detay = "") { 
-            if(!currentUser) return; 
-            const now = new Date();
-            db.ref("islem_loglari").push({ 
-                user: currentUser, action: actionText, detay: detay,
-                time: now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}),
-                date: now.toLocaleDateString('tr-TR', {day: '2-digit', month: '2-digit', year: 'numeric'}),
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            }); 
-        }
+        function logAction(actionText) { if(!currentUser) return; db.ref("islem_loglari").push({ user: currentUser, action: actionText, time: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}) }); }
+        db.ref("islem_loglari").limitToLast(30).on("value", snap => { const l = document.getElementById("logList"); l.innerHTML = ""; if(snap.val()) { Object.values(snap.val()).reverse().forEach(val => { l.innerHTML += `<div class="log-item"><span class="log-user">${val.user}</span> <span style="flex:1; margin-left:10px;">${val.action}</span> <span style="color:#64748b; font-size:10px;">${val.time}</span></div>`; }); } });
 
-        db.ref("islem_loglari").orderByChild("timestamp").limitToLast(50).on("value", snap => { 
-            const l = document.getElementById("logList"); l.innerHTML = ""; 
-            if(snap.val()) { 
-                let logs = []; snap.forEach(child => { logs.push(child.val()); });
-                logs.reverse().forEach(val => { 
-                    l.innerHTML += `
-                    <div class="log-item">
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 5px;">
-                            <span class="log-user">👤 ${val.user.toUpperCase()}</span>
-                            <span style="color:#64748b; font-size:10px; font-family:monospace;">📅 ${val.date || ''} - 🕒 ${val.time}</span>
-                        </div>
-                        <div style="color:#e2e8f0; font-size:13px; font-weight:500;"><span style="color:#38bdf8;">▶</span> ${val.action}</div>
-                        ${val.detay ? `<div style="color:#475569; font-size:10px; margin-top:5px; font-family:monospace;">[DETAY]: ${val.detay}</div>` : ''}
-                    </div>`; 
-                }); 
-            } else { l.innerHTML = "<div style='color:#64748b; text-align:center; padding:20px; font-size:12px; font-style:italic;'>Sistemde henüz bir işlem kaydı yok.</div>"; }
-        });
-
-        // Çözüm Merkezi Kodları
-        function openSupportModal() { document.getElementById('supportModal').style.display = 'flex'; setTimeout(() => document.getElementById('supportModal').classList.add('show'), 10); loadTickets(); }
-        function closeSupportModal() { document.getElementById('supportModal').classList.remove('show'); setTimeout(() => document.getElementById('supportModal').style.display = 'none', 400); }
-        function sendTicket() {
-            const val = document.getElementById('ticketInput').value.trim();
-            if(!val) return alert("Lütfen önce bir mesaj yazın!");
-            const currentTenant = localStorage.getItem('sm_current_tenant') || "Bilinmiyor";
-            originalRef("cozum_merkezi").push({ tenant: currentTenant, user: currentUser, text: val, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'numeric'}), status: 'Bekliyor', adminReply: '' }).then(() => {
-                document.getElementById('ticketInput').value = ''; showToast("Talebiniz başarıyla iletildi! 🎧"); logAction("Çözüm Merkezine yeni talep gönderdi.");
-            });
-        }
-        function loadTickets() {
-            originalRef("cozum_merkezi").on('value', snap => {
-                const list = document.getElementById('ticketList'); list.innerHTML = "";
-                const currentTenant = localStorage.getItem('sm_current_tenant'); const isSuperAdmin = localStorage.getItem('sm_role') === 'superadmin'; let biletSayisi = 0;
-                if(snap.val()) {
-                    Object.entries(snap.val()).reverse().forEach(([id, t]) => {
-                        if (!isSuperAdmin && t.tenant !== currentTenant) return;
-                        biletSayisi++;
-                        let statusColor = t.status === 'Çözüldü' ? 'var(--success)' : (t.status === 'İnceleniyor' ? '#3b82f6' : 'var(--warning)');
-                        let replyHtml = t.adminReply ? `<div style="margin-top: 12px; background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--success); padding: 10px; border-radius: 6px; font-size: 12px; color: #a7f3d0;"><strong>⚡ YETKİLİ CEVABI:</strong><br>${t.adminReply}</div>` : '';
-                        list.innerHTML += `<div class="ticket-item"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;"><span style="color:var(--text); font-weight:800; font-size:12px;">👤 ${t.user}</span><span style="color:${statusColor}; font-size:10px; border:1px solid ${statusColor}; padding:3px 8px; border-radius:12px; font-weight:800;">${t.status.toUpperCase()}</span></div><div style="font-size: 13px; color: #e2e8f0; line-height: 1.5;">${t.text}</div>${replyHtml}<div style="font-size: 9px; color: #64748b; margin-top: 10px; text-align: right; font-family: monospace;">Gönderim: ${t.time}</div></div>`;
-                    });
-                }
-                if(biletSayisi === 0) list.innerHTML = "<div style='text-align:center; color:#64748b; padding:30px; font-size:12px;'>SİSTEMDE KAYITLI TALEBİNİZ BULUNMAMAKTADIR.</div>";
-            });
-        }
         function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; let count = 0; staffList = []; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); } document.getElementById("staffCounter").innerText = count; }); }
         function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; const lines = raw.split('\n'); lines.forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction(`${lines.length} personel ekledi.`); inp.value = ""; }
         function removeStaff(e, id) { e.stopPropagation(); if(confirm("Kişiyi havuzdan sil?")) db.ref("personel_havuzu").child(id).remove(); }
@@ -803,7 +740,7 @@
             
             const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; 
             wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); 
-            wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff; margin-top:15px;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:15px; padding-top:15px; border-top:1px dashed rgba(255,255,255,0.1);"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">❌ KAPAT</button> </div> `; 
+            wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; 
             if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); 
             saveHistory(); updateAllStats(); openModal('tableModalOverlay'); 
         }
@@ -887,7 +824,7 @@
         }
 
         // =========================================
-        // HÜCRE İŞLEMLERİ VE İSTATİSTİKLER
+        // 12. HÜCRE İŞLEMLERİ 
         // =========================================
         function updateAllStats() {
             document.querySelectorAll("table tbody tr").forEach(row => {
@@ -905,7 +842,26 @@
 
         function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
         function openShiftMenu(e, c) { e.preventDefault(); if (!c.classList.contains('selected-cell')) { document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); c.classList.add('selected-cell'); } activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
-        function openStaffQuickMenu(e, btn) { e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; document.querySelectorAll('.select-icon.open').forEach(el => { if(el !== btn) el.classList.remove('open'); }); btn.classList.add('open'); const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; const poolNames = Array.from(document.querySelectorAll("#staffPool input")).map(i => i.value); poolNames.forEach(n => { const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; d.onclick = () => { saveHistory(); activeCell.innerText = n; m.style.display = "none"; btn.classList.remove('open'); }; m.appendChild(d); }); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
+        
+        // 🔥 OK İŞARETİ AÇILIŞ ANİMASYONU VE LİSTE 🔥
+        function openStaffQuickMenu(e, btn) { 
+            e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; 
+            
+            // Diğer açık olan okları kapat, tıklananı aç
+            document.querySelectorAll('.select-icon.open').forEach(el => { if(el !== btn) el.classList.remove('open'); });
+            btn.classList.add('open');
+
+            const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; 
+            const poolNames = Array.from(document.querySelectorAll("#staffPool input")).map(i => i.value); 
+            poolNames.forEach(n => { 
+                const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; 
+                d.onclick = () => { 
+                    saveHistory(); activeCell.innerText = n; m.style.display = "none"; btn.classList.remove('open'); 
+                }; 
+                m.appendChild(d); 
+            }); 
+            m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; 
+        }
 
         function saveHistory() { const cont = document.getElementById("tablesContainer").innerHTML; historyStack.push(cont); if(historyStack.length > 25) historyStack.shift(); }
         function undo() { if(historyStack.length > 0) { document.getElementById("tablesContainer").innerHTML = historyStack.pop(); updateAllStats(); } }
@@ -917,12 +873,24 @@
             const cell = e.target.closest('td, th');
             if(cell && cell.closest('table') && !cell.closest('.table-header') && !cell.classList.contains('no-export')) { isDraggingCells = true; startSelectCell = cell; document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); cell.classList.add('selected-cell'); if (cell.classList.contains('shift-cell')) activeCell = cell; } else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn') && !e.target.closest('.mini-swatch') && e.target.id !== "customColorInput") { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
         });
+        
+        // 🔥 EKRANIN ORTASINDA AÇILAN DEVASA İĞNE (NOT) SİSTEMİ 🔥
         document.addEventListener('mouseover', e => { 
             if(isDraggingCells) { const cell = e.target.closest('td, th'); if(cell && cell.closest('table') === startSelectCell.closest('table') && !cell.classList.contains('no-export')) selectCellRange(startSelectCell, cell); } 
-            const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]'); const tooltip = document.getElementById('centralPinTooltip');
-            if(shiftCellWithPin && tooltip) { tooltip.innerText = shiftCellWithPin.getAttribute('data-pin'); tooltip.style.display = 'block'; }
+            
+            const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]');
+            const tooltip = document.getElementById('centralPinTooltip');
+            if(shiftCellWithPin && tooltip) {
+                tooltip.innerText = shiftCellWithPin.getAttribute('data-pin');
+                tooltip.style.display = 'block';
+            }
         });
-        document.addEventListener('mouseout', e => { const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]'); const tooltip = document.getElementById('centralPinTooltip'); if(shiftCellWithPin && tooltip) { tooltip.style.display = 'none'; } });
+        document.addEventListener('mouseout', e => {
+            const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]');
+            const tooltip = document.getElementById('centralPinTooltip');
+            if(shiftCellWithPin && tooltip) { tooltip.style.display = 'none'; }
+        });
+
         document.addEventListener('mouseup', () => { isDraggingCells = false; });
         document.addEventListener('selectstart', e => { if(isDraggingCells) e.preventDefault(); }); 
         
@@ -934,7 +902,7 @@
         }
 
         // =========================================
-        // EXCEL KOPYALAMA MOTORU
+        // 13. KUSURSUZ EXCEL KOPYALAMA MOTORU
         // =========================================
         function getCleanCellText(cell) { 
             if (cell.classList.contains('hidden-by-snipper') || cell.classList.contains('no-export')) return null;
@@ -1038,38 +1006,129 @@
         function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); }
         function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) closeModal('tableModalOverlay'); } }
 
-        document.addEventListener('click', e => { const th = e.target.closest('th'); if(th && th.closest('table.snipping-mode')) { const table = th.closest('table'); const tr = th.parentNode; let colIndex = Array.from(tr.children).indexOf(th); if(colIndex > 1) { saveHistory(); table.querySelectorAll('tr').forEach(row => { if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper'); }); } } });
+        document.addEventListener('click', e => { 
+            const th = e.target.closest('th'); if(th && th.closest('table.snipping-mode')) { const table = th.closest('table'); const tr = th.parentNode; let colIndex = Array.from(tr.children).indexOf(th); if(colIndex > 1) { saveHistory(); table.querySelectorAll('tr').forEach(row => { if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper'); }); } } 
+        });
 
-        document.addEventListener('contextmenu', e => { const th = e.target.closest('th[data-date]'); if(th) { e.preventDefault(); activeHeaderCell = th; const menu = document.getElementById("headerContextMenu"); menu.style.display = "block"; let x = e.pageX; let y = e.pageY; if (x + 280 > window.innerWidth) x = window.innerWidth - 290; menu.style.left = x + "px"; menu.style.top = y + "px"; } });
+        window.onclick = (e) => { 
+            if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { 
+                document.getElementById("contextMenu").style.display = "none"; 
+                document.getElementById("staffSelectMenu").style.display = "none"; 
+                if(document.getElementById("headerContextMenu")) document.getElementById("headerContextMenu").style.display = "none"; 
+                document.querySelectorAll('.select-icon.open').forEach(icon => icon.classList.remove('open'));
+            } 
+        };
+        
+        // 🔥 PWA (CİHAZA KURMA) MOTORU 🔥
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
 
-      // 🔥 GÜN GÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
-        function showTodaySummary(selectedDateStr = null) {
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Kurulum destekleyen bir cihazsa ve Chrome onay verdiyse butonu üst menüde göster
+            let installBtn = document.getElementById('btnInstallApp');
+            if(installBtn) installBtn.style.display = 'inline-block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Kullanıcı kurulumu onayladı');
+                        document.getElementById('btnInstallApp').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // 🔥 TABLOYU KALICI DEPOYA ATMA FONKSİYONU 🔥
+        function sendSingleTableToArchive(btn) {
+            if(!confirm("Bu tabloyu 'Kalıcı Depo'ya (Geçmiş Aylar Arşivi) göndermek istediğinize emin misiniz?")) return;
+            
+            const wrapper = btn.closest('.table-wrapper');
+            let tName = wrapper.getAttribute("data-tablename");
+            let sDate = wrapper.getAttribute("data-startdt");
+            let colCount = wrapper.getAttribute("data-colcount");
+            
+            // Ekrandaki verileri topla
+            const rowsData = [];
+            wrapper.querySelectorAll("tbody tr").forEach(tr => { 
+                let nameEl = tr.querySelector(".editable-name"); 
+                if (!nameEl) return; 
+                let name = nameEl.innerText.trim(); 
+                let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ 
+                    text: td.innerText.replace(/[\n\r]/g, ""), 
+                    bg: td.style.background || "transparent", 
+                    pin: td.getAttribute("data-pin") || "" 
+                })); 
+                rowsData.push({ name: name, shifts: shifts }); 
+            });
+            
+            let notesElement = wrapper.querySelector(".table-notes"); 
+            let notesVal = notesElement ? notesElement.value : "";
+            
+            // Tablo objesi oluştur
+            const tableObj = { 
+                tableName: tName, 
+                startDate: sDate, 
+                colCount: colCount, 
+                data: rowsData, 
+                notes: notesVal 
+            };
+            
+            // Kalıcı depoya (Geçmiş Aylara) kaydet
+            const saveData = { 
+                name: tName + " (Tekli Kayıt)", 
+                date: new Date().toLocaleString('tr-TR'), 
+                tables: [tableObj] 
+            };
+            
+            db.ref("kalici_depo").push(saveData).then(() => {
+                showToast("📦 Tablo Kalıcı Depoya Gönderildi!");
+                logAction(`'${tName}' kalıcı depoya atıldı.`);
+                
+                // Depoya atılan tabloyu ekrandan temizle
+                wrapper.remove();
+                if(document.querySelectorAll('.table-wrapper').length === 0) {
+                    closeModal('tableModalOverlay');
+                }
+            }).catch(err => {
+                alert("Hata oluştu: " + err.message);
+            });
+        }
+
+        // 🔥 TARİH BAŞLIKLARI SAĞ TIK MENÜSÜ TETİKLEYİCİSİ 🔥
+        document.addEventListener('contextmenu', e => {
+            const th = e.target.closest('th[data-date]');
+            if(th) {
+                e.preventDefault(); // Tarayıcının kendi menüsünü engelle
+                activeHeaderCell = th;
+                const menu = document.getElementById("headerContextMenu");
+                menu.style.display = "block";
+                
+                // Menünün ekranın sağına taşıp kaybolmasını önleyen akıllı hizalama
+                let x = e.pageX;
+                let y = e.pageY;
+                if (x + 280 > window.innerWidth) x = window.innerWidth - 290; 
+                
+                menu.style.left = x + "px";
+                menu.style.top = y + "px";
+            }
+        });
+
+        // 🔥 BUGÜN KİMLER ÇALIŞIYOR (CANLI ÖZET) MOTORU 🔥
+        function showTodaySummary() {
             openModal('todaySummaryModal');
             
-            let targetDate = new Date();
-            const datePicker = document.getElementById('summaryDatePicker');
-            
-            // Zaman dilimi hatasını önlemek için güvenli formatlama
-            const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
-            const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
-
-            if (selectedDateStr) {
-                // Eğer takvimden yeni bir tarih seçildiyse
-                targetDate = new Date(selectedDateStr);
-            } else {
-                // Eğer butonla ilk kez açılıyorsa (Takvimde bugünü ayarla)
-                if(!datePicker.value) {
-                    datePicker.value = localISOTime;
-                } else {
-                    targetDate = new Date(datePicker.value);
-                }
-            }
-            
-            targetDate.setHours(0,0,0,0);
-            
-            const todayStr = `${String(targetDate.getDate()).padStart(2,'0')}.${String(targetDate.getMonth()+1).padStart(2,'0')}.${targetDate.getFullYear()}`;
+            const today = new Date();
+            const todayStr = `${String(today.getDate()).padStart(2,'0')}.${String(today.getMonth()+1).padStart(2,'0')}.${today.getFullYear()}`;
             const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-            document.getElementById('todaySummaryDateText').innerText = `Seçilen Gün: ${todayStr} - ${dayNames[targetDate.getDay()]}`;
+            document.getElementById('todaySummaryDate').innerText = `Bugün: ${todayStr} - ${dayNames[today.getDay()]}`;
             
             const listDay = document.getElementById('listDay');
             const listNight = document.getElementById('listNight');
@@ -1093,12 +1152,14 @@
                             if(!startDt) return;
                             
                             startDt.setHours(0,0,0,0);
+                            let todayCheck = new Date(); 
+                            todayCheck.setHours(0,0,0,0);
                             
-                            // Seçilen tarih, bu tablonun kaçıncı gününe (sütununa) denk geliyor?
-                            let timeDiff = targetDate.getTime() - startDt.getTime();
+                            // Bugünün tarihi, bu tablonun kaçıncı gününe (sütununa) denk geliyor?
+                            let timeDiff = todayCheck.getTime() - startDt.getTime();
                             let dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
                             
-                            // Eğer seçilen tarih bu tablonun içindeyse
+                            // Eğer bugün bu tablonun içindeyse (0 ile colCount arasındaysa)
                             if(dayDiff >= 0 && dayDiff < (t.colCount || 30)) {
                                 t.data.forEach(row => {
                                     if(!row.shifts || !row.shifts[dayDiff]) return;
@@ -1116,11 +1177,11 @@
                                     if(["HT", "İ", "R", "Yİ", "Nİ", "RT", "RAPOR", "İZİN"].includes(shiftVal)) {
                                         listOff.innerHTML += itemHtml; offCount++;
                                     } 
-                                    // Gece Nöbeti Ayrımı (BAŞLANGIÇ saati 16, 20, 24 olanlar veya NÖBET kelimesi içerenler)
-                                    else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET") || shiftVal === "N") {
+                                    // Gece Nöbeti Ayrımı (İçinde 20, 16, 24 geçiyorsa veya NÖBET kelimesi varsa)
+                                    else if(shiftVal.includes("20:") || shiftVal.includes("16:") || shiftVal.includes("24:") || shiftVal.includes("NÖBET")) {
                                         listNight.innerHTML += itemHtml; nightCount++;
                                     } 
-                                    // Geri kalan herkes (08:00 ile başlayanlar dahil) Gündüz Çalışanı
+                                    // Geri kalan herkes Gündüz Çalışanı
                                     else {
                                         listDay.innerHTML += itemHtml; dayCount++;
                                     }
@@ -1136,14 +1197,11 @@
                 document.getElementById('cOff').innerText = offCount;
                 
                 // Eğer kimse yoksa
-                if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gündüz mesaisinde kimse bulunamadı.</div>';
-                if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gece nöbetinde kimse bulunamadı.</div>';
-                if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli/raporlu kimse bulunamadı.</div>';
+                if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bugün gündüz mesaisinde kimse bulunamadı.</div>';
+                if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bugün gece nöbetinde kimse bulunamadı.</div>';
+                if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bugün izinli/raporlu kimse bulunamadı.</div>';
             });
         }
     </script>
 </body>
 </html>
-
-
-
