@@ -314,7 +314,7 @@
             localStorage.removeItem('sm_block_time');
         }
 
-        function patronKaydiOlustur() {
+        async function patronKaydiOlustur() {
             const email = document.getElementById("regEmail").value.trim();
             const s1 = document.getElementById("regSifre1").value;
             const s2 = document.getElementById("regSifre2").value;
@@ -325,14 +325,28 @@
             if(!email || !s1 || !kurumAd || !kurumKod || !patronAd) return alert("Lütfen zorunlu alanları doldurun!");
             if(s1 !== s2) return alert("Şifreler eşleşmiyor!");
 
-            auth.createUserWithEmailAndPassword(email, s1).then((uc) => {
-                rtdb.ref('kurum_kayitlari/' + kurumKod).set({ kurumAdi: kurumAd, patronEmail: email, patronIsim: patronAd });
-                
-                uc.user.sendEmailVerification().then(() => {
-                    alert("Kayıt başarılı! Lütfen " + email + " adresine gelen doğrulama linkine tıklayın.");
-                    switchTab('giris');
-                });
-            }).catch(e => alert("Hata: " + e.message));
+            try {
+                // Şifreyi hemen kriptoluyoruz
+                let kriptoluSifre = await sifreKriptola(s1);
+
+                auth.createUserWithEmailAndPassword(email, s1).then((uc) => {
+                    // Kurumun ana bilgilerini kaydet
+                    rtdb.ref('kurum_kayitlari/' + kurumKod).set({ kurumAdi: kurumAd, patronEmail: email, patronIsim: patronAd });
+                    
+                    // 🔥 YENİ: Patronun şifresini de (kriptolu olarak) yönetici havuzuna ekle
+                    rtdb.ref("kurum_alt_yoneticileri/" + kurumKod + "/" + kriptoluSifre).set({ 
+                        isim: patronAd, 
+                        rol: "admin" 
+                    });
+
+                    uc.user.sendEmailVerification().then(() => {
+                        alert("Kayıt başarılı! Lütfen " + email + " adresine gelen doğrulama linkine tıklayın.");
+                        switchTab('giris');
+                    });
+                }).catch(e => alert("Hata: " + e.message));
+            } catch (error) {
+                alert("Kriptolama Hatası: " + error.message);
+            }
         }
 
         // 🔥 GÜVENLİK: ŞİFRE KRİPTOLAMA MOTORU (BASE64 + SALT) 🔥
