@@ -1602,6 +1602,9 @@
         // ============================================================================
         // 🧠 SHIFTMASTER A.I. CORE V4 (SUDOKU ÇÖZÜCÜ VE ADALET MOTORU) 🧠
         // ============================================================================
+        // ============================================================================
+        // 🧠 SHIFTMASTER A.I. CORE V5 (SUDOKU ÇÖZÜCÜ VE KUSURSUZ ADALET MOTORU) 🧠
+        // ============================================================================
         function startAiDistribution() {
             let dayCode = document.getElementById('aiDayShiftSelect').value;
             let nightCode = document.getElementById('aiNightShiftSelect').value;
@@ -1646,7 +1649,8 @@
             let maxCons = 4;
             document.querySelectorAll('.ai-pattern-cb[data-type="day"]:checked').forEach(cb => maxCons = Math.max(maxCons, parseInt(cb.value)));
 
-            let maxWeeklyHours = parseInt(document.getElementById('aiMaxHours').value) || 45;
+            let minWeeklyHours = parseInt(document.getElementById('aiMinHours').value) || 40;
+            let maxWeeklyHours = parseInt(document.getElementById('aiMaxHours').value) || 48;
 
             let tables = document.querySelectorAll('.table-wrapper');
             if(tables.length === 0) return alert("Ekranda doldurulacak açık bir tablo yok!");
@@ -1674,10 +1678,11 @@
                     consecutive: 0,
                     weeklyHours: 0,
                     totalHours: 0,
+                    nightCount: 0,
                     fixedShift: null
                 }));
 
-                // Sabit Ekstraları Personele Zimmetle (Sadece 1 kez)
+                // Sabit Ekstraları Personele Zimmetle
                 let fixedExtras = extras.filter(e => e.type === 'fixed');
                 fixedExtras.forEach(fe => {
                     for(let i=0; i<fe.count; i++) {
@@ -1695,7 +1700,7 @@
                     let dow = d.getDay();
                     let reqIndex = dow === 0 ? 7 : dow;
 
-                    // Her Pazartesi haftalık saatleri sıfırla ki 45 saat adaletli yürüsün
+                    // Her Pazartesi haftalık saatleri sıfırla
                     if (dow === 1) staff.forEach(s => s.weeklyHours = 0);
 
                     let cReqG = reqG[reqIndex];
@@ -1706,12 +1711,7 @@
 
                     // 🛑 ADIM 1: ZORUNLU İZİNLERİ KES (Yapay Zekanın Kuralları Çiğnemesini Engeller)
                     staff.forEach(s => {
-                        let mustRest = false;
-                        if (s.restNeeded > 0) mustRest = true; // Dün gece nöbetteyse
-                        if (s.consecutive >= maxCons) mustRest = true; // Çok peş peşe çalıştıysa
-                        if (s.weeklyHours + 8 > maxWeeklyHours) mustRest = true; // Haftalık saati patlıyorsa
-
-                        if (mustRest) {
+                        if (s.restNeeded > 0 || s.consecutive >= maxCons) {
                             s.assignedToday = offCode;
                             s.assignedHours = 0;
                             if(s.restNeeded > 0) s.restNeeded--;
@@ -1719,24 +1719,33 @@
                         }
                     });
 
-                    // 📌 ADIM 2: SABİT GÜNDÜZCÜLERİ YAZ
+                    // 📌 ADIM 2: SABİT GÜNDÜZCÜLERİ YAZ (Eğer saatleri dolmadıysa)
                     staff.forEach(s => {
                         if(!s.assignedToday && s.fixedShift) {
-                            s.assignedToday = s.fixedShift.code;
-                            s.assignedHours = s.fixedShift.hours;
-                            s.consecutive++;
+                            if(s.weeklyHours + s.fixedShift.hours <= maxWeeklyHours) {
+                                s.assignedToday = s.fixedShift.code;
+                                s.assignedHours = s.fixedShift.hours;
+                                s.consecutive++;
+                            }
                         }
                     });
 
-                    // 🌙 ADIM 3: GECE NÖBETLERİNİ DAĞIT (Adalet terazisi ile)
-                    let eligibleForNight = staff.filter(s => !s.assignedToday);
-                    eligibleForNight.sort((a,b) => a.totalHours - b.totalHours); // En az saati olana kilitle
+                    // 🌙 ADIM 3: GECE NÖBETLERİNİ DAĞIT (Klonlamayı önlemek için Math.random eklendi)
+                    let eligibleForNight = staff.filter(s => !s.assignedToday && (s.weeklyHours + nightHours) <= maxWeeklyHours);
+                    // Sıralama: Önce az nöbet tutan, saatleri eşitse RASTGELE kura çek!
+                    eligibleForNight.sort((a,b) => {
+                        if(a.nightCount !== b.nightCount) return a.nightCount - b.nightCount;
+                        if(a.totalHours !== b.totalHours) return a.totalHours - b.totalHours;
+                        return 0.5 - Math.random(); 
+                    });
+                    
                     let assignedNightCount = 0;
                     for(let i=0; i < eligibleForNight.length && assignedNightCount < cReqN; i++) {
                         let s = eligibleForNight[i];
                         s.assignedToday = nightCode;
                         s.assignedHours = nightHours;
                         s.consecutive++;
+                        s.nightCount++;
                         s.restNeeded = nightRest; // Yarınki iznini sisteme kaydet
                         assignedNightCount++;
                     }
@@ -1744,8 +1753,11 @@
                     // 🔀 ADIM 4: DEĞİŞKEN EKSTRA VARDİYALARI DAĞIT
                     cRandomExtras.forEach(re => {
                         let assignedExtra = 0;
-                        let eligibleForExtra = staff.filter(s => !s.assignedToday);
-                        eligibleForExtra.sort((a,b) => a.totalHours - b.totalHours);
+                        let eligibleForExtra = staff.filter(s => !s.assignedToday && (s.weeklyHours + re.hours) <= maxWeeklyHours);
+                        eligibleForExtra.sort((a,b) => {
+                            if(a.totalHours !== b.totalHours) return a.totalHours - b.totalHours;
+                            return 0.5 - Math.random();
+                        });
                         for(let i=0; i < eligibleForExtra.length && assignedExtra < re.count; i++) {
                             eligibleForExtra[i].assignedToday = re.code;
                             eligibleForExtra[i].assignedHours = re.hours;
@@ -1756,8 +1768,11 @@
 
                     // ☀️ ADIM 5: ANA GÜNDÜZ KOTASINI DOLDUR
                     let assignedDayCount = 0;
-                    let eligibleForDay = staff.filter(s => !s.assignedToday);
-                    eligibleForDay.sort((a,b) => a.totalHours - b.totalHours);
+                    let eligibleForDay = staff.filter(s => !s.assignedToday && (s.weeklyHours + dayHours) <= maxWeeklyHours);
+                    eligibleForDay.sort((a,b) => {
+                        if(a.totalHours !== b.totalHours) return a.totalHours - b.totalHours;
+                        return 0.5 - Math.random();
+                    });
                     for(let i=0; i < eligibleForDay.length && assignedDayCount < cReqG; i++) {
                         let s = eligibleForDay[i];
                         s.assignedToday = dayCode;
@@ -1766,20 +1781,19 @@
                         assignedDayCount++;
                     }
 
-                    // 🕳️ ADIM 6: KARA DELİKLERİ KAPAT (Sistemin en can alıcı yeri!)
+                    // 🕳️ ADIM 6: KARA DELİKLERİ KAPAT (Eksik saati olanı çalıştır, yoksa HT yaz)
                     let stillEmpty = staff.filter(s => !s.assignedToday);
                     stillEmpty.forEach(s => {
-                        // Kotalar dolsa bile, bu adamın haftalık saati eksikse ona zorla GÜNDÜZ yaz! (Fazla kişi olsun sorun değil kuralı)
-                        if (s.weeklyHours + dayHours <= maxWeeklyHours && s.consecutive < maxCons) {
+                        // Eğer kotayı doldurduk ama adamın saati 40'ın altındaysa ve peş peşe limiti aşmıyorsa zorla gündüze çağır
+                        if (s.weeklyHours + dayHours <= maxWeeklyHours && s.weeklyHours < minWeeklyHours && s.consecutive < maxCons) {
                             s.assignedToday = dayCode; 
                             s.assignedHours = dayHours;
                             s.consecutive++;
-                            assignedDayCount++;
                         } else {
-                            // Saati dolmuşsa, o günü boş bırakma, İZİN (HT) yaz!
+                            // Geri kalan herkese İZİN yaz (Tabloda boşluk kalmasın)
                             s.assignedToday = offCode;
                             s.assignedHours = 0;
-                            s.consecutive = 0;
+                            s.consecutive = 0; // Dinlendi
                         }
                     });
 
@@ -1800,10 +1814,12 @@
                         let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
                         cell.style.background = r ? r.color : "transparent";
                         
-                        // Günlük Özette Sayalım
-                        if (s.assignedToday === nightCode || s.assignedToday.includes('20:00') || s.assignedToday.includes('NÖBET')) {
+                        // 🔥 SAYMA HATASI ÇÖZÜLDÜ: Gündüz vardiyasında geçen 20:00 artık gece sayılmıyor!
+                        let isNightShift = (s.assignedToday === nightCode) || s.assignedToday.startsWith('16:') || s.assignedToday.startsWith('20:') || s.assignedToday.startsWith('24:') || s.assignedToday.includes('NÖBET');
+                        
+                        if (isNightShift) {
                             nCount++;
-                        } else if (s.assignedToday !== offCode) {
+                        } else if (s.assignedToday !== offCode && s.assignedToday !== "") {
                             dCount++;
                         }
                     });
@@ -1834,6 +1850,7 @@
     </script>
 </body>
 </html>
+
 
 
 
