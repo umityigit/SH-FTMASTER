@@ -1568,7 +1568,7 @@
         }
 
   // ============================================================================
-// 🧠 SHIFTMASTER A.I. CORE V17 (DESEN TANIMA VE KUSURSUZ 44 SAAT DENGESİ) 🧠
+// 🧠 SHIFTMASTER A.I. CORE V18 (GRANDMASTER - İLERİYİ GÖRME VE KIRMIZI ALARM) 🧠
 // ============================================================================
 function startAiDistribution() {
     let dayCode = document.getElementById('aiDayShiftSelect').value;
@@ -1594,23 +1594,25 @@ function startAiDistribution() {
     saveHistory();
     closeModal('aiGeneratorModal');
     
-    document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI: 2000 İhtimal Taranıyor (Kusursuz Ritim Aranıyor)...";
+    document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
 
     setTimeout(() => {
         let simulations = [];
-        let totalSimulations = 2000; // Kusursuz dengeyi bulmak için 2000 evren yaratıyoruz
+        let totalSimulations = 5000; // Geleceği görmek için 5000 farklı paralel evren!
 
         for(let sim = 0; sim < totalSimulations; sim++) {
             let simStaff = staffNames.map(name => ({
                 name: name,
-                realShifts: [],  // Ekrana basılacak renkli hücreler
-                shiftLog: [],    // Desen taraması için harf dizisi (G, N, O)
+                realShifts: [],  
+                shiftLog: [],    
                 weeklyWorkDays: 0,
                 totalHours: 0,
                 nightCount: 0,
                 dayConsecutive: 0,
-                lastShiftType: 'O' // Başlangıçta herkesi dinlenmiş kabul et
+                lastShiftType: 'O' 
             }));
+
+            let unfilledSlots = 0; // Kırmızı Alarm Sayacı (Hastane boş kalırsa)
 
             for(let c = 0; c < colCount; c++) {
                 let d = new Date(startDt);
@@ -1626,11 +1628,11 @@ function startAiDistribution() {
 
                 simStaff.forEach(s => { s.assignedToday = null; });
 
-                // 🛑 1. GECE ÇIKIŞI İZİN VE HAFTALIK LİMİT (KIRMIZI ÇİZGİ)
+                // 🛑 1. GECE ÇIKIŞI İZİN VE HAFTALIK 4 GÜN LİMİTİ
                 simStaff.forEach(s => {
                     if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) {
                         s.assignedToday = offCode;
-                        s.lastShiftType = 'O'; // Dinlendi
+                        s.lastShiftType = 'O'; 
                     }
                 });
 
@@ -1646,9 +1648,11 @@ function startAiDistribution() {
                     poolN[i].dayConsecutive = 0;
                     nAssigned++;
                 }
+                // Eğer nöbete adam bulunamadıysa (Gelecekteki kara delik)
+                if(nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
 
-                // ☀️ 3. GÜNDÜZ KOTASINI DAĞIT (3 Gündüz yasağı devrede)
-                let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < 2); // 3. günü olanları havuza almaz!
+                // ☀️ 3. GÜNDÜZ KOTASINI DAĞIT
+                let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < 2); // 3 gündüz yasağı
                 poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
                 let dAssigned = 0;
                 for(let i=0; i<poolG.length && dAssigned<cReqG; i++) {
@@ -1658,21 +1662,10 @@ function startAiDistribution() {
                     poolG[i].dayConsecutive++;
                     dAssigned++;
                 }
-                
-                // Eğer havuz yetmezse (kuralı mecburen deleceksek - ki simülasyon bunu ceza ile eleyecek)
-                if(dAssigned < cReqG) {
-                    let emergencyPool = simStaff.filter(s => !s.assignedToday);
-                    emergencyPool.sort(() => 0.5 - Math.random());
-                    for(let i=0; i<emergencyPool.length && dAssigned<cReqG; i++) {
-                        emergencyPool[i].assignedToday = dayCode;
-                        emergencyPool[i].lastShiftType = 'G';
-                        emergencyPool[i].weeklyWorkDays++;
-                        emergencyPool[i].dayConsecutive++;
-                        dAssigned++;
-                    }
-                }
+                // Eğer gündüze adam bulunamadıysa (Gelecekteki kara delik)
+                if(dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
 
-                // 🏖️ 4. GERİ KALAN HERKESE HT YAZ
+                // 🏖️ 4. GERİ KALANLARA İZİN YAZ
                 simStaff.forEach(s => {
                     if (!s.assignedToday) {
                         s.assignedToday = offCode;
@@ -1680,59 +1673,67 @@ function startAiDistribution() {
                         s.dayConsecutive = 0;
                     }
                     
-                    // Kayıt defterine yaz (Desen taraması için N, G veya O)
                     let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === offCode ? 'O' : 'G');
                     s.shiftLog.push(codeChar);
 
-                    // Renkli tablo hücresi oluştur
                     let safeVal = s.assignedToday.replace(/\./g, ':'); 
                     let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
                     s.realShifts.push({ text: s.assignedToday, bg: r ? r.color : "transparent" });
                 });
             }
 
-            // 🕵️‍♂️ SİMÜLASYON RÖNTGENİ VE CEZA PUANI (PATTERN RECOGNITION)
+            // 🕵️‍♂️ SİMÜLASYON RÖNTGENİ VE ÖLÜMCÜL CEZALAR
             let penalty = 0;
+            
+            // Eğer hastane 1 kişi bile eksik kaldıysa (Kara Delik) o senaryoyu YAK!
+            penalty += (unfilledSlots * 50000000); 
+
             let maxN = -1, minN = 9999;
-
             simStaff.forEach(s => {
-                let seq = s.shiftLog.join(''); // Tüm ayı metne çevir (Örn: "GGOONG...")
+                let seq = s.shiftLog.join(''); 
                 
-                // İHLALLERİ SAY VE FATURA KES (Senin Altın Kuralların)
-                let ngMatches = (seq.match(/NG/g) || []).length; // Gece->Gündüz
-                let nnMatches = (seq.match(/NN/g) || []).length; // Gece->Gece
-                let gggMatches = (seq.match(/GGG/g) || []).length; // 3 Gündüz peş peşe
+                // İnsan Biyolojisi Kuralları
+                let ngMatches = (seq.match(/NG/g) || []).length; // Gece->Gündüz (YASAK)
+                let nnMatches = (seq.match(/NN/g) || []).length; // Gece->Gece (YASAK)
+                let gggMatches = (seq.match(/GGG/g) || []).length; // 3 Gündüz (YASAK)
                 
-                penalty += (ngMatches * 1000000); // Milyon puanlık yasak
-                penalty += (nnMatches * 1000000); // Milyon puanlık yasak
-                penalty += (gggMatches * 500000); // Yarım milyon puanlık yasak
+                penalty += (ngMatches * 1000000); 
+                penalty += (nnMatches * 1000000); 
+                penalty += (gggMatches * 500000); 
 
-                // Gece nöbeti adalet kontrolü
                 maxN = Math.max(maxN, s.nightCount);
                 minN = Math.min(minN, s.nightCount);
             });
 
-            // Nöbet adaletsizliğine ceza kes
+            // Nöbet adaleti
             penalty += ((maxN - minN) * 100);
 
             simulations.push({ penalty: penalty, staffData: simStaff });
         }
 
-        // EN KUSURSUZ TABLOLARI SEÇ
+        // EN KUSURSUZ (0 CEZALI) TABLOLARI SEÇ
         simulations.sort((a, b) => a.penalty - b.penalty);
         document.getElementById("tablesContainer").innerHTML = "";
 
         for(let i=0; i<numTablesToGenerate; i++) {
             let bestSim = simulations[i];
             let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.realShifts }));
-            let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Skoru: ${bestSim.penalty}`;
+            let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
             generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
         }
 
-        // ALT GÜNLÜK ÖZET (G/Gc)
+        // 🚨 KIRMIZI ALARMLI GÜNLÜK ÖZET (G/Gc) 🚨
         document.querySelectorAll('.table-wrapper').forEach(wrapper => {
             let sumHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
             for(let c = 0; c < colCount; c++) {
+                let d = new Date(startDt);
+                d.setDate(d.getDate() + c);
+                let dow = d.getDay();
+                let reqIndex = dow === 0 ? 7 : dow;
+                
+                let targetG = reqG[reqIndex];
+                let targetN = reqN[reqIndex];
+
                 let dCount = 0, nCount = 0;
                 wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
                     let cell = tr.querySelectorAll('.shift-cell')[c];
@@ -1742,9 +1743,21 @@ function startAiDistribution() {
                         else if(val !== offCode && val !== "") dCount++;
                     }
                 });
-                sumHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;">${dCount} / ${nCount}</td>`;
-                let d = new Date(startDt); d.setDate(d.getDate() + c);
-                if(d.getDay() === 0) sumHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
+                
+                // KONTROL MEKANİZMASI: İstenen sayının altındaysa KIRMIZI ALARM çal!
+                let isWarning = false;
+                let gText = dCount;
+                let nText = nCount;
+
+                if(dCount < targetG) { gText = `<span style="color:#ef4444;">${dCount}</span>`; isWarning = true; }
+                if(nCount < targetN) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
+                
+                let cellHtml = `${gText} / ${nText}`;
+                if(isWarning) cellHtml = `<span style="color:#ef4444; font-size:12px;">⚠️</span><br>` + cellHtml;
+
+                sumHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;">${cellHtml}</td>`;
+                
+                if(dow === 0) sumHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
             }
             sumHtml += `<td class="total-summary-cell"></td></tr>`;
             wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', sumHtml);
@@ -1752,7 +1765,7 @@ function startAiDistribution() {
 
         updateAllStats();
         document.getElementById("masterArchiveTitle").innerHTML = "📁 AI Tarafından Üretildi";
-        showToast(`✨ AI V17: RÖNTGEN TARAMALI KUSURSUZ TABLO ÜRETİLDİ! ✨`);
+        showToast(`✨ AI V18: GELECEK HESAPLANDI! (5000 SİMÜLASYON) ✨`);
         logAction("Yapay Zeka Monte Carlo ile en eşit tabloyu oluşturdu.");
 
     }, 100);
@@ -1760,6 +1773,7 @@ function startAiDistribution() {
     </script>
 </body>
 </html>
+
 
 
 
