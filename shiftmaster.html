@@ -428,12 +428,83 @@
         <div class="full-modal-content" style="max-width: 1400px; height: 95vh; border-color: #8b5cf6; background: radial-gradient(circle at center, #1e1b4b, #050b14); box-shadow: 0 0 80px rgba(139, 92, 246, 0.4);">
             <div class="modal-header-bar" style="background: rgba(109,40,217,0.3); border-bottom-color: #8b5cf6; padding: 20px 35px;">
                 <div style="font-size:26px; font-weight:900; color:#fff; text-shadow:0 0 15px #8b5cf6;">
-                    🪄 V20 BÜYÜK USTA <span style="font-size:12px; color:#cbd5e1; font-weight:normal; letter-spacing:2px;">(3 Vardiyalı Yapay Zeka Motoru)</span>
+                    🪄 V21 BÜYÜK USTA <span style="font-size:12px; color:#cbd5e1; font-weight:normal; letter-spacing:2px;">(Çift Motorlu Yapay Zeka)</span>
                 </div>
                 <button class="btn btn-red" onclick="closeModal('aiGeneratorModal')">❌ Kapat</button>
             </div>
             
             <div class="modal-body-area" style="padding: 25px; overflow-y: auto;">
+                
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(16,185,129,0.2);">
+                    <label style="color:var(--success); font-weight:900; font-size:14px; display:block; margin-bottom:10px;">⚙️ ÇALIŞMA SİSTEMİ SEÇİMİ</label>
+                    <select id="aiSystemType" class="glass-input" style="width:100%; padding:15px; font-size:16px; font-weight:bold; cursor:pointer; color:#fff; border-color:var(--success);" onchange="toggleAiSystemUI()">
+                        <option value="v18" style="color:black;">🧿 KLASİK V18 MOTORU (İhtiyaca Göre Esnek ve Karışık Dağıtım)</option>
+                        <option value="v21" style="color:black;">🎯 3 VARDİYA DÖNGÜSÜ (Haftalık Sabit Rotasyon ve Joker Sistemi)</option>
+                    </select>
+                </div>
+
+                <div class="ai-panel" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex:1; min-width:200px;">
+                        <label style="font-size: 11px; color: #38bdf8; font-weight:900;">☀️ SABAH VARDİYASI</label>
+                        <select id="aiDayShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#38bdf8;"></select>
+                    </div>
+                    <div style="flex:1; min-width:200px;">
+                        <label style="font-size: 11px; color: #a855f7; font-weight:900;">🌆 AKŞAM VARDİYASI</label>
+                        <select id="aiMidShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#a855f7;"></select>
+                    </div>
+                    <div style="flex:1; min-width:200px;">
+                        <label style="font-size: 11px; color: #facc15; font-weight:900;">🌙 GECE NÖBETİ</label>
+                        <select id="aiNightShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#facc15;"></select>
+                    </div>
+                    <div style="flex:1; min-width:200px;">
+                        <label style="font-size: 11px; color: #ef4444; font-weight:900;">🏖️ DİNLENME (İZİN)</label>
+                        <select id="aiOffShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#ef4444;"></select>
+                    </div>
+                </div>
+
+                <div class="ai-cockpit-grid">
+                    <div class="ai-panel">
+                        <h4 class="ai-panel-title">👥 Nöbet Kadrosu</h4>
+                        <p style="font-size:11px; color:#cbd5e1; margin-top:-5px;" id="aiStaffWarningText">İsim yazıp Ekle'ye basın. 3 Vardiya döngüsü için isimleri 4'ün katları olacak şekilde eklerseniz (4, 8, 12 kişi) tam verim alırsınız.</p>
+                        
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input type="text" id="aiAddStaffInput" class="glass-input" placeholder="Personel Adı..." style="flex:1; font-size:12px;">
+                            <button class="btn btn-cyan" onclick="aiAddStaffChip()">EKLE</button>
+                        </div>
+                        <div id="aiStaffChipContainer" style="display:flex; flex-wrap:wrap; background:rgba(0,0,0,0.4); padding:15px; border-radius:10px; min-height:150px; align-content:flex-start;"></div>
+                    </div>
+
+                    <div class="ai-panel" id="aiRulesPanel">
+                        <h4 class="ai-panel-title">⚖️ Titanyum Kurallar (Klasik Motor İçin)</h4>
+                        <ul class="rule-list">
+                            <li><span style="color:var(--success); font-size:16px;">☑️</span> Gece nöbetinden çıkan personele ertesi gün banko İzin yazılır.</li>
+                            <li><span style="color:var(--success); font-size:16px;">☑️</span> Akşamdan (16-24) çıkan personele ertesi sabah yazılamaz.</li>
+                            <li><span style="color:var(--success); font-size:16px;">☑️</span> Geceye birden fazla kişi seçilmişse en az 1 Erkek şarttır.</li>
+                            <li><span style="color:var(--warning); font-size:16px;">⚙️</span> <b style="white-space:nowrap;">Peş Peşe Gündüz Sınırı:</b> 
+                                <select id="aiMaxConsecutive" class="glass-input" style="padding:2px 5px; font-size:11px; margin-left:5px;">
+                                    <option value="3">Maks. 3 Gün</option>
+                                    <option value="4" selected>Maks. 4 Gün</option>
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="ai-panel" id="aiMatrixPanel">
+                        <h4 class="ai-panel-title">📊 Günlük İhtiyaç (Klasik Motor İçin)</h4>
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;" id="aiDaysContainer"></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); border-radius: 15px; padding: 15px; margin-bottom: 20px; display:inline-block;">
+                        <label style="font-size: 12px; color: var(--success); font-weight: 900; margin-right:10px;">ÜRETİLECEK ALTERNATİF SAYISI:</label>
+                        <input type="number" id="aiTableCount" class="glass-input" value="1" min="1" max="5" style="width: 60px; text-align: center; padding: 5px;">
+                    </div><br>
+                    <button class="btn" style="background: linear-gradient(135deg, #a855f7, #6d28d9); font-size: 18px; font-weight:900; padding: 20px 60px; border-radius: 50px; box-shadow: 0 0 40px rgba(168,85,247,0.6);" onclick="startAiDistribution()">🚀 MOTORU ÇALIŞTIR VE DAĞIT</button>
+                </div>
+            </div>
+        </div>
+    </div>
                 
                 <div class="ai-panel" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
                     <div style="flex:1; min-width:200px;">
@@ -1537,133 +1608,125 @@
             container.innerHTML = html;
         }
 
+        // ============================================================================
+        // 🪄 ARAYÜZ VE GEÇİŞ KONTROLLERİ
+        // ============================================================================
+        function toggleAiSystemUI() {
+            let type = document.getElementById('aiSystemType').value;
+            let rulesPanel = document.getElementById('aiRulesPanel');
+            let matrixPanel = document.getElementById('aiMatrixPanel');
+            
+            if(type === 'v21') {
+                // 3 Vardiya seçildiyse karmaşık kurallara ve kotalara gerek yok, onları gizle.
+                rulesPanel.style.opacity = "0.3"; rulesPanel.style.pointerEvents = "none";
+                matrixPanel.style.opacity = "0.3"; matrixPanel.style.pointerEvents = "none";
+                document.getElementById('aiStaffWarningText').innerText = "Bu sistem otomatik olarak 4'lü takımlar kurar. Eklediğiniz kişileri 4'erli gruplar halinde döngüye sokar.";
+            } else {
+                rulesPanel.style.opacity = "1"; rulesPanel.style.pointerEvents = "auto";
+                matrixPanel.style.opacity = "1"; matrixPanel.style.pointerEvents = "auto";
+                document.getElementById('aiStaffWarningText').innerText = "İsim yazıp Ekle'ye basın. Cinsiyeti değiştirmek için ikonun üzerine tıklayın.";
+            }
+        }
+
+        function renderAiDays() {
+            const container = document.getElementById('aiDaysContainer');
+            if(!container) return;
+            const days = ['PZT', 'SAL', 'ÇAR', 'PER', 'CUM', 'CMT', 'PAZ'];
+            let html = '';
+            days.forEach((d, i) => {
+                let border = (d==='CMT' || d==='PAZ') ? 'border-color:var(--danger);' : 'border-color:#475569;';
+                let c = i+1;
+                html += `
+                <div style="background:rgba(0,0,0,0.6); border:1px solid transparent; ${border} border-radius:8px; padding:8px; text-align:center;">
+                    <div style="color:${(d==='CMT'||d==='PAZ')?'#ef4444':'#fff'}; font-weight:900; font-size:11px; margin-bottom:8px; border-bottom:1px dashed #334155; padding-bottom:4px;">${d}</div>
+                    <div style="font-size:9px; color:#38bdf8;">Sabah</div>
+                    <input type="number" id="aiReq_G_${c}" value="${d==='CMT'||d==='PAZ'?1:2}" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
+                    <div style="font-size:9px; color:#a855f7;">Akşam</div>
+                    <input type="number" id="aiReq_A_${c}" value="0" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
+                    <div style="font-size:9px; color:#facc15;">Gece</div>
+                    <input type="number" id="aiReq_N_${c}" value="1" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px;">
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
         function openAiModal() {
             let opts = `<option value="">-- Seçiniz --</option>`;
-            Object.keys(shiftRules).forEach(k => { opts += `<option value="${k}">${k} (G:${shiftRules[k].w})</option>`; });
+            Object.keys(shiftRules).forEach(k => { opts += `<option value="${k}">${k}</option>`; });
             
             ['aiDayShiftSelect', 'aiMidShiftSelect', 'aiNightShiftSelect', 'aiOffShiftSelect'].forEach(id => {
                 let el = document.getElementById(id); if(el) el.innerHTML = opts;
             });
 
-            // 1. AÇILIR MENÜ (DATALIST) OLUŞTURMA
             let dataList = document.getElementById('aiStaffDatalist');
-            if(!dataList) {
-                dataList = document.createElement('datalist');
-                dataList.id = 'aiStaffDatalist';
-                document.body.appendChild(dataList);
-            }
+            if(!dataList) { dataList = document.createElement('datalist'); dataList.id = 'aiStaffDatalist'; document.body.appendChild(dataList); }
             let inputEl = document.getElementById('aiAddStaffInput');
             if(inputEl) inputEl.setAttribute('list', 'aiStaffDatalist');
 
             dataList.innerHTML = '';
-            
-            // Tüm havuzu SADECE "Açılır Menü (Dropdown)" seçenekleri için yükle
-            if(staffList && staffList.length > 0) {
-                staffList.forEach(s => { 
-                    dataList.innerHTML += `<option value="${s.name}">`; 
-                });
-            }
+            if(staffList && staffList.length > 0) { staffList.forEach(s => { dataList.innerHTML += `<option value="${s.name}">`; }); }
 
             let container = document.getElementById('aiStaffChipContainer');
             if(container) {
-                container.innerHTML = ''; // Temiz başla
-                container.style.maxHeight = "250px";
-                container.style.overflowY = "auto";
-                
-                // 2. SADECE ANA EKRANDA SEÇİLİ OLANLARI EKRANA YANSIT!
-                // Ana havuzdaki yeşil yanan (selected) çipleri bul:
+                container.innerHTML = ''; container.style.maxHeight = "250px"; container.style.overflowY = "auto";
                 let selectedStaff = Array.from(document.querySelectorAll("#staffPool .staff-chip.selected")).map(el => el.innerText.replace('×','').trim());
-                
-                if(selectedStaff.length > 0) {
-                    // Sadece seçili olanları AI çipi olarak ekle
-                    selectedStaff.forEach(name => {
-                        aiAddStaffChip(name); 
-                    });
-                } else {
-                    // Eğer ana ekranda kimse seçilmediyse, aşağıdaki tablodan çekmeyi dene
+                if(selectedStaff.length > 0) { selectedStaff.forEach(name => { aiAddStaffChip(name); }); } 
+                else {
                     let baseTable = document.querySelector('.table-wrapper');
-                    if(baseTable) {
-                        Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).forEach(tr => {
-                            let name = tr.querySelector('.editable-name').innerText.trim();
-                            aiAddStaffChip(name); 
-                        });
-                    }
+                    if(baseTable) { Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).forEach(tr => { aiAddStaffChip(tr.querySelector('.editable-name').innerText.trim()); }); }
                 }
             }
 
-            // 3. SEÇİLİNCE OTOMATİK KUTUYA DÜŞME SENSÖRÜ
             if(inputEl) {
                 inputEl.oninput = function() {
-                    let val = this.value.trim();
-                    let options = Array.from(document.getElementById('aiStaffDatalist').options).map(o => o.value);
-                    if(options.includes(val)) {
-                        aiAddStaffChip(val);
-                        this.value = ''; // Kutuyu anında temizle
-                    }
+                    let val = this.value.trim(); let options = Array.from(document.getElementById('aiStaffDatalist').options).map(o => o.value);
+                    if(options.includes(val)) { aiAddStaffChip(val); this.value = ''; }
                 };
             }
-
-            renderAiDays();
-            openModal('aiGeneratorModal');
+            renderAiDays(); toggleAiSystemUI(); openModal('aiGeneratorModal');
         }
 
         function toggleGender(btn) {
             let chip = btn.parentElement; let currentGender = chip.getAttribute("data-gender");
-            if(currentGender === "E") { chip.setAttribute("data-gender", "K"); btn.innerText = "👩"; } 
-            else { chip.setAttribute("data-gender", "E"); btn.innerText = "👨"; }
+            if(currentGender === "E") { chip.setAttribute("data-gender", "K"); btn.innerText = "👩"; } else { chip.setAttribute("data-gender", "E"); btn.innerText = "👨"; }
         }
 
         function aiAddStaffChip(isim = null) {
-            let inp = document.getElementById('aiAddStaffInput');
-            let name = isim || (inp ? inp.value.trim() : ""); 
-            if(!name) return;
-            
+            let inp = document.getElementById('aiAddStaffInput'); let name = isim || (inp ? inp.value.trim() : ""); if(!name) return;
             let container = document.getElementById('aiStaffChipContainer');
-            
-            // Aynı isimden varsa tekrar ekleme
             let existing = Array.from(container.querySelectorAll('.ai-staff-chip')).map(c => c.innerText.replace(/[👩👨×]/g, '').trim());
-            if(existing.includes(name)) {
-                if(!isim && inp) inp.value = ""; 
-                return;
-            }
-            
+            if(existing.includes(name)) { if(!isim && inp) inp.value = ""; return; }
             let lowerName = name.toLowerCase();
             let isFemale = lowerName.endsWith('a') || lowerName.endsWith('e') || lowerName.endsWith('u') || lowerName.endsWith('ı') || lowerName.endsWith('nur') || lowerName.endsWith('gül');
-            let cinsiyet = isFemale ? "K" : "E";
-            let icon = cinsiyet === "E" ? "👨" : "👩";
-            
-            let html = `<div class="ai-staff-chip" data-gender="${cinsiyet}">${name} <button class="gender-btn" onclick="toggleGender(this)" title="Cinsiyeti Değiştir">${icon}</button> <span style="color:#ef4444; cursor:pointer; font-size:14px; margin-left:5px;" onclick="this.parentElement.remove()">×</span></div>`;
-            container.insertAdjacentHTML('beforeend', html);
+            let cinsiyet = isFemale ? "K" : "E"; let icon = cinsiyet === "E" ? "👨" : "👩";
+            container.insertAdjacentHTML('beforeend', `<div class="ai-staff-chip" data-gender="${cinsiyet}">${name} <button class="gender-btn" onclick="toggleGender(this)" title="Cinsiyeti Değiştir">${icon}</button> <span style="color:#ef4444; cursor:pointer; font-size:14px; margin-left:5px;" onclick="this.parentElement.remove()">×</span></div>`);
             if(!isim && inp) inp.value = "";
         }
 
-        function addExtraShiftRow() {
-            let container = document.getElementById('extraShiftsList');
-            if(!container) return;
-            let opts = `<option value="">-- Seçiniz --</option>`;
-            Object.keys(shiftRules).forEach(k => { opts += `<option value="${k}">${k}</option>`; });
-            let row = document.createElement('div'); row.style.cssText = "display: flex; gap: 10px; margin-bottom: 10px;";
-            row.innerHTML = `<select class="glass-input ai-extra-shift-select" style="flex:2; padding:8px;">${opts}</select><input type="number" class="glass-input ai-extra-shift-count" value="1" min="1" style="flex:1; padding:8px;"><button type="button" class="btn btn-red" style="padding:0 15px; border-radius:10px;" onclick="this.parentElement.remove()">X</button>`;
-            container.appendChild(row);
-        }
-
-     // ============================================================================
-        // 🧠 SHIFTMASTER A.I. CORE (V18 EFSANE MOTORU + V20 KOKPİT ÖZELLİKLERİ) 🧠
+        // ============================================================================
+        // 🧠 ÇİFT MOTORLU DAĞITIM YÖNETİCİSİ (YOL AYRIMI)
         // ============================================================================
         function startAiDistribution() {
+            let systemType = document.getElementById('aiSystemType').value;
+            
+            // Eğer V21 (Haftalık Döngü) seçildiyse onu çalıştır
+            if(systemType === 'v21') {
+                return startV21FixedWeeklyCycle();
+            }
+            
+            // ================== V18 KLASİK MOTOR (Senin Efsane Kodun) ==================
             let dayCode = document.getElementById('aiDayShiftSelect').value;
-            let midCode = document.getElementById('aiMidShiftSelect').value; // Opsiyonel (Akşam)
+            let midCode = document.getElementById('aiMidShiftSelect').value; 
             let nightCode = document.getElementById('aiNightShiftSelect').value;
             let offCode = document.getElementById('aiOffShiftSelect').value;
-            let numTablesToGenerate = parseInt(document.getElementById('aiTableCount') ? document.getElementById('aiTableCount').value : 1) || 1;
-            let maxConsecutive = parseInt(document.getElementById('aiMaxConsecutive') ? document.getElementById('aiMaxConsecutive').value : 4);
+            let numTablesToGenerate = parseInt(document.getElementById('aiTableCount').value) || 1;
             
-            if(!dayCode || !nightCode || !offCode) return alert("Lütfen Sabah, Gece ve İzin kodlarını seçiniz! (Akşam isteğe bağlıdır)");
+            if(!dayCode || !nightCode || !offCode) return alert("Lütfen Gündüz, Gece ve İzin kodlarını seçiniz! (Akşam Opsiyoneldir)");
 
             let reqG = [], reqA = [], reqN = [];
             for(let i=1; i<=7; i++) {
                 reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
-                reqA[i] = parseInt(document.getElementById('aiReq_A_'+i).value) || 0; 
+                reqA[i] = parseInt(document.getElementById('aiReq_A_'+i).value) || 0;
                 reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
             }
 
@@ -1671,236 +1734,181 @@
             let colCount = parseInt(document.getElementById('colCount').value || 30);
             
             let staffChips = document.querySelectorAll('.ai-staff-chip');
-            if(staffChips.length === 0) return alert("Kadro listesi boş! Lütfen personel ekleyin.");
-            
-            let staffNames = Array.from(staffChips).map(chip => ({ name: chip.innerText.replace(/[👩👨×]/g, '').trim(), gender: chip.getAttribute('data-gender') }));
+            if(staffChips.length === 0) return alert("Ekranda işlem yapılacak personel yok!");
+            let staffNames = Array.from(staffChips).map(chip => chip.innerText.replace(/[👩👨×]/g, '').trim());
 
-            if(typeof saveHistory === "function") saveHistory(); 
-            closeModal('aiGeneratorModal'); showToast("⏳ V18 Efsane Motoru 3'lü Vardiya ile Başlıyor...");
-            
-            let masterTitleEl = document.getElementById("masterArchiveTitle");
-            let oldHtml = masterTitleEl ? masterTitleEl.innerHTML : "📁 Yeni Dosya";
-            if(masterTitleEl) masterTitleEl.innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
+            saveHistory(); closeModal('aiGeneratorModal');
+            document.getElementById("masterArchiveTitle").innerHTML = "⏳ V18: 5000 Hamle İlerisi Hesaplanıyor...";
 
             setTimeout(() => {
                 let simulations = [];
-                let totalSimulations = 5000; // V18'in efsane gücü (5000 Paralel Evren)
+                let totalSimulations = 5000; 
 
                 for(let sim = 0; sim < totalSimulations; sim++) {
-                    let simStaff = staffNames.map(person => ({
-                        name: person.name,
-                        gender: person.gender,
-                        realShifts: [],  
-                        shiftLog: [],    
-                        weeklyWorkDays: 0,
-                        nightCount: 0,
-                        dayConsecutive: 0,
-                        lastShiftType: 'O' 
+                    let simStaff = staffNames.map(name => ({
+                        name: name, realShifts: [], shiftLog: [], weeklyWorkDays: 0, totalHours: 0, nightCount: 0, dayConsecutive: 0, lastShiftType: 'O' 
                     }));
 
-                    let unfilledSlots = 0; // Hastane boş kalırsa devreye girecek V18 sensörü
-                    let penalty = 0;
-
+                    let unfilledSlots = 0; 
                     for(let c = 0; c < colCount; c++) {
-                        let d = new Date(startDt);
-                        d.setDate(d.getDate() + c);
-                        let dow = d.getDay();
-                        let reqIndex = dow === 0 ? 7 : dow;
-
-                        // Pazartesi haftalık saati sıfırla
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
                         if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; });
 
-                        let cReqG = reqG[reqIndex];
-                        let cReqA = reqA[reqIndex];
-                        let cReqN = reqN[reqIndex];
-
+                        let cReqG = reqG[reqIndex]; let cReqA = reqA[reqIndex]; let cReqN = reqN[reqIndex];
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 🛑 1. KESİN YASAKLAR: Gece Çıkışı İzin ve Kesin 4 Gün Sınırı
-                        simStaff.forEach(s => {
-                            if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) {
-                                s.assignedToday = offCode;
-                                s.lastShiftType = 'O'; 
-                            }
-                        });
+                        simStaff.forEach(s => { if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { s.assignedToday = offCode; s.lastShiftType = 'O'; } });
 
-                        // 🌙 2. GECE NÖBETİNİ DAĞIT (3G1N yasağı filtreli)
-                        let poolN = simStaff.filter(s => !s.assignedToday && !(s.lastShiftType === 'G' && s.dayConsecutive >= 3));
-                        poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random())); // V18'in o organik harmanlaması
-                        
+                        let poolN = simStaff.filter(s => !s.assignedToday);
+                        poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random()));
                         let nAssigned = 0;
-                        let nightTeam = [];
                         for(let i=0; i<poolN.length && nAssigned<cReqN; i++) {
-                            poolN[i].assignedToday = nightCode;
-                            poolN[i].lastShiftType = 'N';
-                            poolN[i].nightCount++;
-                            poolN[i].weeklyWorkDays++;
-                            poolN[i].dayConsecutive = 0;
-                            nightTeam.push(poolN[i]);
-                            nAssigned++;
+                            poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; poolN[i].nightCount++; poolN[i].weeklyWorkDays++; poolN[i].dayConsecutive = 0; nAssigned++;
                         }
                         if(nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
 
-                        // KADIN GÜVENLİK ZIRHI
-                        if(nightTeam.length > 1) {
-                            let kCount = nightTeam.filter(s => s.gender === 'K').length;
-                            let eCount = nightTeam.filter(s => s.gender === 'E').length;
-                            if(kCount >= 2 && eCount === 0) penalty += 5000000;
-                        }
-
-                        // 🌆 3. AKŞAM VARDİYASI DAĞIT (Opsiyonel)
-                        if (midCode && cReqA > 0) {
+                        if(midCode && cReqA > 0) {
                             let poolA = simStaff.filter(s => !s.assignedToday);
-                            poolA.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
+                            poolA.sort((a,b) => (0.5 - Math.random()));
                             let aAssigned = 0;
                             for(let i=0; i<poolA.length && aAssigned<cReqA; i++) {
-                                poolA[i].assignedToday = midCode;
-                                poolA[i].lastShiftType = 'A';
-                                poolA[i].weeklyWorkDays++;
-                                poolA[i].dayConsecutive = 0;
-                                aAssigned++;
+                                poolA[i].assignedToday = midCode; poolA[i].lastShiftType = 'A'; poolA[i].weeklyWorkDays++; poolA[i].dayConsecutive = 0; aAssigned++;
                             }
                             if(aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
                         }
 
-                        // ☀️ 4. GÜNDÜZ KOTASINI DAĞIT (Akşamdan çıkana sabah yasağı ve Peş peşe sınır)
-                        let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < maxConsecutive && s.lastShiftType !== 'A');
-                        poolG.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random())); // V18 Organik harmanlama
-                        
+                        let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < 2); 
+                        poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
                         let dAssigned = 0;
                         for(let i=0; i<poolG.length && dAssigned<cReqG; i++) {
-                            poolG[i].assignedToday = dayCode;
-                            poolG[i].lastShiftType = 'G';
-                            poolG[i].weeklyWorkDays++;
-                            poolG[i].dayConsecutive++;
-                            dAssigned++;
+                            poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; poolG[i].weeklyWorkDays++; poolG[i].dayConsecutive++; dAssigned++;
                         }
                         if(dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
 
-                        // 🏖️ 5. GERİ KALANLARA İZİN YAZ
                         simStaff.forEach(s => {
-                            if (!s.assignedToday) {
-                                s.assignedToday = offCode;
-                                s.lastShiftType = 'O';
-                                s.dayConsecutive = 0;
-                            }
-                            
-                            let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === midCode ? 'A' : (s.assignedToday === offCode ? 'O' : 'G'));
-                            s.shiftLog.push(codeChar);
-
-                            let safeVal = s.assignedToday.replace(/\./g, ':'); 
-                            let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
-                            s.realShifts.push({ text: s.assignedToday, bg: r ? r.color : "transparent" });
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; }
+                            s.shiftLog.push((s.assignedToday === nightCode) ? 'N' : 'G');
+                            let rule = shiftRules[s.assignedToday.replace(/\./g, ':')] || shiftRules[s.assignedToday];
+                            s.realShifts.push({ text: s.assignedToday, bg: rule ? rule.color : "transparent" });
                         });
                     }
 
-                    // 🕵️‍♂️ SİMÜLASYON RÖNTGENİ VE CEZALAR (V18 STİLİ DEV CEZALAR)
-                    penalty += (unfilledSlots * 50000000); // Kırmızı Alarm: Pazar günü 0/1 olursa bu senaryo direkt YANAR!
-
+                    let penalty = 0;
+                    penalty += (unfilledSlots * 50000000); 
                     let maxN = -1, minN = 9999;
-                    let maxW = -1, minW = 9999; // Haftalık eşitlik için
-
                     simStaff.forEach(s => {
                         let seq = s.shiftLog.join(''); 
-                        
-                        // İnsan Biyolojisi Kuralları
-                        let ngMatches = (seq.match(/NG/g) || []).length; 
-                        let naMatches = (seq.match(/NA/g) || []).length;
-                        let nnMatches = (seq.match(/NN/g) || []).length; 
-                        let agMatches = (seq.match(/AG/g) || []).length;
-                        let gggnMatches = (seq.match(/G{3,}N/g) || []).length; // 3G1N Kesin Yasak!
-                        
-                        let gggRegex = new RegExp(`G{${maxConsecutive + 1},}`, 'g');
-                        let tooManyDays = (seq.match(gggRegex) || []).length;
-                        
-                        penalty += (ngMatches * 10000000); 
-                        penalty += (naMatches * 10000000); 
-                        penalty += (nnMatches * 10000000); 
-                        penalty += (agMatches * 5000000); 
-                        penalty += (gggnMatches * 10000000); // 3G1N Cezası
-                        penalty += (tooManyDays * 500000); 
-
-                        maxN = Math.max(maxN, s.nightCount);
-                        minN = Math.min(minN, s.nightCount);
-
-                        let totalWork = (seq.match(/[NAG]/g) || []).length;
-                        maxW = Math.max(maxW, totalWork);
-                        minW = Math.min(minW, totalWork);
+                        penalty += ((seq.match(/NG/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/NN/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/GGG/g) || []).length * 500000); 
+                        maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
                     });
-
-                    penalty += ((maxN - minN) * 5000); // Gece adaleti
-                    penalty += ((maxW - minW) * 10000); // Toplam gün adaleti (Kimseyi 3 veya 5 günde bırakmaz)
-
+                    penalty += ((maxN - minN) * 100);
                     simulations.push({ penalty: penalty, staffData: simStaff });
                 }
 
-                // EN KUSURSUZ TABLOLARI SEÇ
                 simulations.sort((a, b) => a.penalty - b.penalty);
-                let tc = document.getElementById("tablesContainer");
-                if(tc) tc.innerHTML = "";
+                document.getElementById("tablesContainer").innerHTML = "";
 
                 for(let i=0; i<numTablesToGenerate; i++) {
                     let bestSim = simulations[i];
                     let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.realShifts }));
-                    let penaltyText = bestSim.penalty < 1000 ? "🏆 EFSANE V18 KUSURSUZ" : `⚠️ Uyarı Skoru: ${bestSim.penalty}`;
-                    if(typeof generateTable === "function") generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
+                    generateTable(true, exportData, `🤖 V18 Klasik Dağıtım ${i+1}`, startDt, colCount);
                 }
 
-                // 🚨 KIRMIZI ALARMLI GÜNLÜK ÖZET SATIRI (3'LÜ DESTEKLİ) 🚨
-                document.querySelectorAll('.table-wrapper').forEach(wrapper => {
-                    let tbody = wrapper.querySelector('tbody');
-                    if(!tbody) return;
-                    let headerText = midCode ? "📊 GÜNLÜK KADRO (S/A/Gc)" : "📊 GÜNLÜK KADRO (S/Gc)";
-                    let sumHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">${headerText}</td>`;
+                updateAllStats();
+                document.getElementById("masterArchiveTitle").innerHTML = "📁 V18 Klasik Dağıtım";
+                showToast(`✨ V18 KLASİK: İşlem Tamamlandı! ✨`);
+            }, 100);
+        }
+
+        // ============================================================================
+        // 🎯 YEPYENİ MOTOR: V21 SABİT DÖNGÜ (3 VARDİYA / 4'LÜ TAKIM SİSTEMİ)
+        // ============================================================================
+        function startV21FixedWeeklyCycle() {
+            let M = document.getElementById('aiDayShiftSelect').value;   // Sabah
+            let E = document.getElementById('aiMidShiftSelect').value;   // Akşam
+            let N = document.getElementById('aiNightShiftSelect').value; // Gece
+            let O = document.getElementById('aiOffShiftSelect').value;   // İzin
+            
+            if(!M || !E || !N || !O) return alert("Bu sistem kusursuz bir rotasyon kurar. Lütfen Sabah, Akşam, Gece ve İzin kodlarının 4'ünü de zorunlu olarak seçin!");
+
+            let startDt = new Date(document.getElementById('startDate').value || new Date());
+            let colCount = parseInt(document.getElementById('colCount').value || 30);
+            let numTablesToGenerate = parseInt(document.getElementById('aiTableCount').value) || 1;
+
+            let staffChips = document.querySelectorAll('.ai-staff-chip');
+            let staffNames = Array.from(staffChips).map(chip => chip.innerText.replace(/[👩👨×]/g, '').trim());
+            
+            if(staffNames.length < 4) return alert("Bu sistem en az 4 kişilik (1 Takım) personel gerektirir.");
+
+            saveHistory(); closeModal('aiGeneratorModal'); showToast("🎯 V21 Sabit Döngü Kuruluyor...");
+            document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI: Döngü Matematikleniyor...";
+
+            setTimeout(() => {
+                // ALTIN DÖNGÜ (Pzt, Sal, Çar, Per, Cum, Cmt, Paz)
+                // Her satır bir rolü temsil eder. Haftaya göre roller birer kayar.
+                const GOLDEN_PATTERN = [
+                    [M, M, M, M, O, M, M], // R1 (Sabahçı - Cuma İzin)
+                    [E, E, E, E, E, O, E], // R2 (Akşamcı - Cumartesi İzin)
+                    [O, M, M, M, M, E, N], // R3 (Joker - Pzt İzin, Cuma E, Cmt/Paz N)
+                    [N, N, N, N, N, N, O]  // R4 (Gececi - Pazar İzin)
+                ];
+
+                let exportData = [];
+
+                // Personelleri 4'erli takımlara bölüyoruz
+                for (let i = 0; i < staffNames.length; i++) {
+                    let teamIndex = Math.floor(i / 4); // Hangi 4'lü takımda?
+                    let baseRoleIndex = i % 4;         // Takımdaki ilk rolü ne? (0, 1, 2 veya 3)
                     
-                    for(let c = 0; c < colCount; c++) {
-                        let d = new Date(startDt);
-                        d.setDate(d.getDate() + c);
-                        let dow = d.getDay();
-                        let reqIndex = dow === 0 ? 7 : dow;
-                        
-                        let targetG = reqG[reqIndex];
-                        let targetA = midCode ? reqA[reqIndex] : 0;
-                        let targetN = reqN[reqIndex];
+                    let personShifts = [];
+                    
+                    // İlk günün hangi haftaya (Pazartesiye göre) denk geldiğini buluyoruz ki,
+                    // Eğer tabloyu ayın ortasından başlatırsan döngü bozulmasın.
+                    let firstMonday = new Date(startDt);
+                    firstMonday.setDate(startDt.getDate() - (startDt.getDay() === 0 ? 6 : startDt.getDay() - 1));
 
-                        let sCount = 0, aCount = 0, nCount = 0;
-                        wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
-                            let cell = tr.querySelectorAll('.shift-cell')[c];
-                            if(cell) {
-                                let val = cell.innerText;
-                                if(val === nightCode || val.startsWith('16:') || val.startsWith('20:') || val.startsWith('24:') || val.includes('NÖBET')) nCount++;
-                                else if(midCode && val === midCode) aCount++;
-                                else if(val !== offCode && val !== "") sCount++;
-                            }
-                        });
+                    for (let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
                         
-                        let isWarning = false;
-                        let sText = sCount, aText = aCount, nText = nCount;
-
-                        if(sCount < targetG) { sText = `<span style="color:#ef4444;">${sCount}</span>`; isWarning = true; }
-                        if(midCode && aCount < targetA) { aText = `<span style="color:#ef4444;">${aCount}</span>`; isWarning = true; }
-                        if(nCount < targetN) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
+                        let dayOfWeek = d.getDay() === 0 ? 6 : d.getDay() - 1; // 0=Pzt, 6=Paz
                         
-                        let cellHtml = midCode ? `${sText} / ${aText} / ${nText}` : `${sText} / ${nText}`;
-                        if(isWarning) cellHtml = `<span style="color:#ef4444; font-size:12px;">⚠️</span><br>` + cellHtml;
-
-                        sumHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;">${cellHtml}</td>`;
+                        // Gün farkını bul ve kaçıncı haftada olduğumuzu hesapla
+                        let diffTime = Math.abs(d - firstMonday);
+                        let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                        let weekNumber = Math.floor(diffDays / 7);
                         
-                        if(dow === 0) sumHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
+                        // Rotasyon Mantığı: Her hafta rol 1 kayar! 
+                        // (Sabah->Akşam->Joker->Gece->Sabah)
+                        let currentRole = (baseRoleIndex + weekNumber) % 4;
+                        
+                        let shiftCode = GOLDEN_PATTERN[currentRole][dayOfWeek];
+                        let safeVal = shiftCode.replace(/\./g, ':');
+                        let rule = shiftRules[safeVal] || shiftRules[shiftCode];
+                        
+                        personShifts.push({ text: shiftCode, bg: rule ? rule.color : "transparent" });
                     }
-                    sumHtml += `<td class="total-summary-cell"></td></tr>`;
-                    tbody.insertAdjacentHTML('beforeend', sumHtml);
-                });
+                    
+                    exportData.push({ name: staffNames[i], shifts: personShifts });
+                }
 
-                if(typeof updateAllStats === "function") updateAllStats();
-                if(masterTitleEl) masterTitleEl.innerHTML = oldHtml;
-                showToast(`✨ V18 EFSANE MOTORU: GELECEK HESAPLANDI! ✨`);
+                document.getElementById("tablesContainer").innerHTML = "";
+                for(let i=0; i<numTablesToGenerate; i++) {
+                    generateTable(true, exportData, `🎯 V21 Sabit Döngü Tablosu`, startDt, colCount);
+                }
+
+                updateAllStats();
+                document.getElementById("masterArchiveTitle").innerHTML = "📁 V21 Sabit Döngü Arşivi";
+                showToast(`✨ V21: KUSURSUZ ROTASYON TAMAMLANDI! ✨`);
 
             }, 100);
         }
     </script>
 </body>
 </html>
+
 
 
 
