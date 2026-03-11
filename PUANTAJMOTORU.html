@@ -1,6 +1,43 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <head>
+    <script>
+        (function() {
+            // 1. Klavye Kısayolları (Capture: true ile havada yakalar!)
+            window.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || 
+                   (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) || 
+                   (e.ctrlKey && (e.key === 'U' || e.key === 'u')) || 
+                   (e.ctrlKey && (e.key === 'S' || e.key === 's'))) {
+                    e.preventDefault();
+                    e.stopPropagation(); // Diğer tüm kodları susturur
+                    return false;
+                }
+            }, { capture: true });
+
+            // 2. Sağ Tık Menüsü Engeli
+            window.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }, { capture: true });
+
+            // 3. Debugger Tuzağı
+            setInterval(function() {
+                let before = new Date().getTime();
+                debugger; 
+                let after = new Date().getTime();
+                if (after - before > 100) {
+                    document.body.innerHTML = "<div style='background:#050b14; height:100vh; display:flex; align-items:center; justify-content:center;'><h1 style='color:red; font-family:sans-serif;'>GÜVENLİK İHLALİ!<br>SİSTEM KENDİNİ KİLİTLEDİ.</h1></div>";
+                }
+            }, 1000); 
+        })();
+    </script>
+    ```
+
+Ayrıca emin olmak için `PUANTAJMOTORU.html` dosyasındaki `<body>` etiketini de şu şekilde güncelle:
+`<body oncontextmenu="return false;">`
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PUANTAJ MOTORU (SAAS ENTEGRELİ)</title>
@@ -1355,6 +1392,7 @@ function closeLegalModal() {
 </script>
 </body>
 </html>
+
 
 
 
