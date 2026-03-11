@@ -647,7 +647,7 @@
     </div>
 
     <script>
-        // ============================================================================
+       // ============================================================================
         // 🛡️ 1. KADEME: HIRSIZ KOVAR GÜVENLİK ZIRHI (F12, CTRL+U VE DEBUGGER KİLİDİ) 🛡️
         // ============================================================================
         (function() {
@@ -663,7 +663,7 @@
                 }
             });
 
-            // 2. Sağ Tık Menüsünü Komple Kapatma (Zaten body'de var ama garantiye alalım)
+            // 2. Sağ Tık Menüsünü Komple Kapatma 
             document.addEventListener('contextmenu', e => e.preventDefault());
 
             // 3. Ölümcül Tuzak: Debugger Döngüsü (Biri konsolu açarsa site donar)
@@ -673,16 +673,18 @@
                 let after = new Date().getTime();
                 if (after - before > 100) {
                     // Eğer konsol açıksa (süre uzadıysa), siteyi silip at!
-                    document.body.innerHTML = "<div style='background:#050b14; height:100vh; display:flex; align-items:center; justify-content:center;'><h1 style='color:red; font-family:sans-serif;'>GÜVENLİK İHLALİ!<br>SİSTEM KENDİNİ KİLİTLEDİ.</h1></div>";
+                    document.body.innerHTML = "<div style='background:#050b14; height:100vh; display:flex; align-items:center; justify-content:center;'><h1 style='color:red; font-family:sans-serif;'>GÜVENLİK İHLALİ!<br>SİSTEM KENDİNİ KİLİTLEDİ. YÖNETİCİYE BİLDİRİLDİ.</h1></div>";
                 }
             }, 1000); // Saniyede bir kontrol et
 
-            // 4. Alan Adı (Domain) Kilidi Taslağı
+            // 4. Alan Adı (Domain) Kilidi -> (ŞU AN SEN RAHAT ÇALIŞ DİYE PASİF)
+            /*
             let currentDomain = window.location.hostname;
-            let allowedDomains = ["localhost", "127.0.0.1", ""]; // Şimdilik bilgisayarda açman için boşluk var. Yayına çıkınca buraya "shiftmaster.com" yazacağız.
+            let allowedDomains = ["localhost", "127.0.0.1", ""]; 
             if (!allowedDomains.includes(currentDomain) && currentDomain !== "") {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center;'>BU YAZILIMIN LİSANSI BU SİTE İÇİN GEÇERLİ DEĞİLDİR!</h1>";
             }
+            */
         })();
         
         function openSupportModal() {
@@ -1946,6 +1948,7 @@
     </script>
 </body>
 </html>
+
 
 
 
