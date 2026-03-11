@@ -268,7 +268,15 @@
         <div class="splash-text-container" id="splashTextContainer"></div>
     </div>
 
-    <div id="appSelector">
+   <div id="appSelector">
+        <div class="selector-card" onclick="openShiftMaster()">
+             </div>
+        <div class="selector-card" onclick="window.location.href='PUANTAJMOTORU.html'">
+             </div>
+    </div>
+
+    <div id="mainContent">
+        <div class="container">
         <div class="selector-card" onclick="openShiftMaster()">
             <div style="font-size:80px; margin-bottom:20px; text-shadow: 0 0 20px var(--accent);">📅</div>
             <h3 style="color:var(--accent); font-size:22px; font-weight:900;">VARDİYA PANELİ</h3>
@@ -877,10 +885,10 @@
         };
 
         function openShiftMaster() { 
-            document.getElementById("appSelector").style.setProperty("display", "none", "important"); 
-            document.getElementById("mainContent").style.setProperty("display", "block", "important"); 
-            document.getElementById("mainContent").style.opacity = "1";
-        }
+    document.getElementById("appSelector").style.display = "none"; 
+    document.getElementById("mainContent").style.display = "block"; 
+    document.getElementById("mainContent").style.opacity = "1";
+}
 
         // 🔥 ASKERİ SINIF KRİPTO MOTORU (SHA-256) 🔥
         async function sifreKriptola(sifre) {
@@ -1991,6 +1999,7 @@
     </script>
 </body>
 </html>
+
 
 
 
