@@ -1729,8 +1729,118 @@
         }
 
         // Ekran yüklenirken her şeyi başlat
+       // ============================================================================
+        // 🧑‍🤝‍🧑 KADRO / PERSONEL HAVUZU FONKSİYONLARI (EKSİK OLAN KISIM)
+        // ============================================================================
+        function loadStaffPool() {
+            db.ref(`sistem_verileri/${currentKurum}/havuz`).on('value', snap => {
+                staffList = [];
+                if(snap.val()) {
+                    Object.entries(snap.val()).forEach(([key, val]) => {
+                        staffList.push({ id: key, name: val.isim });
+                    });
+                }
+                renderStaffPool();
+            });
+        }
+
+        function renderStaffPool() {
+            const p = document.getElementById("staffPool");
+            const c = document.getElementById("staffCounter");
+            if(!p || !c) return;
+            
+            p.innerHTML = "";
+            c.innerText = staffList.length;
+            
+            staffList.forEach(s => {
+                p.innerHTML += `
+                <div class="staff-chip selected" id="staff_${s.id}" onclick="this.classList.toggle('selected')">
+                    <span style="font-size:16px;">👤</span> ${s.name}
+                    <span class="staff-del" onclick="removeStaff(event, '${s.id}', '${s.name}')">×</span>
+                </div>`;
+            });
+        }
+
+        function addStaff() {
+            const input = document.getElementById("staffInput").value.trim();
+            if(!input) return alert("Lütfen personel ismi girin veya Excel listesi yapıştırın!");
+
+            let names = input.split('\n');
+            let addedCount = 0;
+
+            names.forEach(name => {
+                let n = name.trim();
+                if(n && n !== "PERSONEL" && !n.includes("GÜNLÜK KADRO")) {
+                    db.ref(`sistem_verileri/${currentKurum}/havuz`).push({ isim: n });
+                    addedCount++;
+                }
+            });
+
+            document.getElementById("staffInput").value = "";
+            showToast(`${addedCount} personel eklendi.`);
+            logAction(`Havuza ${addedCount} personel ekledi.`);
+        }
+
+        function removeStaff(e, id, name) {
+            e.stopPropagation();
+            if(confirm(`${name} isimli personeli havuzdan tamamen silmek istediğinize emin misiniz?`)) {
+                db.ref(`sistem_verileri/${currentKurum}/havuz/${id}`).remove();
+                logAction(`Havuzdan sildi: ${name}`);
+            }
+        }
+
+        function clearStaffPool() {
+            if(confirm("TÜM PERSONEL HAVUZUNU SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ? (Bu işlem geri alınamaz)")) {
+                db.ref(`sistem_verileri/${currentKurum}/havuz`).remove();
+                showToast("Bomba patladı! Havuz tertemiz.");
+                logAction("Tüm personel havuzunu temizledi.");
+            }
+        }
+
+        // ============================================================================
+        // 🎨 CUSTOM MENU & KALICI ARŞİV (EKSİK OLAN KISIM)
+        // ============================================================================
+        function buildCustomMenu() {
+            let menu = document.getElementById('staffSelectMenu');
+            if(!menu) {
+                menu = document.createElement('div');
+                menu.id = 'staffSelectMenu';
+                menu.className = 'custom-menu';
+                document.body.appendChild(menu);
+            }
+            // Bu menüyü detaylı olarak sonradan yapılandırabilirsin, şu an hata vermemesi için boş bir iskelet oluşturduk.
+        }
+
+        function loadPermanentArchives() {
+             db.ref(`sistem_verileri/${currentKurum}/kalici_arsiv`).on("value", snap => {
+                const list = document.getElementById("permanentArchiveList");
+                if(!list) return;
+                list.innerHTML = "";
+                
+                let archives = [];
+                snap.forEach(child => { archives.push({ key: child.key, ...child.val() }); });
+                archives.sort((a,b) => b.timestamp - a.timestamp); 
+
+                if(archives.length === 0) {
+                    list.innerHTML = `<div style="color:#64748b; font-size:12px; padding:20px;">Henüz kaydedilmiş eski bir arşiv yok.</div>`;
+                    return;
+                }
+
+                archives.forEach((arc) => {
+                    list.innerHTML += `
+                    <div class="archive-card" onclick="openArchive('${arc.key}')">
+                        <div>
+                            <div style="font-size:16px; font-weight:900; color:var(--accent); margin-bottom:8px;">${arc.title}</div>
+                            <div style="font-size:11px; color:#cbd5e1;">👤 ${arc.savedBy} | 🕒 ${arc.date}</div>
+                        </div>
+                        <button class="btn btn-red" style="padding:8px; border-radius:10px; z-index:10;" onclick="event.stopPropagation(); deleteArchive('${arc.key}', '${arc.title}')">🗑️</button>
+                    </div>`;
+                });
+            });
+        } 
         window.onload = initApp;
 
     </script>
 </body>
 </html>
+
