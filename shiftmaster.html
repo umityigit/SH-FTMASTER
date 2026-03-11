@@ -198,8 +198,28 @@
         @keyframes popUp { from { bottom: -50px; opacity: 0; transform: translateX(-50%) scale(0.5); } to { bottom: 40px; opacity: 1; transform: translateX(-50%) scale(1); } }
         @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
 
-        .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; }
-        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+       .sm-player { position: fixed; bottom: 25px; ... }
+        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); ... }
+
+        /* 🔥 AI SİHİRBAZ KOKPİT TASARIMLARI 🔥 */
+        .ai-cockpit-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 20px; }
+        @media (max-width: 1200px) { .ai-cockpit-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 900px) { .ai-cockpit-grid { grid-template-columns: 1fr; } }
+        
+        .ai-panel { background: rgba(15,23,42,0.6); border: 1px solid var(--glass-border); border-radius: 15px; padding: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .ai-panel-title { color: var(--accent); font-size: 16px; font-weight: 900; margin-top: 0; margin-bottom: 15px; border-bottom: 1px dashed rgba(56,189,248,0.3); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        
+        .ai-staff-chip { background: rgba(2,6,23,0.8); padding: 8px 12px; border-radius: 10px; display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; border: 1px solid #475569; transition: 0.3s; margin: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .ai-staff-chip[data-gender="E"] { border-left: 4px solid #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.2); }
+        .ai-staff-chip[data-gender="K"] { border-left: 4px solid #ec4899; box-shadow: 0 0 10px rgba(236,72,153,0.2); }
+        
+        .gender-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 5px; cursor: pointer; font-size: 14px; padding: 2px 6px; transition: 0.2s; }
+        .gender-btn:hover { transform: scale(1.2); }
+        
+        .rule-list { list-style: none; padding: 0; margin: 0; font-size: 12px; color: #cbd5e1; display: flex; flex-direction: column; gap: 12px; }
+        .rule-list li { display: flex; align-items: flex-start; gap: 8px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 2px solid var(--success); }
+
+    </style>  </head>
    
     
     </style>
@@ -1720,6 +1740,7 @@ function startAiDistribution() {
     </script>
 </body>
 </html>
+
 
 
 
