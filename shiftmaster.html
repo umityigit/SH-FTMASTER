@@ -1512,257 +1512,9 @@
             }, 1000);
         });
 
-        // 🔥 AI MOTORU BAŞLATICISI (AŞAMA 1) 🔥
-        // 🔥 AI MOTORU AÇILIŞ VE DİNAMİK VARDİYA OKUMA 🔥
-        function openAiModal() {
-            const daySel = document.getElementById('aiDayShiftSelect');
-            const nightSel = document.getElementById('aiNightShiftSelect');
-            const offSel = document.getElementById('aiOffShiftSelect');
-
-            let optionsHtml = '<option value="" style="color:black;">-- Lütfen Seçiniz --</option>';
-            
-            // shiftRules objesinden senin kaydettiğin tüm vardiyaları çekip kutulara koyar
-            Object.keys(shiftRules).forEach(key => {
-                optionsHtml += `<option value="${key}" style="color:black;">${key} (G:${shiftRules[key].w} / Gc:${shiftRules[key].n})</option>`;
-            });
-
-            daySel.innerHTML = optionsHtml;
-            nightSel.innerHTML = optionsHtml;
-            offSel.innerHTML = optionsHtml;
-
-            // Ekranda modalı aç
-            openModal('aiGeneratorModal');
-        }
-
-  // ============================================================================
-// 🧠 SHIFTMASTER A.I. CORE V18 (GRANDMASTER - İLERİYİ GÖRME VE KIRMIZI ALARM) 🧠
-// ============================================================================
-function startAiDistribution() {
-    let dayCode = document.getElementById('aiDayShiftSelect').value;
-    let nightCode = document.getElementById('aiNightShiftSelect').value;
-    let offCode = document.getElementById('aiOffShiftSelect').value;
-    let numTablesToGenerate = parseInt(document.getElementById('aiTableCount') ? document.getElementById('aiTableCount').value : 1) || 1;
-    
-    if(!dayCode || !nightCode || !offCode) return alert("Lütfen Gündüz, Gece ve İzin kodlarını seçiniz!");
-
-    let reqG = [], reqN = [];
-    for(let i=1; i<=7; i++) {
-        reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
-        reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
-    }
-
-    let baseTable = document.querySelector('.table-wrapper');
-    if(!baseTable) return alert("Ekranda işlem yapılacak açık bir tablo yok!");
-
-    let colCount = parseInt(baseTable.getAttribute("data-colcount"));
-    let startDt = new Date(baseTable.getAttribute("data-startdt"));
-    let staffNames = Array.from(baseTable.querySelectorAll("tbody tr")).filter(tr => !tr.classList.contains('summary-row')).map(tr => tr.querySelector('.editable-name').innerText.trim());
-
-    saveHistory();
-    closeModal('aiGeneratorModal');
-    
-    document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
-
-    setTimeout(() => {
-        let simulations = [];
-        let totalSimulations = 5000; // Geleceği görmek için 5000 farklı paralel evren!
-
-        for(let sim = 0; sim < totalSimulations; sim++) {
-            let simStaff = staffNames.map(name => ({
-                name: name,
-                realShifts: [],  
-                shiftLog: [],    
-                weeklyWorkDays: 0,
-                totalHours: 0,
-                nightCount: 0,
-                dayConsecutive: 0,
-                lastShiftType: 'O' 
-            }));
-
-            let unfilledSlots = 0; // Kırmızı Alarm Sayacı (Hastane boş kalırsa)
-
-            for(let c = 0; c < colCount; c++) {
-                let d = new Date(startDt);
-                d.setDate(d.getDate() + c);
-                let dow = d.getDay();
-                let reqIndex = dow === 0 ? 7 : dow;
-
-                // Pazartesi günleri haftalık mesaiyi sıfırla
-                if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; });
-
-                let cReqG = reqG[reqIndex];
-                let cReqN = reqN[reqIndex];
-
-                simStaff.forEach(s => { s.assignedToday = null; });
-
-                // 🛑 1. GECE ÇIKIŞI İZİN VE HAFTALIK 4 GÜN LİMİTİ
-                simStaff.forEach(s => {
-                    if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) {
-                        s.assignedToday = offCode;
-                        s.lastShiftType = 'O'; 
-                    }
-                });
-
-                // 🌙 2. GECE NÖBETİNİ DAĞIT
-                let poolN = simStaff.filter(s => !s.assignedToday);
-                poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random()));
-                let nAssigned = 0;
-                for(let i=0; i<poolN.length && nAssigned<cReqN; i++) {
-                    poolN[i].assignedToday = nightCode;
-                    poolN[i].lastShiftType = 'N';
-                    poolN[i].nightCount++;
-                    poolN[i].weeklyWorkDays++;
-                    poolN[i].dayConsecutive = 0;
-                    nAssigned++;
-                }
-                // Eğer nöbete adam bulunamadıysa (Gelecekteki kara delik)
-                if(nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
-
-                // ☀️ 3. GÜNDÜZ KOTASINI DAĞIT
-                let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < 2); // 3 gündüz yasağı
-                poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
-                let dAssigned = 0;
-                for(let i=0; i<poolG.length && dAssigned<cReqG; i++) {
-                    poolG[i].assignedToday = dayCode;
-                    poolG[i].lastShiftType = 'G';
-                    poolG[i].weeklyWorkDays++;
-                    poolG[i].dayConsecutive++;
-                    dAssigned++;
-                }
-                // Eğer gündüze adam bulunamadıysa (Gelecekteki kara delik)
-                if(dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
-
-                // 🏖️ 4. GERİ KALANLARA İZİN YAZ
-                simStaff.forEach(s => {
-                    if (!s.assignedToday) {
-                        s.assignedToday = offCode;
-                        s.lastShiftType = 'O';
-                        s.dayConsecutive = 0;
-                    }
-                    
-                    let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === offCode ? 'O' : 'G');
-                    s.shiftLog.push(codeChar);
-
-                    let safeVal = s.assignedToday.replace(/\./g, ':'); 
-                    let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
-                    s.realShifts.push({ text: s.assignedToday, bg: r ? r.color : "transparent" });
-                });
-            }
-
-            // 🕵️‍♂️ SİMÜLASYON RÖNTGENİ VE ÖLÜMCÜL CEZALAR
-            let penalty = 0;
-            
-            // Eğer hastane 1 kişi bile eksik kaldıysa (Kara Delik) o senaryoyu YAK!
-            penalty += (unfilledSlots * 50000000); 
-
-            let maxN = -1, minN = 9999;
-            simStaff.forEach(s => {
-                let seq = s.shiftLog.join(''); 
-                
-                // İnsan Biyolojisi Kuralları
-                let ngMatches = (seq.match(/NG/g) || []).length; // Gece->Gündüz (YASAK)
-                let nnMatches = (seq.match(/NN/g) || []).length; // Gece->Gece (YASAK)
-                let gggMatches = (seq.match(/GGG/g) || []).length; // 3 Gündüz (YASAK)
-                
-                penalty += (ngMatches * 1000000); 
-                penalty += (nnMatches * 1000000); 
-                penalty += (gggMatches * 500000); 
-
-                maxN = Math.max(maxN, s.nightCount);
-                minN = Math.min(minN, s.nightCount);
-            });
-
-            // Nöbet adaleti
-            penalty += ((maxN - minN) * 100);
-
-            simulations.push({ penalty: penalty, staffData: simStaff });
-        }
-
-        // EN KUSURSUZ (0 CEZALI) TABLOLARI SEÇ
-        simulations.sort((a, b) => a.penalty - b.penalty);
-        document.getElementById("tablesContainer").innerHTML = "";
-
-        for(let i=0; i<numTablesToGenerate; i++) {
-            let bestSim = simulations[i];
-            let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.realShifts }));
-            let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
-            generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
-        }
-
-        // 🚨 KIRMIZI ALARMLI GÜNLÜK ÖZET (G/Gc) 🚨
-        document.querySelectorAll('.table-wrapper').forEach(wrapper => {
-            let sumHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
-            for(let c = 0; c < colCount; c++) {
-                let d = new Date(startDt);
-                d.setDate(d.getDate() + c);
-                let dow = d.getDay();
-                let reqIndex = dow === 0 ? 7 : dow;
-                
-                let targetG = reqG[reqIndex];
-                let targetN = reqN[reqIndex];
-
-                let dCount = 0, nCount = 0;
-                wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
-                    let cell = tr.querySelectorAll('.shift-cell')[c];
-                    if(cell) {
-                        let val = cell.innerText;
-                        if(val === nightCode || val.startsWith('16:') || val.startsWith('20:') || val.startsWith('24:') || val.includes('NÖBET')) nCount++;
-                        else if(val !== offCode && val !== "") dCount++;
-                    }
-                });
-                
-                // KONTROL MEKANİZMASI: İstenen sayının altındaysa KIRMIZI ALARM çal!
-                let isWarning = false;
-                let gText = dCount;
-                let nText = nCount;
-
-                if(dCount < targetG) { gText = `<span style="color:#ef4444;">${dCount}</span>`; isWarning = true; }
-                if(nCount < targetN) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
-                
-                let cellHtml = `${gText} / ${nText}`;
-                if(isWarning) cellHtml = `<span style="color:#ef4444; font-size:12px;">⚠️</span><br>` + cellHtml;
-
-                sumHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;">${cellHtml}</td>`;
-                
-                if(dow === 0) sumHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
-            }
-            sumHtml += `<td class="total-summary-cell"></td></tr>`;
-            wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', sumHtml);
-        });
-
-        updateAllStats();
-        document.getElementById("masterArchiveTitle").innerHTML = "📁 AI Tarafından Üretildi";
-        showToast(`✨ AI V18: GELECEK HESAPLANDI! (5000 SİMÜLASYON) ✨`);
-        logAction("Yapay Zeka Monte Carlo ile en eşit tabloyu oluşturdu.");
-
-    }, 100);
-}
-   // ============================================================================
-        // 🪄 YENİ ARAYÜZ (KOKPİT) FONKSİYONLARI 
+       // ============================================================================
+        // 1. GÜNCELLENEN ARAYÜZ AÇILIŞI (HAVUZDAN OTOMATİK İSİM ÇEKME VE SCROLL)
         // ============================================================================
-        function renderAiDays() {
-            const container = document.getElementById('aiDaysContainer');
-            if(!container) return;
-            const days = ['PZT', 'SAL', 'ÇAR', 'PER', 'CUM', 'CMT', 'PAZ'];
-            let html = '';
-            days.forEach((d, i) => {
-                let border = (d==='CMT' || d==='PAZ') ? 'border-color:var(--danger);' : 'border-color:#475569;';
-                let c = i+1;
-                html += `
-                <div style="background:rgba(0,0,0,0.6); border:1px solid transparent; ${border} border-radius:8px; padding:8px; text-align:center;">
-                    <div style="color:${(d==='CMT'||d==='PAZ')?'#ef4444':'#fff'}; font-weight:900; font-size:11px; margin-bottom:8px; border-bottom:1px dashed #334155; padding-bottom:4px;">${d}</div>
-                    <div style="font-size:9px; color:#38bdf8;">Sabah</div>
-                    <input type="number" id="aiReq_G_${c}" value="${d==='CMT'||d==='PAZ'?1:2}" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
-                    <div style="font-size:9px; color:#a855f7;">Akşam</div>
-                    <input type="number" id="aiReq_A_${c}" value="0" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
-                    <div style="font-size:9px; color:#facc15;">Gece</div>
-                    <input type="number" id="aiReq_N_${c}" value="1" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px;">
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        // openAiModal fonksiyonunu güncelliyoruz (Eskisini ezmiş olacak)
         function openAiModal() {
             let opts = `<option value="">-- Seçiniz --</option>`;
             Object.keys(shiftRules).forEach(k => { opts += `<option value="${k}">${k} (G:${shiftRules[k].w})</option>`; });
@@ -1770,43 +1522,190 @@ function startAiDistribution() {
                 let el = document.getElementById(id); if(el) el.innerHTML = opts;
             });
 
-            // Ekrandaki tabloda isim varsa otomatik çekip çip yap
-            let baseTable = document.querySelector('.table-wrapper');
             let container = document.getElementById('aiStaffChipContainer');
-            if(baseTable && container && container.innerHTML.trim() === '') {
-                Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).forEach(tr => {
-                    let name = tr.querySelector('.editable-name').innerText.trim();
-                    aiAddStaffChip(name);
-                });
+            if(container) {
+                container.innerHTML = ''; // İçini temizle
+                // Kaydırma çubuğu (scroll) ekleyelim ki 40 kişi bile olsa sığsın
+                container.style.maxHeight = "250px";
+                container.style.overflowY = "auto";
+                
+                // DİREKT ANA HAVUZDAN ÇEK!
+                if(staffList && staffList.length > 0) {
+                    staffList.forEach(s => {
+                        aiAddStaffChip(s.name);
+                    });
+                } else {
+                    // Eğer havuz boşsa, ekrandaki tablodan çekmeyi dene
+                    let baseTable = document.querySelector('.table-wrapper');
+                    if(baseTable) {
+                        Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).forEach(tr => {
+                            let name = tr.querySelector('.editable-name').innerText.trim();
+                            aiAddStaffChip(name);
+                        });
+                    }
+                }
             }
             renderAiDays();
             openModal('aiGeneratorModal');
         }
 
-        function toggleGender(btn) {
-            let chip = btn.parentElement; let currentGender = chip.getAttribute("data-gender");
-            if(currentGender === "E") { chip.setAttribute("data-gender", "K"); btn.innerText = "👩"; } 
-            else { chip.setAttribute("data-gender", "E"); btn.innerText = "👨"; }
-        }
+        // ============================================================================
+        // 2. GÜNCELLENEN V20 MOTORU (16-24 DÜZELTİLDİ VE S/A/Gc ÖZETİ EKLENDİ)
+        // ============================================================================
+        function startAiDistribution() {
+            let dayCode = document.getElementById('aiDayShiftSelect').value;
+            let midCode = document.getElementById('aiMidShiftSelect').value; 
+            let nightCode = document.getElementById('aiNightShiftSelect').value;
+            let offCode = document.getElementById('aiOffShiftSelect').value;
+            let numTablesToGenerate = parseInt(document.getElementById('aiTableCount').value) || 1;
+            let maxConsecutive = parseInt(document.getElementById('aiMaxConsecutive').value) || 4;
+            
+            // AKŞAM (midCode) seçimi artık ZORUNLU kılındı!
+            if(!dayCode || !midCode || !nightCode || !offCode) return alert("Lütfen Sabah, Akşam, Gece ve İzin kodlarının 4'ünü de sihirbazdan seçiniz!");
 
-        function aiAddStaffChip(isim = null) {
-            let name = isim || document.getElementById('aiAddStaffInput').value.trim(); if(!name) return;
-            let container = document.getElementById('aiStaffChipContainer');
+            let reqG = [], reqA = [], reqN = [];
+            for(let i=1; i<=7; i++) {
+                reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
+                reqA[i] = parseInt(document.getElementById('aiReq_A_'+i).value) || 0; 
+                reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
+            }
+
+            let startDt = new Date(document.getElementById('startDate').value || new Date());
+            let colCount = parseInt(document.getElementById('colCount').value || 30);
             
-            // İsmin son harfine göre tahmini cinsiyet (Türkçe isim yapısı)
-            let lowerName = name.toLowerCase();
-            let isFemale = lowerName.endsWith('a') || lowerName.endsWith('e') || lowerName.endsWith('u') || lowerName.endsWith('ı') || lowerName.endsWith('nur') || lowerName.endsWith('gül');
-            let cinsiyet = isFemale ? "K" : "E";
-            let icon = cinsiyet === "E" ? "👨" : "👩";
+            let staffChips = document.querySelectorAll('.ai-staff-chip');
+            if(staffChips.length === 0) return alert("Kadro listesi boş! Lütfen personel ekleyin.");
             
-            let html = `<div class="ai-staff-chip" data-gender="${cinsiyet}">${name} <button class="gender-btn" onclick="toggleGender(this)" title="Cinsiyeti Değiştir">${icon}</button> <span style="color:#ef4444; cursor:pointer; font-size:14px; margin-left:5px;" onclick="this.parentElement.remove()">×</span></div>`;
-            container.insertAdjacentHTML('beforeend', html);
-            document.getElementById('aiAddStaffInput').value = "";
+            let staffNames = Array.from(staffChips).map(chip => ({ name: chip.innerText.replace(/[👩👨×]/g, '').trim(), gender: chip.getAttribute('data-gender') }));
+
+            saveHistory(); closeModal('aiGeneratorModal'); showToast("⏳ Yapay Zeka Başlıyor...");
+            let oldHtml = document.getElementById("masterArchiveTitle").innerHTML;
+            document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI Motoru Çalışıyor...";
+
+            setTimeout(() => {
+                let simulations = []; let totalSimulations = 2000;
+                for(let sim = 0; sim < totalSimulations; sim++) {
+                    let simStaff = staffNames.map(person => ({ name: person.name, gender: person.gender, realShifts: [], shiftLog: [], weeklyWorkDays: 0, totalHours: 0, nightCount: 0, dayConsecutive: 0, lastShiftType: 'O' }));
+                    let penalty = 0;
+
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; });
+                        let cReqG = reqG[reqIndex]; let cReqA = reqA[reqIndex]; let cReqN = reqN[reqIndex];
+
+                        simStaff.forEach(s => { s.assignedToday = null; });
+
+                        // 1. DİNLENME VE HAFTALIK LİMİT
+                        simStaff.forEach(s => { if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 5) { s.assignedToday = offCode; s.lastShiftType = 'O'; } });
+
+                        // 2. GECE NÖBETİ (Cinsiyet Zırhı)
+                        let poolN = simStaff.filter(s => !s.assignedToday); poolN.sort(() => 0.5 - Math.random());
+                        let nAssigned = 0; let nightTeam = [];
+                        for(let i=0; i<poolN.length && nAssigned<cReqN; i++) {
+                            poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; poolN[i].nightCount++; poolN[i].weeklyWorkDays++; poolN[i].dayConsecutive = 0;
+                            nightTeam.push(poolN[i]); nAssigned++;
+                        }
+                        if(nightTeam.length > 1) {
+                            let kCount = nightTeam.filter(s => s.gender === 'K').length; let eCount = nightTeam.filter(s => s.gender === 'E').length;
+                            if(kCount >= 2 && eCount === 0) penalty += 50000000; // Sadece kadınlar kalamaz!
+                        }
+
+                        // 3. AKŞAM VARDİYASI (ÖNEMLİ: Kodu eksiksiz işler)
+                        let poolA = simStaff.filter(s => !s.assignedToday); poolA.sort(() => 0.5 - Math.random());
+                        let aAssigned = 0;
+                        for(let i=0; i<poolA.length && aAssigned<cReqA; i++) {
+                            poolA[i].assignedToday = midCode; poolA[i].lastShiftType = 'A'; poolA[i].weeklyWorkDays++; poolA[i].dayConsecutive = 0; aAssigned++;
+                        }
+
+                        // 4. GÜNDÜZ VARDİYASI (Akşamdan çıkana sabah yok)
+                        let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < maxConsecutive && s.lastShiftType !== 'A'); poolG.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
+                        let dAssigned = 0;
+                        for(let i=0; i<poolG.length && dAssigned<cReqG; i++) {
+                            poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; poolG[i].weeklyWorkDays++; poolG[i].dayConsecutive++; dAssigned++;
+                        }
+
+                        // 5. İZİNLER
+                        simStaff.forEach(s => {
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; }
+                            let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === midCode ? 'A' : (s.assignedToday === offCode ? 'O' : 'G'));
+                            s.shiftLog.push(codeChar);
+                            let safeVal = s.assignedToday.replace(/\./g, ':');
+                            let rule = shiftRules[safeVal] || shiftRules[s.assignedToday]; 
+                            s.realShifts.push({ text: s.assignedToday, bg: rule ? rule.color : "transparent" });
+                        });
+                    }
+
+                    // CEZALAR
+                    let maxN = -1, minN = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.join(''); 
+                        penalty += ((seq.match(/NG/g) || []).length * 10000000); 
+                        penalty += ((seq.match(/NA/g) || []).length * 10000000); 
+                        penalty += ((seq.match(/NN/g) || []).length * 10000000); 
+                        penalty += ((seq.match(/AG/g) || []).length * 5000000); 
+                        let gggRegex = new RegExp(`G{${maxConsecutive + 1},}`, 'g'); penalty += ((seq.match(gggRegex) || []).length * 5000000);
+                        maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
+                    });
+                    penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
+                }
+
+                simulations.sort((a, b) => a.penalty - b.penalty);
+                document.getElementById("tablesContainer").innerHTML = "";
+
+                for(let i=0; i<numTablesToGenerate; i++) {
+                    let bestSim = simulations[i]; let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.realShifts }));
+                    let penaltyText = bestSim.penalty < 1000 ? "🏆 KUSURSUZ (0 Hata)" : `⚠️ Risk Skoru: ${bestSim.penalty}`;
+                    generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
+                }
+
+                // 🚨 YENİ 3'LÜ (SABAH/AKŞAM/GECE) ÖZET SATIRI 🚨
+                document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                    let sumHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK (S/A/Gc)</td>`;
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        
+                        let targetG = reqG[reqIndex];
+                        let targetA = reqA[reqIndex];
+                        let targetN = reqN[reqIndex];
+
+                        let sCount = 0, aCount = 0, nCount = 0;
+                        wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
+                            let cell = tr.querySelectorAll('.shift-cell')[c];
+                            if(cell) {
+                                let val = cell.innerText;
+                                if(val === nightCode) nCount++;
+                                else if(val === midCode) aCount++;
+                                else if(val === dayCode) sCount++;
+                            }
+                        });
+                        
+                        let isWarning = false;
+                        let sText = sCount, aText = aCount, nText = nCount;
+
+                        if(sCount < targetG) { sText = `<span style="color:#ef4444;">${sCount}</span>`; isWarning = true; }
+                        if(aCount < targetA) { aText = `<span style="color:#ef4444;">${aCount}</span>`; isWarning = true; }
+                        if(nCount < targetN) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
+                        
+                        let cellHtml = `${sText} / ${aText} / ${nText}`;
+                        if(isWarning) cellHtml = `<span style="color:#ef4444; font-size:12px;">⚠️</span><br>` + cellHtml;
+
+                        sumHtml += `<td style="font-size: 10px; font-weight: 800; color: #fff; text-align:center;">${cellHtml}</td>`;
+                        if(dow === 0) sumHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
+                    }
+                    sumHtml += `<td class="total-summary-cell"></td></tr>`;
+                    wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', sumHtml);
+                });
+
+                updateAllStats(); document.getElementById("masterArchiveTitle").innerHTML = oldHtml; showToast(`✨ V20 KOKPİT İşlemi Bitti! ✨`);
+            }, 100);
         }
                 
                 </script>
 </body>
 </html>
+
 
 
 
