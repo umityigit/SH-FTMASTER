@@ -218,7 +218,29 @@
         
         .rule-list { list-style: none; padding: 0; margin: 0; font-size: 12px; color: #cbd5e1; display: flex; flex-direction: column; gap: 12px; }
         .rule-list li { display: flex; align-items: flex-start; gap: 8px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 2px solid var(--success); }
-    
+    /* ============================================================================
+        /* 🎨 ÇETELE TAŞMA DÜZELTME (SCRÖLL EKLEME)
+        /* ============================================================================ */
+        
+        /* 1. Tüm ana tabloların (çetele tabloları dahil) dışarı taşmasını önle, gerekirse scroll ekle */
+        .table-wrapper {
+            overflow-x: auto !important; /* Yatay scroll'u zorla aktif et */
+            width: 100% !important;     /* Kapsayıcısının genişliğini aşma */
+            border-radius: 10px;        /* Köşeleri yuvarla, şık dursun */
+            margin-bottom: 20px;        /* Altına boşluk bırak */
+        }
+        
+        /* 2. Çetele tablosunun içindeki hücrelerin minimum genişliğini kontrol et (biraz cila) */
+        .editable-table, .staff-table, #id_Cetele_Konteyner_Tablo {
+            min-width: 100% !important; /* Tabloyu kapsayıcısına sığdır */
+            table-layout: fixed !important; /* Hücre genişliklerini sabit tut, taşmayı önle */
+        }
+        
+        /* 3. Çetele hücrelerinin içindeki metinlerin taşmasını veya hücreleri genişletmesini önle */
+        .editable-table td, .editable-table th {
+            word-wrap: break-word !important; /* Uzun kelimeleri kır, hücre genişliğini sabit tut */
+            max-width: 100px !important;      /* Hücrelere maksimum genişlik ver (ihtiyaca göre ayarla) */
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1948,6 +1970,7 @@
     </script>
 </body>
 </html>
+
 
 
 
