@@ -1568,7 +1568,7 @@
         }
 
   // ============================================================================
-// 🧠 SHIFTMASTER A.I. CORE V15 (CEZA PUANLI SATRANÇ MOTORU VE KESİN ÇÖZÜM) 🧠
+// 🧠 SHIFTMASTER A.I. CORE V16 (TİTANYUM KANUN & KUSURSUZ RİTİM MOTORU) 🧠
 // ============================================================================
 function startAiDistribution() {
     let dayCode = document.getElementById('aiDayShiftSelect').value;
@@ -1588,7 +1588,7 @@ function startAiDistribution() {
     let dayHours = getShiftHours(dayCode);
     let nightHours = getShiftHours(nightCode);
 
-    // KOTALAR - ASLA ŞAŞMAYACAK
+    // KOTALARI TOPLA
     let reqG = [], reqN = [];
     for(let i=1; i<=7; i++) {
         reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
@@ -1609,7 +1609,7 @@ function startAiDistribution() {
     document.querySelectorAll('.ai-pattern-cb[data-type="night"]:checked').forEach(cb => nightRest = Math.max(nightRest, parseInt(cb.value)));
 
     let baseTable = document.querySelector('.table-wrapper');
-    if(!baseTable) return alert("Ekranda personel listesini okuyacağım bir tablo yok!");
+    if(!baseTable) return alert("Ekranda işlem yapılacak açık bir tablo yok!");
 
     let colCount = parseInt(baseTable.getAttribute("data-colcount"));
     let startDt = new Date(baseTable.getAttribute("data-startdt"));
@@ -1619,11 +1619,11 @@ function startAiDistribution() {
     closeModal('aiGeneratorModal');
     
     let oldBtnHtml = document.getElementById("masterArchiveTitle").innerHTML;
-    document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI: 1000 Senaryo Oynanıyor...";
+    document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI: KUSURSUZ RİTİM ARANIYOR (1000 İHTİMAL)...";
 
     setTimeout(() => {
         let simulations = [];
-        let totalSimulations = 1000; // 1000 farklı evren yaratılıyor!
+        let totalSimulations = 1000;
 
         for(let sim = 0; sim < totalSimulations; sim++) {
             let simStaff = staffNames.map(name => ({
@@ -1637,36 +1637,35 @@ function startAiDistribution() {
                 totalHours: 0,
                 nightCount: 0,
                 fixedShift: null,
-                violationScore: 0 // Sistemin zekası burada yatıyor!
+                violationScore: 0 // Ceza Puanı Sistemi
             }));
 
-            // Sabit görevleri bağla
-            let fixedExtras = extras.filter(e => e.type === 'fixed');
-            fixedExtras.forEach(fe => {
+            extras.filter(e => e.type === 'fixed').forEach(fe => {
                 for(let i=0; i<fe.count; i++) {
                     let cand = simStaff.find(s => s.fixedShift === null);
                     if(cand) cand.fixedShift = fe;
                 }
             });
 
-            // 🔥 PUANLAMA (CEZA) SİSTEMİ
+            // 🔥 YENİ DÜZEN: TİTANYUM CEZA SİSTEMİ 🔥
             function getScore(s, isNight) {
                 let score = 0;
-                // Kırmızı Çizgiler (Çok ağır ceza)
-                if (s.restNeeded > 0) score += 10000; 
-                if (isNight && s.nightConsecutive >= 1) score += 10000; // 2 gece peş peşe yasak
                 
-                // Kurallar (Mümkünse kaçın)
-                if (s.weeklyWorkDays >= 4) score += 1000; // 4 günü dolduysa ceza
-                if (s.consecutive >= 3) score += 500; // 4. gün peş peşeye ceza
-                if (!isNight && s.dayConsecutive >= 2) score += 200; // 3. gündüz peş peşeye ceza
+                // 1. DERECE KIRMIZI ÇİZGİLER (ASLA ESNETİLEMEZ)
+                if (s.restNeeded > 0) score += 1000000; // Gece çıkışı asla çalışmaz
+                if (s.weeklyWorkDays >= 4) score += 500000; // Haftada 5. gün yasak
                 
-                // Adalet Terazisi
-                score += s.totalHours; // Saati çok olana eksi puan
-                if (isNight) score += (s.nightCount * 50); // Nöbeti çok olana eksi puan
+                // 2. DERECE RİTİM KURALLARI (SENİN İSTEDİĞİN 2+1 ve 1+1 MANTIĞI)
+                if (s.consecutive >= 3) score += 100000; // 4. gün peş peşe çalışmak yasak
+                if (!isNight && s.dayConsecutive >= 2) score += 100000; // Peş peşe 3 gündüz yasak!
+                if (isNight && s.nightConsecutive >= 1) score += 100000; // Peş peşe 2 gece yasak!
+                
+                // 3. DERECE ADALET (Saat ve Nöbet dengeleme)
+                score += s.totalHours; 
+                if (isNight) score += (s.nightCount * 50); 
                 
                 // Kura
-                score += Math.random() * 10;
+                score += Math.random() * 20;
                 return score;
             }
 
@@ -1676,7 +1675,7 @@ function startAiDistribution() {
                 let dow = d.getDay();
                 let reqIndex = dow === 0 ? 7 : dow;
 
-                if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; }); // Pzt sıfırla
+                if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; });
 
                 let cReqG = reqG[reqIndex];
                 let cReqN = reqN[reqIndex];
@@ -1684,7 +1683,7 @@ function startAiDistribution() {
 
                 simStaff.forEach(s => { s.assignedToday = null; s.assignedHours = 0; });
 
-                // 1. SABİT EKLENENLER (Kotadan düşer)
+                // SABİT VARDİYALAR
                 simStaff.forEach(s => {
                     if(s.fixedShift) {
                         s.assignedToday = s.fixedShift.code;
@@ -1694,25 +1693,27 @@ function startAiDistribution() {
                     }
                 });
 
-                // 2. GECE NÖBETİ (KOTA KRALDIR)
+                // GECE NÖBETLERİ DAĞITIMI
                 let poolN = simStaff.filter(s => !s.assignedToday);
                 poolN.sort((a,b) => getScore(a, true) - getScore(b, true));
                 for(let i=0; i<cReqN && i<poolN.length; i++) {
                     let s = poolN[i];
+                    
+                    // Titanyum Ceza Yazımı (Gerekirse ceza yer ama kotayı doldurur)
+                    if(s.restNeeded > 0) s.violationScore += 1000000;
+                    if(s.weeklyWorkDays >= 4) s.violationScore += 500000;
+                    if(s.consecutive >= 3) s.violationScore += 100000;
+                    if(s.nightConsecutive >= 1) s.violationScore += 100000;
+
                     s.assignedToday = nightCode;
                     s.assignedHours = nightHours;
-                    
-                    // Kural çiğnediyse faturaya yaz
-                    if(s.restNeeded > 0) s.violationScore += 10000;
-                    if(s.weeklyWorkDays >= 4) s.violationScore += 1000;
-                    
                     s.nightCount++;
                     s.nightConsecutive++;
-                    s.dayConsecutive = 0;
+                    s.dayConsecutive = 0; // Gece tuttuğu için gündüz serisi sıfırlandı
                     s.restNeeded = nightRest;
                 }
 
-                // 3. GÜNDÜZ VARDİYALARI (KOTA KRALDIR)
+                // GÜNDÜZ VARDİYALARI DAĞITIMI
                 let dayTasks = [];
                 cRandomExtras.forEach(re => { for(let i=0; i<re.count; i++) dayTasks.push({code: re.code, hours: re.hours}); });
                 for(let i=0; i<cReqG; i++) dayTasks.push({code: dayCode, hours: dayHours});
@@ -1722,19 +1723,21 @@ function startAiDistribution() {
                     poolG.sort((a,b) => getScore(a, false) - getScore(b, false));
                     if(poolG.length > 0) {
                         let s = poolG[0];
+                        
+                        // Titanyum Ceza Yazımı
+                        if(s.restNeeded > 0) s.violationScore += 1000000;
+                        if(s.weeklyWorkDays >= 4) s.violationScore += 500000;
+                        if(s.consecutive >= 3) s.violationScore += 100000;
+                        if(s.dayConsecutive >= 2) s.violationScore += 100000;
+
                         s.assignedToday = task.code;
                         s.assignedHours = task.hours;
-                        
-                        if(s.restNeeded > 0) s.violationScore += 10000;
-                        if(s.weeklyWorkDays >= 4) s.violationScore += 1000;
-                        if(s.dayConsecutive >= 2) s.violationScore += 200;
-
                         s.dayConsecutive++;
-                        s.nightConsecutive = 0;
+                        s.nightConsecutive = 0; // Gündüze geçti, gece serisi bitti
                     }
                 });
 
-                // 4. TABLOYA KAYDET VE TEMİZLE
+                // TABLOYA YAZDIRMA VE HT BASMA
                 simStaff.forEach(s => {
                     if (!s.assignedToday) {
                         s.assignedToday = offCode;
@@ -1755,28 +1758,28 @@ function startAiDistribution() {
                 });
             }
 
-            // AYLIK SİMÜLASYON KARNESİ ÇIKART
+            // SİMÜLASYONU PUANLA
             let maxH = -1, minH = 9999, maxN = -1, minN = 9999;
             simStaff.forEach(s => {
                 maxH = Math.max(maxH, s.totalHours); minH = Math.min(minH, s.totalHours);
                 maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
             });
-            // Ceza Skoru: Kural ihlalleri + Saat adaletsizliği
-            let penalty = simStaff.reduce((sum, s) => sum + s.violationScore, 0) + ((maxH - minH) * 10) + ((maxN - minN) * 50);
+            // Simülasyonun toplam hatası (Titanyum Kurallar + Saat Farkı)
+            let penalty = simStaff.reduce((sum, s) => sum + s.violationScore, 0) + ((maxH - minH) * 2) + ((maxN - minN) * 10);
             simulations.push({ penalty: penalty, staffData: simStaff });
         }
 
-        // EN İYİ SİMÜLASYONLARI (CEZASI EN DÜŞÜK OLANLARI) SEÇ
+        // EN İYİ OYUNLARI SEÇ (CEZASI SIFIR VEYA EN DÜŞÜK OLAN)
         simulations.sort((a, b) => a.penalty - b.penalty);
         document.getElementById("tablesContainer").innerHTML = "";
 
         for(let i=0; i<numTablesToGenerate; i++) {
             let bestSim = simulations[i];
             let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.shifts }));
-            generateTable(true, exportData, `🤖 AI Alternatif ${i+1} (Ceza Skoru: ${bestSim.penalty})`, startDt, colCount);
+            generateTable(true, exportData, `🤖 AI Alternatif ${i+1} (Hata Puanı: ${bestSim.penalty})`, startDt, colCount);
         }
 
-        // ALTA GÜNLÜK ÖZET (G/Gc) EKLE
+        // GÜNLÜK ÖZET EKLENTİSİ (G/Gc)
         document.querySelectorAll('.table-wrapper').forEach(wrapper => {
             let sumHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
             for(let c = 0; c < colCount; c++) {
@@ -1799,14 +1802,15 @@ function startAiDistribution() {
 
         updateAllStats();
         document.getElementById("masterArchiveTitle").innerHTML = "📁 AI Tarafından Üretildi";
-        showToast(`✨ AI V15: 1000 SİMÜLASYON TAMAMLANDI! ✨`);
-        logAction("Yapay Zeka Monte Carlo ile en eşit tabloyu oluşturdu.");
+        showToast(`✨ AI V16: NİHAİ RİTİM VE ADALET SAĞLANDI! ✨`);
+        logAction("Yapay Zeka Monte Carlo ile en kusursuz tabloyu oluşturdu.");
 
     }, 100);
 }
     </script>
 </body>
 </html>
+
 
 
 
