@@ -18,7 +18,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050b14">
 
-</stil>
+    <style>
         /* 🔥 ÇÖZÜM MERKEZİ (TICKET SİSTEMİ) TASARIMI 🔥 */
         .btn-support { background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid var(--accent); color: white; display: inline-flex; align-items: center; padding: 8px 18px; border-radius: 12px; transition: 0.3s; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
         .btn-support:hover { transform: translateY(-3px); border-color: #fff; box-shadow: 0 0 25px var(--accent-glow); background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); }
@@ -198,30 +198,8 @@
         @keyframes popUp { from { bottom: -50px; opacity: 0; transform: translateX(-50%) scale(0.5); } to { bottom: 40px; opacity: 1; transform: translateX(-50%) scale(1); } }
         @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
 
-       .sm-player { position: fixed; bottom: 25px; ... }
-        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); ... }
-
-        /* 🔥 AI SİHİRBAZ KOKPİT TASARIMLARI 🔥 */
-        .ai-cockpit-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 20px; }
-        @media (max-width: 1200px) { .ai-cockpit-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 900px) { .ai-cockpit-grid { grid-template-columns: 1fr; } }
-        
-        .ai-panel { background: rgba(15,23,42,0.6); border: 1px solid var(--glass-border); border-radius: 15px; padding: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-        .ai-panel-title { color: var(--accent); font-size: 16px; font-weight: 900; margin-top: 0; margin-bottom: 15px; border-bottom: 1px dashed rgba(56,189,248,0.3); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        
-        .ai-staff-chip { background: rgba(2,6,23,0.8); padding: 8px 12px; border-radius: 10px; display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; border: 1px solid #475569; transition: 0.3s; margin: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
-        .ai-staff-chip[data-gender="E"] { border-left: 4px solid #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.2); }
-        .ai-staff-chip[data-gender="K"] { border-left: 4px solid #ec4899; box-shadow: 0 0 10px rgba(236,72,153,0.2); }
-        
-        .gender-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 5px; cursor: pointer; font-size: 14px; padding: 2px 6px; transition: 0.2s; }
-        .gender-btn:hover { transform: scale(1.2); }
-        
-        .rule-list { list-style: none; padding: 0; margin: 0; font-size: 12px; color: #cbd5e1; display: flex; flex-direction: column; gap: 12px; }
-        .rule-list li { display: flex; align-items: flex-start; gap: 8px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 2px solid var(--success); }
-
-    </style>  </head>
-   
-    
+        .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; }
+        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -428,154 +406,209 @@
     </div>
 
     <div id="aiGeneratorModal" class="full-modal-overlay">
-        <div class="full-modal-content" style="max-width: 1400px; height: 95vh; border-color: #8b5cf6; background: radial-gradient(circle at center, #1e1b4b, #050b14); box-shadow: 0 0 80px rgba(139, 92, 246, 0.4);">
+        <div class="full-modal-content" style="max-width: 1100px; height: 90vh; border-color: #8b5cf6; background: radial-gradient(circle at top right, #2e1065, #050b14); box-shadow: 0 0 80px rgba(139, 92, 246, 0.4);">
             <div class="modal-header-bar" style="background: rgba(109,40,217,0.3); border-bottom-color: #8b5cf6; padding: 20px 35px;">
-                <div style="font-size:26px; font-weight:900; color:#fff; text-shadow:0 0 15px #8b5cf6;">
-                    🪄 V20 BÜYÜK USTA <span style="font-size:12px; color:#cbd5e1; font-weight:normal; letter-spacing:2px;">(3 Vardiyalı Yapay Zeka Motoru)</span>
+                <div style="font-size:24px; font-weight:900; color:#fff; text-shadow:0 0 15px #8b5cf6;">
+                    🪄 SHIFTMASTER YAPAY ZEKA MOTORU <span style="font-size:12px; color:#cbd5e1; font-weight:normal; letter-spacing:2px;">(Kural Belirleme Merkezi)</span>
                 </div>
-                <button class="btn btn-red" onclick="closeModal('aiGeneratorModal')">❌ Kapat</button>
+                <button class="btn btn-red" onclick="closeModal('aiGeneratorModal')">❌ İPTAL</button>
             </div>
             
-            <div class="modal-body-area" style="padding: 25px; overflow-y: auto;">
-                
-                <div class="ai-panel" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
-                    <div style="flex:1; min-width:200px;">
-                        <label style="font-size: 11px; color: #38bdf8; font-weight:900;">☀️ SABAH VARDİYASI</label>
-                        <select id="aiDayShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#38bdf8;"></select>
-                    </div>
-                    <div style="flex:1; min-width:200px;">
-                        <label style="font-size: 11px; color: #a855f7; font-weight:900;">🌆 AKŞAM VARDİYASI</label>
-                        <select id="aiMidShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#a855f7;"></select>
-                    </div>
-                    <div style="flex:1; min-width:200px;">
-                        <label style="font-size: 11px; color: #facc15; font-weight:900;">🌙 GECE NÖBETİ</label>
-                        <select id="aiNightShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#facc15;"></select>
-                    </div>
-                    <div style="flex:1; min-width:200px;">
-                        <label style="font-size: 11px; color: #ef4444; font-weight:900;">🏖️ DİNLENME (İZİN)</label>
-                        <select id="aiOffShiftSelect" class="glass-input" style="width:100%; padding:12px; font-size:14px; border-color:#ef4444;"></select>
-                    </div>
-                </div>
+            <div class="modal-body-area" style="padding: 30px; overflow-y: auto;">
+                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                    
+                    <div style="flex: 1; min-width: 350px;">
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.3); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
+                            <h4 style="color: #a855f7; margin-top: 0; font-size: 16px;">1️⃣ Temel Vardiyalar & İzinler</h4>
+                            <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">☀️ GÜNDÜZ ANA VARDİYASI</label>
+                            <select id="aiDayShiftSelect" class="glass-input" style="width: 100%; padding: 10px; margin-bottom: 15px; font-size: 14px; cursor: pointer;"></select>
+                            
+                            <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">🌙 GECE NÖBETİ (Ana)</label>
+                            <select id="aiNightShiftSelect" class="glass-input" style="width: 100%; padding: 10px; margin-bottom: 15px; font-size: 14px; cursor: pointer;"></select>
+                            
+                            <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">🏖️ OTOMATİK İZİN KODU</label>
+                            <select id="aiOffShiftSelect" class="glass-input" style="width: 100%; padding: 10px; font-size: 14px; cursor: pointer;"></select>
 
-                <div class="ai-cockpit-grid">
-                    <div class="ai-panel">
-                        <h4 class="ai-panel-title">👥 Nöbet Kadrosu & Güvenlik</h4>
-                        <p style="font-size:11px; color:#cbd5e1; margin-top:-5px;">İsim yazıp Ekle'ye basın. Cinsiyeti değiştirmek için ikonun (👨/👩) üzerine tıklayın.</p>
-                        
-                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                            <input type="text" id="aiAddStaffInput" class="glass-input" placeholder="Personel Adı..." style="flex:1; font-size:12px;" onkeydown="if(event.key==='Enter') aiAddStaffChip()">
-                            <button class="btn btn-cyan" onclick="aiAddStaffChip()">EKLE</button>
-                        </div>
-                        
-                        <div id="aiStaffChipContainer" style="display:flex; flex-wrap:wrap; background:rgba(0,0,0,0.4); padding:15px; border-radius:10px; min-height:150px; align-content:flex-start;">
+                            <div id="extraShiftsWrapper" style="margin-top: 15px; border-top: 1px dashed rgba(168,85,247,0.3); padding-top: 15px;">
+                                <h5 style="color: #38bdf8; margin: 0 0 10px 0; font-size: 12px; display:flex; justify-content:space-between; align-items:center;">
+                                    <span>➕ EKSTRA GÜNLÜK VARDİYALAR</span>
+                                    <button class="btn" style="background:rgba(56,189,248,0.1); border:1px solid #38bdf8; color:#38bdf8; padding:5px 10px; font-size:10px;" onclick="addExtraShiftRow()">EKLE</button>
+                                </h5>
+                                <div id="extraShiftsList"></div>
                             </div>
-                    </div>
+                        </div>
 
-                    <div class="ai-panel">
-                        <h4 class="ai-panel-title">⚖️ Titanyum Çalışma Kuralları</h4>
-                        <ul class="rule-list">
-                            <li><span style="color:var(--success); font-size:16px;">☑️</span> <b>Gece Sonrası İzin:</b> Gece nöbetinden (24-08) çıkan personele ertesi gün banko İzin (HT) yazılır.</li>
-                            <li><span style="color:var(--success); font-size:16px;">☑️</span> <b>Peş Peşe Gece Yasağı:</b> Bir personel 2 gece üst üste nöbet tutamaz.</li>
-                            <li><span style="color:var(--success); font-size:16px;">☑️</span> <b>Akşam -> Sabah Yasağı:</b> Akşam (16-24) mesaisinden çıkan personele ertesi sabah (08-16) yazılamaz, dinlendirilir.</li>
-                            <li><span style="color:var(--success); font-size:16px;">☑️</span> <b>Kadın Güvenlik Koruması:</b> Gece nöbetine birden fazla kişi seçilmişse, tüm ekip Kadın (👩) olamaz, en az 1 Erkek (👨) şarttır.</li>
-                            <li><span style="color:var(--warning); font-size:16px;">⚙️</span> <b>Peş Peşe Gündüz Sınırı:</b> 
-                                <select id="aiMaxConsecutive" class="glass-input" style="padding:2px 5px; font-size:11px; margin-left:5px;">
-                                    <option value="3">Maksimum 3 Gün</option>
-                                    <option value="4" selected>Maksimum 4 Gün</option>
-                                </select>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="ai-panel">
-                        <h4 class="ai-panel-title">📊 Günlük İhtiyaç (Kota) Matrisi</h4>
-                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
-                            <script>
-                                const days = ['PZT', 'SAL', 'ÇAR', 'PER', 'CUM', 'CMT', 'PAZ'];
-                                days.forEach((d, i) => {
-                                    let border = (d==='CMT' || d==='PAZ') ? 'border-color:var(--danger);' : 'border-color:#475569;';
-                                    let c = i+1;
-                                    document.write(`
-                                    <div style="background:rgba(0,0,0,0.6); border:1px solid transparent; ${border} border-radius:8px; padding:8px; text-align:center;">
-                                        <div style="color:${(d==='CMT'||d==='PAZ')?'#ef4444':'#fff'}; font-weight:900; font-size:11px; margin-bottom:8px; border-bottom:1px dashed #334155; padding-bottom:4px;">${d}</div>
-                                        <div style="font-size:9px; color:#38bdf8;">Sabah</div>
-                                        <input type="number" id="aiReq_G_${c}" value="${d==='CMT'||d==='PAZ'?1:2}" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
-                                        <div style="font-size:9px; color:#a855f7;">Akşam</div>
-                                        <input type="number" id="aiReq_A_${c}" value="0" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
-                                        <div style="font-size:9px; color:#facc15;">Gece</div>
-                                        <input type="number" id="aiReq_N_${c}" value="1" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px;">
-                                    </div>`);
-                                });
-                            </script>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.3); border-radius: 15px; padding: 20px;">
+                            <h4 style="color: #a855f7; margin-top: 0; font-size: 16px;">2️⃣ Çalışma & Dinlenme Kombinasyonları</h4>
+                            <p style="font-size:10px; color:#cbd5e1; margin-top:-10px; line-height:1.4;">Seçtiğiniz kurallar arasında sistem adil bir karma yapar. (Örn: Hem 3+1 hem 4+1 seçilirse, personele karışık dağıtır).</p>
+                            
+                            <div style="display: flex; gap: 15px;">
+                                <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
+                                    <label style="font-size: 11px; color: #38bdf8; font-weight: 800; display:block; margin-bottom:10px; border-bottom:1px solid #38bdf8; padding-bottom:5px;">☀️ GÜNDÜZ DÜZENİ</label>
+                                    <div style="display:flex; flex-direction:column; gap:8px; font-size:12px; color:#cbd5e1;">
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="1"> 1 Çalış + 1 İzin (1+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="2"> 2 Çalış + 1 İzin (2+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="3" checked> 3 Çalış + 1 İzin (3+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="4" checked> 4 Çalış + 1 İzin (4+1)</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="day" value="5"> 5 Çalış + 2 İzin</label>
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
+                                    <label style="font-size: 11px; color: #facc15; font-weight: 800; display:block; margin-bottom:10px; border-bottom:1px solid #facc15; padding-bottom:5px;">🌙 GECE ÇIKIŞI</label>
+                                    <div style="display:flex; flex-direction:column; gap:8px; font-size:12px; color:#cbd5e1;">
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="night" value="1" checked> Nöbet + 1 Gün İzin</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="night" value="2" checked> Nöbet + 2 Gün İzin</label>
+                                        <label style="cursor:pointer;"><input type="checkbox" class="ai-pattern-cb" data-type="night" value="3"> Nöbet + 3 Gün İzin</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                                <div style="flex: 1;">
+                                    <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">📉 HAFTALIK MİN. SAAT</label>
+                                    <input type="number" id="aiMinHours" class="glass-input" value="40" style="width: 100%; padding: 10px; margin-top: 5px; font-size: 14px; text-align: center;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label style="font-size: 11px; color: #94a3b8; font-weight: 800;">📈 HAFTALIK MAX. SAAT</label>
+                                    <input type="number" id="aiMaxHours" class="glass-input" value="48" style="width: 100%; padding: 10px; margin-top: 5px; font-size: 14px; text-align: center;">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="ai-cockpit-grid" style="margin-top: 20px; grid-template-columns: 1.5fr 1fr;">
-                    <div class="ai-panel">
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #475569; padding-bottom:10px; margin-bottom:10px;">
-                            <h4 class="ai-panel-title" style="border:none; margin:0; padding:0;">➕ Ekstra Günlük Görevler</h4>
-                            <button class="btn" style="background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:var(--accent); padding:6px 12px; font-size:11px;" onclick="addExtraShiftRow()">+ SATIR EKLE</button>
-                        </div>
-                        <div id="extraShiftsList" style="max-height:100px; overflow-y:auto; padding-right:5px;"></div>
-                    </div>
-
-                    <div class="ai-panel" style="display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(0,0,0,0.6)); border-color:var(--success);">
-                        <label style="font-size: 14px; color: var(--success); font-weight: 900; margin-bottom: 10px;">📊 ÜRETİLECEK ALTERNATİF SAYISI</label>
-                        <div style="display: flex; gap: 15px; align-items:center;">
-                            <input type="number" id="aiTableCount" class="glass-input" value="1" min="1" max="5" style="width: 80px; text-align: center; font-size: 20px; font-weight: 900; border-color: var(--success);">
-                            <span style="font-size:11px; color:#cbd5e1;">Sistem arkaplanda 2000 senaryo dener,<br>en kusursuz olan(lar)ı ekrana getirir.</span>
+                    <div style="flex: 2; min-width: 450px; background: rgba(255,255,255,0.03); border: 1px solid rgba(168,85,247,0.3); border-radius: 15px; padding: 20px;">
+                        <h4 style="color: #a855f7; margin-top: 0; font-size: 16px;">3️⃣ Günlük İhtiyaç Matrisi (Kişi Sayısı)</h4>
+                        <p style="font-size:10px; color:#cbd5e1; margin-top:-10px;">Her gün için Ana Gündüz ve Ana Gece sayılarını girin. Ekstra vardiyalar tüm günlere eşit uygulanır.</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px;">
+                            <div style="background: rgba(0,0,0,0.5); border: 1px solid #334155; border-radius: 10px; padding: 10px; text-align: center;">
+                                <div style="color: #fff; font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed #475569; padding-bottom: 5px;">PZT</div>
+                                <div style="color: var(--accent); font-size: 10px; font-weight: bold;">☀️ Gündüz</div>
+                                <input type="number" id="aiReq_G_1" value="2" class="glass-input" style="width: 100%; padding: 5px; text-align: center; margin-bottom: 8px;">
+                                <div style="color: var(--warning); font-size: 10px; font-weight: bold;">🌙 Gece</div>
+                                <input type="number" id="aiReq_N_1" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center;">
+                            </div>
+                            <div style="background: rgba(0,0,0,0.5); border: 1px solid #334155; border-radius: 10px; padding: 10px; text-align: center;">
+                                <div style="color: #fff; font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed #475569; padding-bottom: 5px;">SAL</div>
+                                <div style="color: var(--accent); font-size: 10px; font-weight: bold;">☀️ Gündüz</div>
+                                <input type="number" id="aiReq_G_2" value="2" class="glass-input" style="width: 100%; padding: 5px; text-align: center; margin-bottom: 8px;">
+                                <div style="color: var(--warning); font-size: 10px; font-weight: bold;">🌙 Gece</div>
+                                <input type="number" id="aiReq_N_2" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center;">
+                            </div>
+                            <div style="background: rgba(0,0,0,0.5); border: 1px solid #334155; border-radius: 10px; padding: 10px; text-align: center;">
+                                <div style="color: #fff; font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed #475569; padding-bottom: 5px;">ÇAR</div>
+                                <div style="color: var(--accent); font-size: 10px; font-weight: bold;">☀️ Gündüz</div>
+                                <input type="number" id="aiReq_G_3" value="2" class="glass-input" style="width: 100%; padding: 5px; text-align: center; margin-bottom: 8px;">
+                                <div style="color: var(--warning); font-size: 10px; font-weight: bold;">🌙 Gece</div>
+                                <input type="number" id="aiReq_N_3" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center;">
+                            </div>
+                            <div style="background: rgba(0,0,0,0.5); border: 1px solid #334155; border-radius: 10px; padding: 10px; text-align: center;">
+                                <div style="color: #fff; font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed #475569; padding-bottom: 5px;">PER</div>
+                                <div style="color: var(--accent); font-size: 10px; font-weight: bold;">☀️ Gündüz</div>
+                                <input type="number" id="aiReq_G_4" value="2" class="glass-input" style="width: 100%; padding: 5px; text-align: center; margin-bottom: 8px;">
+                                <div style="color: var(--warning); font-size: 10px; font-weight: bold;">🌙 Gece</div>
+                                <input type="number" id="aiReq_N_4" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center;">
+                            </div>
+                            <div style="background: rgba(0,0,0,0.5); border: 1px solid #334155; border-radius: 10px; padding: 10px; text-align: center;">
+                                <div style="color: #fff; font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed #475569; padding-bottom: 5px;">CUM</div>
+                                <div style="color: var(--accent); font-size: 10px; font-weight: bold;">☀️ Gündüz</div>
+                                <input type="number" id="aiReq_G_5" value="2" class="glass-input" style="width: 100%; padding: 5px; text-align: center; margin-bottom: 8px;">
+                                <div style="color: var(--warning); font-size: 10px; font-weight: bold;">🌙 Gece</div>
+                                <input type="number" id="aiReq_N_5" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center;">
+                            </div>
+                            <div style="background: rgba(30,58,138,0.3); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; text-align: center; box-shadow: inset 0 0 10px rgba(56,189,248,0.2);">
+                                <div style="color: var(--accent); font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed var(--accent); padding-bottom: 5px;">CMT</div>
+                                <div style="color: var(--accent); font-size: 10px; font-weight: bold;">☀️ Gündüz</div>
+                                <input type="number" id="aiReq_G_6" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center; margin-bottom: 8px; border-color: var(--accent);">
+                                <div style="color: var(--warning); font-size: 10px; font-weight: bold;">🌙 Gece</div>
+                                <input type="number" id="aiReq_N_6" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center; border-color: var(--accent);">
+                            </div>
+                            <div style="background: rgba(30,58,138,0.3); border: 1px solid var(--accent); border-radius: 10px; padding: 10px; text-align: center; box-shadow: inset 0 0 10px rgba(56,189,248,0.2);">
+                                <div style="color: var(--accent); font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed var(--accent); padding-bottom: 5px;">PAZ</div>
+                                <div style="color: var(--accent); font-size: 10px; font-weight: bold;">☀️ Gündüz</div>
+                                <input type="number" id="aiReq_G_7" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center; margin-bottom: 8px; border-color: var(--accent);">
+                                <div style="color: var(--warning); font-size: 10px; font-weight: bold;">🌙 Gece</div>
+                                <input type="number" id="aiReq_N_7" value="1" class="glass-input" style="width: 100%; padding: 5px; text-align: center; border-color: var(--accent);">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div style="margin-top: 30px; text-align: center;">
-                    <button class="btn" style="background: linear-gradient(135deg, #a855f7, #6d28d9); font-size: 18px; font-weight:900; padding: 20px 60px; border-radius: 50px; box-shadow: 0 0 40px rgba(168,85,247,0.6);" onclick="startAiDistribution()">🚀 V20 MOTORUNU ÇALIŞTIR VE DAĞIT</button>
+                    <button class="btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px 50px; font-size: 18px; font-weight: 900; box-shadow: 0 10px 25px rgba(16,185,129,0.5); border-radius: 50px; letter-spacing: 2px;" onclick="startAiDistribution()">
+                        🚀 MOTORU ÇALIŞTIR VE TABLOYU DOLDUR
+                    </button>
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); border-radius: 15px; padding: 15px; margin-top: 20px; text-align: center;">
+    <label style="font-size: 14px; color: var(--success); font-weight: 900; display: block; margin-bottom: 10px;">📊 KAÇ FARKLI ALTERNATİF TABLO ÜRETİLSİN?</label>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+        <input type="number" id="aiTableCount" class="glass-input" value="1" min="1" max="5" style="width: 80px; text-align: center; font-size: 18px; font-weight: 900; padding: 10px; border-color: var(--success);">
+        <span style="font-size: 11px; color: #cbd5e1; text-align: left;">Sistem arka planda 500 farklı ihtimali dener, <br>en eşit saat/gün dağılımına sahip olanları ekrana dizer.</span>
+    </div>
+</div>
                 </div>
             </div>
         </div>
     </div>
+    <div id="sorumluModal" class="modal-overlay" onclick="if(event.target.id==='sorumluModal') closeModal('sorumluModal')">
+        <div class="modal-box" style="max-width: 450px; text-align: center; border: 2px solid var(--warning); box-shadow:0 0 40px rgba(250,204,21,0.3);">
+            <h3 style="margin-top:0; color:var(--warning); font-size:26px; text-shadow:0 0 15px rgba(250,204,21,0.5);">👑 YÖNETİCİ ATA</h3>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:20px;">Havuzdaki bir personele sisteme giriş yetkisi verin.</p>
+            <select id="sorumluIsim" class="glass-input" style="width:100%; margin-bottom:15px; text-align:center; cursor:pointer; font-size:16px; font-weight:800; padding:15px;">
+                <option value="" style="color:black;">-- Havuzdan Personel Seçin --</option>
+            </select>
+            <input type="text" id="sorumluSifre" class="glass-input" style="width:100%; margin-bottom:25px; text-align:center; font-size:18px; font-weight:900; padding:15px; letter-spacing:3px;" placeholder="Giriş Şifresi (Örn: 1010)">
+            <div style="display:flex; gap:15px;">
+                <button class="btn btn-green" style="flex:1; justify-content:center; padding:15px; font-size:15px;" onclick="kaydetSorumlu()">YETKİ VER / KAYDET</button>
+                <button class="btn btn-red" style="padding:15px 30px; font-size:15px;" onclick="closeModal('sorumluModal')">İPTAL</button>
+            </div>
+            <div style="margin-top: 30px; text-align: left; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px;">
+                <h4 style="color:#fff; margin-top:0; font-size:14px;">Mevcut Yöneticiler:</h4>
+                <div id="sorumluListesi" style="max-height: 180px; overflow-y: auto; padding-right:5px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="headerContextMenu" class="custom-menu" style="width:280px; border-color:var(--warning);">
+        <div class="menu-item" style="background:linear-gradient(135deg, #0ea5e9, #0369a1); padding:15px;" onclick="editColumnDate()">✏️ TARİHİ MANUEL DEĞİŞTİR</div>
+        <div class="menu-item" style="background:linear-gradient(135deg, #10b981, #047857); margin-top:10px; padding:15px;" onclick="insertColumn('after')">➕ SAĞA YENİ GÜN (SÜTUN) EKLE</div>
+        <div class="menu-item" style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; color:#ef4444 !important; margin-top:10px; padding:15px;" onclick="deleteColumn()">🗑️ DİKKAT: BU GÜNÜ KOMPLE SİL</div>
+    </div>
+
+    <div id="contextMenu" class="custom-menu">
+        <div class="menu-grid" id="dynamicMenuGrid"></div>
+        <div style="margin-top:20px; padding-top:20px; border-top:1px dashed rgba(255,255,255,0.2); text-align:center;">
+            <span style="color:#94a3b8; font-size:11px; font-weight:800; letter-spacing:1px; display:block; margin-bottom:12px;">HÜCREYİ ÖZELLEŞTİR</span>
+            <div id="quickColorGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; padding: 5px;"></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <button class="btn" style="background:var(--warning); color:#000; padding:12px; justify-content:center;" onclick="addGhostPinToCell()">📍 İĞNE / NOT TAK</button>
+                <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:12px; justify-content:center;" onclick="removeGhostPinFromCell()">🗑️ İĞNEYİ SİL</button>
+            </div>
+            <div style="text-align: center; margin-top:15px;">
+                <label for="customColorInput" style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(15,23,42,0.8)); padding: 12px; border-radius: 12px; border: 1px solid var(--accent); font-size: 13px; color: #fff; font-weight:800; transition:0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                    🎨 ÖZEL RENK ÇEMBERİNİ AÇ
+                </label>
+                <input type="color" id="customColorInput" style="opacity: 0; position: absolute; width: 0; height: 0;" onchange="applyCustomColorFromWheel(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <div id="staffSelectMenu" class="custom-menu" style="max-height:350px; overflow-y:auto; width:220px; border-color:var(--accent);"></div>
+    
+    <div id="centralPinTooltip"></div>
+
+    <div id="toast">İşlem Başarılı!</div>
+
+    <div class="sm-player" id="sm-player">
+        <button class="sm-btn" onclick="smMusic.prev()">⏮</button>
+        <button class="sm-btn" onclick="smMusic.toggle()" id="sm-play-btn" style="font-size:1.5rem; width:50px; height:50px;">▶</button>
+        <button class="sm-btn" onclick="smMusic.next()">⏭</button>
+        <div class="sm-track-info">
+            <span class="sm-title" id="sm-title">ShiftMaster Radyo</span>
+            <div style="display:flex; gap:3px; margin-top:5px; height:10px; align-items:flex-end;" id="sm-eq"></div>
+        </div>
+    </div>
 
     <script>
-        // -------------------------------------------------------------
-        // KOKPİT ARAYÜZÜ (UI) FONKSİYONLARI (MOTOR BAĞLANANA KADAR GÖRÜNTÜYÜ YÖNETİR)
-        // -------------------------------------------------------------
-        
-        // 1. Cinsiyet İkonunu Değiştirme
-        function toggleGender(btn) {
-            let chip = btn.parentElement;
-            let currentGender = chip.getAttribute("data-gender");
-            if(currentGender === "E") {
-                chip.setAttribute("data-gender", "K");
-                btn.innerText = "👩";
-            } else {
-                chip.setAttribute("data-gender", "E");
-                btn.innerText = "👨";
-            }
-        }
-
-        // 2. Kadroya Çip Ekleme
-        function aiAddStaffChip(isim = null, cinsiyet = "E") {
-            let name = isim || document.getElementById('aiAddStaffInput').value.trim();
-            if(!name) return;
-            
-            let container = document.getElementById('aiStaffChipContainer');
-            let icon = cinsiyet === "E" ? "👨" : "👩";
-            
-            let html = `
-            <div class="ai-staff-chip" data-gender="${cinsiyet}">
-                ${name} 
-                <button class="gender-btn" onclick="toggleGender(this)" title="Cinsiyeti Değiştir">${icon}</button> 
-                <span style="color:#ef4444; cursor:pointer; font-size:14px; margin-left:5px;" onclick="this.parentElement.remove()">×</span>
-            </div>`;
-            
-            container.insertAdjacentHTML('beforeend', html);
-            document.getElementById('aiAddStaffInput').value = "";
-        }
-
-        // 3. Modalı açarken tablodaki isimleri çipler halinde yükleme
-        // openAiModal fonksiyonunu güncellememiz gerekiyor (Scriptin uygun yerinde eskisini ezecek şekilde düzenleyeceğiz).
-    </script>
         function openSupportModal() {
             document.getElementById('supportModal').style.display = 'flex';
             setTimeout(() => document.getElementById('supportModal').classList.add('show'), 10);
@@ -1740,12 +1773,6 @@ function startAiDistribution() {
     </script>
 </body>
 </html>
-
-
-
-
-
-
 
 
 
