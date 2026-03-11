@@ -301,6 +301,45 @@
 </div>
 
 <script>
+    // ============================================================================
+        // 🛡️ 1. KADEME: HIRSIZ KOVAR GÜVENLİK ZIRHI (F12, CTRL+U VE DEBUGGER KİLİDİ) 🛡️
+        // ============================================================================
+        (function() {
+            // 1. Klavye Kısayolları Engeli (F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || 
+                   (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) || 
+                   (e.ctrlKey && (e.key === 'U' || e.key === 'u')) || 
+                   (e.ctrlKey && (e.key === 'S' || e.key === 's'))) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // 2. Sağ Tık Menüsünü Komple Kapatma 
+            document.addEventListener('contextmenu', e => e.preventDefault());
+
+            // 3. Ölümcül Tuzak: Debugger Döngüsü (Biri konsolu açarsa site donar)
+            setInterval(function() {
+                let before = new Date().getTime();
+                debugger; // Tarayıcı konsolu açıksa kod burada duraklayacaktır.
+                let after = new Date().getTime();
+                if (after - before > 100) {
+                    // Eğer konsol açıksa (süre uzadıysa), siteyi silip at!
+                    document.body.innerHTML = "<div style='background:#050b14; height:100vh; display:flex; align-items:center; justify-content:center;'><h1 style='color:red; font-family:sans-serif;'>GÜVENLİK İHLALİ!<br>SİSTEM KENDİNİ KİLİTLEDİ.</h1></div>";
+                }
+            }, 1000); 
+
+            // 4. Alan Adı (Domain) Kilidi -> (ŞU AN GELİŞTİRME AŞAMASINDA OLDUĞUN İÇİN PASİF)
+            /*
+            let currentDomain = window.location.hostname;
+            let allowedDomains = ["localhost", "127.0.0.1", ""]; 
+            if (!allowedDomains.includes(currentDomain) && currentDomain !== "") {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center;'>BU YAZILIMIN LİSANSI BU SİTE İÇİN GEÇERLİ DEĞİLDİR!</h1>";
+            }
+            */
+        })();
+    
 // 🔥 HAREKETSİZLİK KİLİDİ (10 DAKİKA AUTO-LOGOUT) 🔥
 let inactivityTime = function () {
     let time;
@@ -1315,6 +1354,7 @@ function closeLegalModal() {
 </script>
 </body>
 </html>
+
 
 
 
