@@ -1512,9 +1512,31 @@
             }, 1000);
         });
 
-       // ============================================================================
-        // 1. GÜNCELLENEN ARAYÜZ AÇILIŞI (HAVUZDAN OTOMATİK İSİM ÇEKME VE SCROLL)
+      // ============================================================================
+        // 🪄 AI KOKPİT ARAYÜZÜ (KADRO VE KURALLAR) - V20 ULTRA
         // ============================================================================
+        function renderAiDays() {
+            const container = document.getElementById('aiDaysContainer');
+            if(!container) return;
+            const days = ['PZT', 'SAL', 'ÇAR', 'PER', 'CUM', 'CMT', 'PAZ'];
+            let html = '';
+            days.forEach((d, i) => {
+                let border = (d==='CMT' || d==='PAZ') ? 'border-color:var(--danger);' : 'border-color:#475569;';
+                let c = i+1;
+                html += `
+                <div style="background:rgba(0,0,0,0.6); border:1px solid transparent; ${border} border-radius:8px; padding:8px; text-align:center;">
+                    <div style="color:${(d==='CMT'||d==='PAZ')?'#ef4444':'#fff'}; font-weight:900; font-size:11px; margin-bottom:8px; border-bottom:1px dashed #334155; padding-bottom:4px;">${d}</div>
+                    <div style="font-size:9px; color:#38bdf8;">Sabah</div>
+                    <input type="number" id="aiReq_G_${c}" value="${d==='CMT'||d==='PAZ'?1:2}" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
+                    <div style="font-size:9px; color:#a855f7;">Akşam</div>
+                    <input type="number" id="aiReq_A_${c}" value="0" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px; margin-bottom:5px;">
+                    <div style="font-size:9px; color:#facc15;">Gece</div>
+                    <input type="number" id="aiReq_N_${c}" value="1" class="glass-input" style="width:100%; padding:4px; text-align:center; font-size:12px;">
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
         function openAiModal() {
             let opts = `<option value="">-- Seçiniz --</option>`;
             Object.keys(shiftRules).forEach(k => { opts += `<option value="${k}">${k} (G:${shiftRules[k].w})</option>`; });
@@ -1525,15 +1547,11 @@
             let container = document.getElementById('aiStaffChipContainer');
             if(container) {
                 container.innerHTML = ''; 
-                // Liste uzunsa kaydırma çubuğu çıksın:
                 container.style.maxHeight = "250px";
                 container.style.overflowY = "auto";
                 
-                // Ana Havuzdan otomatik isim çekme
                 if(staffList && staffList.length > 0) {
-                    staffList.forEach(s => {
-                        aiAddStaffChip(s.name);
-                    });
+                    staffList.forEach(s => { aiAddStaffChip(s.name); });
                 } else {
                     let baseTable = document.querySelector('.table-wrapper');
                     if(baseTable) {
@@ -1578,7 +1596,7 @@
         }
 
         // ============================================================================
-        // 🧠 SHIFTMASTER A.I. CORE V20 (ULTRA: 3 VARDİYA, CİNSİYET VE HAFIZA MOTORU)
+        // 🧠 SHIFTMASTER A.I. CORE V20 (ULTRA: 3 VARDİYA VE CİNSİYET MOTORU)
         // ============================================================================
         function startAiDistribution() {
             let dayCode = document.getElementById('aiDayShiftSelect').value;
@@ -1586,9 +1604,9 @@
             let nightCode = document.getElementById('aiNightShiftSelect').value;
             let offCode = document.getElementById('aiOffShiftSelect').value;
             let numTablesToGenerate = parseInt(document.getElementById('aiTableCount').value) || 1;
-            let maxConsecutive = parseInt(document.getElementById('aiMaxConsecutive').value) || 4;
+            let maxConsecutive = parseInt(document.getElementById('aiMaxConsecutive') ? document.getElementById('aiMaxConsecutive').value : 4);
             
-            if(!dayCode || !midCode || !nightCode || !offCode) return alert("Lütfen Sabah, Akşam, Gece ve İzin kodlarının 4'ünü de sihirbazdan seçiniz!");
+            if(!dayCode || !midCode || !nightCode || !offCode) return alert("Lütfen Sabah, Akşam, Gece ve İzin kodlarının 4'ünü de seçiniz!");
 
             let reqG = [], reqA = [], reqN = [];
             for(let i=1; i<=7; i++) {
@@ -1605,9 +1623,12 @@
             
             let staffNames = Array.from(staffChips).map(chip => ({ name: chip.innerText.replace(/[👩👨×]/g, '').trim(), gender: chip.getAttribute('data-gender') }));
 
-            saveHistory(); closeModal('aiGeneratorModal'); showToast("⏳ Yapay Zeka Başlıyor...");
-            let oldHtml = document.getElementById("masterArchiveTitle").innerHTML;
-            document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI Motoru Çalışıyor...";
+            if(typeof saveHistory === "function") saveHistory(); 
+            closeModal('aiGeneratorModal'); showToast("⏳ Yapay Zeka Başlıyor...");
+            
+            let masterTitleEl = document.getElementById("masterArchiveTitle");
+            let oldHtml = masterTitleEl ? masterTitleEl.innerHTML : "📁 Yeni Dosya";
+            if(masterTitleEl) masterTitleEl.innerHTML = "⏳ AI Motoru Çalışıyor...";
 
             setTimeout(() => {
                 let simulations = []; let totalSimulations = 2000;
@@ -1623,10 +1644,8 @@
 
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. DİNLENME VE HAFTALIK LİMİT
                         simStaff.forEach(s => { if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 5) { s.assignedToday = offCode; s.lastShiftType = 'O'; } });
 
-                        // 2. GECE NÖBETİ (Cinsiyet Zırhı)
                         let poolN = simStaff.filter(s => !s.assignedToday); poolN.sort(() => 0.5 - Math.random());
                         let nAssigned = 0; let nightTeam = [];
                         for(let i=0; i<poolN.length && nAssigned<cReqN; i++) {
@@ -1638,21 +1657,18 @@
                             if(kCount >= 2 && eCount === 0) penalty += 50000000; 
                         }
 
-                        // 3. AKŞAM VARDİYASI
                         let poolA = simStaff.filter(s => !s.assignedToday); poolA.sort(() => 0.5 - Math.random());
                         let aAssigned = 0;
                         for(let i=0; i<poolA.length && aAssigned<cReqA; i++) {
                             poolA[i].assignedToday = midCode; poolA[i].lastShiftType = 'A'; poolA[i].weeklyWorkDays++; poolA[i].dayConsecutive = 0; aAssigned++;
                         }
 
-                        // 4. GÜNDÜZ VARDİYASI (Akşamdan çıkana sabah yok)
                         let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < maxConsecutive && s.lastShiftType !== 'A'); poolG.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
                         let dAssigned = 0;
                         for(let i=0; i<poolG.length && dAssigned<cReqG; i++) {
                             poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; poolG[i].weeklyWorkDays++; poolG[i].dayConsecutive++; dAssigned++;
                         }
 
-                        // 5. İZİNLER
                         simStaff.forEach(s => {
                             if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; }
                             let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === midCode ? 'A' : (s.assignedToday === offCode ? 'O' : 'G'));
@@ -1663,7 +1679,6 @@
                         });
                     }
 
-                    // CEZALAR
                     let maxN = -1, minN = 9999;
                     simStaff.forEach(s => {
                         let seq = s.shiftLog.join(''); 
@@ -1678,33 +1693,31 @@
                 }
 
                 simulations.sort((a, b) => a.penalty - b.penalty);
-                document.getElementById("tablesContainer").innerHTML = "";
+                let tc = document.getElementById("tablesContainer");
+                if(tc) tc.innerHTML = "";
 
                 for(let i=0; i<numTablesToGenerate; i++) {
                     let bestSim = simulations[i]; let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.realShifts }));
                     let penaltyText = bestSim.penalty < 1000 ? "🏆 KUSURSUZ (0 Hata)" : `⚠️ Risk Skoru: ${bestSim.penalty}`;
-                    generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
+                    if(typeof generateTable === "function") generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
                 }
 
-                // 🚨 3'LÜ ÖZET SATIRI EKLENİYOR 🚨
                 document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                    let tbody = wrapper.querySelector('tbody');
+                    if(!tbody) return;
                     let sumHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK (S/A/Gc)</td>`;
                     for(let c = 0; c < colCount; c++) {
                         let d = new Date(startDt); d.setDate(d.getDate() + c);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
                         
-                        let targetG = reqG[reqIndex];
-                        let targetA = reqA[reqIndex];
-                        let targetN = reqN[reqIndex];
-
+                        let targetG = reqG[reqIndex]; let targetA = reqA[reqIndex]; let targetN = reqN[reqIndex];
                         let sCount = 0, aCount = 0, nCount = 0;
+                        
                         wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
                             let cell = tr.querySelectorAll('.shift-cell')[c];
                             if(cell) {
                                 let val = cell.innerText;
-                                if(val === nightCode) nCount++;
-                                else if(val === midCode) aCount++;
-                                else if(val === dayCode) sCount++;
+                                if(val === nightCode) nCount++; else if(val === midCode) aCount++; else if(val === dayCode) sCount++;
                             }
                         });
                         
@@ -1722,19 +1735,20 @@
                         if(dow === 0) sumHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
                     }
                     sumHtml += `<td class="total-summary-cell"></td></tr>`;
-                    wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', sumHtml);
+                    tbody.insertAdjacentHTML('beforeend', sumHtml);
                 });
 
-                updateAllStats(); document.getElementById("masterArchiveTitle").innerHTML = oldHtml; showToast(`✨ V20 KOKPİT İşlemi Bitti! ✨`);
+                if(typeof updateAllStats === "function") updateAllStats(); 
+                if(masterTitleEl) masterTitleEl.innerHTML = oldHtml; 
+                showToast(`✨ V20 KOKPİT İşlemi Bitti! ✨`);
+                if(typeof logAction === "function") logAction("Yapay Zeka 3'lü Vardiya dağıtımı yaptı.");
             }, 100);
         }
-    </script>
-</body>
-</html>
                 
                 </script>
 </body>
 </html>
+
 
 
 
