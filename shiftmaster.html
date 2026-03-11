@@ -1647,8 +1647,8 @@
             container.appendChild(row);
         }
 
-        // ============================================================================
-        // 🧠 SHIFTMASTER A.I. CORE V20 (ULTRA: 3 VARDİYA VE 3G1N YASAĞI)
+       // ============================================================================
+        // 🧠 SHIFTMASTER A.I. CORE V20.1 (TAVİZSİZ ASKERİ MOTOR - KESİN 4 GÜN KURALI)
         // ============================================================================
         function startAiDistribution() {
             let dayCode = document.getElementById('aiDayShiftSelect').value;
@@ -1658,7 +1658,7 @@
             let numTablesToGenerate = parseInt(document.getElementById('aiTableCount').value) || 1;
             let maxConsecutive = parseInt(document.getElementById('aiMaxConsecutive') ? document.getElementById('aiMaxConsecutive').value : 4);
             
-            if(!dayCode || !nightCode || !offCode) return alert("Lütfen Sabah, Gece ve İzin kodlarını seçiniz! (Akşam isteğe bağlıdır)");
+            if(!dayCode || !nightCode || !offCode) return alert("Lütfen Sabah, Gece ve İzin kodlarını seçiniz!");
 
             let reqG = [], reqA = [], reqN = [];
             for(let i=1; i<=7; i++) {
@@ -1676,14 +1676,18 @@
             let staffNames = Array.from(staffChips).map(chip => ({ name: chip.innerText.replace(/[👩👨×]/g, '').trim(), gender: chip.getAttribute('data-gender') }));
 
             if(typeof saveHistory === "function") saveHistory(); 
-            closeModal('aiGeneratorModal'); showToast("⏳ Yapay Zeka Başlıyor...");
+            closeModal('aiGeneratorModal'); showToast("⏳ Yapay Zeka Askeri Modda Başlıyor...");
             
             let masterTitleEl = document.getElementById("masterArchiveTitle");
             let oldHtml = masterTitleEl ? masterTitleEl.innerHTML : "📁 Yeni Dosya";
-            if(masterTitleEl) masterTitleEl.innerHTML = "⏳ AI Motoru Çalışıyor...";
+            if(masterTitleEl) masterTitleEl.innerHTML = "⏳ AI: Kesin 4 Gün Hesaplanıyor...";
 
             setTimeout(() => {
-                let simulations = []; let totalSimulations = 2000;
+                let simulations = []; let totalSimulations = 3000; // Kusursuz 4 günü bulmak için 3000 evren
+                
+                // Toplam beklenen vardiya sayısı (Eğer matematik tutmuyorsa ceza sistemini yönetecek)
+                let expectedTotalShifts = Math.floor(colCount / 7) * 4;
+
                 for(let sim = 0; sim < totalSimulations; sim++) {
                     let simStaff = staffNames.map(person => ({ name: person.name, gender: person.gender, realShifts: [], shiftLog: [], weeklyWorkDays: 0, totalHours: 0, nightCount: 0, dayConsecutive: 0, lastShiftType: 'O' }));
                     let penalty = 0;
@@ -1691,44 +1695,59 @@
                     for(let c = 0; c < colCount; c++) {
                         let d = new Date(startDt); d.setDate(d.getDate() + c);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        
                         if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; });
                         let cReqG = reqG[reqIndex]; let cReqA = reqA[reqIndex]; let cReqN = reqN[reqIndex];
 
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. DİNLENME VE HAFTALIK LİMİT
-                        simStaff.forEach(s => { if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 5) { s.assignedToday = offCode; s.lastShiftType = 'O'; } });
+                        // 🛑 1. KESİN YASAKLAR: Gece Çıkışı İzin VE "Tam 4 Gün" Sınırı (5 YASAK!)
+                        simStaff.forEach(s => { 
+                            if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
+                                s.assignedToday = offCode; 
+                                s.lastShiftType = 'O'; 
+                            } 
+                        });
 
-                        // 2. GECE NÖBETİ (3 Gündüz + 1 Gece filtresi ile)
+                        // 🌙 2. GECE NÖBETİ (Geceye giderken 3 Gündüz + 1 Gece YASAĞI kontrolü)
                         let poolN = simStaff.filter(s => !s.assignedToday && !(s.lastShiftType === 'G' && s.dayConsecutive >= 3)); 
-                        poolN.sort(() => 0.5 - Math.random());
+                        // Öncelik: Haftalık günü eksik olanlar!
+                        poolN.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (a.nightCount - b.nightCount) || (0.5 - Math.random()));
+                        
                         let nAssigned = 0; let nightTeam = [];
                         for(let i=0; i<poolN.length && nAssigned<cReqN; i++) {
                             poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; poolN[i].nightCount++; poolN[i].weeklyWorkDays++; poolN[i].dayConsecutive = 0;
                             nightTeam.push(poolN[i]); nAssigned++;
                         }
+                        // Hastane Gece Boş Kaldıysa Dev Ceza (Matematik Hatası)
+                        if(nAssigned < cReqN) penalty += ((cReqN - nAssigned) * 10000000);
+
                         if(nightTeam.length > 1) {
                             let kCount = nightTeam.filter(s => s.gender === 'K').length; let eCount = nightTeam.filter(s => s.gender === 'E').length;
                             if(kCount >= 2 && eCount === 0) penalty += 50000000; 
                         }
 
-                        // 3. AKŞAM VARDİYASI
+                        // 🌆 3. AKŞAM VARDİYASI
                         if (midCode && cReqA > 0) {
-                            let poolA = simStaff.filter(s => !s.assignedToday); poolA.sort(() => 0.5 - Math.random());
+                            let poolA = simStaff.filter(s => !s.assignedToday); 
+                            poolA.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
                             let aAssigned = 0;
                             for(let i=0; i<poolA.length && aAssigned<cReqA; i++) {
                                 poolA[i].assignedToday = midCode; poolA[i].lastShiftType = 'A'; poolA[i].weeklyWorkDays++; poolA[i].dayConsecutive = 0; aAssigned++;
                             }
+                            if(aAssigned < cReqA) penalty += ((cReqA - aAssigned) * 10000000);
                         }
 
-                        // 4. GÜNDÜZ VARDİYASI
-                        let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < maxConsecutive && s.lastShiftType !== 'A'); poolG.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
+                        // ☀️ 4. GÜNDÜZ VARDİYASI (Akşamdan çıkana sabah yok)
+                        let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < maxConsecutive && s.lastShiftType !== 'A'); 
+                        poolG.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
                         let dAssigned = 0;
                         for(let i=0; i<poolG.length && dAssigned<cReqG; i++) {
                             poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; poolG[i].weeklyWorkDays++; poolG[i].dayConsecutive++; dAssigned++;
                         }
+                        if(dAssigned < cReqG) penalty += ((cReqG - dAssigned) * 10000000);
 
-                        // 5. İZİNLER
+                        // 🏖️ 5. İZİNLER
                         simStaff.forEach(s => {
                             if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; }
                             let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === midCode ? 'A' : (s.assignedToday === offCode ? 'O' : 'G'));
@@ -1739,29 +1758,41 @@
                         });
                     }
 
-                    // TİTANYUM CEZALAR
+                    // 🔥 TİTANYUM CEZALAR (YASAKLAR VE EŞİTLİK DENETİMİ) 🔥
                     let maxN = -1, minN = 9999;
                     simStaff.forEach(s => {
                         let seq = s.shiftLog.join(''); 
-                        let ngMatches = (seq.match(/NG/g) || []).length; 
-                        let naMatches = (seq.match(/NA/g) || []).length; 
-                        let nnMatches = (seq.match(/NN/g) || []).length; 
-                        let agMatches = (seq.match(/AG/g) || []).length; 
-                        let gggnMatches = (seq.match(/G{3,}N/g) || []).length; // 3 Gündüz + Gece YASAĞI!
-                        let gggRegex = new RegExp(`G{${maxConsecutive + 1},}`, 'g'); let tooManyDays = (seq.match(gggRegex) || []).length;
                         
-                        penalty += (ngMatches * 10000000); 
-                        penalty += (naMatches * 10000000); 
-                        penalty += (nnMatches * 10000000); 
-                        penalty += (agMatches * 5000000); 
-                        penalty += (gggnMatches * 50000000); // Acımasız ceza
-                        penalty += (tooManyDays * 5000000);
+                        // Yasak Kombinasyonlar
+                        let ngMatches = (seq.match(/NG/g) || []).length; // Gece -> Sabah
+                        let naMatches = (seq.match(/NA/g) || []).length; // Gece -> Akşam
+                        let nnMatches = (seq.match(/NN/g) || []).length; // Gece -> Gece
+                        let agMatches = (seq.match(/AG/g) || []).length; // Akşam -> Sabah
+                        let gggnMatches = (seq.match(/G{3,}N/g) || []).length; // 3 Gündüz + Gece YASAĞI!
+                        
+                        let gggRegex = new RegExp(`G{${maxConsecutive + 1},}`, 'g'); 
+                        let tooManyDays = (seq.match(gggRegex) || []).length;
+                        
+                        penalty += (ngMatches * 50000000); 
+                        penalty += (naMatches * 50000000); 
+                        penalty += (nnMatches * 50000000); 
+                        penalty += (agMatches * 50000000); 
+                        penalty += (gggnMatches * 50000000); // 3G+1N Senaryosu Direkt İptal!
+                        penalty += (tooManyDays * 50000000);
+                        
+                        // SADECE 3 VEYA SADECE 5 GÜN ÇALIŞANLARA DEHŞET CEZA (Kesin 4 Gün Olsun Diye)
+                        let actualShifts = (seq.match(/[NAG]/g) || []).length;
+                        let shiftDeviation = Math.abs(actualShifts - expectedTotalShifts);
+                        penalty += (shiftDeviation * 5000000); // Hedef saatten sapan her gün için 5 Milyon ceza
                         
                         maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
                     });
-                    penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
+                    
+                    penalty += ((maxN - minN) * 100); 
+                    simulations.push({ penalty: penalty, staffData: simStaff });
                 }
 
+                // En az cezalı evreni seç
                 simulations.sort((a, b) => a.penalty - b.penalty);
                 let tc = document.getElementById("tablesContainer");
                 if(tc) tc.innerHTML = "";
@@ -1772,7 +1803,7 @@
                     if(typeof generateTable === "function") generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
                 }
 
-                // DİNAMİK ÖZET SATIRI (Akşam varsa 3'lü, yoksa 2'li)
+                // DİNAMİK ÖZET SATIRI
                 document.querySelectorAll('.table-wrapper').forEach(wrapper => {
                     let tbody = wrapper.querySelector('tbody');
                     if(!tbody) return;
@@ -1820,6 +1851,7 @@
     </script>
 </body>
 </html>
+
 
 
 
