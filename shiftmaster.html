@@ -1556,26 +1556,36 @@
             if(inputEl) inputEl.setAttribute('list', 'aiStaffDatalist');
 
             dataList.innerHTML = '';
-            let container = document.getElementById('aiStaffChipContainer');
             
+            // Tüm havuzu SADECE "Açılır Menü (Dropdown)" seçenekleri için yükle
+            if(staffList && staffList.length > 0) {
+                staffList.forEach(s => { 
+                    dataList.innerHTML += `<option value="${s.name}">`; 
+                });
+            }
+
+            let container = document.getElementById('aiStaffChipContainer');
             if(container) {
                 container.innerHTML = ''; // Temiz başla
                 container.style.maxHeight = "250px";
                 container.style.overflowY = "auto";
                 
-                // 2. HAVUZDAN OTOMATİK ÇEKME VE EKRANA YANSITMA
-                if(staffList && staffList.length > 0) {
-                    staffList.forEach(s => { 
-                        dataList.innerHTML += `<option value="${s.name}">`; 
-                        aiAddStaffChip(s.name); // Otomatik ekle!
+                // 2. SADECE ANA EKRANDA SEÇİLİ OLANLARI EKRANA YANSIT!
+                // Ana havuzdaki yeşil yanan (selected) çipleri bul:
+                let selectedStaff = Array.from(document.querySelectorAll("#staffPool .staff-chip.selected")).map(el => el.innerText.replace('×','').trim());
+                
+                if(selectedStaff.length > 0) {
+                    // Sadece seçili olanları AI çipi olarak ekle
+                    selectedStaff.forEach(name => {
+                        aiAddStaffChip(name); 
                     });
                 } else {
+                    // Eğer ana ekranda kimse seçilmediyse, aşağıdaki tablodan çekmeyi dene
                     let baseTable = document.querySelector('.table-wrapper');
                     if(baseTable) {
                         Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).forEach(tr => {
                             let name = tr.querySelector('.editable-name').innerText.trim();
-                            dataList.innerHTML += `<option value="${name}">`;
-                            aiAddStaffChip(name); // Otomatik ekle!
+                            aiAddStaffChip(name); 
                         });
                     }
                 }
@@ -1810,6 +1820,7 @@
     </script>
 </body>
 </html>
+
 
 
 
