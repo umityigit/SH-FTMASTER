@@ -1192,655 +1192,217 @@
         }
 
         // ============================================================================
-        // 🧠 SHIFTMASTER A.I. CORE V20 (ULTRA: 3 VARDİYA, CİNSİYET VE HAFIZA MOTORU) 🧠
+        // 🎨 CUSTOM MENU & VARDİYA SEÇİCİ (GERİ GETİRİLDİ)
         // ============================================================================
-        function startAiDistribution() {
-            let dayCode = document.getElementById('aiDayShiftSelect').value;
-            let midCode = document.getElementById('aiMidShiftSelect')?.value || ""; 
-            let nightCode = document.getElementById('aiNightShiftSelect').value;
-            let offCode = document.getElementById('aiOffShiftSelect').value;
-            let numTablesToGenerate = parseInt(document.getElementById('aiTableCount') ? document.getElementById('aiTableCount').value : 1) || 1;
-            
-            if(!dayCode || !nightCode || !offCode) return alert("Lütfen Gündüz, Gece ve İzin kodlarını seçiniz!");
-
-            let reqG = [], reqA = [], reqN = [];
-            for(let i=1; i<=7; i++) {
-                reqG[i] = parseInt(document.getElementById('aiReq_G_'+i)?.value) || 0;
-                reqA[i] = parseInt(document.getElementById('aiReq_A_'+i)?.value) || 0; 
-                reqN[i] = parseInt(document.getElementById('aiReq_N_'+i)?.value) || 0;
-            }
-
-            let baseTable = document.querySelector('.table-wrapper');
-            if(!baseTable) return alert("Ekranda işlem yapılacak açık bir tablo yok!");
-
-            let colCount = parseInt(baseTable.getAttribute("data-colcount"));
-            let startDt = new Date(baseTable.getAttribute("data-startdt"));
-            
-            let staffText = document.getElementById('aiStaffList')?.value.trim();
-            let staffNames = [];
-            if(staffText) {
-                staffNames = staffText.split('\n').filter(n => n.trim() !== '');
-            } else {
-                staffNames = Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector('.editable-name').innerText.trim());
-            }
-
-            saveHistory();
-            closeModal('aiGeneratorModal');
-            
-            document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI V20: Hafıza Okunuyor, Dengeler Kuruluyor (2000 Simülasyon)...";
-
-            setTimeout(() => {
-                let simulations = [];
-                let totalSimulations = 2000;
-
-                for(let sim = 0; sim < totalSimulations; sim++) {
-                    let simStaff = staffNames.map(name => {
-                        let gender = name.toUpperCase().includes('(K)') ? 'K' : (name.toUpperCase().includes('(E)') ? 'E' : 'U');
-                        return {
-                            name: name.replace(/\(K\)|\(E\)/ig, '').trim(),
-                            gender: gender,
-                            realShifts: [],  
-                            shiftLog: [],    
-                            weeklyWorkDays: 0,
-                            totalHours: 0,
-                            nightCount: 0,
-                            dayConsecutive: 0,
-                            lastShiftType: 'O' 
-                        };
-                    });
-
-                    // 🧠 GEÇMİŞ TABLO HAFIZASI 🧠
-                    let pastTables = document.querySelectorAll('.table-wrapper');
-                    if(pastTables.length > 1) {
-                        let lastTable = pastTables[pastTables.length - 2]; 
-                        simStaff.forEach(s => {
-                            let pastRow = Array.from(lastTable.querySelectorAll("tbody tr")).find(tr => tr.innerText.includes(s.name));
-                            if(pastRow) {
-                                let cells = pastRow.querySelectorAll('.shift-cell');
-                                if(cells.length > 0) {
-                                    let lastVal = cells[cells.length - 1].innerText;
-                                    if(lastVal === nightCode || lastVal.includes('NÖBET') || lastVal.startsWith('20:')) s.lastShiftType = 'N';
-                                    else if(lastVal === midCode || lastVal.startsWith('16:')) s.lastShiftType = 'A';
-                                    else if(lastVal === dayCode || lastVal.startsWith('08:')) s.lastShiftType = 'G';
-                                }
-                            }
-                        });
-                    }
-
-                    let penalty = 0;
-
-                    for(let c = 0; c < colCount; c++) {
-                        let d = new Date(startDt);
-                        d.setDate(d.getDate() + c);
-                        let dow = d.getDay();
-                        let reqIndex = dow === 0 ? 7 : dow;
-
-                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; });
-
-                        let cReqG = reqG[reqIndex];
-                        let cReqA = reqA[reqIndex];
-                        let cReqN = reqN[reqIndex];
-
-                        simStaff.forEach(s => { s.assignedToday = null; });
-
-                        // 🛑 1. DİNLENME VE HAFTALIK LİMİT KONTROLÜ
-                        simStaff.forEach(s => {
-                            if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) {
-                                s.assignedToday = offCode;
-                                s.lastShiftType = 'O'; 
-                            }
-                        });
-
-                        // 🌙 2. GECE NÖBETİ (Cinsiyet Zırhı)
-                        let poolN = simStaff.filter(s => !s.assignedToday);
-                        poolN.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (a.nightCount - b.nightCount) || (0.5 - Math.random()));
-                        
-                        let nAssigned = 0;
-                        let nightTeam = [];
-                        for(let i=0; i<poolN.length && nAssigned<cReqN; i++) {
-                            poolN[i].assignedToday = nightCode;
-                            poolN[i].lastShiftType = 'N';
-                            poolN[i].nightCount++;
-                            poolN[i].weeklyWorkDays++;
-                            poolN[i].dayConsecutive = 0;
-                            nightTeam.push(poolN[i]);
-                            nAssigned++;
-                        }
-
-                        if(nightTeam.length > 1) {
-                            let kCount = nightTeam.filter(s => s.gender === 'K').length;
-                            let eCount = nightTeam.filter(s => s.gender === 'E').length;
-                            if(kCount >= 2 && eCount === 0) penalty += 50000000; // 2 Kadın gece yalnız kalamaz
-                        }
-
-                        // 🌆 3. AKŞAM VARDİYASI
-                        let poolA = simStaff.filter(s => !s.assignedToday);
-                        poolA.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
-                        let aAssigned = 0;
-                        for(let i=0; i<poolA.length && aAssigned<cReqA; i++) {
-                            poolA[i].assignedToday = midCode;
-                            poolA[i].lastShiftType = 'A';
-                            poolA[i].weeklyWorkDays++;
-                            poolA[i].dayConsecutive = 0;
-                            aAssigned++;
-                        }
-
-                        // ☀️ 4. GÜNDÜZ KOTASI (Akşamdan çıkana sabah yazılamaz)
-                        let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < 2 && s.lastShiftType !== 'A'); 
-                        poolG.sort((a,b) => (a.weeklyWorkDays - b.weeklyWorkDays) || (0.5 - Math.random()));
-                        let dAssigned = 0;
-                        for(let i=0; i<poolG.length && dAssigned<cReqG; i++) {
-                            poolG[i].assignedToday = dayCode;
-                            poolG[i].lastShiftType = 'G';
-                            poolG[i].weeklyWorkDays++;
-                            poolG[i].dayConsecutive++;
-                            dAssigned++;
-                        }
-
-                        // 🏖️ 5. İZİNLER
-                        simStaff.forEach(s => {
-                            if (!s.assignedToday) {
-                                s.assignedToday = offCode;
-                                s.lastShiftType = 'O';
-                                s.dayConsecutive = 0;
-                            }
-                            
-                            let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === midCode ? 'A' : (s.assignedToday === offCode ? 'O' : 'G'));
-                            s.shiftLog.push(codeChar);
-
-                            let safeVal = s.assignedToday.replace(/\./g, ':'); 
-                            let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
-                            s.realShifts.push({ text: s.assignedToday, bg: r ? r.color : "transparent" });
-                        });
-                    }
-
-                    // 🕵️‍♂️ RÖNTGEN VE CEZA HESAPLAMASI
-                    let maxN = -1, minN = 9999;
-                    simStaff.forEach(s => {
-                        let seq = s.shiftLog.join(''); 
-                        let ngMatches = (seq.match(/NG/g) || []).length; 
-                        let naMatches = (seq.match(/NA/g) || []).length; 
-                        let nnMatches = (seq.match(/NN/g) || []).length; 
-                        let agMatches = (seq.match(/AG/g) || []).length; 
-                        let gggMatches = (seq.match(/GGG/g) || []).length;
-                        
-                        penalty += (ngMatches * 10000000); 
-                        penalty += (naMatches * 10000000); 
-                        penalty += (nnMatches * 10000000); 
-                        penalty += (agMatches * 5000000); 
-                        penalty += (gggMatches * 5000000);
-
-                        maxN = Math.max(maxN, s.nightCount);
-                        minN = Math.min(minN, s.nightCount);
-                    });
-
-                    penalty += ((maxN - minN) * 100);
-                    simulations.push({ penalty: penalty, staffData: simStaff });
-                }
-
-                simulations.sort((a, b) => a.penalty - b.penalty);
-                document.getElementById("tablesContainer").innerHTML = "";
-
-                for(let i=0; i<numTablesToGenerate; i++) {
-                    let bestSim = simulations[i];
-                    let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.realShifts }));
-                    let penaltyText = bestSim.penalty < 1000 ? "🏆 KUSURSUZ (0 Hata)" : `⚠️ Risk Skoru: ${bestSim.penalty}`;
-                    generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
-                }
-
-                updateAllStats();
-                document.getElementById("masterArchiveTitle").innerHTML = "📁 AI Tarafından Üretilen Tablolar";
-                showToast(`✨ AI V20 ULTRA: Kadro, Cinsiyet ve Hafıza Kuralları Uygulandı! ✨`);
-                logAction("Yapay Zeka V20 motoru ile çizelge oluşturdu.");
-
-            }, 100);
-        }
-
-        // ============================================================================
-        // 📈 İSTATİSTİK HESAPLAMA (AYLIK ÖZET) VE MENÜ İŞLEMLERİ
-        // ============================================================================
-        function updateAllStats() {
-            document.querySelectorAll('table').forEach(table => {
-                let rows = table.querySelectorAll('tbody tr:not(.summary-row)');
-                rows.forEach(tr => {
-                    let wTotal = 0, nTotal = 0;
-                    tr.querySelectorAll('.shift-cell').forEach(td => {
-                        let val = td.innerText.replace(/\./g, ':');
-                        let rule = shiftRules[val];
-                        if (rule) {
-                            wTotal += parseFloat(rule.w || 0);
-                            nTotal += parseFloat(rule.n || 0);
-                        } else if (val !== "" && val !== "HT" && val !== "Rİ" && val !== "Yİ") {
-                            // Kuralı olmayan ama saat içeren vardiyalar (Örn: 08:00-16:00) için basit tahmin
-                            if(val.includes('08:00-20:00')) wTotal += 11;
-                            else if(val.includes('20:00-08:00')) nTotal += 11;
-                            else wTotal += 8; 
-                        }
-                    });
-                    
-                    let statCell = tr.querySelector('.stat-cell');
-                    if(statCell) {
-                        statCell.innerHTML = `
-                            <div class="stat-sub" style="color:var(--accent);">☀️ ${wTotal.toFixed(1)}</div>
-                            <div class="stat-sub" style="color:var(--warning);">🌙 ${nTotal.toFixed(1)}</div>
-                            <div style="font-weight:900; color:#fff; font-size:13px; margin-top:3px; background:var(--success); border-radius:4px;">TOP: ${(wTotal + nTotal).toFixed(1)}</div>
-                        `;
-                    }
-                });
-            });
-        }
-
-        let currentActiveCell = null;
-        function openMenu(cell, e) {
-            e.stopPropagation();
-            currentActiveCell = cell;
+        function buildCustomMenu() {
             let menu = document.getElementById('customShiftMenu');
-            menu.style.display = 'block';
-            
-            // Ekranın dışına taşmasını engelle
-            let rect = cell.getBoundingClientRect();
-            let topPos = rect.bottom + window.scrollY;
-            let leftPos = rect.left + window.scrollX;
-            
-            if(leftPos + 400 > window.innerWidth) leftPos = window.innerWidth - 420;
-            if(topPos + 300 > window.innerHeight + window.scrollY) topPos = rect.top + window.scrollY - 300;
-            
-            menu.style.top = topPos + 'px';
-            menu.style.left = leftPos + 'px';
+            if(!menu) {
+                menu = document.createElement('div');
+                menu.id = 'customShiftMenu';
+                menu.className = 'custom-menu';
+                
+                let html = `<div class="menu-grid">`;
+                
+                // Önceden tanımlı kurallar (shiftRules)
+                Object.keys(shiftRules).forEach(k => {
+                    let r = shiftRules[k];
+                    html += `
+                    <div class="menu-item-wrapper">
+                        <div class="menu-item" style="background:${r.color};" onclick="selectShift('${k}')">
+                            ${k} <br><span style="font-size:9px; font-weight:normal; opacity:0.8;">(G:${r.w} | Gc:${r.n})</span>
+                        </div>
+                        ${!defaultRules[k] ? `<div class="delete-custom-btn" onclick="deleteCustomRule(event, '${k}')">X</div>` : ''}
+                    </div>`;
+                });
+                
+                html += `</div>
+                
+                <div style="margin-top:20px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:15px;">
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="customShiftName" class="glass-input" placeholder="Örn: 10:00-18:00" style="flex:2; font-size:11px; padding:8px;">
+                        <input type="number" id="customShiftW" class="glass-input" placeholder="G(Saat)" style="flex:1; font-size:11px; padding:8px;">
+                        <input type="number" id="customShiftN" class="glass-input" placeholder="Gc(Saat)" style="flex:1; font-size:11px; padding:8px;">
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="color" id="customShiftColor" value="#38bdf8" style="width:40px; height:35px; border:none; border-radius:8px; cursor:pointer; background:transparent;">
+                        <button class="btn btn-green" style="flex:1; padding:10px; font-size:11px;" onclick="addCustomRule()">+ YENİ KURAL EKLE</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top:15px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:15px;">
+                    <div style="font-size:10px; color:#cbd5e1; margin-bottom:8px; text-align:center;">Özel Not/Renk (Kuralsız) Ekle:</div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="quickNoteInput" class="glass-input" placeholder="Örn: İzin, Rapor..." style="flex:1; font-size:11px; padding:8px;" onkeydown="if(event.key==='Enter') applyQuickNote()">
+                        <div id="quickColorGrid" style="display:flex; gap:5px; flex-wrap:wrap; max-width:120px;"></div>
+                        <button class="btn btn-cyan" style="padding:8px; font-size:10px;" onclick="applyQuickNote()">YAZ</button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-red" style="width:100%; margin-top:15px; padding:10px; font-size:11px;" onclick="selectShift('')">🧹 HÜCREYİ TEMİZLE</button>
+                `;
+                
+                menu.innerHTML = html;
+                document.body.appendChild(menu);
+                
+                // Renk paletini doldur
+                const colorGrid = document.getElementById('quickColorGrid'); 
+                if(colorGrid) {
+                    colorGrid.innerHTML = "";
+                    colors.slice(0, 8).forEach(c => { // İlk 8 rengi al
+                        colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; 
+                    });
+                }
+            }
         }
 
-        function selectShift(code) {
+        // ============================================================================
+        // ⚙️ KURAL YÖNETİMİ (EKLE/SİL) & RENK UYGULAMA
+        // ============================================================================
+        function loadCustomRules() {
+            shiftRules = JSON.parse(JSON.stringify(defaultRules)); // Varsayılanları yükle
+            let saved = localStorage.getItem('sm_custom_rules_' + tenantId);
+            if(saved) {
+                let parsed = JSON.parse(saved);
+                Object.keys(parsed).forEach(k => { shiftRules[k] = parsed[k]; });
+            }
+            
+            // Menüyü baştan çiz
+            let menu = document.getElementById('customShiftMenu');
+            if(menu) menu.remove();
+            buildCustomMenu();
+        }
+
+        function addCustomRule() {
+            let name = document.getElementById('customShiftName').value.trim().replace(/\./g, ':');
+            let w = parseFloat(document.getElementById('customShiftW').value) || 0;
+            let n = parseFloat(document.getElementById('customShiftN').value) || 0;
+            let c = document.getElementById('customShiftColor').value;
+            
+            if(!name) return alert("Lütfen vardiya için bir isim veya saat aralığı girin!");
+            
+            shiftRules[name] = { w: w, n: n, color: c };
+            
+            // Sadece bu kuruma özel kaydet
+            let customOnly = {};
+            Object.keys(shiftRules).forEach(k => {
+                if(!defaultRules[k]) customOnly[k] = shiftRules[k];
+            });
+            localStorage.setItem('sm_custom_rules_' + tenantId, JSON.stringify(customOnly));
+            
+            loadCustomRules();
+            document.getElementById('customShiftName').value = "";
+            document.getElementById('customShiftW').value = "";
+            document.getElementById('customShiftN').value = "";
+            showToast("Yeni kural eklendi!");
+            logAction(`Yeni vardiya kuralı oluşturdu: ${name}`);
+        }
+
+        function deleteCustomRule(e, key) {
+            e.stopPropagation();
+            if(confirm(`"${key}" kuralını silmek istediğinize emin misiniz?`)) {
+                delete shiftRules[key];
+                let customOnly = {};
+                Object.keys(shiftRules).forEach(k => {
+                    if(!defaultRules[k]) customOnly[k] = shiftRules[k];
+                });
+                localStorage.setItem('sm_custom_rules_' + tenantId, JSON.stringify(customOnly));
+                loadCustomRules();
+                showToast("Kural silindi!");
+            }
+        }
+
+        function applyQuickNote() {
+            let note = document.getElementById('quickNoteInput').value.trim();
+            if(currentActiveCell && note) {
+                saveHistory();
+                currentActiveCell.innerText = note;
+                currentActiveCell.style.background = "rgba(0,0,0,0.5)"; // Varsayılan not rengi
+                updateAllStats();
+                document.getElementById('quickNoteInput').value = "";
+            }
+        }
+
+        function applyColorToCell(color) {
             if(currentActiveCell) {
                 saveHistory();
-                currentActiveCell.innerText = code;
-                let safeVal = code.replace(/\./g, ':');
-                let rule = shiftRules[safeVal] || shiftRules[code];
-                currentActiveCell.style.background = rule ? rule.color : "transparent";
-                updateAllStats();
+                currentActiveCell.style.background = color;
             }
         }
 
-        document.addEventListener('click', function(e) {
-            let menu = document.getElementById('customShiftMenu');
-            if(menu && !menu.contains(e.target) && !e.target.classList.contains('shift-cell')) {
-                menu.style.display = 'none';
+        // ============================================================================
+        // ⏪ GERİ ALMA (UNDO) SİSTEMİ
+        // ============================================================================
+        function saveHistory() {
+            let container = document.getElementById('tablesContainer');
+            if(container) {
+                historyStack.push(container.innerHTML);
+                if(historyStack.length > 20) historyStack.shift(); // Sadece son 20 işlemi tut
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'z') {
+                e.preventDefault();
+                if (historyStack.length > 0) {
+                    document.getElementById('tablesContainer').innerHTML = historyStack.pop();
+                    updateAllStats();
+                    showToast("↩️ İşlem geri alındı!");
+                } else {
+                    showToast("Geri alınacak işlem yok.");
+                }
             }
         });
 
         // ============================================================================
-        // 💾 VERİTABANI: KAYDETME, YÜKLEME VE ARŞİVLEME SİSTEMİ
+        // 🚀 INIT (SİSTEM BAŞLANGICI) GÜNCELLEMESİ
         // ============================================================================
-        function saveMasterArchive() {
-            let tables = document.querySelectorAll('.table-wrapper');
-            if(tables.length === 0) return alert("Kaydedilecek tablo yok!");
-
-            let title = document.getElementById("masterArchiveTitle").innerText.replace('✏️ İSMİ DEĞİŞTİR', '').trim();
-            if(title === "📁 Yeni Dosya" || title.includes("AI Alternatif")) {
-                let userTitle = prompt("Bu çalışma planını hangi isimle kaydetmek istersiniz?", "Nisan 2026 Planı");
-                if(!userTitle) return;
-                title = userTitle;
-                document.getElementById("masterArchiveTitle").innerText = title;
-            }
-
-            let htmlContent = document.getElementById("tablesContainer").innerHTML;
-            let now = new Date();
-            let key = "archive_" + Date.now();
-            let dateStr = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
-
-            db.ref(`sistem_verileri/${currentKurum}/arsivler/${key}`).set({
-                title: title,
-                html: htmlContent,
-                savedBy: currentUser,
-                date: dateStr,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                showToast("✅ Tablo panoya ve buluta kaydedildi!");
-                logAction(`'${title}' adlı tabloyu kaydetti.`);
-                closeModal('tableModalOverlay');
-            }).catch(err => alert("Hata: " + err));
-        }
-
-        function loadArchives() {
-            db.ref(`sistem_verileri/${currentKurum}/arsivler`).on("value", snap => {
-                const list = document.getElementById("archiveList");
-                const permList = document.getElementById("permanentArchiveList");
-                if(list) list.innerHTML = "";
-                if(permList) permList.innerHTML = "";
-                
-                let archives = [];
-                snap.forEach(child => { archives.push({ key: child.key, ...child.val() }); });
-                archives.sort((a,b) => b.timestamp - a.timestamp); // En yeni en üstte
-
-                if(archives.length === 0) {
-                    if(list) list.innerHTML = `<div style="color:#64748b; font-size:12px; padding:20px;">Henüz kaydedilmiş bir tablo yok.</div>`;
-                    return;
+        window.onload = () => {
+            try {
+                let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
+                let splashBaslik = document.getElementById('dynamicSplashTitle');
+                if(splashBaslik && aktifKurum && aktifKurum !== "null") {
+                    splashBaslik.innerHTML = aktifKurum.toUpperCase() + "<br>VARDİYA YÖNETİM SİSTEMİ";
                 }
+            } catch(e) {}
 
-                archives.forEach((arc, index) => {
-                    let cardHtml = `
-                    <div class="archive-card" onclick="openArchive('${arc.key}')">
-                        <div>
-                            <div style="font-size:16px; font-weight:900; color:var(--accent); margin-bottom:8px;">${arc.title}</div>
-                            <div style="font-size:11px; color:#cbd5e1;">👤 ${arc.savedBy} | 🕒 ${arc.date}</div>
-                        </div>
-                        <button class="btn btn-red" style="padding:8px; border-radius:10px; z-index:10;" onclick="event.stopPropagation(); deleteArchive('${arc.key}', '${arc.title}')">🗑️</button>
-                    </div>`;
-
-                    if(index < 4 && list) { // İlk 4'ü ana ekranda
-                        list.innerHTML += cardHtml;
-                    } else if (permList) { // Geri kalanı kalıcı depoda
-                        permList.innerHTML += cardHtml;
-                    }
-                });
-            });
-        }
-
-        function openArchive(key) {
-            db.ref(`sistem_verileri/${currentKurum}/arsivler/${key}`).once("value").then(snap => {
-                if(snap.exists()) {
-                    let data = snap.val();
-                    document.getElementById("tablesContainer").innerHTML = data.html;
-                    document.getElementById("masterArchiveTitle").innerText = data.title;
-                    document.getElementById("tableModalOverlay").classList.add('show');
-                    document.getElementById("tableModalOverlay").style.display = 'flex';
-                    logAction(`'${data.title}' adlı tabloyu görüntüledi.`);
-                }
-            });
-        }
-
-        function deleteArchive(key, title) {
-            if(confirm(`"${title}" adlı tabloyu kalıcı olarak silmek istediğinize emin misiniz?`)) {
-                db.ref(`sistem_verileri/${currentKurum}/arsivler/${key}`).remove().then(() => {
-                    showToast("🗑️ Tablo silindi.");
-                    logAction(`'${title}' adlı tabloyu sildi.`);
-                });
-            }
-        }
-
-        function renameMasterArchive() {
-            let currentTitle = document.getElementById("masterArchiveTitle").innerText;
-            let newTitle = prompt("Bu çalışma alanı için yeni bir isim girin:", currentTitle);
-            if(newTitle && newTitle.trim() !== "") {
-                document.getElementById("masterArchiveTitle").innerText = newTitle.trim();
-            }
-        }
-
-        // ============================================================================
-        // 📍 BUGÜN KİMLER VAR (OPERASYON ÖZETİ)
-        // ============================================================================
-        function showTodaySummary(dateStr = null) {
-            let targetDate = dateStr ? new Date(dateStr) : new Date();
-            let targetDayStr = targetDate.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
+            if (container) text.split("").forEach((char, idx) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + idx*0.1) + "s"; container.appendChild(span); });
             
-            document.getElementById('todaySummaryDateText').innerText = "Tarih: " + targetDayStr;
-            if(!dateStr) document.getElementById('summaryDatePicker').valueAsDate = targetDate;
+            // Kuralları Yükle ve Menüyü Çiz
+            loadCustomRules();
 
-            let dList = [], nList = [], oList = [];
-            
-            // Ekrandaki aktif açık tabloda arama yap
-            let tables = document.querySelectorAll('.table-wrapper table');
-            if(tables.length === 0) {
-                alert("Özeti görmek için önce bir tablo oluşturmalı veya arşivden açmalısınız.");
-                return;
-            }
+            setTimeout(() => { 
+                document.getElementById('splash').style.opacity = '0'; 
+                setTimeout(() => { 
+                    document.getElementById('splash').style.display = 'none'; 
+                    const activeUsr = localStorage.getItem('sm_active_user');
+                    const activeRole = localStorage.getItem('sm_role');
+                    
+                    if(activeUsr) {
+                        currentUser = activeUsr; 
+                        document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span>`;
+                        document.getElementById("appSelector").style.display = "flex";
 
-            tables.forEach(table => {
-                let headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim());
-                let targetColIndex = headers.indexOf(targetDayStr);
-
-                if (targetColIndex > -1) {
-                    let rows = table.querySelectorAll('tbody tr:not(.summary-row)');
-                    rows.forEach(tr => {
-                        let name = tr.querySelector('.editable-name').innerText.trim();
-                        let cells = tr.querySelectorAll('.shift-cell');
-                        if(cells.length > targetColIndex - 1) { // -1 çünkü isim kolonu var
-                            let shiftVal = cells[targetColIndex - 1].innerText;
-                            
-                            if (shiftVal === "" || shiftVal === "HT" || shiftVal === "Rİ" || shiftVal === "Yİ" || shiftVal === "İZİN") oList.push(`${name} <span style="float:right; opacity:0.7;">[${shiftVal || 'Boş'}]</span>`);
-                            else if (shiftVal.includes('20:00') || shiftVal.includes('16:00') || shiftVal.includes('24:') || shiftVal.includes('NÖBET')) nList.push(`${name} <span style="float:right; color:var(--warning); font-weight:bold;">[${shiftVal}]</span>`);
-                            else dList.push(`${name} <span style="float:right; color:var(--success); font-weight:bold;">[${shiftVal}]</span>`);
+                        const btnSorumlu = document.getElementById('btnSorumluAta');
+                        if (activeRole === 'admin') {
+                            if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
+                            loadSorumlular(); 
+                        } else {
+                            if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
-                    });
-                }
-            });
 
-            document.getElementById('listDay').innerHTML = dList.length > 0 ? dList.map(i => `<div style="padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">${i}</div>`).join('') : '<div style="color:#64748b; font-style:italic;">Kimse yok</div>';
-            document.getElementById('listNight').innerHTML = nList.length > 0 ? nList.map(i => `<div style="padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">${i}</div>`).join('') : '<div style="color:#64748b; font-style:italic;">Kimse yok</div>';
-            document.getElementById('listOff').innerHTML = oList.length > 0 ? oList.map(i => `<div style="padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">${i}</div>`).join('') : '<div style="color:#64748b; font-style:italic;">Kimse yok</div>';
-
-            document.getElementById('cDay').innerText = dList.length;
-            document.getElementById('cNight').innerText = nList.length;
-            document.getElementById('cOff').innerText = oList.length;
-
-            document.getElementById('todaySummaryModal').classList.add('show');
-            document.getElementById('todaySummaryModal').style.display = 'flex';
-        }
-
-        // ============================================================================
-        // 🚀 SİSTEM BAŞLANGIÇ (INIT) FONKSİYONLARI
-        // ============================================================================
-        function showToast(msg) {
-            let t = document.getElementById("toast");
-            t.innerText = msg;
-            t.classList.add("show");
-            setTimeout(() => { t.classList.remove("show"); }, 3000);
-        }
-
-        function closeModal(id) {
-            let el = document.getElementById(id);
-            if(el) {
-                el.classList.remove('show');
-                setTimeout(() => el.style.display = 'none', 400);
-            }
-        }
-
-        function toggleTheme() {
-            const root = document.documentElement;
-            if(root.style.getPropertyValue('--bg-dark') === '#ffffff') {
-                // Koyu Temaya Dön (Varsayılan)
-                root.style.setProperty('--bg-dark', '#050b14');
-                root.style.setProperty('--bg-light', '#0f172a');
-                root.style.setProperty('--text', '#f8fafc');
-                root.style.setProperty('--glass-bg', 'rgba(20, 30, 48, 0.4)');
-                root.style.setProperty('--glass-border', 'rgba(255, 255, 255, 0.15)');
-                showToast("🌙 Koyu Tema Aktif");
-            } else {
-                // Açık Tema
-                root.style.setProperty('--bg-dark', '#ffffff');
-                root.style.setProperty('--bg-light', '#f1f5f9');
-                root.style.setProperty('--text', '#0f172a');
-                root.style.setProperty('--glass-bg', 'rgba(255, 255, 255, 0.8)');
-                root.style.setProperty('--glass-border', 'rgba(0, 0, 0, 0.1)');
-                showToast("☀️ Açık Tema Aktif");
-            }
-        }
-
-        function initApp() {
-            buildCustomMenu();
-            setTimeout(() => {
-                document.getElementById('dynamicSplashTitle').innerText = "DOĞRULANIYOR...";
-                let stc = document.getElementById('splashTextContainer');
-                let word = "SHIFTMASTER";
-                stc.innerHTML = "";
-                word.split('').forEach((char, index) => {
-                    let span = document.createElement('span');
-                    span.className = 'splash-char';
-                    span.innerText = char;
-                    span.style.animationDelay = (0.5 + (index * 0.1)) + 's';
-                    stc.appendChild(span);
-                });
-            }, 1000);
-
-            // Yetki Kontrolü
-            firebase.auth().onAuthStateChanged(user => {
-                setTimeout(() => {
-                    document.getElementById('splash').style.opacity = '0';
-                    setTimeout(() => { 
-                        document.getElementById('splash').style.display = 'none'; 
-                        document.getElementById('appSelector').style.display = 'flex';
-                    }, 600);
-                }, 3000); // Havalı açılış için 3 saniye bekle
-
-                if (user) {
-                    currentUser = localStorage.getItem('sm_username') || user.email.split('@')[0];
-                    currentKurum = localStorage.getItem('sm_kurum') || "BilinmeyenKurum";
-                    let role = localStorage.getItem('sm_role');
-                    
-                    document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:var(--accent);">${currentUser.toUpperCase()}</span>`;
-                    
-                    if (role === 'admin') {
-                        document.getElementById('btnSorumluAta').style.display = 'inline-flex';
-                        if(currentKurum === "BOSSKURUM") document.getElementById('btnBossConsole').style.display = 'inline-flex';
+                        loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews();
+                        logAction("Sisteme giriş yaptı.");
+                    } else {
+                        window.location.href = "login.html"; 
                     }
-
-                    // Verileri Yükle
-                    loadLogs();
-                    loadArchives();
-                    loadStaffPool();
-                    
-                    // Haberleşme Dinleyicisi
-                    db.ref("haberler").on("value", snap => {
-                        const l = document.getElementById("newsList");
-                        l.innerHTML = "";
-                        let news = [];
-                        snap.forEach(child => { news.push({id: child.key, ...child.val()}); });
-                        news.reverse();
-                        // (Haberleşme panosu HTML içeriği, önceki kod parçasında addNews altında verildiği için burada sadece tetikleniyor)
-                        // Kod boyutunu aşmamak için renderlama işlemi addNews/loadNews döngüsündedir.
-                    });
-
-                } else {
-                    window.location.href = "login.html";
-                }
-            });
-        }
-
-        function openShiftMaster() {
-            document.getElementById('appSelector').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-        }
-
-        function logout() {
-            logAction("Sistemden çıkış yaptı.");
-            firebase.auth().signOut().then(() => {
-                localStorage.clear();
-                window.location.href = "login.html";
-            });
-        }
-
-        // Ekran yüklenirken her şeyi başlat
-       // ============================================================================
-        // 🧑‍🤝‍🧑 KADRO / PERSONEL HAVUZU FONKSİYONLARI (EKSİK OLAN KISIM)
-        // ============================================================================
-        function loadStaffPool() {
-            db.ref(`sistem_verileri/${currentKurum}/havuz`).on('value', snap => {
-                staffList = [];
-                if(snap.val()) {
-                    Object.entries(snap.val()).forEach(([key, val]) => {
-                        staffList.push({ id: key, name: val.isim });
-                    });
-                }
-                renderStaffPool();
-            });
-        }
-
-        function renderStaffPool() {
-            const p = document.getElementById("staffPool");
-            const c = document.getElementById("staffCounter");
-            if(!p || !c) return;
+                }, 600); 
+            }, 2500);
             
-            p.innerHTML = "";
-            c.innerText = staffList.length;
-            
-            staffList.forEach(s => {
-                p.innerHTML += `
-                <div class="staff-chip selected" id="staff_${s.id}" onclick="this.classList.toggle('selected')">
-                    <span style="font-size:16px;">👤</span> ${s.name}
-                    <span class="staff-del" onclick="removeStaff(event, '${s.id}', '${s.name}')">×</span>
-                </div>`;
-            });
-        }
-
-        function addStaff() {
-            const input = document.getElementById("staffInput").value.trim();
-            if(!input) return alert("Lütfen personel ismi girin veya Excel listesi yapıştırın!");
-
-            let names = input.split('\n');
-            let addedCount = 0;
-
-            names.forEach(name => {
-                let n = name.trim();
-                if(n && n !== "PERSONEL" && !n.includes("GÜNLÜK KADRO")) {
-                    db.ref(`sistem_verileri/${currentKurum}/havuz`).push({ isim: n });
-                    addedCount++;
-                }
-            });
-
-            document.getElementById("staffInput").value = "";
-            showToast(`${addedCount} personel eklendi.`);
-            logAction(`Havuza ${addedCount} personel ekledi.`);
-        }
-
-        function removeStaff(e, id, name) {
-            e.stopPropagation();
-            if(confirm(`${name} isimli personeli havuzdan tamamen silmek istediğinize emin misiniz?`)) {
-                db.ref(`sistem_verileri/${currentKurum}/havuz/${id}`).remove();
-                logAction(`Havuzdan sildi: ${name}`);
-            }
-        }
-
-        function clearStaffPool() {
-            if(confirm("TÜM PERSONEL HAVUZUNU SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ? (Bu işlem geri alınamaz)")) {
-                db.ref(`sistem_verileri/${currentKurum}/havuz`).remove();
-                showToast("Bomba patladı! Havuz tertemiz.");
-                logAction("Tüm personel havuzunu temizledi.");
-            }
-        }
-
-        // ============================================================================
-        // 🎨 CUSTOM MENU & KALICI ARŞİV (EKSİK OLAN KISIM)
-        // ============================================================================
-        function buildCustomMenu() {
-            let menu = document.getElementById('staffSelectMenu');
-            if(!menu) {
-                menu = document.createElement('div');
-                menu.id = 'staffSelectMenu';
-                menu.className = 'custom-menu';
-                document.body.appendChild(menu);
-            }
-            // Bu menüyü detaylı olarak sonradan yapılandırabilirsin, şu an hata vermemesi için boş bir iskelet oluşturduk.
-        }
-
-        function loadPermanentArchives() {
-             db.ref(`sistem_verileri/${currentKurum}/kalici_arsiv`).on("value", snap => {
-                const list = document.getElementById("permanentArchiveList");
-                if(!list) return;
-                list.innerHTML = "";
-                
-                let archives = [];
-                snap.forEach(child => { archives.push({ key: child.key, ...child.val() }); });
-                archives.sort((a,b) => b.timestamp - a.timestamp); 
-
-                if(archives.length === 0) {
-                    list.innerHTML = `<div style="color:#64748b; font-size:12px; padding:20px;">Henüz kaydedilmiş eski bir arşiv yok.</div>`;
-                    return;
-                }
-
-                archives.forEach((arc) => {
-                    list.innerHTML += `
-                    <div class="archive-card" onclick="openArchive('${arc.key}')">
-                        <div>
-                            <div style="font-size:16px; font-weight:900; color:var(--accent); margin-bottom:8px;">${arc.title}</div>
-                            <div style="font-size:11px; color:#cbd5e1;">👤 ${arc.savedBy} | 🕒 ${arc.date}</div>
-                        </div>
-                        <button class="btn btn-red" style="padding:8px; border-radius:10px; z-index:10;" onclick="event.stopPropagation(); deleteArchive('${arc.key}', '${arc.title}')">🗑️</button>
-                    </div>`;
-                });
-            });
-        } 
-        window.onload = initApp;
-
+            try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
+        };
     </script>
 </body>
 </html>
+
 
