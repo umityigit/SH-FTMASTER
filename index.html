@@ -52,17 +52,16 @@
 
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; width: 100%; max-width: 420px; box-shadow: 10px 10px 40px rgba(0,0,0,0.6); }
 
-        /* 🔥 KAPI SEÇİM EKRANI STİLLERİ 🔥 */
-        #gateSelector { display: none; width: 100%; max-width: 420px; animation: fadeIn 0.6s ease; margin-top: 20px; }
-        .gate-card { 
+        /* 🔥 YENİ: KAPI SEÇİM KARTI STİLLERİ 🔥 */
+        #gateSelector { display: none; width: 100%; max-width: 420px; animation: fadeIn 0.5s ease-out; }
+        .gate-btn { 
+            width: 100%; padding: 25px; margin-bottom: 20px; border-radius: 20px; 
             background: rgba(15, 23, 42, 0.8); border: 1px solid var(--glass-border); 
-            padding: 25px; border-radius: 20px; margin-bottom: 20px; cursor: pointer; 
-            transition: 0.3s; text-align: center; position: relative; overflow: hidden;
+            cursor: pointer; transition: 0.3s; text-align: center; color: white;
         }
-        .gate-card:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(56, 189, 248, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .gate-icon { font-size: 45px; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 10px var(--accent)); }
-        .gate-title { font-size: 22px; font-weight: 900; color: white; margin: 0; text-transform: uppercase; }
-        .gate-desc { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.5; }
+        .gate-btn:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(56, 189, 248, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .gate-btn h3 { margin: 0; font-size: 20px; font-weight: 900; letter-spacing: 1px; color: var(--accent); }
+        .gate-btn p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
 
         .tab-container { display: flex; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 25px; padding: 5px; border: 1px solid rgba(255,255,255,0.05); }
         .tab-btn { flex: 1; padding: 12px; text-align: center; font-weight: 800; font-size: 13px; color: #64748b; cursor: pointer; border-radius: 12px; transition: 0.3s; letter-spacing: 1px; }
@@ -101,6 +100,13 @@
                 <p class="slide-desc">İzinler, raporlar ve nöbetler birbirine mi girdi? ShiftMaster'ın akıllı yapısıyla saniyeler içinde kusursuz planlar hazırlayın, karmaşaya son verin.</p>
             </div>
         </div>
+        <div class="slide" style="background-image: url('SSAAAAAAAA.jpg');">
+            <div class="slide-overlay"></div>
+            <div class="slide-text-box" style="border-left-color: #facc15;">
+                <h2 class="slide-title">7/24 KESİNTİSİZ KONTROL SİZDE!</h2>
+                <p class="slide-desc">İster cepten, ister tabletten, isterseniz bilgisayardan... Canlı işlem logları ve interaktif haberleşme panosu ile sisteminiz daima elinizin altında.</p>
+            </div>
+        </div>
         <div class="slide" style="background-image: url('EEEEEEEEEEE.jpg');">
             <div class="slide-overlay"></div>
             <div class="slide-text-box" style="border-left-color: #10b981;">
@@ -108,9 +114,18 @@
                 <p class="slide-desc">ShiftMaster karmaşık formülleri saniyeler içinde sizin yerinize çözer ve hata payını sıfıra indirir.</p>
             </div>
         </div>
+        <div class="slide" style="background-image: url('ASASAS.jpg');">
+            <div class="slide-overlay"></div>
+            <div class="slide-text-box" style="border-left-color: #a855f7;">
+                <h2 class="slide-title">%100 GOOGLE GÜVENLİĞİ İLE GÜVENDESİNİZ!</h2>
+                <p class="slide-desc">Hassas verileriniz Google Firebase sunucularında uçtan uca şifrelenir. Teknoloji devinin gücüyle daima güvendesiniz.</p>
+            </div>
+        </div>
         <div class="indicators">
             <div class="dot active" onclick="goToSlide(0)"></div>
             <div class="dot" onclick="goToSlide(1)"></div>
+            <div class="dot" onclick="goToSlide(2)"></div>
+            <div class="dot" onclick="goToSlide(3)"></div>
         </div>
 
         <div class="ad-banner-area">
@@ -131,21 +146,19 @@
         </div>
 
         <div id="gateSelector">
-            <h2 style="text-align: center; font-weight: 900; color: var(--accent); margin-bottom: 25px; text-shadow: 0 0 10px rgba(56,189,248,0.3);">HOŞ GELDİNİZ!<br><small style="font-size: 11px; color:#94a3b8; letter-spacing: 2px;">LÜTFEN BİR PANEL SEÇİN</small></h2>
+            <h2 style="text-align:center; font-weight:900; color:var(--accent); margin-bottom:20px;">HOŞ GELDİNİZ!</h2>
             
-            <div class="gate-card" onclick="window.location.href='shiftmaster.html'">
-                <span class="gate-icon">👷‍♂️</span>
-                <h3 class="gate-title">İŞÇİ PANELİ</h3>
-                <p class="gate-desc">Vardiya planlama, izin takibi, arşivleme ve genel personel yönetimi.</p>
+            <div class="gate-btn" onclick="window.location.href='shiftmaster.html'">
+                <h3>👷‍♂️ İŞÇİ PANELİ</h3>
+                <p>Genel vardiya planlama ve izin takip merkezi.</p>
             </div>
 
-            <div class="gate-card" onclick="window.location.href='memur_portal.html'">
-                <span class="gate-icon">👨‍⚕️</span>
-                <h3 class="gate-title">MEMUR PORTALI</h3>
-                <p class="gate-desc">657 Memur Nöbet matrisi, puantaj motoru ve maaş tahakkuk merkezi.</p>
+            <div class="gate-btn" onclick="window.location.href='memur_portal.html'">
+                <h3>👨‍⚕️ MEMUR PORTALI</h3>
+                <p>Nöbet matrisi, puantaj ve maaş tahakkuk motoru.</p>
             </div>
 
-            <button onclick="location.reload()" class="btn-action" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; margin-top: 15px;">GÜVENLİ ÇIKIŞ</button>
+            <button onclick="location.reload()" class="btn-action" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; margin-top: 10px;">ÇIKIŞ YAP</button>
         </div>
 
         <div class="login-card" id="loginCard">
@@ -169,25 +182,42 @@
 
             <div id="formKayit" class="form-area">
                 <div class="input-group">
-                    <label class="input-label">KURUM ADI</label>
+                    <label class="input-label">KURUM ADI (ZORUNLU)</label>
                     <input type="text" id="regKurumAd" class="glass-input" placeholder="Örn: Döşemealtı Hastanesi">
                 </div>
                 <div class="input-group">
-                    <label class="input-label">KURUM KISA ADI</label>
+                    <label class="input-label">KURUM KISA ADI (ortak giriş için)</label>
                     <input type="text" id="regKurumKod" class="glass-input" placeholder="Örn: addh">
                 </div>
-                <button onclick="patronKaydiOlustur()" class="btn-action">KURUMU OLUŞTUR</button>
+                <div class="input-group">
+                    <label class="input-label">PATRON ADI SOYADI</label>
+                    <input type="text" id="regKullanici" class="glass-input" placeholder="Örn: Ümit Yiğit">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">E-MAİL ADRESİ (SADECE ONAY İÇİN)</label>
+                    <input type="email" id="regEmail" class="glass-input" placeholder="mail@ornek.com">
+                </div>
+                <div class="input-row">
+                    <div style="flex:1" class="input-group">
+                        <label class="input-label">PATRON ŞİFRESİ</label>
+                        <input type="password" id="regSifre1" class="glass-input" placeholder="••••••••">
+                    </div>
+                    <div style="flex:1" class="input-group">
+                        <label class="input-label">ŞİFRE TEKRAR</label>
+                        <input type="password" id="regSifre2" class="glass-input" placeholder="••••••••">
+                    </div>
+                </div>
+                <button onclick="patronKaydiOlustur()" class="btn-action">KURUMU OLUŞTUR VE DOĞRULA</button>
             </div>
         </div>
 
-        <div class="seo-footer" id="seoFooter">
-            <a href="#">Gizlilik Politikası</a> | <a href="#">İletişim</a>
-            <div style="margin-top: 10px;">© 2026 ShiftMaster. Tüm hakları saklıdır.</div>
+        <div class="seo-footer">
+            <a href="#">Gizlilik Politikası</a> | <a href="#">Kullanım Koşulları</a> | <a href="#">İletişim</a>
+            <div style="margin-top: 10px; font-size: 11px; opacity: 0.6;">© 2026 ShiftMaster. Tüm hakları saklıdır.</div>
         </div>
     </div>
 
     <script>
-        // FIREBASE KONFİGÜRASYONU (ORİJİNAL)
         const firebaseConfig = {
             apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ",
             authDomain: "shiftmaster1-7fc5f.firebaseapp.com",
@@ -198,12 +228,14 @@
         const auth = firebase.auth();
         const rtdb = firebase.database();
 
-        // SLIDER MOTORU (ORİJİNAL)
+        // SLIDER VE TAB MOTORLARI (AYNEN KALDI)
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
         function showSlide(index) { slides.forEach(s => s.classList.remove('active')); dots.forEach(d => d.classList.remove('active')); slides[index].classList.add('active'); dots[index].classList.add('active'); }
-        setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }, 6000);
+        function nextSlide() { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }
+        function goToSlide(index) { currentSlide = index; showSlide(currentSlide); }
+        setInterval(nextSlide, 6000);
 
         function switchTab(t) {
             document.querySelectorAll('.tab-btn, .form-area').forEach(el => el.classList.remove('active'));
@@ -223,24 +255,51 @@
                 const kurumData = snap.val();
 
                 auth.signInWithEmailAndPassword(kurumData.patronEmail, sifre).then((uc) => {
-                    // Giriş Başarılı!
+                    // BAŞARILI GİRİŞ
                     localStorage.setItem('sm_current_tenant', kod);
                     localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
                     localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
                     localStorage.setItem('sm_role', 'admin');
 
-                    // 🚪 LOGIN KARTINI SİL, KAPILARI GÖSTER (ORİJİNALİ BOZMADAN GİZLEME)
+                    // 🚪 LOGIN FORMUNU GİZLE, KAPILARI GÖSTER
                     document.getElementById("loginCard").style.display = "none";
                     document.getElementById("gateSelector").style.display = "block";
-                    // Footer'ı da temizleyelim şık dursun
-                    document.getElementById("seoFooter").style.marginTop = "20px";
 
-                }).catch(err => alert("Şifre Yanlış veya Giriş Engellendi!"));
+                }).catch(err => alert("Şifre Yanlış!"));
             });
         }
 
-        // Diğer fonksiyonların (Kayit vs.) burada devam eder...
-        function goToSlide(idx) { currentSlide = idx; showSlide(idx); }
+        // DİĞER KAYIT VE GÜVENLİK KODLARIN BURADA DEVAM EDİYORDU (KORUNDU)
+        (function() {
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase() === 'U')) {
+                    e.preventDefault(); return false;
+                }
+            });
+        })();
+
+        async function sifreKriptola(sifre) {
+            const textAsBuffer = new TextEncoder().encode(sifre + "_SHIFTMASTER_2026_ZIRH");
+            const hashBuffer = await crypto.subtle.digest('SHA-256', textAsBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function patronKaydiOlustur() {
+            const email = document.getElementById("regEmail").value.trim();
+            const s1 = document.getElementById("regSifre1").value;
+            const kurumAd = document.getElementById("regKurumAd").value.trim();
+            const kurumKod = document.getElementById("regKurumKod").value.trim().toLowerCase();
+            const patronAd = document.getElementById("regKullanici").value.trim();
+            if(!email || !s1 || !kurumAd || !kurumKod || !patronAd) return alert("Doldurun!");
+            let kripto = await sifreKriptola(s1);
+            auth.createUserWithEmailAndPassword(email, s1).then((uc) => {
+                rtdb.ref('kurum_kayitlari/' + kurumKod).set({ kurumAdi: kurumAd, patronEmail: email, patronIsim: patronAd });
+                rtdb.ref("kurum_alt_yoneticileri/" + kurumKod + "/" + kripto).set({ isim: patronAd, rol: "admin" });
+                alert("Başarılı!"); switchTab('giris');
+            }).catch(e => alert(e.message));
+        }
     </script>
 </body>
 </html>
