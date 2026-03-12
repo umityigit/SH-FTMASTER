@@ -304,12 +304,30 @@
                     <span id="staffCounter" style="background:var(--accent); color:#000; padding:2px 10px; border-radius:10px; font-weight:900; font-size:16px; box-shadow:0 0 15px var(--accent);">0</span>
                 </div>
                 <div id="staffPool" class="pool-grid" style="margin-bottom: 25px;"></div>
-                <div style="display:flex; gap:15px; background:rgba(0,0,0,0.3); padding:20px; border-radius:15px; border:1px dashed var(--glass-border);">
-                    <input type="text" id="staffInput" placeholder="Tek isim yaz veya Excel'den listeyi kopyalayıp buraya yapıştır..." class="glass-input" style="flex:1; font-size:14px;" onkeydown="if(event.key==='Enter') addStaff()">
-                    <button class="btn btn-cyan" style="padding:15px 30px; font-size:13px;" onclick="addStaff()">EKLE / YÜKLE</button>
-                    <button class="btn btn-red" style="padding:15px 30px; font-size:13px;" onclick="clearStaffPool()">💣 HAVUZU BOŞALT</button>
+               <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:15px; border:1px dashed var(--glass-border);">
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <input type="text" id="staffInput" placeholder="İsim yaz veya Excel kopyala..." class="glass-input" style="flex:1; min-width:200px; font-size:14px;" onkeydown="if(event.key==='Enter') addStaff()">
+                        
+                        <select id="staffGender" class="glass-input" style="width:auto; padding:12px; cursor:pointer;" title="Cinsiyet Seçimi">
+                            <option value="auto">🤖 Cinsiyeti Otomatik Tahmin Et</option>
+                            <option value="E">👨 Erkek</option>
+                            <option value="K">👩 Kadın</option>
+                        </select>
+
+                        <select id="staffUnvan" class="glass-input" style="width:auto; padding:12px; cursor:pointer; display:none;">
+                            <option value="">-- Ünvan Seçin (Memur) --</option>
+                            <option value="Uzman Tabip">Uzman Tabip</option>
+                            <option value="Pratisyen Tabip">Pratisyen Tabip</option>
+                            <option value="Diş Hekimi">Diş Hekimi</option>
+                            <option value="Hemşire / Ebe (Lisans)">Hemşire / Ebe (Lisans)</option>
+                            <option value="Sağlık Memuru (Lise)">Sağlık Memuru (Lise)</option>
+                            <option value="Diğer Personel">Diğer Personel</option>
+                        </select>
+
+                        <button class="btn btn-cyan" style="padding:14px 25px; font-size:13px;" onclick="addStaff()">EKLE</button>
+                        <button class="btn btn-red" style="padding:14px 25px; font-size:13px;" onclick="clearStaffPool()">💣 BOŞALT</button>
+                    </div>
                 </div>
-            </div>
             
             <details class="card" style="margin-top: 50px; background: rgba(2,6,23,0.8); border: 2px dashed #475569;">
                 <summary style="font-size: 20px; font-weight: 900; color: #94a3b8; cursor: pointer; outline:none; text-shadow:0 0 10px rgba(255,255,255,0.2);">
@@ -710,6 +728,7 @@
         };
 
         // 🔥 YENİ: İKİ KAPILI SİSTEM YÖNLENDİRİCİSİ 🔥
+        // 🔥 YENİ: İKİ KAPILI SİSTEM YÖNLENDİRİCİSİ 🔥
         function selectKadro(tip) {
             aktifKadro = tip; // 'isci' veya 'memur'
             document.getElementById("kadroSelector").style.display = "none";
@@ -718,194 +737,21 @@
             let rozet = tip === 'memur' ? '<span style="color:#38bdf8; font-size:12px; background:rgba(56,189,248,0.1); padding:4px 8px; border-radius:8px; margin-left:10px;">👨‍⚕️ MEMUR (657)</span>' : '<span style="color:#f59e0b; font-size:12px; background:rgba(245,158,11,0.1); padding:4px 8px; border-radius:8px; margin-left:10px;">👷‍♂️ İŞÇİ (4/D)</span>';
             document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span> ${rozet}`;
             
+            // Memur seçildiyse Ünvan Kutusunu görünür yap!
+            let unvanKutusu = document.getElementById("staffUnvan");
+            if(unvanKutusu) {
+                if(tip === 'memur') unvanKutusu.style.display = 'inline-block';
+                else unvanKutusu.style.display = 'none';
+            }
+
             // Sadece seçtiğin kapının verilerini buluttan çeker!
             loadStaffPool();
             if(typeof loadArchives === 'function') loadArchives();
             if(typeof loadPermanentArchives === 'function') loadPermanentArchives();
         }
 
-        function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
-        function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
-
-        // 🔥 ASKERİ SINIF KRİPTO MOTORU (SHA-256) 🔥
-        async function sifreKriptola(sifre) {
-            const textAsBuffer = new TextEncoder().encode(sifre + "_SHIFTMASTER_2026_ZIRH");
-            const hashBuffer = await crypto.subtle.digest('SHA-256', textAsBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        async function bireyselSifreDegistir() {
-            const role = localStorage.getItem('sm_role'); const isim = currentUser;
-            if (role === 'admin') {
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    let yeniSifre = prompt(`Sayın Patron (${isim}), lütfen YENİ ŞİFRENİZİ girin:`);
-                    if (yeniSifre && yeniSifre.trim() !== "") {
-                        user.updatePassword(yeniSifre).then(() => { showToast("Patron şifreniz güncellendi! ✅"); logAction("Patron şifresini değiştirdi."); }).catch(err => { alert("Güvenlik gereği çıkış yapıp tekrar giriş yapmanız gerekiyor. Lütfen giriş yapıp tekrar deneyin. Hata: " + err.message); });
-                    }
-                } else { alert("Oturum bulunamadı! Lütfen tekrar giriş yapın."); }
-            } else if (role === 'superadmin') {
-                let eskiSifre = prompt(`Sistem Kurucusu, güvenliğiniz için lütfen MEVCUT ŞİFRENİZİ girin:`);
-                if(!eskiSifre) return;
-                
-                let yeniSifre = prompt(`Lütfen YENİ ZOR ŞİFRENİZİ girin:`);
-                if (yeniSifre && yeniSifre.trim() !== "") {
-                    let eskiKripto = await sifreKriptola(eskiSifre.trim());
-                    let yeniKripto = await sifreKriptola(yeniSifre.trim());
-                    
-                    originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).once('value').then(snap => {
-                        if(snap.exists()) {
-                            originalRef('kurum_alt_yoneticileri/patron_base/' + yeniKripto).set({ isim: "SİSTEM KURUCUSU", rol: "superadmin" }).then(() => {
-                                originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).remove().then(() => {
-                                    alert("Kurucu şifreniz başarıyla güncellendi! Güvenlik için sistemden çıkış yapılıyor. Lütfen yeni şifrenizle girin."); 
-                                    logout();
-                                });
-                            });
-                        } else {
-                            alert("Mevcut (Eski) şifrenizi yanlış girdiniz! İşlem iptal edildi.");
-                        }
-                    });
-                }
-            } else {
-                let eskiSifre = prompt(`Merhaba ${isim}, lütfen MEVCUT (ESKİ) ŞİFRENİZİ girin:`); if (!eskiSifre) return;
-                let yeniSifre = prompt("Lütfen YENİ ŞİFRENİZİ girin:"); if (!yeniSifre || yeniSifre.trim() === "") return;
-                eskiSifre = eskiSifre.trim(); yeniSifre = yeniSifre.trim();
-                if (eskiSifre === yeniSifre) return alert("Yeni şifreniz eskisiyle aynı olamaz!");
-                
-                let eskiKripto = await sifreKriptola(eskiSifre);
-                let yeniKripto = await sifreKriptola(yeniSifre);
-                
-                const eskiRef = originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + eskiKripto);
-                eskiRef.once('value').then(snap => {
-                    if (snap.exists() && snap.val().isim === isim) {
-                        const personelVerisi = snap.val();
-                        originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniKripto).once('value').then(yeniSnap => {
-                            if (yeniSnap.exists()) return alert("Bu şifre zaten kullanımda, lütfen başka bir şifre seçin!");
-                            originalRef('kurum_alt_yoneticileri/' + tenantId + '/' + yeniKripto).set(personelVerisi).then(() => { eskiRef.remove().then(() => { alert("Şifreniz başarıyla değiştirildi! Güvenliğiniz için çıkış yapılıyor, lütfen yeni şifrenizle tekrar girin."); logout(); }); });
-                        });
-                    } else { alert("Eski şifrenizi hatalı girdiniz!"); }
-                });
-            }
-        }
-
-        async function kaydetSorumlu() {
-            const isim = document.getElementById('sorumluIsim').value.trim().toUpperCase(); 
-            const sifre = document.getElementById('sorumluSifre').value.trim();
-            if(!isim || !sifre) return alert("Lütfen havuzdan isim seçin ve şifre belirleyin!");
-            
-            let kriptoluSifre = await sifreKriptola(sifre);
-            
-            originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + kriptoluSifre).set({ isim: isim, rol: "user" }).then(() => { 
-                showToast("Yönetici Eklendi! ✅"); 
-                document.getElementById('sorumluIsim').value = ""; 
-                document.getElementById('sorumluSifre').value = ""; 
-                logAction(`Yeni yönetici atadı: ${isim} (Şifre Kriptolandı)`); 
-            });
-        }
-
-        function loadSorumlular() {
-            originalRef("kurum_alt_yoneticileri/" + tenantId).on('value', snap => {
-                const list = document.getElementById('sorumluListesi'); if(!list) return; list.innerHTML = "";
-                if(snap.val()) {
-                    Object.entries(snap.val()).forEach(([sif, data]) => { 
-                        list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
-                            <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--success); margin-left:8px; background:rgba(16,185,129,0.1); padding:2px 8px; border-radius:6px; border:1px dashed var(--success);">🔒 Kriptolu</span></span>
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <button class="btn" style="background:rgba(16,185,129,0.2); border:1px solid var(--success); color:var(--success); padding:6px 12px; font-size:10px;" onclick="degistirSorumluSifre(event, '${sif}', '${data.isim}')">✏️ Şifre</button>
-                                <button class="btn" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px;" onclick="silSorumlu(event, '${sif}', '${data.isim}')">X</button>
-                            </div>
-                        </div>`; 
-                    });
-                } else { list.innerHTML += "<div style='color:#64748b;'>Atanmış yönetici yok.</div>"; }
-            });
-        }
-
-        async function degistirSorumluSifre(e, eskiKripto, isim) {
-            e.stopPropagation(); 
-            let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
-            if(yeniSifre && yeniSifre.trim() !== "") {
-                yeniSifre = yeniSifre.trim(); 
-                let yeniKripto = await sifreKriptola(yeniSifre);
-                if(yeniKripto === eskiKripto) return; 
-                originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniKripto).set({ isim: isim, rol: "user" }).then(() => {
-                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKripto).remove().then(() => { 
-                        showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); 
-                    });
-                });
-            }
-        }
-
-        function silSorumlu(e, sifre, isim) { e.stopPropagation(); if(confirm(isim + " adlı yetkiyi silmek istediğinize emin misiniz?")) { originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + sifre).remove(); logAction(`Yetki kaldırdı: ${isim}`); } }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 400); }
-        function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
-
-        function openSupportModal() {
-            document.getElementById('supportModal').style.display = 'flex';
-            setTimeout(() => document.getElementById('supportModal').classList.add('show'), 10);
-            loadTickets();
-        }
-        function closeSupportModal() {
-            document.getElementById('supportModal').classList.remove('show');
-            setTimeout(() => document.getElementById('supportModal').style.display = 'none', 400);
-        }
-
-        function sendTicket() {
-            const val = document.getElementById('ticketInput').value.trim();
-            if(!val) return alert("Lütfen önce bir mesaj yazın!");
-            const currentTenant = localStorage.getItem('sm_current_tenant') || "Bilinmiyor";
-            originalRef("cozum_merkezi").push({
-                tenant: currentTenant, user: currentUser, text: val,
-                time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'numeric'}),
-                status: 'Bekliyor', adminReply: ''
-            }).then(() => {
-                document.getElementById('ticketInput').value = '';
-                showToast("Talebiniz başarıyla iletildi! 🎧");
-                logAction("Çözüm Merkezine yeni talep gönderdi.");
-            });
-        }
-
-        function loadTickets() {
-            originalRef("cozum_merkezi").on('value', snap => {
-                const list = document.getElementById('ticketList'); list.innerHTML = "";
-                const currentTenant = localStorage.getItem('sm_current_tenant');
-                const isSuperAdmin = localStorage.getItem('sm_role') === 'superadmin';
-                let biletSayisi = 0;
-
-                if(snap.val()) {
-                    Object.entries(snap.val()).reverse().forEach(([id, t]) => {
-                        if (!isSuperAdmin && t.tenant !== currentTenant) return;
-                        biletSayisi++;
-                        let statusColor = t.status === 'Çözüldü' ? 'var(--success)' : (t.status === 'İnceleniyor' ? '#3b82f6' : 'var(--warning)');
-                        let replyHtml = t.adminReply ? `<div class="admin-reply"><strong>⚡ YETKİLİ CEVABI:</strong><br>${t.adminReply}</div>` : '';
-                        let patronButonu = ""; let kurumsalEtiket = "";
-                        if (isSuperAdmin) { 
-                            kurumsalEtiket = `<span style="color:#38bdf8; font-size:10px;">[${(t.tenant || "BİLİNMİYOR").toUpperCase()}]</span> `;
-                            patronButonu = `<button class="btn btn-green" style="margin-top:10px; padding:6px 12px; font-size:10px;" onclick="cevapYaz('${id}')">Cevapla & Çözüldü Yap</button>`;
-                        }
-                        list.innerHTML += `
-                            <div class="ticket-item">
-                                <div class="ticket-header">
-                                    <span style="color:var(--text); font-weight:800; font-size:12px;">👤 ${kurumsalEtiket}${t.user}</span>
-                                    <span style="color:${statusColor}; font-size:10px; border:1px solid ${statusColor}; padding:3px 8px; border-radius:12px; font-weight:800; background:rgba(0,0,0,0.5);">${t.status.toUpperCase()}</span>
-                                </div>
-                                <div class="ticket-body">${t.text}</div>
-                                ${replyHtml}
-                                ${patronButonu}
-                                <div class="ticket-time">Gönderim: ${t.time}</div>
-                            </div>
-                        `;
-                    });
-                }
-                if(biletSayisi === 0) {
-                    list.innerHTML = "<div style='text-align:center; color:#64748b; padding:30px; font-size:12px; font-family:monospace;'>SİSTEMDE KAYITLI TALEBİNİZ BULUNMAMAKTADIR.</div>";
-                }
-            });
-        }
-
         // ============================================================================
-        // 🧑‍🤝‍🧑 KADRO HAVUZU (MEMUR / İŞÇİ AYRIMLI VE CİNSİYET ZEKALI)
+        // 🧑‍🤝‍🧑 KADRO HAVUZU (ESKİ İŞÇİ VERİLERİNİ KURTARAN MOTOR)
         // ============================================================================
         const kadinPersonelListesi = [
             "AYŞE BOZKAYA", "AYŞENA KARA", "BETÜL ŞİMŞEK", "BURCU DERELİOĞLU", 
@@ -918,14 +764,23 @@
         ];
 
         function loadStaffPool() {
-            // HATA DÜZELTİLDİ: Veriler doğrudan seçilen kapıya göre (İşçi/Memur) çekiliyor!
-            db.ref("havuz_" + aktifKadro).on('value', snap => {
+            // İŞÇİ İSE ESKİ DOSYAYA (personel_havuzu), MEMUR İSE YENİ DOSYAYA (personel_havuzu_memur) BAĞLAN!
+            let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
+            db.ref(poolNode).on('value', snap => {
                 staffList = [];
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([key, val]) => {
-                        staffList.push({ id: key, name: val.isim, cinsiyet: val.cinsiyet || 'E' });
+                        // Eğer veri eskiden kalma (string) ise düzelt:
+                        if (typeof val === 'string') {
+                            let cins = kadinPersonelListesi.some(k => val.includes(k)) ? "K" : "E";
+                            staffList.push({ id: key, name: val, cinsiyet: cins, unvan: "" });
+                        } else {
+                            staffList.push({ id: key, name: val.isim, cinsiyet: val.cinsiyet || 'E', unvan: val.unvan || "" });
+                        }
                     });
                 }
+                // Harf sırasına göre diz
+                staffList.sort((a, b) => a.name.localeCompare(b.name));
                 renderStaffPool();
             });
         }
@@ -938,11 +793,15 @@
             
             staffList.forEach(s => {
                 let icon = s.cinsiyet === 'K' ? '👩' : '👨';
+                let unvanBadge = s.unvan ? `<span style="font-size:10px; color:#cbd5e1; display:block; margin-top:-2px;">${s.unvan}</span>` : '';
                 p.innerHTML += `
-                <div class="ai-staff-chip selected" data-gender="${s.cinsiyet}" id="staff_${s.id}" style="cursor:default;">
-                    <span style="flex:1; cursor:pointer;" onclick="this.parentElement.classList.toggle('selected')">${s.name}</span>
+                <div class="ai-staff-chip selected" data-gender="${s.cinsiyet}" id="staff_${s.id}" style="cursor:default; display:inline-flex; align-items:center;">
+                    <div style="flex:1; cursor:pointer; line-height:1.2;" onclick="this.parentElement.classList.toggle('selected')">
+                        <span style="font-weight:800;">${s.name}</span>
+                        ${unvanBadge}
+                    </div>
                     <button class="gender-btn" onclick="toggleMainPoolGender(event, '${s.id}', '${s.cinsiyet}')" title="Cinsiyeti Değiştir">${icon}</button>
-                    <span class="staff-del" style="color:#ef4444; font-size:18px;" onclick="removeStaff(event, '${s.id}', '${s.name}')">×</span>
+                    <span class="staff-del" style="color:#ef4444; font-size:18px; cursor:pointer; margin-left:5px;" onclick="removeStaff(event, '${s.id}', '${s.name}')">×</span>
                 </div>`;
             });
         }
@@ -950,25 +809,42 @@
         function toggleMainPoolGender(e, id, currentGender) {
             e.stopPropagation(); 
             let newGender = currentGender === 'E' ? 'K' : 'E';
-            db.ref("havuz_" + aktifKadro + "/" + id).update({ cinsiyet: newGender });
+            let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
+            
+            let pData = staffList.find(s => s.id === id);
+            if(pData) {
+                db.ref(poolNode + "/" + id).set({ isim: pData.name, cinsiyet: newGender, unvan: pData.unvan || "" });
+            }
         }
 
         function addStaff() {
             const input = document.getElementById("staffInput").value.trim();
-            if(!input) return alert("İsim veya Excel listesi girin!");
-            let names = input.split('\n'); let addedCount = 0;
+            if(!input) return alert("Lütfen isim girin!");
+            
+            let names = input.split('\n'); 
+            let addedCount = 0;
+            let secilenCinsiyet = document.getElementById("staffGender").value;
+            let secilenUnvan = aktifKadro === 'memur' ? document.getElementById("staffUnvan").value : "";
+            
+            if(aktifKadro === 'memur' && !secilenUnvan && names.length === 1) {
+                if(!confirm("Memur için Ünvan seçmediniz! Yine de eklensin mi?")) return;
+            }
+
+            let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
 
             names.forEach(name => {
                 let n = name.trim();
                 if(n && n !== "PERSONEL" && !n.includes("GÜNLÜK KADRO")) {
                     let upperName = n.toUpperCase();
-                    let cins = kadinPersonelListesi.some(k => upperName.includes(k)) ? "K" : "E";
+                    let finalCinsiyet = "E";
                     
-                    if (names.length === 1 && cins === "E") {
-                        let cevap = confirm(`Sistem bu ismi tanıyamadı!\n\n"${n}" isimli personel KADIN mı?\n\n[Tamam] = Kadın 👩\n[İptal] = Erkek 👨`);
-                        cins = cevap ? "K" : "E";
+                    if (secilenCinsiyet === "auto") {
+                        finalCinsiyet = kadinPersonelListesi.some(k => upperName.includes(k)) ? "K" : "E";
+                    } else {
+                        finalCinsiyet = secilenCinsiyet;
                     }
-                    db.ref("havuz_" + aktifKadro).push({ isim: n, cinsiyet: cins });
+                    
+                    db.ref(poolNode).push({ isim: upperName, cinsiyet: finalCinsiyet, unvan: secilenUnvan });
                     addedCount++;
                 }
             });
@@ -978,15 +854,15 @@
 
         function removeStaff(e, id, name) {
             e.stopPropagation();
-            if(confirm(`${name} silinsin mi?`)) db.ref("havuz_" + aktifKadro + "/" + id).remove();
+            let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
+            if(confirm(`${name} silinsin mi?`)) db.ref(poolNode + "/" + id).remove();
         }
 
         function clearStaffPool() {
-            if(confirm(`TÜM ${aktifKadro.toUpperCase()} HAVUZUNU SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ?`)) {
-                db.ref("havuz_" + aktifKadro).remove();
-            }
+            let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
+            if(confirm(`TÜM ${aktifKadro.toUpperCase()} HAVUZUNU SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ?`)) db.ref(poolNode).remove();
         }
-        
+
         // =========================================
         // EXCEL MODAL VE İÇE AKTARIM
         // =========================================
@@ -1023,112 +899,19 @@
             closeModal('excelModal'); 
         }
 
-        // =========================================
-        // HÜCRE SAĞ TIK / KURALLAR
-        // =========================================
-        db.ref("vardiya_kurallari").on('value', snap => { if(snap.val()) shiftRules = snap.val(); else shiftRules = defaultRules; renderContextMenu(); });
-        function renderContextMenu() { const grid = document.getElementById("dynamicMenuGrid"); grid.innerHTML = ""; Object.keys(shiftRules).forEach(sName => { let r = shiftRules[sName]; grid.innerHTML += `<div class="menu-item-wrapper"><div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div><div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div></div>`; }); grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; }
-        function deleteShiftRule(key, e) { e.stopPropagation(); if(confirm(`Vardiyayı sil?`)) db.ref("vardiya_kurallari/" + key).remove(); }
-        function applyColorToCell(colorOrGradient) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); let targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell; if(!targetCell) return; let val = targetCell.innerText.trim(); if(val === "") return alert("Önce vardiya adını yazın."); let safeKey = val.replace(/\./g, ':'); let existingRule = shiftRules[safeKey]; let defaultW = existingRule ? existingRule.w : "7.5"; let defaultN = existingRule ? existingRule.n : "0"; let wStr = prompt(`Gündüz Saati:`, defaultW); if(wStr === null) return; let nStr = prompt(`Gece Saati (Yoksa 0):`, defaultN); if(nStr === null) return; db.ref("vardiya_kurallari/" + safeKey).set({ w: parseFloat(wStr.replace(',', '.')) || 0, n: parseFloat(nStr.replace(',', '.')) || 0, color: colorOrGradient }); if (selectedCells.length > 0) { selectedCells.forEach(cell => { if(cell.innerText.trim() === val) cell.style.background = colorOrGradient; }); } else { activeCell.style.background = colorOrGradient; } updateAllStats(); document.getElementById("contextMenu").style.display = "none"; }
-        function applyCustomColorFromWheel(hexColor) { applyColorToCell(hexColor); }
-        function addGhostPinToCell() { if(!activeCell) return; let current = activeCell.getAttribute("data-pin") || ""; let n = prompt("Notunuz:", current); if(n !== null) { if(n.trim() === "") activeCell.removeAttribute("data-pin"); else activeCell.setAttribute("data-pin", n); saveHistory(); } document.getElementById("contextMenu").style.display="none"; }
-        function removeGhostPinFromCell() { if(!activeCell) return; activeCell.removeAttribute("data-pin"); saveHistory(); document.getElementById("contextMenu").style.display="none"; }
-
-        // =========================================
-        // TABLO MOTORU
-        // =========================================
-        function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; window.currentArchiveNode = "arsivlenmis_shiftler"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
-        function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll(".staff-chip.selected")).map(el => el.innerText.split('×')[0].trim()); if(sel.length===0) return alert("Seçim yapmadınız!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); }
-        
-        function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") { 
-            const cols = customColCount || parseInt(document.getElementById("colCount").value); 
-            let startDt = customStartDt; 
-            if (!(startDt instanceof Date) || isNaN(startDt.getTime())) { let dVal = document.getElementById("startDate").value; startDt = dVal ? new Date(dVal) : new Date(); } 
-            
-            let h = `<table><thead><tr><th class="no-export" style="width: 30px; background: transparent; border: none; box-shadow: none;"></th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border-left:none;"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox" style="width:18px;height:18px;"> PERSONEL</th>`; 
-            for(let i=0; i<cols; i++) { 
-                let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
-                let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; 
-                h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; 
-                if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; 
-                if(i === cols - 1) lastUsedEndDate = new Date(d); 
-            } 
-            h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`; 
-            if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); }); 
-            else data.forEach(n => { h += createRowHtml(n, cols, startDt); }); 
-            h += '</tbody></table>'; 
-            
-            const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; 
-            wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); 
-            wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; 
-            if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); 
-            saveHistory(); updateAllStats(); openModal('tableModalOverlay'); 
-        }
-        
-        function createRowHtml(name, colCount, startDt, savedShifts = null) { 
-            let cells = `<td class="no-export" style="width: 30px; background: transparent !important; border: none !important; box-shadow: none !important;"><div class="nav-box" style="pointer-events:auto; display:flex; flex-direction:column; gap:2px;"><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,1)">▼</button></div></td>`; 
-            cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: 1px solid var(--glass-border);"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`; 
-            let shiftIdx = 0; 
-            for(let i=0; i<colCount; i++) { 
-                let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
-                const txt = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].text : ""; 
-                const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent"; 
-                const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : ""; 
-                const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; 
-                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; 
-                shiftIdx++; 
-                if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; 
-            } 
-            cells += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td>`; 
-            return `<tr>${cells}</tr>`; 
-        }
-
-        function toggleCheckboxFromCell(e, cell) { if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return; const cb = cell.querySelector('.row-checkbox'); if(cb && e.target !== cb) cb.checked = !cb.checked; }
-        function toggleAllRows(mainCb) { const wrapper = mainCb.closest('table'); wrapper.querySelectorAll('tbody .row-checkbox').forEach(cb => cb.checked = mainCb.checked); }
-        function moveRow(btn, dir) { const row = btn.closest('tr'); const tbody = row.parentElement; if (dir === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling); else if (dir === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row); saveHistory(); }
-        function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let pName = prompt("Tablo adı:", wrapper.getAttribute("data-tablename")); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } }
-        function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
-        function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); const names = Array.from(wrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, null, wrapper); } }
-        function safeAppendTable() { const wrappers = document.querySelectorAll(".table-wrapper"); if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); saveHistory(); const lastWrapper = wrappers[wrappers.length - 1]; const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate); } }
-        
-        function takeFullScreenshot(btn) { 
-            const wrapper = btn.closest('.table-wrapper'); 
-            const captureArea = wrapper.querySelector(".scroll-area"); 
-            const table = wrapper.querySelector("table"); 
-            let oldText = btn.innerHTML; btn.innerHTML = "⏳ FOTO ALINIYOR..."; 
-            const hiddenElements = table.querySelectorAll('.no-export'); hiddenElements.forEach(el => el.style.display = 'none');
-            let oldOverflow = captureArea.style.overflow; let oldMaxHeight = captureArea.style.maxHeight; captureArea.style.overflow = 'visible'; captureArea.style.maxHeight = 'none'; 
-            html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, windowWidth: table.scrollWidth + 50 }).then(canvas => { 
-                const link = document.createElement("a"); link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; link.href = canvas.toDataURL(); link.click(); 
-                btn.innerHTML = oldText; captureArea.style.overflow = oldOverflow; captureArea.style.maxHeight = oldMaxHeight; 
-                hiddenElements.forEach(el => el.style.display = ''); logAction("Fotoğraf aldı."); 
-            }); 
-        }
-
-        function splitRowFromCell() { if(!activeCell) return; const cell = activeCell; const row = cell.closest('tr'); const tbody = row.parentElement; const allShiftCells = Array.from(row.querySelectorAll('.shift-cell')); const cellIndex = allShiftCells.indexOf(cell); if(cellIndex === -1) return; saveHistory(); const newRow = row.cloneNode(true); const origName = row.querySelector('.editable-name').innerText; newRow.querySelector('.editable-name').innerText = origName + " (Devamı)"; for(let i = cellIndex; i < allShiftCells.length; i++) { allShiftCells[i].innerText = ""; allShiftCells[i].style.background = "transparent"; allShiftCells[i].removeAttribute("data-pin"); } const newShiftCells = Array.from(newRow.querySelectorAll('.shift-cell')); for(let i = 0; i < cellIndex; i++) { newShiftCells[i].innerText = ""; newShiftCells[i].style.background = "transparent"; newShiftCells[i].removeAttribute("data-pin"); } tbody.insertBefore(newRow, row.nextSibling); updateAllStats(); document.getElementById("contextMenu").style.display = "none"; showToast("Satır bölündü! ✂️"); logAction("Satır böldü."); }
-        function toggleTableCollapse(header, e) { if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return; header.closest('.table-wrapper').classList.toggle('collapsed'); }
-        function moveTableWrapper(btn, dir, e) { e.stopPropagation(); const wrapper = btn.closest('.table-wrapper'); if(dir === -1 && wrapper.previousElementSibling) wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling); else if (dir === 1 && wrapper.nextElementSibling) wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper); }
-        function toggleSnippingMode(btn) { const table = btn.closest('.table-wrapper').querySelector('table'); table.classList.toggle('snipping-mode'); if(table.classList.contains('snipping-mode')) { btn.innerHTML = "🔴 KESİM AÇIK"; btn.classList.replace('btn-pink', 'btn-red'); } else { btn.innerHTML = "✂️ SÜTUN KES"; btn.classList.replace('btn-red', 'btn-pink'); } }
-        function showAllColumns(btn) { saveHistory(); const table = btn.closest('.table-wrapper').querySelector('table'); table.querySelectorAll('.hidden-by-snipper').forEach(el => el.classList.remove('hidden-by-snipper')); }
-        
-        let activeHeaderCell = null;
-        function editColumnDate() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); if(newVal && newVal.trim() !== "") { saveHistory(); activeHeaderCell.setAttribute("data-date", newVal); let parts = newVal.split("."); if(parts.length === 3) { let d = new Date(parts[2], parts[1]-1, parts[0]); activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); } } }
-        function insertColumn(dir) { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; saveHistory(); const theadTr = activeHeaderCell.parentElement; const table = activeHeaderCell.closest('table'); const tbodyRows = table.querySelectorAll('tbody tr'); const insertIndex = dir === 'after' ? Array.from(theadTr.children).indexOf(activeHeaderCell) + 1 : Array.from(theadTr.children).indexOf(activeHeaderCell); let p = activeHeaderCell.getAttribute("data-date").split("."); let baseDate = new Date(p[2], p[1]-1, p[0]); if(dir === 'after') baseDate.setDate(baseDate.getDate() + 1); let newTh = document.createElement('th'); let fullDateStr = `${String(baseDate.getDate()).padStart(2,'0')}.${String(baseDate.getMonth()+1).padStart(2,'0')}.${baseDate.getFullYear()}`; newTh.setAttribute('data-date', fullDateStr); newTh.innerHTML = `${String(baseDate.getDate()).padStart(2,'0')}.${String(baseDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${baseDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; theadTr.insertBefore(newTh, theadTr.children[insertIndex]); tbodyRows.forEach(tr => { let newTd = document.createElement('td'); newTd.className = "shift-cell"; newTd.contentEditable = "true"; newTd.style.background = "transparent"; newTd.setAttribute("oncontextmenu", "openShiftMenu(event, this)"); newTd.setAttribute("oninput", "updateAllStats()"); tr.insertBefore(newTd, tr.children[insertIndex]); }); table.closest('.table-wrapper').setAttribute("data-colcount", parseInt(table.closest('.table-wrapper').getAttribute("data-colcount")) + 1); if(confirm("Sağdaki günleri 1 gün kaydıralım mı?")) recalculateDatesFrom(newTh, baseDate); updateAllStats(); showToast("Gün Eklendi!"); }
-        function recalculateDatesFrom(startTh, startDate) { let currentTh = startTh.nextElementSibling; let currentDate = new Date(startDate); while(currentTh) { if(currentTh.hasAttribute("data-date")) { currentDate.setDate(currentDate.getDate() + 1); let fullDateStr = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}.${currentDate.getFullYear()}`; currentTh.setAttribute('data-date', fullDateStr); currentTh.innerHTML = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${currentDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; } currentTh = currentTh.nextElementSibling; } showToast("Tarihler güncellendi!"); }
-        function deleteColumn() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; if(!confirm("Sütunu silmek istediğinize emin misiniz?")) return; saveHistory(); const targetIndex = Array.from(activeHeaderCell.parentElement.children).indexOf(activeHeaderCell); activeHeaderCell.closest('table').querySelectorAll('tbody tr').forEach(tr => { if(tr.children[targetIndex]) tr.children[targetIndex].remove(); }); activeHeaderCell.closest('.table-wrapper').setAttribute("data-colcount", parseInt(activeHeaderCell.closest('.table-wrapper').getAttribute("data-colcount")) - 1); activeHeaderCell.remove(); updateAllStats(); showToast("Sütun Silindi!"); }
-
-       // ============================================================================
+        // ============================================================================
         // 📁 DOSYA VE ARŞİV MOTORU (İŞÇİ VE MEMUR DOLAPLARI TAMAMEN AYRILDI)
         // ============================================================================
         function startNewSession() { 
             currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; 
-            window.currentArchiveNode = "arsivlenmis_shiftler_" + aktifKadro; 
+            window.currentArchiveNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; 
             document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; 
             document.getElementById("tablesContainer").innerHTML = ""; 
         }
 
         function loadArchives() { 
-            db.ref("arsivlenmis_shiftler_" + aktifKadro).on("value", snap => { 
+            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
+            db.ref(arcNode).on("value", snap => { 
                 const l = document.getElementById("archiveList"); l.innerHTML = ""; 
                 if(snap.val()) { 
                     let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); 
@@ -1144,7 +927,8 @@
         }
         
         function loadPermanentArchives() { 
-            db.ref("kalici_depo_" + aktifKadro).on("value", snap => { 
+            let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur";
+            db.ref(permNode).on("value", snap => { 
                 const l = document.getElementById("permanentArchiveList"); if(!l) return; l.innerHTML = ""; 
                 if(snap.val()) { 
                     let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); 
@@ -1161,10 +945,20 @@
             }); 
         }
 
-        function sendToPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Depoya kaldır?")) { db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).once("value", snap => { if(snap.val()) db.ref("kalici_depo_" + aktifKadro).child(id).set(snap.val()).then(() => db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).remove()); }); } }
-        function restoreFromPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Panoya geri al?")) { db.ref("kalici_depo_" + aktifKadro).child(id).once("value", snap => { if(snap.val()) db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).set(snap.val()).then(() => db.ref("kalici_depo_" + aktifKadro).child(id).remove()); }); } }
-        function delPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Kalıcı olarak sil?")) db.ref("kalici_depo_" + aktifKadro).child(id).remove(); }
-        function delArchive(e, id) { e.stopPropagation(); if(confirm("Klasörü sil?")) db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).remove(); }
+        function sendToPermanentArchive(e, id) { 
+            e.stopPropagation(); 
+            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
+            let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur";
+            if(confirm("Depoya kaldır?")) { db.ref(arcNode).child(id).once("value", snap => { if(snap.val()) db.ref(permNode).child(id).set(snap.val()).then(() => db.ref(arcNode).child(id).remove()); }); } 
+        }
+        function restoreFromPermanentArchive(e, id) { 
+            e.stopPropagation(); 
+            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
+            let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur";
+            if(confirm("Panoya geri al?")) { db.ref(permNode).child(id).once("value", snap => { if(snap.val()) db.ref(arcNode).child(id).set(snap.val()).then(() => db.ref(permNode).child(id).remove()); }); } 
+        }
+        function delPermanentArchive(e, id) { e.stopPropagation(); let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur"; if(confirm("Kalıcı olarak sil?")) db.ref(permNode).child(id).remove(); }
+        function delArchive(e, id) { e.stopPropagation(); let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; if(confirm("Klasörü sil?")) db.ref(arcNode).child(id).remove(); }
         
         function renameMasterArchive() { 
             let mName = prompt("Klasör adı ne olsun?", currentMasterArchiveName); 
@@ -1176,7 +970,9 @@
         }
 
         function openArchive(id, name, isPermanent = false) { 
-            const sourceNode = isPermanent ? "kalici_depo_" + aktifKadro : "arsivlenmis_shiftler_" + aktifKadro; 
+            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
+            let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur";
+            const sourceNode = isPermanent ? permNode : arcNode; 
             db.ref(sourceNode).child(id).once("value", snap => { 
                 const val = snap.val(); if(!val) return; 
                 currentMasterArchiveId = id; currentMasterArchiveName = name; window.currentArchiveNode = sourceNode; 
@@ -1225,16 +1021,17 @@
                     tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
                 });
                 
+                let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
                 const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData }; 
-                let targetNode = window.currentArchiveNode || ("arsivlenmis_shiftler_" + aktifKadro);
+                let targetNode = window.currentArchiveNode || arcNode;
                 
                 if(currentMasterArchiveId) { 
                     db.ref(targetNode).child(currentMasterArchiveId).update(saveData).then(() => { showToast("✅ Kaydedildi!"); logAction(`'${currentMasterArchiveName}' güncellendi.`); }); 
                 } else { 
-                    const ref = db.ref("arsivlenmis_shiftler_" + aktifKadro).push(); 
+                    const ref = db.ref(arcNode).push(); 
                     ref.set(saveData).then(() => { 
                         currentMasterArchiveId = ref.key; 
-                        window.currentArchiveNode = "arsivlenmis_shiftler_" + aktifKadro; 
+                        window.currentArchiveNode = arcNode; 
                         showToast("✅ Kaydedildi!"); 
                     }); 
                 }
@@ -1456,5 +1253,6 @@
     </script>
 </body>
 </html>
+
 
 
