@@ -200,6 +200,39 @@
 
         .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; }
         .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  /* 👨 ERKEK / 👩 KADIN CANLI RENK TASARIMLARI */
+        .ai-staff-chip { 
+            padding: 8px 12px; 
+            border-radius: 10px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 13px; 
+            font-weight: 800; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            margin: 4px; 
+            border: 1px solid transparent;
+        }
+
+        /* 👨 ERKEK TASARIMI (Mavi Kutu) */
+        .ai-staff-chip[data-gender="E"] { 
+            border-color: #3b82f6; 
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.25), rgba(15, 23, 42, 0.9)); 
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4); 
+            color: #fff;
+        }
+
+        /* 👩 KADIN TASARIMI (Fosforlu Pembe Kutu) */
+        .ai-staff-chip[data-gender="K"] { 
+            border-color: #ec4899; 
+            background: linear-gradient(145deg, rgba(236, 72, 153, 0.35), rgba(15, 23, 42, 0.9)); 
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.6); 
+            color: #fff;
+        }
+        
+        .gender-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; font-size: 14px; padding: 3px 8px; transition: 0.3s; }
+        .gender-btn:hover { transform: scale(1.2); background: #fff; }
+  
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -610,11 +643,11 @@
 
     <script>
 
-        // -------------------------------------------------------------
-        // KOKPİT ARAYÜZÜ VE ZEKİ KİMLİK TANIMA MOTORU
-        // -------------------------------------------------------------
+        // ============================================================================
+        // 🪄 KOKPİT ARAYÜZÜ VE ZEKİ KİMLİK TANIMA MOTORU
+        // ============================================================================
         
-        // Ümit Abi'nin Sabit Kadın Personel Listesi (Sistem bunları asla unutmaz)
+        // Ümit Abi'nin Sabit Kadın Personel Listesi
         const kadinPersonelListesi = [
             "AYŞE BOZKAYA", "AYŞENA KARA", "BETÜL ŞİMŞEK", "BURCU DERELİOĞLU", 
             "FATMA ÇALIŞKAN", "FATMA IŞIK", "FATMA KOÇAR", "FUNDA POYRAZ", 
@@ -625,7 +658,6 @@
             "SONGÜL ÖZTÜRK", "ÜMMÜ KURU", "ZELİHA ERSOY", "ZEYNEP BOZAN"
         ];
 
-        // 1. Cinsiyet İkonunu Elle Değiştirme (Hata olursa tıklayıp düzeltmek için)
         function toggleGender(btn) {
             let chip = btn.parentElement;
             let currentGender = chip.getAttribute("data-gender");
@@ -638,20 +670,17 @@
             }
         }
 
-        // 2. Kadroya Çip Ekleme (Yapay Zeka Taramalı)
         function aiAddStaffChip(isim = null) {
             let name = isim || document.getElementById('aiAddStaffInput').value.trim();
             if(!name) return;
             
             let upperName = name.toUpperCase();
-            let cinsiyet = "E"; // Varsayılan Erkek
-            let isKadin = kadinPersonelListesi.some(k => upperName.includes(k)); // Hafızada var mı?
+            let cinsiyet = "E"; 
+            let isKadin = kadinPersonelListesi.some(k => upperName.includes(k)); 
 
             if (isKadin) {
-                // Hafızada buldu, otomatik Kadın yaptı
                 cinsiyet = "K";
             } else if (!isim) {
-                // Elle yeni bir isim yazıldıysa ve listede yoksa kullanıcıya sor!
                 let cevap = confirm(`"${name}" isimli personel KADIN mı?\n\n[Tamam] = Kadın 👩\n[İptal] = Erkek 👨`);
                 cinsiyet = cevap ? "K" : "E";
             }
@@ -667,10 +696,9 @@
             </div>`;
             
             container.insertAdjacentHTML('beforeend', html);
-            document.getElementById('aiAddStaffInput').value = ""; // Kutuyu temizle
+            document.getElementById('aiAddStaffInput').value = ""; 
         }
 
-        // 3. Modalı açarken arkadaki tablodan isimleri otomatik okuyup kutuya doldurma
         function openAiModal() {
             populateAiShiftSelects();
             document.getElementById('aiGeneratorModal').classList.add('show');
@@ -679,10 +707,10 @@
             let baseTable = document.querySelector('.table-wrapper');
             let container = document.getElementById('aiStaffChipContainer');
             
-            // Eğer çip kutusu boşsa, tablodaki isimleri sırayla çip olarak ekle
+            // Çip kutusu boşsa, tablodaki isimleri akıllı tanıma ile ekle
             if(baseTable && container && container.innerHTML.trim() === '') {
                 let names = Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector('.editable-name').innerText.trim());
-                names.forEach(n => aiAddStaffChip(n)); // Tablodakileri eklerken üstteki tanıma motorunu kullanır
+                names.forEach(n => aiAddStaffChip(n)); 
             }
         }
 
@@ -1851,6 +1879,7 @@ function startAiDistribution() {
     </script>
 </body>
 </html>
+
 
 
 
