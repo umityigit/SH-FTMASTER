@@ -1770,9 +1770,68 @@ function startAiDistribution() {
 
     }, 100);
 }
+    // ============================================================================
+        // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ
+        // ============================================================================
+        
+        // 1. Sağ Tık Menüsünü Tamamen Kapat (Senin HTML'de vardı, JS ile mühürlüyoruz)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 2. Klavye Kısayolları Kalkanı
+        document.addEventListener('keydown', function(e) {
+            
+            // F12 Tuşunu Engelle (Geliştirici Araçları)
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+
+            // Ctrl (veya Mac için Cmd) basılıyken yapılan hırsızlık kombinasyonları
+            if (e.ctrlKey || e.metaKey) {
+                
+                // Ctrl + Shift + I / J / C (Geliştirici Penceresi ve Konsol)
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+
+                // Ctrl + U (Sayfa Kaynağını Görüntüle)
+                if (e.key === 'U' || e.key === 'u') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+
+                // Ctrl + S (Sayfayı Bilgisayara Kaydet)
+                if (e.key === 'S' || e.key === 's') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+
+                // Ctrl + P (Sayfayı Yazdır / PDF olarak çalma)
+                if (e.key === 'P' || e.key === 'p') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }
+        });
+
+        // 3. Sürükleyip Metin Kopyalamayı Zorlaştırma (Sadece buton/input dışı alanlar)
+        document.addEventListener('selectstart', function(e) {
+            // Eğer tıkladığı yer bir input, textarea veya senin ismini yazdığın editable-name değilse seçime izin verme!
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name')) {
+                e.preventDefault();
+            }
+        });
+    
     </script>
 </body>
 </html>
+
 
 
 
