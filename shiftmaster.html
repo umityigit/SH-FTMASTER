@@ -1117,29 +1117,127 @@
         function recalculateDatesFrom(startTh, startDate) { let currentTh = startTh.nextElementSibling; let currentDate = new Date(startDate); while(currentTh) { if(currentTh.hasAttribute("data-date")) { currentDate.setDate(currentDate.getDate() + 1); let fullDateStr = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}.${currentDate.getFullYear()}`; currentTh.setAttribute('data-date', fullDateStr); currentTh.innerHTML = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${currentDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; } currentTh = currentTh.nextElementSibling; } showToast("Tarihler güncellendi!"); }
         function deleteColumn() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; if(!confirm("Sütunu silmek istediğinize emin misiniz?")) return; saveHistory(); const targetIndex = Array.from(activeHeaderCell.parentElement.children).indexOf(activeHeaderCell); activeHeaderCell.closest('table').querySelectorAll('tbody tr').forEach(tr => { if(tr.children[targetIndex]) tr.children[targetIndex].remove(); }); activeHeaderCell.closest('.table-wrapper').setAttribute("data-colcount", parseInt(activeHeaderCell.closest('.table-wrapper').getAttribute("data-colcount")) - 1); activeHeaderCell.remove(); updateAllStats(); showToast("Sütun Silindi!"); }
 
-        function loadArchives() { db.ref("arsivlenmis_shiftler").on("value", snap => { const l = document.getElementById("archiveList"); l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', false)"><b style="color:var(--accent); font-size:16px; text-shadow:0 0 10px var(--glass-glow);">📁 ${val.name || 'İsimsiz'}</b><br><small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-orange" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button><button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } }); }
-        function loadPermanentArchives() { db.ref("kalici_depo").on("value", snap => { const l = document.getElementById("permanentArchiveList"); if(!l) return; l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.style.border = "1px dashed rgba(255,255,255,0.2)"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', true)"><b style="color:#94a3b8; font-size:16px;">📦 ${val.name || 'İsimsiz'}</b><br><small style="color:#64748b; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button><button class="btn btn-red" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } else { l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Geçmiş ayların deposu şu an boş...</div>"; } }); }
-        function sendToPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Depoya kaldır?")) { db.ref("arsivlenmis_shiftler").child(id).once("value", snap => { if(snap.val()) db.ref("kalici_depo").child(id).set(snap.val()).then(() => db.ref("arsivlenmis_shiftler").child(id).remove()); }); } }
-        function restoreFromPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Panoya geri al?")) { db.ref("kalici_depo").child(id).once("value", snap => { if(snap.val()) db.ref("arsivlenmis_shiftler").child(id).set(snap.val()).then(() => db.ref("kalici_depo").child(id).remove()); }); } }
-        function delPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Kalıcı olarak sil?")) db.ref("kalici_depo").child(id).remove(); }
-        function delArchive(e, id) { e.stopPropagation(); if(confirm("Klasörü sil?")) db.ref("arsivlenmis_shiftler").child(id).remove(); }
-        function renameMasterArchive() { let mName = prompt("Klasör adı ne olsun?", currentMasterArchiveName); if(mName && mName.trim() !== "") { currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = (window.currentArchiveNode==="kalici_depo"?"📦 ":"📁 ") + currentMasterArchiveName; if(currentMasterArchiveId) db.ref(window.currentArchiveNode).child(currentMasterArchiveId).update({name: currentMasterArchiveName}); } }
-        function openArchive(id, name, isPermanent = false) { const sourceNode = isPermanent ? "kalici_depo" : "arsivlenmis_shiftler"; db.ref(sourceNode).child(id).once("value", snap => { const val = snap.val(); if(!val) return; currentMasterArchiveId = id; currentMasterArchiveName = name; window.currentArchiveNode = sourceNode; document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; document.getElementById("tablesContainer").innerHTML = ""; if(val.tables) { val.tables.forEach(t => { let sDate = t.startDate ? new Date(t.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(t.colCount) || 30; generateTable(true, t.data || [], t.tableName || "Tablo", sDate, cols, null, t.notes || ""); }); } else if(val.data) { let sDate = val.startDate ? new Date(val.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(val.colCount) || 30; generateTable(true, val.data, val.name || "Tablo", sDate, cols); } }); }
+       // ============================================================================
+        // 📁 DOSYA VE ARŞİV MOTORU (İŞÇİ VE MEMUR DOLAPLARI TAMAMEN AYRILDI)
+        // ============================================================================
+        function startNewSession() { 
+            currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; 
+            window.currentArchiveNode = "arsivlenmis_shiftler_" + aktifKadro; 
+            document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; 
+            document.getElementById("tablesContainer").innerHTML = ""; 
+        }
+
+        function loadArchives() { 
+            db.ref("arsivlenmis_shiftler_" + aktifKadro).on("value", snap => { 
+                const l = document.getElementById("archiveList"); l.innerHTML = ""; 
+                if(snap.val()) { 
+                    let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); 
+                    arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); 
+                    arr.forEach(({id, val}) => { 
+                        let count = val.tables ? val.tables.length : 1; 
+                        const div = document.createElement("div"); div.className = "archive-card"; 
+                        div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', false)"><b style="color:var(--accent); font-size:16px; text-shadow:0 0 10px var(--glass-glow);">📁 ${val.name || 'İsimsiz'}</b><br><small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-orange" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button><button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; 
+                        l.appendChild(div); 
+                    }); 
+                } 
+            }); 
+        }
+        
+        function loadPermanentArchives() { 
+            db.ref("kalici_depo_" + aktifKadro).on("value", snap => { 
+                const l = document.getElementById("permanentArchiveList"); if(!l) return; l.innerHTML = ""; 
+                if(snap.val()) { 
+                    let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); 
+                    arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); 
+                    arr.forEach(({id, val}) => { 
+                        let count = val.tables ? val.tables.length : 1; 
+                        const div = document.createElement("div"); div.className = "archive-card"; div.style.border = "1px dashed rgba(255,255,255,0.2)"; 
+                        div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', true)"><b style="color:#94a3b8; font-size:16px;">📦 ${val.name || 'İsimsiz'}</b><br><small style="color:#64748b; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button><button class="btn btn-red" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button></div>`; 
+                        l.appendChild(div); 
+                    }); 
+                } else { 
+                    l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Bu bölümün deposu şu an boş...</div>"; 
+                } 
+            }); 
+        }
+
+        function sendToPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Depoya kaldır?")) { db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).once("value", snap => { if(snap.val()) db.ref("kalici_depo_" + aktifKadro).child(id).set(snap.val()).then(() => db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).remove()); }); } }
+        function restoreFromPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Panoya geri al?")) { db.ref("kalici_depo_" + aktifKadro).child(id).once("value", snap => { if(snap.val()) db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).set(snap.val()).then(() => db.ref("kalici_depo_" + aktifKadro).child(id).remove()); }); } }
+        function delPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Kalıcı olarak sil?")) db.ref("kalici_depo_" + aktifKadro).child(id).remove(); }
+        function delArchive(e, id) { e.stopPropagation(); if(confirm("Klasörü sil?")) db.ref("arsivlenmis_shiftler_" + aktifKadro).child(id).remove(); }
+        
+        function renameMasterArchive() { 
+            let mName = prompt("Klasör adı ne olsun?", currentMasterArchiveName); 
+            if(mName && mName.trim() !== "") { 
+                currentMasterArchiveName = mName.trim(); 
+                document.getElementById("masterArchiveTitle").innerText = (window.currentArchiveNode.includes("kalici_depo")?"📦 ":"📁 ") + currentMasterArchiveName; 
+                if(currentMasterArchiveId) db.ref(window.currentArchiveNode).child(currentMasterArchiveId).update({name: currentMasterArchiveName}); 
+            } 
+        }
+
+        function openArchive(id, name, isPermanent = false) { 
+            const sourceNode = isPermanent ? "kalici_depo_" + aktifKadro : "arsivlenmis_shiftler_" + aktifKadro; 
+            db.ref(sourceNode).child(id).once("value", snap => { 
+                const val = snap.val(); if(!val) return; 
+                currentMasterArchiveId = id; currentMasterArchiveName = name; window.currentArchiveNode = sourceNode; 
+                document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; 
+                document.getElementById("tablesContainer").innerHTML = ""; 
+                if(val.tables) { 
+                    val.tables.forEach(t => { 
+                        let sDate = t.startDate ? new Date(t.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); 
+                        let cols = parseInt(t.colCount) || 30; 
+                        generateTable(true, t.data || [], t.tableName || "Tablo", sDate, cols, null, t.notes || ""); 
+                    }); 
+                } else if(val.data) { 
+                    let sDate = val.startDate ? new Date(val.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); 
+                    let cols = parseInt(val.colCount) || 30; 
+                    generateTable(true, val.data, val.name || "Tablo", sDate, cols); 
+                } 
+            }); 
+        }
 
         function saveMasterArchive() {
             try {
-                if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { let mName = prompt("ANA KLASÖR adını girin:", "Vardiya Klasörü"); if(!mName) return; currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; }
-                const tables = document.querySelectorAll('.table-wrapper'); if(tables.length === 0) return alert("Kaydedilecek Tablo yok!");
+                if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { 
+                    let mName = prompt("ANA KLASÖR adını girin:", "Vardiya Klasörü"); 
+                    if(!mName) return; 
+                    currentMasterArchiveName = mName.trim(); 
+                    document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; 
+                }
+                const tables = document.querySelectorAll('.table-wrapper'); 
+                if(tables.length === 0) return alert("Kaydedilecek Tablo yok!");
+                
                 const tablesData = [];
                 tables.forEach((wrapper, index) => {
                     let tName = wrapper.getAttribute("data-tablename");
-                    if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { let pName = prompt((index+1) + ". Tablo adı:", tName); if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } }
-                    const rowsData = []; wrapper.querySelectorAll("tbody tr").forEach(tr => { let nameEl = tr.querySelector(".editable-name"); if (!nameEl) return; let name = nameEl.innerText.trim(); let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText.replace(/[\n\r]/g, ""), bg: td.style.background || "transparent", pin: td.getAttribute("data-pin") || "" })); rowsData.push({ name: name, shifts: shifts }); });
-                    let notesElement = wrapper.querySelector(".table-notes"); let notesVal = notesElement ? notesElement.value : ""; tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
+                    if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { 
+                        let pName = prompt((index+1) + ". Tablo adı:", tName); 
+                        if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } 
+                    }
+                    const rowsData = []; 
+                    wrapper.querySelectorAll("tbody tr").forEach(tr => { 
+                        let nameEl = tr.querySelector(".editable-name"); if (!nameEl) return; 
+                        let name = nameEl.innerText.trim(); 
+                        let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText.replace(/[\n\r]/g, ""), bg: td.style.background || "transparent", pin: td.getAttribute("data-pin") || "" })); 
+                        rowsData.push({ name: name, shifts: shifts }); 
+                    });
+                    let notesElement = wrapper.querySelector(".table-notes"); let notesVal = notesElement ? notesElement.value : ""; 
+                    tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
                 });
-                const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData }; let targetNode = window.currentArchiveNode || "arsivlenmis_shiftler";
-                if(currentMasterArchiveId) { db.ref(targetNode).child(currentMasterArchiveId).update(saveData).then(() => { showToast("✅ Kaydedildi!"); logAction(`'${currentMasterArchiveName}' güncellendi.`); }); } 
-                else { const ref = db.ref("arsivlenmis_shiftler").push(); ref.set(saveData).then(() => { currentMasterArchiveId = ref.key; window.currentArchiveNode = "arsivlenmis_shiftler"; showToast("✅ Kaydedildi!"); }); }
+                
+                const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData }; 
+                let targetNode = window.currentArchiveNode || ("arsivlenmis_shiftler_" + aktifKadro);
+                
+                if(currentMasterArchiveId) { 
+                    db.ref(targetNode).child(currentMasterArchiveId).update(saveData).then(() => { showToast("✅ Kaydedildi!"); logAction(`'${currentMasterArchiveName}' güncellendi.`); }); 
+                } else { 
+                    const ref = db.ref("arsivlenmis_shiftler_" + aktifKadro).push(); 
+                    ref.set(saveData).then(() => { 
+                        currentMasterArchiveId = ref.key; 
+                        window.currentArchiveNode = "arsivlenmis_shiftler_" + aktifKadro; 
+                        showToast("✅ Kaydedildi!"); 
+                    }); 
+                }
             } catch (error) { alert("Hata: " + error.message); }
         }
 
@@ -1358,4 +1456,5 @@
     </script>
 </body>
 </html>
+
 
