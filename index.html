@@ -22,54 +22,73 @@
 
     <style>
         * { max-width: 100%; box-sizing: border-box; }
-        body { overflow-x: hidden; margin: 0; padding: 0; display: flex; height: 100vh; font-family: 'Poppins', sans-serif; background: #050b14; color: white; overflow: hidden; }
+        body { overflow-x: hidden; margin: 0; padding: 0; display: flex; height: 100vh; font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; overflow: hidden; }
         
         :root { --bg-dark: #050b14; --bg-light: #0f172a; --accent: #38bdf8; --accent-glow: #0284c7; --glass-bg: rgba(15, 23, 42, 0.6); --glass-border: rgba(255, 255, 255, 0.1); --warning: #facc15; --success: #10b981; }
 
         .slider-section { flex: 1.3; position: relative; box-shadow: 15px 0 40px rgba(0,0,0,0.9); z-index: 10; overflow: hidden; background-color: var(--bg-dark); }
+        
         .slide { position: absolute; top: 0; left: 40px; right: 0; bottom: 160px; opacity: 0; transition: opacity 1.2s ease-in-out; background-size: contain; background-position: center; background-repeat: no-repeat; filter: contrast(1.15) saturate(1.15) brightness(1.05); }
         .slide.active { opacity: 1; }
         .slide-overlay { position: absolute; top: 0; left: 40px; right: 0; bottom: 160px; background: linear-gradient(to top, rgba(5,11,20,1) 2%, rgba(15,23,42,0.1) 40%, rgba(5,11,20,0.4) 100%); }
         
-        .slide-text-box { position: absolute; bottom: calc(8% + 160px); left: calc(8% + 40px); right: 8%; background: var(--glass-bg); backdrop-filter: blur(15px); padding: 35px 40px; border-radius: 20px; border-left: 6px solid var(--accent); box-shadow: 0 20px 50px rgba(0,0,0,0.8); transform: translateY(30px); opacity: 0; transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .slide-text-box { position: absolute; bottom: calc(8% + 160px); left: calc(8% + 40px); right: 8%; background: var(--glass-bg); backdrop-filter: blur(15px); padding: 35px 40px; border-radius: 20px; border-left: 6px solid var(--accent); box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 2px 2px 10px rgba(255,255,255,0.05); transform: translateY(30px); opacity: 0; transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .slide.active .slide-text-box { transform: translateY(0); opacity: 1; transition-delay: 0.5s; }
         .slide-title { font-size: 32px; color: var(--accent); font-weight: 900; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 20px var(--accent-glow); }
         .slide-desc { font-size: 16px; color: #e2e8f0; line-height: 1.8; margin: 0; font-weight: 300; }
         
         .indicators { position: absolute; bottom: calc(3% + 160px); left: calc(50% + 20px); transform: translateX(-50%); display: flex; gap: 15px; }
-        .dot { width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.2); cursor: pointer; transition: 0.4s; }
-        .dot.active { background: var(--accent); transform: scale(1.5); box-shadow: 0 0 15px var(--accent); }
+        .dot { width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.2); cursor: pointer; transition: 0.4s; border: 2px solid transparent; }
+        .dot.active { background: var(--accent); transform: scale(1.5); border-color: rgba(255,255,255,0.4); box-shadow: 0 0 15px var(--accent); }
+
+        .ad-banner-area { position: absolute; bottom: 0; left: 0; width: 100%; height: 160px; background: var(--bg-dark); z-index: 20; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--glass-border); }
 
         .login-section { flex: 1; display: flex; flex-direction: column; align-items: center; background: radial-gradient(circle at top right, var(--bg-light), var(--bg-dark)); padding: 20px 40px; overflow-y: auto; }
+        .login-section::-webkit-scrollbar { width: 6px; }
+        .login-section::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        
+        .login-header { text-align: center; margin-bottom: 20px; margin-top: 20px; }
+        .app-logo { width: 65px; height: 65px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-radius: 20px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); margin-bottom: 15px; }
+
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; width: 100%; max-width: 420px; box-shadow: 10px 10px 40px rgba(0,0,0,0.6); }
 
         /* 🔥 KAPI SEÇİM EKRANI STİLLERİ 🔥 */
-        #gateSelector { display: none; width: 100%; max-width: 450px; animation: scaleIn 0.5s ease; }
-        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
+        #gateSelector { display: none; width: 100%; max-width: 420px; animation: fadeIn 0.6s ease; margin-top: 20px; }
         .gate-card { 
-            background: rgba(15, 23, 42, 0.8); border: 2px solid var(--glass-border); 
+            background: rgba(15, 23, 42, 0.8); border: 1px solid var(--glass-border); 
             padding: 25px; border-radius: 20px; margin-bottom: 20px; cursor: pointer; 
             transition: 0.3s; text-align: center; position: relative; overflow: hidden;
         }
         .gate-card:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(56, 189, 248, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .gate-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        .gate-title { font-size: 20px; font-weight: 900; color: white; margin: 0; }
-        .gate-desc { font-size: 12px; color: #94a3b8; margin-top: 5px; }
+        .gate-icon { font-size: 45px; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 10px var(--accent)); }
+        .gate-title { font-size: 22px; font-weight: 900; color: white; margin: 0; text-transform: uppercase; }
+        .gate-desc { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.5; }
 
-        .tab-container { display: flex; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 25px; padding: 5px; }
-        .tab-btn { flex: 1; padding: 12px; text-align: center; font-weight: 800; font-size: 13px; color: #64748b; cursor: pointer; border-radius: 12px; transition: 0.3s; }
-        .tab-btn.active { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; }
+        .tab-container { display: flex; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 25px; padding: 5px; border: 1px solid rgba(255,255,255,0.05); }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; font-weight: 800; font-size: 13px; color: #64748b; cursor: pointer; border-radius: 12px; transition: 0.3s; letter-spacing: 1px; }
+        .tab-btn.active { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4); }
 
-        .form-area { display: none; }
+        .form-area { display: none; animation: fadeIn 0.4s; }
         .form-area.active { display: block; }
-        .input-group { margin-bottom: 15px; }
-        .input-label { display: block; font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 6px; }
-        .glass-input { width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 12px; outline: none; font-weight: 600; }
-        .btn-action { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; background: linear-gradient(135deg, #10b981, #059669); color: white; transition: 0.3s; text-transform: uppercase; margin-top: 10px; }
-        .btn-login { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @media (max-width: 900px) { body { flex-direction: column; overflow: auto; } .slider-section { flex: none; height: 40vh; } .login-section { flex: none; padding: 20px; } }
+        .input-group { margin-bottom: 15px; }
+        .input-row { display: flex; gap: 10px; }
+        .input-label { display: block; font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 6px; letter-spacing: 1px;}
+        
+        .glass-input { width: 100%; box-sizing: border-box; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; transition: 0.3s; box-shadow: inset 3px 3px 8px rgba(0,0,0,0.6); }
+        .glass-input:focus { border-color: var(--accent); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8); background: rgba(15, 23, 42, 0.8); }
+
+        .btn-action { width: 100%; padding: 16px; border: none; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 14px; cursor: pointer; background: linear-gradient(135deg, #10b981, #059669); color: white; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), 0 5px 15px rgba(0,0,0,0.5); margin-top: 10px; }
+        .btn-login { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+        .btn-action:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5); }
+        
+        #verificationNotice { display: none; margin-top: 20px; padding: 15px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border-left: 4px solid #ef4444; font-size: 12px; line-height: 1.5; color: #fca5a5; }
+
+        .seo-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 11px; color: #64748b; max-width: 420px; line-height: 1.6; }
+        .seo-footer a { color: var(--accent); text-decoration: none; font-weight: 600; margin: 0 5px; transition: 0.3s; }
+
+        @media (max-width: 900px) { body { flex-direction: column; overflow: auto; } .slider-section { flex: none; height: 50vh; } .login-section { flex: none; padding: 20px; } }
     </style>
 </head>
 <body>
@@ -78,14 +97,14 @@
         <div class="slide active" style="background-image: url('ZZZZZZZZ.jpg');">
             <div class="slide-overlay"></div>
             <div class="slide-text-box">
-                <h2 class="slide-title">VARDİYA HAZIRLAMAK İŞKENCE OLMASIN!</h2>
-                <p class="slide-desc">ShiftMaster'ın akıllı yapısıyla saniyeler içinde kusursuz planlar hazırlayın, karmaşaya son verin.</p>
+                <h2 class="slide-title">VARDİYA HAZIRLAMAK SİZE İŞKENCE OLMASIN!</h2>
+                <p class="slide-desc">İzinler, raporlar ve nöbetler birbirine mi girdi? ShiftMaster'ın akıllı yapısıyla saniyeler içinde kusursuz planlar hazırlayın, karmaşaya son verin.</p>
             </div>
         </div>
         <div class="slide" style="background-image: url('EEEEEEEEEEE.jpg');">
             <div class="slide-overlay"></div>
             <div class="slide-text-box" style="border-left-color: #10b981;">
-                <h2 class="slide-title">AYLIK PUANTAJ SANİYELER İÇİNDE HAZIR!</h2>
+                <h2 class="slide-title">TEK TIKLA BİNLERCE KİŞİNİN AYLIK PUANTAJI SANİYELER İÇİNDE HAZIR OLSUN!</h2>
                 <p class="slide-desc">ShiftMaster karmaşık formülleri saniyeler içinde sizin yerinize çözer ve hata payını sıfıra indirir.</p>
             </div>
         </div>
@@ -93,48 +112,59 @@
             <div class="dot active" onclick="goToSlide(0)"></div>
             <div class="dot" onclick="goToSlide(1)"></div>
         </div>
+
+        <div class="ad-banner-area">
+             </div>
     </div>
 
     <div class="login-section">
-        <div class="login-header" id="loginHeader">
+        
+        <div class="login-header">
+            <div class="app-logo">
+                <svg viewBox="0 0 24 24" width="42" height="42" fill="#050b14">
+                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7v-2H5V9h14v3h2V5a2 2 0 0 0-2-2zm0 4H5V5h14v2z"/>
+                    <path d="M21.7 13.35l-1-1a1 1 0 0 0-1.42 0l-1.6 1.6 2.42 2.41 1.6-1.6a1 1 0 0 0 0-1.41zM17.1 14.53l-5.6 5.61V22.5h2.36l5.65-5.56-2.41-2.41z"/>
+                </svg>
+            </div>
             <h1 style="margin: 0; font-size: 28px; font-weight: 900;">SHIFT<span style="color: var(--accent);">MASTER</span></h1>
             <p style="color: #64748b; margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 3px;">KURUMSAL GİRİŞ PORTALI</p>
         </div>
 
         <div id="gateSelector">
-            <h2 style="text-align: center; font-weight: 900; color: var(--accent); margin-bottom: 30px;">Hangi Sisteme Giriş Yapacaksınız?</h2>
+            <h2 style="text-align: center; font-weight: 900; color: var(--accent); margin-bottom: 25px; text-shadow: 0 0 10px rgba(56,189,248,0.3);">HOŞ GELDİNİZ!<br><small style="font-size: 11px; color:#94a3b8; letter-spacing: 2px;">LÜTFEN BİR PANEL SEÇİN</small></h2>
             
             <div class="gate-card" onclick="window.location.href='shiftmaster.html'">
                 <span class="gate-icon">👷‍♂️</span>
                 <h3 class="gate-title">İŞÇİ PANELİ</h3>
-                <p class="gate-desc">Vardiya planlama, izin takibi ve personel arşivi.</p>
+                <p class="gate-desc">Vardiya planlama, izin takibi, arşivleme ve genel personel yönetimi.</p>
             </div>
 
             <div class="gate-card" onclick="window.location.href='memur_portal.html'">
                 <span class="gate-icon">👨‍⚕️</span>
                 <h3 class="gate-title">MEMUR PORTALI</h3>
-                <p class="gate-desc">Nöbet matrisi, puantaj motoru ve maaş tahakkuk.</p>
+                <p class="gate-desc">657 Memur Nöbet matrisi, puantaj motoru ve maaş tahakkuk merkezi.</p>
             </div>
 
-            <button onclick="location.reload()" class="btn-action" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444;">OTURUMU KAPAT</button>
+            <button onclick="location.reload()" class="btn-action" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; margin-top: 15px;">GÜVENLİ ÇIKIŞ</button>
         </div>
 
         <div class="login-card" id="loginCard">
             <div class="tab-container">
                 <div class="tab-btn active" id="tabGiris" onclick="switchTab('giris')">GİRİŞ YAP</div>
-                <div class="tab-btn" id="tabKayit" onclick="switchTab('kayit')">KURUM KAYDI</div>
+                <div class="tab-btn" id="tabKayit" onclick="switchTab('kayit')">KURUM KAYDI </div>
             </div>
 
             <div id="formGiris" class="form-area active">
                 <div class="input-group">
-                    <label class="input-label">KURUM KISA ADI</label>
-                    <input type="text" id="loginKurumKod" class="glass-input" placeholder="Örn: addh">
+                    <label class="input-label">KURUM KISA ADI (ortak giriş için)</label>
+                    <input type="text" id="loginKurumKod" class="glass-input" placeholder="Örn: addh" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label class="input-label">GİRİŞ ŞİFRESİ</label>
-                    <input type="password" id="loginSifre" class="glass-input" placeholder="••••••••">
+                    <input type="password" id="loginSifre" class="glass-input" placeholder="••••••••" autocomplete="off">
                 </div>
                 <button onclick="sihirliGirisYap()" class="btn-action btn-login">SİSTEME GİRİŞ YAP</button>
+                <div id="verificationNotice"></div>
             </div>
 
             <div id="formKayit" class="form-area">
@@ -150,11 +180,14 @@
             </div>
         </div>
 
-        <div id="verificationNotice" style="display:none; color:red; font-size:12px; margin-top:10px;">Lütfen mailinizi onaylayın!</div>
+        <div class="seo-footer" id="seoFooter">
+            <a href="#">Gizlilik Politikası</a> | <a href="#">İletişim</a>
+            <div style="margin-top: 10px;">© 2026 ShiftMaster. Tüm hakları saklıdır.</div>
+        </div>
     </div>
 
     <script>
-        // FIREBASE AYARLARI (Senin bilgilerin aynen kalacak)
+        // FIREBASE KONFİGÜRASYONU (ORİJİNAL)
         const firebaseConfig = {
             apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ",
             authDomain: "shiftmaster1-7fc5f.firebaseapp.com",
@@ -165,11 +198,11 @@
         const auth = firebase.auth();
         const rtdb = firebase.database();
 
-        // SLIDER MOTORU
+        // SLIDER MOTORU (ORİJİNAL)
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
-        function showSlide(idx) { slides.forEach(s => s.classList.remove('active')); dots.forEach(d => d.classList.remove('active')); slides[idx].classList.add('active'); dots[idx].classList.add('active'); }
+        function showSlide(index) { slides.forEach(s => s.classList.remove('active')); dots.forEach(d => d.classList.remove('active')); slides[index].classList.add('active'); dots[index].classList.add('active'); }
         setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }, 6000);
 
         function switchTab(t) {
@@ -178,7 +211,7 @@
             document.getElementById('form' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
         }
 
-        // 🔥 SİHİRLİ GİRİŞ VE KAPI TETİKLEYİCİ 🔥
+        // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
         async function sihirliGirisYap() {
             const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
             const sifre = document.getElementById("loginSifre").value;
@@ -186,32 +219,28 @@
             if(!kod || !sifre) return alert("Boş alan bırakmayın!");
 
             rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
-                if(!snap.exists()) return alert("Kurum kodu hatalı!");
+                if(!snap.exists()) return alert("Hatalı Kurum Kodu!");
                 const kurumData = snap.val();
 
                 auth.signInWithEmailAndPassword(kurumData.patronEmail, sifre).then((uc) => {
-                    if (uc.user.emailVerified || kod === "addh") { // Test için addh bypass
-                        
-                        // Başarılı Giriş Verilerini Kaydet
-                        localStorage.setItem('sm_current_tenant', kod);
-                        localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
-                        localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
-                        localStorage.setItem('sm_role', 'admin');
+                    // Giriş Başarılı!
+                    localStorage.setItem('sm_current_tenant', kod);
+                    localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
+                    localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
+                    localStorage.setItem('sm_role', 'admin');
 
-                        // 🚪 LOGIN FORMUNU GİZLE, KAPILARI GÖSTER
-                        document.getElementById("loginCard").style.display = "none";
-                        document.getElementById("loginHeader").style.display = "none";
-                        document.getElementById("gateSelector").style.display = "block";
+                    // 🚪 LOGIN KARTINI SİL, KAPILARI GÖSTER (ORİJİNALİ BOZMADAN GİZLEME)
+                    document.getElementById("loginCard").style.display = "none";
+                    document.getElementById("gateSelector").style.display = "block";
+                    // Footer'ı da temizleyelim şık dursun
+                    document.getElementById("seoFooter").style.marginTop = "20px";
 
-                    } else {
-                        alert("Lütfen e-posta adresinizi doğrulayın!");
-                        auth.signOut();
-                    }
-                }).catch(err => alert("Şifre hatalı!"));
+                }).catch(err => alert("Şifre Yanlış veya Giriş Engellendi!"));
             });
         }
 
-        // Kayıt fonksiyonu vs. aşağıda devam eder...
+        // Diğer fonksiyonların (Kayit vs.) burada devam eder...
+        function goToSlide(idx) { currentSlide = idx; showSlide(idx); }
     </script>
 </body>
 </html>
