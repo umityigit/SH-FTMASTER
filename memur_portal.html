@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Memur Portalı Pro V23 | ShiftMaster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        :root { --bg-dark:#050b14; --bg-light:#0f172a; --glass-bg:rgba(15,23,42,0.7); --glass-border:rgba(255,255,255,0.15); --accent:#38bdf8; --warning:#facc15; --danger:#ef4444; --success:#10b981; --text:#f8fafc; }
+        body { font-family:'Poppins',sans-serif; background:radial-gradient(circle at top right,var(--bg-light),var(--bg-dark)); background-attachment:fixed; color:var(--text); margin:0; padding:20px; display:flex; flex-direction:column; align-items:center; user-select:none; }
+        .header-bar { width:100%; max-width:1400px; display:flex; justify-content:space-between; align-items:center; background:var(--glass-bg); padding:15px 30px; border-radius:20px; border:1px solid var(--glass-border); margin-bottom:20px; box-sizing:border-box; }
+        .tab-container { display:flex; gap:10px; width:100%; max-width:1400px; margin-bottom:20px; }
+        .tab-btn { flex:1; padding:15px; background:rgba(0,0,0,0.5); border:1px solid var(--glass-border); border-radius:15px; color:#cbd5e1; font-weight:900; cursor:pointer; transition:0.3s; }
+        .tab-btn.active { background:linear-gradient(135deg,var(--accent),#0284c7); color:white; box-shadow:0 0 20px rgba(56,189,248,0.4); }
+        .engine-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:20px; padding:25px; width:100%; max-width:1400px; display:none; }
+        .engine-card.active { display:block; }
+
+        /* ÜNVAN RENK GRUPLARI */
+        .u-doktor { background: #ef4444 !important; color: white !important; }
+        .u-hemsire { background: #38bdf8 !important; color: #000 !important; }
+        .u-memur { background: #10b981 !important; color: white !important; }
+        .u-idari { background: #f59e0b !important; color: #000 !important; }
+        .u-yardimci { background: #64748b !important; color: white !important; }
+
+        .pool-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin-bottom:20px; }
+        .staff-chip { background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); padding:12px; border-radius:12px; display:flex; align-items:center; gap:10px; cursor:pointer; transition:0.2s; border-left: 5px solid transparent; }
+        .staff-chip.selected { border-left-color:var(--success); background:rgba(16,185,129,0.2); box-shadow: 0 0 10px var(--success); }
+        .unvan-badge { font-size:10px; padding:3px 6px; border-radius:5px; font-weight:bold; margin-top:4px; display:inline-block; }
+        
+        table { width:100%; border-collapse:separate; border-spacing:2px; margin-top:15px; }
+        th, td { border-radius:4px; padding:8px; text-align:center; font-size:12px; font-weight:700; border:1px solid rgba(255,255,255,0.05); }
+        th { background:rgba(15,23,42,0.9); color:var(--accent); position:sticky; top:0; }
+        .shift-cell { cursor:cell; height:40px; background:rgba(0,0,0,0.2); transition:0.1s; color:white; }
+        .shift-cell:hover { border:1px solid #fff; z-index:10; background:rgba(255,255,255,0.1); }
+        .selected-cell { background:rgba(56,189,248,0.4) !important; outline: 2px solid #fff; }
+        
+        .archive-card { background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-left: 5px solid var(--accent); }
+        .context-menu { display:none; position:absolute; background:#0f172a; border:1px solid var(--accent); border-radius:12px; z-index:99999; width:180px; padding:8px; box-shadow:0 10px 30px #000; }
+        .menu-item { padding:10px; cursor:pointer; border-radius:6px; font-size:12px; font-weight:bold; margin-bottom:2px; transition:0.2s; color:white; }
+        .menu-item:hover { background:var(--accent); color:#000; }
+        .btn { padding:12px 18px; border:none; border-radius:10px; font-weight:800; cursor:pointer; color:white; font-size:11px; display:inline-flex; align-items:center; gap:5px; }
+        .btn-cyan { background:#0ea5e9; } .btn-green { background:#10b981; } .btn-red { background:#ef4444; } .btn-purple { background:#a855f7; }
+        .glass-input { background:rgba(0,0,0,0.5); border:1px solid var(--glass-border); color:white; padding:8px; border-radius:8px; outline:none; font-weight:bold; }
+        .full-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; display:none; flex-direction:column; padding:20px; box-sizing:border-box; }
+        #toast { visibility:hidden; position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--success); color:white; padding:12px 25px; border-radius:50px; z-index:999999; font-weight:bold; }
+        #toast.show { visibility:visible; animation:fadeIn 0.5s; }
+    </style>
+</head>
+<body>
+
+    <div id="splash"><h1 style="color:var(--accent)">SHIFTMASTER PORTAL V23</h1></div>
+
+    <div class="header-bar">
+        <div style="font-size:18px; font-weight:900;">👨‍⚕️ SHIFTMASTER <span style="color:var(--accent);">PUANTAJ & MATRİS</span></div>
+        <button class="btn btn-red" onclick="window.location.href='index.html'">🚪 ANA KAPILARA DÖN</button>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab('vardiyaTab', this)">📅 1. ADIM: VARDİYA MATRİSİ</button>
+        <button class="tab-btn" onclick="switchTab('puantajTab', this)">💰 2. ADIM: PUANTAJ HESAPLAMA</button>
+    </div>
+
+    <div id="vardiyaTab" class="engine-card active">
+        <div style="display:flex; gap:10px; margin-bottom:20px; align-items:flex-end; flex-wrap:wrap;">
+            <div><label style="font-size:10px; font-weight:bold; color:var(--accent);">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input"></div>
+            <div><label style="font-size:10px; font-weight:bold; color:var(--accent);">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:60px; text-align:center;"></div>
+            <button class="btn btn-cyan" onclick="generateTable()">🚀 YENİ MATRİS OLUŞTUR</button>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.2); padding:20px; border-radius:15px; border:1px solid var(--glass-border);">
+            <h4 style="margin:0 0 15px 0; color:#fff;">👥 PERSONEL HAVUZU (MAX LİSTE)</h4>
+            <div id="staffPool" class="pool-grid"></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+                <input type="text" id="staffInput" placeholder="İsimleri yazın veya kopyalayın..." class="glass-input" style="flex:1;">
+                <select id="staffUnvan" class="glass-input">
+                    <optgroup label="Hekimler">
+                        <option value="Uzman Tabip">Uzman Tabip</option>
+                        <option value="Doçent Dr.">Doçent Dr.</option>
+                        <option value="Profesör Dr.">Profesör Dr.</option>
+                        <option value="Pratisyen Tabip">Pratisyen Tabip</option>
+                        <option value="Diş Hekimi">Diş Hekimi</option>
+                    </optgroup>
+                    <optgroup label="Sağlık Hizmetleri">
+                        <option value="Hemşire">Hemşire</option>
+                        <option value="Ebe">Ebe</option>
+                        <option value="Sağlık Memuru">Sağlık Memuru</option>
+                        <option value="Laborant">Laborant</option>
+                        <option value="Röntgen Tekni.">Röntgen Tekni.</option>
+                        <option value="Teknisyen">Teknisyen</option>
+                        <option value="Eczacı">Eczacı</option>
+                        <option value="Biyolog">Biyolog</option>
+                    </optgroup>
+                    <optgroup label="İdari & Yardımcı">
+                        <option value="V.H.K.İ.">V.H.K.İ.</option>
+                        <option value="Memur (GİH)">Memur (GİH)</option>
+                        <option value="Sekreter">Sekreter</option>
+                        <option value="Şoför">Şoför</option>
+                        <option value="Hizmetli">Hizmetli</option>
+                        <option value="Güvenlik Görevlisi">Güvenlik Görevlisi</option>
+                    </optgroup>
+                </select>
+                <button class="btn btn-green" onclick="addStaff()">HAVUZA EKLE</button>
+            </div>
+        </div>
+
+        <div style="margin-top:30px;">
+            <h4 style="color:#94a3b8;">📁 KAYITLI ÇİZELGE ARŞİVİ</h4>
+            <div id="archiveList"></div>
+        </div>
+    </div>
+
+    <div id="puantajTab" class="engine-card">
+        <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:15px; margin-bottom:20px;">
+            <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+                <span>📅 İş Günü: <input type="number" id="globalIsGunu" class="glass-input" value="21" style="width:50px; text-align:center;" oninput="updateZorunlu()"></span>
+                <span>➡️ Zorunlu: <b id="globalZorunlu" style="color:var(--accent)">168</b> Saat</span>
+                <div style="display:flex; gap:5px; align-items:center; border-left:1px solid #444; padding-left:15px;">
+                    <label style="font-size:10px;">TARİH ARALIĞI:</label>
+                    <input type="date" id="calcStart" class="glass-input" style="padding:4px;">
+                    <input type="date" id="calcEnd" class="glass-input" style="padding:4px;">
+                </div>
+                <div style="margin-left:auto; display:flex; gap:10px;">
+                    <button class="btn btn-purple" onclick="havuzdanPuantajaCek()">🔄 MATRİSTEN VERİLERİ SÜZ</button>
+                    <button class="btn btn-green" onclick="hesaplaPuantaj()">🧮 HESAPLA</button>
+                    <button class="btn" style="background:#f59e0b;" onclick="exportExcelNow()">📤 EXCEL DOSYASI AL</button>
+                </div>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table id="puantajTable">
+                <thead>
+                    <tr>
+                        <th>SİL</th>
+                        <th style="text-align:left">PERSONEL ADI SOYADI</th>
+                        <th>ÜNVAN (Katsayı)</th>
+                        <th>RİSKLİ BİRİM (+%50)</th>
+                        <th>TOPLAM SAAT</th>
+                        <th>BAYRAM (Saat)</th>
+                        <th>NÖBET SAATİ</th>
+                        <th>TUTAR (TL)</th>
+                    </tr>
+                </thead>
+                <tbody id="puantajBody"></tbody>
+            </table>
+        </div>
+        <div style="text-align:right; font-size:24px; font-weight:900; margin-top:20px; color:var(--success); background:rgba(16,185,129,0.1); padding:15px; border-radius:10px;">
+            💰 TOPLAM TAHAKKUK: <span id="grandTotal">0.00 ₺</span>
+        </div>
+    </div>
+
+    <div id="tableModal" class="full-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 id="matrixTitle" style="margin:0; color:var(--accent);">📁 MATRİS DÜZENLEME MERKEZİ</h2>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-purple" onclick="saveToFirebase()">💾 KAYDET VE ARŞİVLE</button>
+                <button class="btn btn-red" onclick="closeModal('tableModal')">❌ KAPAT</button>
+            </div>
+        </div>
+        <div id="tablesContainer" style="overflow:auto; flex:1; background:rgba(0,0,0,0.3); border-radius:12px; border:1px solid var(--accent);"></div>
+    </div>
+
+    <div id="ctxMenu" class="context-menu">
+        <div class="menu-item" onclick="applyShift('24', '#f59e0b')">🕒 24 SAAT NÖBET</div>
+        <div class="menu-item" onclick="applyShift('N', '#d97706')">🌙 GECE (16 Saat)</div>
+        <div class="menu-item" onclick="applyShift('G', '#0ea5e9')">☀️ GÜNDÜZ (8 Saat)</div>
+        <div class="menu-item" onclick="applyShift('HT', '#10b981')">🏝️ HAFTA TATİLİ</div>
+        <div class="menu-item" onclick="applyShift('İ', '#ef4444')">🏖️ İZİNLİ</div>
+        <div style="border-top:1px solid #444; margin:5px 0;"></div>
+        <div class="menu-item" onclick="applyShift('', 'transparent')">🗑️ TEMİZLE</div>
+    </div>
+
+    <div id="toast">İşlem Başarılı</div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const tenantId = localStorage.getItem('sm_current_tenant') || "demo_kurum";
+        const ref = (path) => db.ref(`kurumlar/${tenantId}/memur_portal/${path}`);
+
+        const SHIFT_HOURS = { "24": 24, "N": 16, "G": 8, "HT": 0, "İ": 0, "": 0 };
+        const UNVAN_DATA = {
+            "Uzman Tabip": { group: "u-doktor", k: 150 },
+            "Doçent Dr.": { group: "u-doktor", k: 145 },
+            "Profesör Dr.": { group: "u-doktor", k: 160 },
+            "Pratisyen Tabip": { group: "u-doktor", k: 120 },
+            "Diş Hekimi": { group: "u-doktor", k: 110 },
+            "Hemşire": { group: "u-hemsire", k: 90 },
+            "Ebe": { group: "u-hemsire", k: 90 },
+            "Sağlık Memuru": { group: "u-memur", k: 80 },
+            "Laborant": { group: "u-memur", k: 75 },
+            "Röntgen Tekni.": { group: "u-memur", k: 75 },
+            "Teknisyen": { group: "u-memur", k: 70 },
+            "Eczacı": { group: "u-memur", k: 100 },
+            "Biyolog": { group: "u-memur", k: 85 },
+            "V.H.K.İ.": { group: "u-idari", k: 65 },
+            "Memur (GİH)": { group: "u-idari", k: 60 },
+            "Sekreter": { group: "u-idari", k: 60 },
+            "Şoför": { group: "u-yardimci", k: 55 },
+            "Hizmetli": { group: "u-yardimci", k: 50 },
+            "Güvenlik Görevlisi": { group: "u-yardimci", k: 55 }
+        };
+
+        let isDragging = false; let startCell = null;
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.engine-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); btn.classList.add('active');
+        }
+
+        // HAVUZ SİSTEMİ
+        function addStaff() {
+            const input = document.getElementById('staffInput');
+            const unvan = document.getElementById('staffUnvan').value;
+            if(!input.value.trim()) return;
+            input.value.split('\n').forEach(name => {
+                if(name.trim()) ref("havuz").push({ name: name.trim().toUpperCase(), unvan: unvan });
+            });
+            input.value = ""; showToast("Personel Havuza Eklendi!");
+        }
+
+        function loadPool() {
+            ref("havuz").on('value', snap => {
+                const pool = document.getElementById('staffPool'); pool.innerHTML = "";
+                snap.forEach(c => {
+                    const s = c.val();
+                    const uInfo = UNVAN_DATA[s.unvan] || { group: "u-yardimci" };
+                    pool.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')">
+                        <div style="flex:1"><b>${s.name}</b><br><span class="unvan-badge ${uInfo.group}">${s.unvan}</span></div>
+                        <button onclick="event.stopPropagation(); deleteStaff('${c.key}')" style="background:none; border:none; color:red; cursor:pointer; font-size:18px;">×</button>
+                    </div>`;
+                });
+            });
+        }
+        function deleteStaff(k) { if(confirm("Siliyoruz, emin misin Abi?")) ref("havuz").child(k).remove(); }
+
+        // MATRİS VE ÇOKLU SEÇİM
+        function generateTable(rows = null, start = null, days = null) {
+            const startDt = start || document.getElementById('startDate').value;
+            const dayCount = days || parseInt(document.getElementById('colCount').value);
+            const selected = document.querySelectorAll('.staff-chip.selected');
+            if(!startDt || (!rows && selected.length === 0)) return alert("Lütfen Tarih ve Personel seçin!");
+
+            let h = `<table><thead><tr><th style="min-width:180px">PERSONEL</th>`;
+            let dBase = new Date(startDt);
+            for(let i=0; i<dayCount; i++) {
+                let d = new Date(dBase); d.setDate(dBase.getDate() + i);
+                let iso = d.toISOString().split('T')[0];
+                h += `<th data-iso="${iso}" style="${(d.getDay()===0||d.getDay()===6)?'color:var(--danger)':''}">${d.getDate()}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></th>`;
+            }
+            h += `</tr></thead><tbody id="matrixBody">`;
+
+            if(rows) {
+                rows.forEach(r => {
+                    h += `<tr><td style="text-align:left"><b>${r.name}</b><br><small>${r.unvan}</small></td>`;
+                    r.shifts.forEach(s => h += `<td class="shift-cell" style="background:${s.b}">${s.t}</td>`);
+                    h += `</tr>`;
+                });
+            } else {
+                selected.forEach(node => {
+                    h += `<tr><td style="text-align:left"><b>${node.querySelector('b').innerText}</b><br><small>${node.querySelector('span').innerText}</small></td>`;
+                    for(let j=0; j<dayCount; j++) h += `<td class="shift-cell"></td>`;
+                    h += `</tr>`;
+                });
+            }
+            document.getElementById('tablesContainer').innerHTML = h + `</tbody></table>`;
+            document.getElementById('tableModal').style.display = "flex";
+            initMatrixEvents();
+        }
+
+        function initMatrixEvents() {
+            document.querySelectorAll('.shift-cell').forEach(cell => {
+                cell.onmousedown = (e) => { if(e.button !== 0) return; isDragging = true; startCell = cell; clearSelect(); cell.classList.add('selected-cell'); };
+                cell.onmouseenter = () => { if(isDragging) { clearSelect(); selectRange(startCell, cell); } };
+                cell.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    if(!cell.classList.contains('selected-cell')) { clearSelect(); cell.classList.add('selected-cell'); }
+                    const m = document.getElementById('ctxMenu'); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px";
+                };
+            });
+        }
+
+        function selectRange(s, e) {
+            const table = s.closest('table'); const sRow = s.parentNode.rowIndex, eRow = e.parentNode.rowIndex;
+            const sCol = s.cellIndex, eCol = e.cellIndex;
+            for(let r=Math.min(sRow,eRow); r<=Math.max(sRow,eRow); r++) {
+                for(let c=Math.min(sCol,eCol); c<=Math.max(sCol,eCol); c++) {
+                    const target = table.rows[r].cells[c]; if(target) target.classList.add('selected-cell');
+                }
+            }
+        }
+        function clearSelect() { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
+        window.onmouseup = () => isDragging = false;
+        window.onclick = () => document.getElementById('ctxMenu').style.display = "none";
+        function applyShift(txt, color) { document.querySelectorAll('.selected-cell').forEach(c => { c.innerText = txt; c.style.background = color; c.style.color = (color==='transparent')?'#fff':'#000'; }); clearSelect(); }
+
+        // ARŞİVLEME
+        function saveToFirebase() {
+            const rows = [];
+            document.querySelectorAll('#matrixBody tr').forEach(tr => {
+                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
+                rows.push({ name: tr.querySelector('b').innerText, unvan: tr.querySelector('small').innerText, shifts: shifts });
+            });
+            const data = { date: new Date().toLocaleString('tr-TR'), start: document.getElementById('startDate').value, days: document.getElementById('colCount').value, rows: rows };
+            ref("memur_arsiv").push(data).then(() => { showToast("Sistem Arşivlendi!"); loadArchive(); });
+        }
+
+        function loadArchive() {
+            ref("memur_arsiv").on('value', snap => {
+                const list = document.getElementById('archiveList'); list.innerHTML = "";
+                if(!snap.val()) return;
+                snap.forEach(c => {
+                    const a = c.val();
+                    list.innerHTML += `<div class="archive-card">
+                        <div><b style="color:var(--accent)">📅 ${a.date}</b><br><small>${a.rows.length} Personel | ${a.days} Gün</small></div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-green" onclick="openMatrix('${c.key}')">AÇ</button>
+                            <button class="btn btn-red" onclick="deleteArchive('${c.key}')">SİL</button>
+                        </div>
+                    </div>`;
+                });
+            });
+        }
+        function openMatrix(k) { ref("memur_arsiv").child(k).once('value', snap => { const a = snap.val(); generateTable(a.rows, a.start, a.days); }); }
+        function deleteArchive(k) { if(confirm("Arşiv silinsin mi?")) ref("memur_arsiv").child(k).remove(); }
+
+        // 🔥 PUANTAJ: MATRİSTEN VERİ ÇEKME VE HESAPLAMA 🔥
+        function havuzdanPuantajaCek() {
+            const matrixRows = document.querySelectorAll('#matrixBody tr');
+            const body = document.getElementById('puantajBody');
+            const cStart = document.getElementById('calcStart').value;
+            const cEnd = document.getElementById('calcEnd').value;
+            
+            if(matrixRows.length === 0) return alert("Önce Arşivden bir tablo AÇIN veya yeni tablo yapın!");
+            if(!cStart || !cEnd) return alert("Lütfen tarih aralığını seçin.");
+
+            const ths = Array.from(document.querySelectorAll('#tableModal thead th')).slice(1);
+            const startIdx = ths.findIndex(th => th.getAttribute('data-iso') === cStart);
+            const endIdx = ths.findIndex(th => th.getAttribute('data-iso') === cEnd);
+
+            if(startIdx === -1 || endIdx === -1) return alert("Seçtiğiniz tarihler açık olan matriste bulunamadı!");
+
+            body.innerHTML = "";
+            matrixRows.forEach(row => {
+                const name = row.querySelector('b').innerText;
+                const unvan = row.querySelector('small').innerText;
+                const uKatsayi = UNVAN_DATA[unvan] ? UNVAN_DATA[unvan].k : 60;
+                
+                let filteredHours = 0;
+                const cells = Array.from(row.querySelectorAll('.shift-cell'));
+                for(let i = startIdx; i <= endIdx; i++) {
+                    const val = (cells[i] ? cells[i].innerText.trim() : "");
+                    filteredHours += (SHIFT_HOURS[val] || 0);
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><button class="btn btn-red" onclick="this.closest('tr').remove()">×</button></td>
+                    <td><input type="text" class="glass-input p-name" value="${name}" style="width:100%; text-align:left;"></td>
+                    <td><select class="glass-input p-unvan" style="width:100%">
+                        <option value="150" ${uKatsayi===150?'selected':''}>Uzman Tabip (150₺)</option>
+                        <option value="120" ${uKatsayi===120?'selected':''}>Pratisyen Tabip (120₺)</option>
+                        <option value="90" ${uKatsayi===90?'selected':''}>Lisans Mezunu (90₺)</option>
+                        <option value="80" ${uKatsayi===80?'selected':''}>Sağlık Memuru (80₺)</option>
+                        <option value="60" ${uKatsayi<=60?'selected':''}>Diğer Personel (60₺)</option>
+                    </select></td>
+                    <td><input type="checkbox" class="p-risk" style="width:18px;height:18px;"></td>
+                    <td><input type="number" class="glass-input p-toplam" value="${filteredHours}" style="width:60px; text-align:center;"></td>
+                    <td><input type="number" class="glass-input p-bayram" value="0" style="width:60px; text-align:center;"></td>
+                    <td class="res-s" style="color:var(--accent); font-weight:bold;">0 S.</td>
+                    <td class="res-t" style="color:var(--success); font-weight:900;">0.00 ₺</td>`;
+                body.appendChild(tr);
+            });
+            hesaplaPuantaj();
+        }
+
+        function hesaplaPuantaj() {
+            let zorunlu = parseInt(document.getElementById('globalZorunlu').innerText);
+            let grandTotal = 0;
+            document.querySelectorAll('#puantajBody tr').forEach(tr => {
+                let katsayi = parseFloat(tr.querySelector('.p-unvan').value);
+                if(tr.querySelector('.p-risk').checked) katsayi *= 1.5;
+                let toplam = parseFloat(tr.querySelector('.p-toplam').value) || 0;
+                let bayram = parseFloat(tr.querySelector('.p-bayram').value) || 0;
+                let nobet = toplam > zorunlu ? (toplam - zorunlu) : 0;
+                let hakedis = ((nobet - bayram) * katsayi) + (bayram * katsayi * 1.2);
+                tr.querySelector('.res-s').innerText = nobet + " S.";
+                tr.querySelector('.res-t').innerText = hakedis.toLocaleString('tr-TR', {minimumFractionDigits:2}) + " ₺";
+                grandTotal += hakedis;
+            });
+            document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('tr-TR', {minimumFractionDigits:2}) + " ₺";
+        }
+
+        // 🔥 GERÇEK EXCEL AKTARIM FONKSİYONU 🔥
+        function exportExcelNow() {
+            const table = document.getElementById('puantajTable');
+            let html = `
+            <table border="1">
+                <thead>
+                    <tr style="background:#38bdf8; color:white;">
+                        <th>PERSONEL</th><th>UNVAN</th><th>RISKLI BIRIM</th><th>TOPLAM SAAT</th><th>BAYRAM SAATI</th><th>NOBET SAATI</th><th>HAKEDIS (TL)</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            document.querySelectorAll('#puantajBody tr').forEach(tr => {
+                const name = tr.querySelector('.p-name').value;
+                const unvan = tr.querySelector('.p-unvan').options[tr.querySelector('.p-unvan').selectedIndex].text;
+                const risk = tr.querySelector('.p-risk').checked ? "EVET" : "HAYIR";
+                const toplam = tr.querySelector('.p-toplam').value;
+                const bayram = tr.querySelector('.p-bayram').value;
+                const nobet = tr.querySelector('.res-s').innerText;
+                const tutar = tr.querySelector('.res-t').innerText;
+                html += `<tr><td>${name}</td><td>${unvan}</td><td>${risk}</td><td>${toplam}</td><td>${bayram}</td><td>${nobet}</td><td>${tutar}</td></tr>`;
+            });
+
+            html += `<tr><td colspan="6" align="right"><b>GENEL TOPLAM:</b></td><td><b>${document.getElementById('grandTotal').innerText}</b></td></tr>`;
+            html += "</tbody></table>";
+
+            const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Memur_Puantaj_Bordrosu_${new Date().toLocaleDateString('tr-TR')}.xls`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        function updateZorunlu() { document.getElementById('globalZorunlu').innerText = document.getElementById('globalIsGunu').value * 8; }
+        function showToast(m) { const x = document.getElementById('toast'); x.innerText=m; x.classList.add('show'); setTimeout(()=>x.classList.remove('show'),3000); }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+
+        window.onload = () => { loadPool(); loadArchive(); updateZorunlu(); setTimeout(()=> { document.getElementById('splash').style.opacity='0'; setTimeout(()=>document.getElementById('splash').style.display='none',600); }, 1000); };
+    </script>
+</body>
+</html>
