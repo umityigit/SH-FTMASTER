@@ -1042,11 +1042,108 @@
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             }); 
         }
+// ============================================================================
+        // 🧑‍🤝‍🧑 KADRO / PERSONEL HAVUZU FONKSİYONLARI (ZEKİ KİMLİK MOTORU ENTEGRELİ)
+        // ============================================================================
+        
+        // Ümit Abi'nin Sabit Kadın Personel Listesi (Sistem bunları hafızaya kazıdı)
+        const kadinPersonelListesi = [
+            "AYŞE BOZKAYA", "AYŞENA KARA", "BETÜL ŞİMŞEK", "BURCU DERELİOĞLU", 
+            "FATMA ÇALIŞKAN", "FATMA IŞIK", "FATMA KOÇAR", "FUNDA POYRAZ", 
+            "GÜLBAHAR ÜNVER", "GÜLLÜ TOSUN", "HAFİSE DİKMEN", "HAFİZE ÖNAL", 
+            "HATİCE KARAKUŞ", "HATİCE YILDIRIM", "HURİYE ELMAS", "MAKBULE DENK", 
+            "MERVE ÖZ", "NAZMİYE DURAN", "NEJLA NİLİ", "ÖZLEM DURSUN", 
+            "SAFİYE DENECİ", "SEDA YILMAZ", "SONGÜL DİLEK", "SONGÜL ERDOĞAN", 
+            "SONGÜL ÖZTÜRK", "ÜMMÜ KURU", "ZELİHA ERSOY", "ZEYNEP BOZAN"
+        ];
 
-        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; let count = 0; staffList = []; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); } document.getElementById("staffCounter").innerText = count; }); }
-        function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; const lines = raw.split('\n'); lines.forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction(`${lines.length} personel ekledi.`); inp.value = ""; }
-        function removeStaff(e, id) { e.stopPropagation(); if(confirm("Kişiyi havuzdan sil?")) db.ref("personel_havuzu").child(id).remove(); }
-        function clearStaffPool() { if(confirm("Tüm havuzu sil?")) db.ref("personel_havuzu").remove(); }
+        function loadStaffPool() {
+            db.ref(`sistem_verileri/${currentKurum}/havuz`).on('value', snap => {
+                staffList = [];
+                if(snap.val()) {
+                    Object.entries(snap.val()).forEach(([key, val]) => {
+                        // Eğer eski kayıtlarda cinsiyet yoksa varsayılan olarak Erkek (E) ata
+                        staffList.push({ id: key, name: val.isim, cinsiyet: val.cinsiyet || 'E' });
+                    });
+                }
+                renderStaffPool();
+            });
+        }
+
+        function renderStaffPool() {
+            const p = document.getElementById("staffPool");
+            const c = document.getElementById("staffCounter");
+            if(!p || !c) return;
+            
+            p.innerHTML = "";
+            c.innerText = staffList.length;
+            
+            staffList.forEach(s => {
+                let icon = s.cinsiyet === 'K' ? '👩' : '👨';
+                // Yapay zeka sihirbazındaki havalı Fosforlu Pembe/Mavi tasarımı Ana Havuza da taşıdık!
+                p.innerHTML += `
+                <div class="ai-staff-chip selected" data-gender="${s.cinsiyet}" id="staff_${s.id}" style="cursor:default;">
+                    <span style="flex:1; cursor:pointer;" onclick="this.parentElement.classList.toggle('selected')">${s.name}</span>
+                    <button class="gender-btn" onclick="toggleMainPoolGender(event, '${s.id}', '${s.cinsiyet}')" title="Cinsiyeti Değiştirip Veritabanına Kaydet">${icon}</button>
+                    <span class="staff-del" style="color:#ef4444; font-size:18px;" onclick="removeStaff(event, '${s.id}', '${s.name}')">×</span>
+                </div>`;
+            });
+        }
+
+        // Ana Havuzdaki İkona Tıklanınca Firebase'de Cinsiyeti Kalıcı Değiştiren Fonksiyon
+        function toggleMainPoolGender(e, id, currentGender) {
+            e.stopPropagation(); // Tıklamanın diğer yerleri etkilemesini engeller
+            let newGender = currentGender === 'E' ? 'K' : 'E';
+            db.ref(`sistem_verileri/${currentKurum}/havuz/${id}`).update({ cinsiyet: newGender });
+            logAction("Bir personelin cinsiyet bilgisini güncelledi.");
+        }
+
+        function addStaff() {
+            const input = document.getElementById("staffInput").value.trim();
+            if(!input) return alert("Lütfen personel ismi girin veya Excel listesi yapıştırın!");
+
+            let names = input.split('\n');
+            let addedCount = 0;
+
+            names.forEach(name => {
+                let n = name.trim();
+                if(n && n !== "PERSONEL" && !n.includes("GÜNLÜK KADRO")) {
+                    let upperName = n.toUpperCase();
+                    // Akıllı Tanıma: İsim listede var mı?
+                    let cins = kadinPersonelListesi.some(k => upperName.includes(k)) ? "K" : "E";
+                    
+                    // Eğer tek bir isim ekleniyorsa ve zeki listede yoksa, sana "Bu kadın mı?" diye sorar.
+                    if (names.length === 1 && cins === "E") {
+                        let cevap = confirm(`Sistem bu ismi tanıyamadı!\n\n"${n}" isimli personel KADIN mı?\n\n[Tamam] = Kadın 👩\n[İptal] = Erkek 👨`);
+                        cins = cevap ? "K" : "E";
+                    }
+
+                    // Veritabanına hem İsmi hem de Cinsiyeti kaydeder!
+                    db.ref(`sistem_verileri/${currentKurum}/havuz`).push({ isim: n, cinsiyet: cins });
+                    addedCount++;
+                }
+            });
+
+            document.getElementById("staffInput").value = "";
+            showToast(`${addedCount} personel başarıyla eklendi.`);
+            logAction(`Havuza ${addedCount} personel ekledi.`);
+        }
+
+        function removeStaff(e, id, name) {
+            e.stopPropagation();
+            if(confirm(`${name} isimli personeli havuzdan tamamen silmek istediğinize emin misiniz?`)) {
+                db.ref(`sistem_verileri/${currentKurum}/havuz/${id}`).remove();
+                logAction(`Havuzdan sildi: ${name}`);
+            }
+        }
+
+        function clearStaffPool() {
+            if(confirm("TÜM PERSONEL HAVUZUNU SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ? (Bu işlem geri alınamaz)")) {
+                db.ref(`sistem_verileri/${currentKurum}/havuz`).remove();
+                showToast("Havuz tertemiz edildi.");
+                logAction("Tüm personel havuzunu temizledi.");
+            }
+        }
 
         function openExcelModal() { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'new'); }
         function openExcelModalForTable(btn) { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'append'); window.currentTableWrapperForExcel = btn.closest('.table-wrapper'); }
@@ -1879,6 +1976,7 @@ function startAiDistribution() {
     </script>
 </body>
 </html>
+
 
 
 
