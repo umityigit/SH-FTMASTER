@@ -662,10 +662,11 @@
             return originalRef("kurumlar/" + tenantId);
         };
 
-        let currentUser = ""; let activeCell = null; let staffList = []; let historyStack = []; let currentMasterArchiveId = null; let currentMasterArchiveName = "Yeni Dosya"; let lastUsedEndDate = null; 
+        let currentUser = ""; let currentKurum = localStorage.getItem('sm_current_kurum_adi') || "Bilinmiyor"; 
+        let activeCell = null; let staffList = []; let historyStack = []; 
+        let currentMasterArchiveId = null; let currentMasterArchiveName = "Yeni Dosya"; let lastUsedEndDate = null; 
 
-        // 🔥 YENİ: AKTİF KADRO (İşçi/Memur) HAFIZASI 🔥
-        let aktifKadro = "memur"; 
+        let aktifKadro = "memur"; // İŞÇİ / MEMUR HAFIZASI
 
         let shiftRules = {};
         const defaultRules = { '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' }, '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' }, '12:00-24:00': { w: 11, n: 4, color: 'linear-gradient(145deg, #f97316, #9a3412)' }, '08:00-16:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #0ea5e9, #0369a1)' }, '16:00-24:00': { w: 7.5, n: 4, color: 'linear-gradient(145deg, #3b82f6, #1d4ed8)' }, '24:00-08:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4338ca, #1e1b4b)' }, 'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' }, 'İ': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }, 'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' } };
@@ -682,13 +683,8 @@
         };
 
         window.onload = () => {
-            try {
-                let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
-                let splashBaslik = document.getElementById('dynamicSplashTitle');
-                if(splashBaslik && aktifKurum && aktifKurum !== "null") {
-                    splashBaslik.innerHTML = aktifKurum.toUpperCase() + "<br>VARDİYA YÖNETİM SİSTEMİ";
-                }
-            } catch(e) {}
+            let splashBaslik = document.getElementById('dynamicSplashTitle');
+            if(splashBaslik && currentKurum !== "null") splashBaslik.innerHTML = currentKurum.toUpperCase() + "<br>VARDİYA YÖNETİM SİSTEMİ";
 
             const text = "SHIFTMASTER"; const container = document.getElementById("splashTextContainer");
             if (container) text.split("").forEach((char, idx) => { const span = document.createElement("span"); span.innerText = char; span.className = "splash-char"; span.style.animationDelay = (0.2 + idx*0.1) + "s"; container.appendChild(span); });
@@ -702,7 +698,6 @@
                     
                     if(activeUsr) {
                         currentUser = activeUsr; 
-                        // 🔥 DİKKAT: ARTIK APP SELECTOR DEĞİL KAPI EKRANI AÇILIYOR 🔥
                         document.getElementById("kadroSelector").style.display = "flex"; 
 
                         const btnSorumlu = document.getElementById('btnSorumluAta');
@@ -712,8 +707,6 @@
                         } else {
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
-
-                        // Sadece global şeyleri yükle. Havuz/Arşiv kapı seçildikten sonra yüklenecek!
                         loadNews(); 
                         logAction("Sisteme giriş yaptı.");
                     } else {
@@ -727,50 +720,45 @@
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
         };
 
-        // 🔥 YENİ: İKİ KAPILI SİSTEM YÖNLENDİRİCİSİ 🔥
-        // 🔥 YENİ: İKİ KAPILI SİSTEM YÖNLENDİRİCİSİ 🔥
+        // =========================================
+        // KAPI GEÇİŞ MOTURU VE ANA TUŞLAR
+        // =========================================
         function selectKadro(tip) {
-            aktifKadro = tip; // 'isci' veya 'memur'
+            aktifKadro = tip; 
             document.getElementById("kadroSelector").style.display = "none";
             document.getElementById("appSelector").style.display = "flex";
             
             let rozet = tip === 'memur' ? '<span style="color:#38bdf8; font-size:12px; background:rgba(56,189,248,0.1); padding:4px 8px; border-radius:8px; margin-left:10px;">👨‍⚕️ MEMUR (657)</span>' : '<span style="color:#f59e0b; font-size:12px; background:rgba(245,158,11,0.1); padding:4px 8px; border-radius:8px; margin-left:10px;">👷‍♂️ İŞÇİ (4/D)</span>';
             document.getElementById("welcomeText").innerHTML = `👋 HOŞ GELDİN, <span style="color:#fff;">${currentUser}</span> ${rozet}`;
             
-            // Memur seçildiyse Ünvan Kutusunu görünür yap!
             let unvanKutusu = document.getElementById("staffUnvan");
             if(unvanKutusu) {
                 if(tip === 'memur') unvanKutusu.style.display = 'inline-block';
                 else unvanKutusu.style.display = 'none';
             }
 
-            // Sadece seçtiğin kapının verilerini buluttan çeker!
-            loadStaffPool();
-            if(typeof loadArchives === 'function') loadArchives();
-            if(typeof loadPermanentArchives === 'function') loadPermanentArchives();
+            loadStaffPool(); loadArchives(); loadPermanentArchives();
         }
 
-        // ============================================================================
-        // 🧑‍🤝‍🧑 KADRO HAVUZU (ESKİ İŞÇİ VERİLERİNİ KURTARAN MOTOR)
-        // ============================================================================
+        function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
+        function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.clear(); window.location.href = 'index.html'; }
+
+        // =========================================
+        // 🧑‍🤝‍🧑 KADRO HAVUZU (İkiye Bölünmüş Zeki Motor)
+        // =========================================
         const kadinPersonelListesi = [
-            "AYŞE BOZKAYA", "AYŞENA KARA", "BETÜL ŞİMŞEK", "BURCU DERELİOĞLU", 
-            "FATMA ÇALIŞKAN", "FATMA IŞIK", "FATMA KOÇAR", "FUNDA POYRAZ", 
-            "GÜLBAHAR ÜNVER", "GÜLLÜ TOSUN", "HAFİSE DİKMEN", "HAFİZE ÖNAL", 
-            "HATİCE KARAKUŞ", "HATİCE YILDIRIM", "HURİYE ELMAS", "MAKBULE DENK", 
-            "MERVE ÖZ", "NAZMİYE DURAN", "NEJLA NİLİ", "ÖZLEM DURSUN", 
-            "SAFİYE DENECİ", "SEDA YILMAZ", "SONGÜL DİLEK", "SONGÜL ERDOĞAN", 
+            "AYŞE BOZKAYA", "AYŞENA KARA", "BETÜL ŞİMŞEK", "BURCU DERELİOĞLU", "FATMA ÇALIŞKAN", "FATMA IŞIK", "FATMA KOÇAR", "FUNDA POYRAZ", 
+            "GÜLBAHAR ÜNVER", "GÜLLÜ TOSUN", "HAFİSE DİKMEN", "HAFİZE ÖNAL", "HATİCE KARAKUŞ", "HATİCE YILDIRIM", "HURİYE ELMAS", "MAKBULE DENK", 
+            "MERVE ÖZ", "NAZMİYE DURAN", "NEJLA NİLİ", "ÖZLEM DURSUN", "SAFİYE DENECİ", "SEDA YILMAZ", "SONGÜL DİLEK", "SONGÜL ERDOĞAN", 
             "SONGÜL ÖZTÜRK", "ÜMMÜ KURU", "ZELİHA ERSOY", "ZEYNEP BOZAN"
         ];
 
         function loadStaffPool() {
-            // İŞÇİ İSE ESKİ DOSYAYA (personel_havuzu), MEMUR İSE YENİ DOSYAYA (personel_havuzu_memur) BAĞLAN!
             let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
             db.ref(poolNode).on('value', snap => {
                 staffList = [];
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([key, val]) => {
-                        // Eğer veri eskiden kalma (string) ise düzelt:
                         if (typeof val === 'string') {
                             let cins = kadinPersonelListesi.some(k => val.includes(k)) ? "K" : "E";
                             staffList.push({ id: key, name: val, cinsiyet: cins, unvan: "" });
@@ -779,15 +767,13 @@
                         }
                     });
                 }
-                // Harf sırasına göre diz
                 staffList.sort((a, b) => a.name.localeCompare(b.name));
                 renderStaffPool();
             });
         }
 
         function renderStaffPool() {
-            const p = document.getElementById("staffPool");
-            const c = document.getElementById("staffCounter");
+            const p = document.getElementById("staffPool"); const c = document.getElementById("staffCounter");
             if(!p || !c) return;
             p.innerHTML = ""; c.innerText = staffList.length;
             
@@ -810,21 +796,20 @@
             e.stopPropagation(); 
             let newGender = currentGender === 'E' ? 'K' : 'E';
             let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
-            
             let pData = staffList.find(s => s.id === id);
-            if(pData) {
-                db.ref(poolNode + "/" + id).set({ isim: pData.name, cinsiyet: newGender, unvan: pData.unvan || "" });
-            }
+            if(pData) db.ref(poolNode + "/" + id).set({ isim: pData.name, cinsiyet: newGender, unvan: pData.unvan || "" });
         }
 
         function addStaff() {
             const input = document.getElementById("staffInput").value.trim();
             if(!input) return alert("Lütfen isim girin!");
             
-            let names = input.split('\n'); 
-            let addedCount = 0;
-            let secilenCinsiyet = document.getElementById("staffGender").value;
-            let secilenUnvan = aktifKadro === 'memur' ? document.getElementById("staffUnvan").value : "";
+            let names = input.split('\n'); let addedCount = 0;
+            let genderSelect = document.getElementById("staffGender");
+            let secilenCinsiyet = genderSelect ? genderSelect.value : "auto";
+            
+            let unvanSelect = document.getElementById("staffUnvan");
+            let secilenUnvan = (aktifKadro === 'memur' && unvanSelect) ? unvanSelect.value : "";
             
             if(aktifKadro === 'memur' && !secilenUnvan && names.length === 1) {
                 if(!confirm("Memur için Ünvan seçmediniz! Yine de eklensin mi?")) return;
@@ -837,77 +822,29 @@
                 if(n && n !== "PERSONEL" && !n.includes("GÜNLÜK KADRO")) {
                     let upperName = n.toUpperCase();
                     let finalCinsiyet = "E";
-                    
-                    if (secilenCinsiyet === "auto") {
-                        finalCinsiyet = kadinPersonelListesi.some(k => upperName.includes(k)) ? "K" : "E";
-                    } else {
-                        finalCinsiyet = secilenCinsiyet;
-                    }
+                    if (secilenCinsiyet === "auto") finalCinsiyet = kadinPersonelListesi.some(k => upperName.includes(k)) ? "K" : "E";
+                    else finalCinsiyet = secilenCinsiyet;
                     
                     db.ref(poolNode).push({ isim: upperName, cinsiyet: finalCinsiyet, unvan: secilenUnvan });
                     addedCount++;
                 }
             });
-            document.getElementById("staffInput").value = "";
-            showToast(`${addedCount} personel eklendi.`);
+            document.getElementById("staffInput").value = ""; showToast(`${addedCount} personel eklendi.`);
         }
 
         function removeStaff(e, id, name) {
-            e.stopPropagation();
-            let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
+            e.stopPropagation(); let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
             if(confirm(`${name} silinsin mi?`)) db.ref(poolNode + "/" + id).remove();
         }
-
         function clearStaffPool() {
             let poolNode = aktifKadro === 'isci' ? "personel_havuzu" : "personel_havuzu_memur";
             if(confirm(`TÜM ${aktifKadro.toUpperCase()} HAVUZUNU SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ?`)) db.ref(poolNode).remove();
         }
 
         // =========================================
-        // EXCEL MODAL VE İÇE AKTARIM
+        // 📁 DOSYA VE ARŞİV MOTORU (Bölünmüş)
         // =========================================
-        function openExcelModal() { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'new'); }
-        function openExcelModalForTable(btn) { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'append'); window.currentTableWrapperForExcel = btn.closest('.table-wrapper'); }
-        function cleanExcelRows(raw) { let rows = raw.split("\n").filter(r => r.trim() !== ""); while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; } return rows; }
-        
-        function importFromExcel() { 
-            const text = document.getElementById("excelInput").value; 
-            if(!text.trim()) return alert("Veri yapıştırın!"); 
-            const targetMode = document.getElementById('excelModal').getAttribute('data-target'); 
-            const rows = cleanExcelRows(text); 
-            if(targetMode === 'new') { 
-                const colsCount = rows[0].split("\t").length - 1; 
-                document.getElementById("colCount").value = colsCount > 0 ? colsCount : 30; 
-                startNewSession(); 
-                generateTable(true, rows.map(r => { 
-                    const c = r.split("\t"); 
-                    return { name: c[0] ? c[0].trim() : "İsimsiz", shifts: c.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }) }; 
-                }), "İçe Aktarılan Liste", new Date(), colsCount); 
-            } else if (targetMode === 'append' && window.currentTableWrapperForExcel) { 
-                const wrapper = window.currentTableWrapperForExcel; 
-                const tbody = wrapper.querySelector('tbody'); 
-                const colCount = parseInt(wrapper.getAttribute("data-colcount")); 
-                const startDt = new Date(wrapper.getAttribute("data-startdt")); 
-                rows.forEach(row => { 
-                    const cols = row.split("\t"); 
-                    let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; 
-                    let shifts = cols.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }); 
-                    tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); 
-                }); 
-                updateAllStats(); showToast("Veriler Tabloya Eklendi!"); 
-            } 
-            closeModal('excelModal'); 
-        }
-
-        // ============================================================================
-        // 📁 DOSYA VE ARŞİV MOTORU (İŞÇİ VE MEMUR DOLAPLARI TAMAMEN AYRILDI)
-        // ============================================================================
-        function startNewSession() { 
-            currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; 
-            window.currentArchiveNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; 
-            document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; 
-            document.getElementById("tablesContainer").innerHTML = ""; 
-        }
+        function startNewSession() { currentMasterArchiveId = null; currentMasterArchiveName = "Yeni Dosya"; window.currentArchiveNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; document.getElementById("masterArchiveTitle").innerText = "📁 Yeni Dosya"; document.getElementById("tablesContainer").innerHTML = ""; }
 
         function loadArchives() { 
             let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
@@ -939,320 +876,276 @@
                         div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', true)"><b style="color:#94a3b8; font-size:16px;">📦 ${val.name || 'İsimsiz'}</b><br><small style="color:#64748b; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button><button class="btn btn-red" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button></div>`; 
                         l.appendChild(div); 
                     }); 
-                } else { 
-                    l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Bu bölümün deposu şu an boş...</div>"; 
-                } 
+                } else { l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Bu bölümün deposu şu an boş...</div>"; } 
             }); 
         }
 
-        function sendToPermanentArchive(e, id) { 
-            e.stopPropagation(); 
-            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
-            let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur";
-            if(confirm("Depoya kaldır?")) { db.ref(arcNode).child(id).once("value", snap => { if(snap.val()) db.ref(permNode).child(id).set(snap.val()).then(() => db.ref(arcNode).child(id).remove()); }); } 
-        }
-        function restoreFromPermanentArchive(e, id) { 
-            e.stopPropagation(); 
-            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
-            let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur";
-            if(confirm("Panoya geri al?")) { db.ref(permNode).child(id).once("value", snap => { if(snap.val()) db.ref(arcNode).child(id).set(snap.val()).then(() => db.ref(permNode).child(id).remove()); }); } 
-        }
+        function sendToPermanentArchive(e, id) { e.stopPropagation(); let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur"; if(confirm("Depoya kaldır?")) { db.ref(arcNode).child(id).once("value", snap => { if(snap.val()) db.ref(permNode).child(id).set(snap.val()).then(() => db.ref(arcNode).child(id).remove()); }); } }
+        function restoreFromPermanentArchive(e, id) { e.stopPropagation(); let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur"; if(confirm("Panoya geri al?")) { db.ref(permNode).child(id).once("value", snap => { if(snap.val()) db.ref(arcNode).child(id).set(snap.val()).then(() => db.ref(permNode).child(id).remove()); }); } }
         function delPermanentArchive(e, id) { e.stopPropagation(); let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur"; if(confirm("Kalıcı olarak sil?")) db.ref(permNode).child(id).remove(); }
         function delArchive(e, id) { e.stopPropagation(); let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; if(confirm("Klasörü sil?")) db.ref(arcNode).child(id).remove(); }
+        function renameMasterArchive() { let mName = prompt("Klasör adı ne olsun?", currentMasterArchiveName); if(mName && mName.trim() !== "") { currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = (window.currentArchiveNode.includes("kalici_depo")?"📦 ":"📁 ") + currentMasterArchiveName; if(currentMasterArchiveId) db.ref(window.currentArchiveNode).child(currentMasterArchiveId).update({name: currentMasterArchiveName}); } }
         
-        function renameMasterArchive() { 
-            let mName = prompt("Klasör adı ne olsun?", currentMasterArchiveName); 
-            if(mName && mName.trim() !== "") { 
-                currentMasterArchiveName = mName.trim(); 
-                document.getElementById("masterArchiveTitle").innerText = (window.currentArchiveNode.includes("kalici_depo")?"📦 ":"📁 ") + currentMasterArchiveName; 
-                if(currentMasterArchiveId) db.ref(window.currentArchiveNode).child(currentMasterArchiveId).update({name: currentMasterArchiveName}); 
-            } 
-        }
-
         function openArchive(id, name, isPermanent = false) { 
-            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
-            let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur";
-            const sourceNode = isPermanent ? permNode : arcNode; 
+            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur"; let permNode = aktifKadro === 'isci' ? "kalici_depo" : "kalici_depo_memur"; const sourceNode = isPermanent ? permNode : arcNode; 
             db.ref(sourceNode).child(id).once("value", snap => { 
                 const val = snap.val(); if(!val) return; 
                 currentMasterArchiveId = id; currentMasterArchiveName = name; window.currentArchiveNode = sourceNode; 
-                document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; 
-                document.getElementById("tablesContainer").innerHTML = ""; 
-                if(val.tables) { 
-                    val.tables.forEach(t => { 
-                        let sDate = t.startDate ? new Date(t.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); 
-                        let cols = parseInt(t.colCount) || 30; 
-                        generateTable(true, t.data || [], t.tableName || "Tablo", sDate, cols, null, t.notes || ""); 
-                    }); 
-                } else if(val.data) { 
-                    let sDate = val.startDate ? new Date(val.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); 
-                    let cols = parseInt(val.colCount) || 30; 
-                    generateTable(true, val.data, val.name || "Tablo", sDate, cols); 
-                } 
+                document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; document.getElementById("tablesContainer").innerHTML = ""; 
+                if(val.tables) { val.tables.forEach(t => { let sDate = t.startDate ? new Date(t.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(t.colCount) || 30; generateTable(true, t.data || [], t.tableName || "Tablo", sDate, cols, null, t.notes || ""); }); } 
+                else if(val.data) { let sDate = val.startDate ? new Date(val.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(val.colCount) || 30; generateTable(true, val.data, val.name || "Tablo", sDate, cols); } 
             }); 
         }
 
         function saveMasterArchive() {
             try {
-                if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { 
-                    let mName = prompt("ANA KLASÖR adını girin:", "Vardiya Klasörü"); 
-                    if(!mName) return; 
-                    currentMasterArchiveName = mName.trim(); 
-                    document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; 
-                }
-                const tables = document.querySelectorAll('.table-wrapper'); 
-                if(tables.length === 0) return alert("Kaydedilecek Tablo yok!");
-                
+                if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { let mName = prompt("ANA KLASÖR adını girin:", "Vardiya Klasörü"); if(!mName) return; currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; }
+                const tables = document.querySelectorAll('.table-wrapper'); if(tables.length === 0) return alert("Kaydedilecek Tablo yok!");
                 const tablesData = [];
                 tables.forEach((wrapper, index) => {
                     let tName = wrapper.getAttribute("data-tablename");
-                    if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { 
-                        let pName = prompt((index+1) + ". Tablo adı:", tName); 
-                        if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } 
-                    }
-                    const rowsData = []; 
-                    wrapper.querySelectorAll("tbody tr").forEach(tr => { 
-                        let nameEl = tr.querySelector(".editable-name"); if (!nameEl) return; 
-                        let name = nameEl.innerText.trim(); 
-                        let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText.replace(/[\n\r]/g, ""), bg: td.style.background || "transparent", pin: td.getAttribute("data-pin") || "" })); 
-                        rowsData.push({ name: name, shifts: shifts }); 
-                    });
-                    let notesElement = wrapper.querySelector(".table-notes"); let notesVal = notesElement ? notesElement.value : ""; 
-                    tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
+                    if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { let pName = prompt((index+1) + ". Tablo adı:", tName); if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } }
+                    const rowsData = []; wrapper.querySelectorAll("tbody tr").forEach(tr => { let nameEl = tr.querySelector(".editable-name"); if (!nameEl) return; let name = nameEl.innerText.trim(); let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText.replace(/[\n\r]/g, ""), bg: td.style.background || "transparent", pin: td.getAttribute("data-pin") || "" })); rowsData.push({ name: name, shifts: shifts }); });
+                    let notesElement = wrapper.querySelector(".table-notes"); let notesVal = notesElement ? notesElement.value : ""; tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
                 });
-                
                 let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
-                const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData }; 
-                let targetNode = window.currentArchiveNode || arcNode;
-                
-                if(currentMasterArchiveId) { 
-                    db.ref(targetNode).child(currentMasterArchiveId).update(saveData).then(() => { showToast("✅ Kaydedildi!"); logAction(`'${currentMasterArchiveName}' güncellendi.`); }); 
-                } else { 
-                    const ref = db.ref(arcNode).push(); 
-                    ref.set(saveData).then(() => { 
-                        currentMasterArchiveId = ref.key; 
-                        window.currentArchiveNode = arcNode; 
-                        showToast("✅ Kaydedildi!"); 
-                    }); 
-                }
+                const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData }; let targetNode = window.currentArchiveNode || arcNode;
+                if(currentMasterArchiveId) { db.ref(targetNode).child(currentMasterArchiveId).update(saveData).then(() => { showToast("✅ Kaydedildi!"); logAction(`'${currentMasterArchiveName}' güncellendi.`); }); } 
+                else { const ref = db.ref(arcNode).push(); ref.set(saveData).then(() => { currentMasterArchiveId = ref.key; window.currentArchiveNode = arcNode; showToast("✅ Kaydedildi!"); }); }
             } catch (error) { alert("Hata: " + error.message); }
         }
 
         // =========================================
-        // HÜCRE VE TABLO İŞLEMLERİ 
+        // DİĞER GLOBAL FONKSİYONLAR VE LİSTELER
         // =========================================
-        function updateAllStats() {
-            document.querySelectorAll("table tbody tr").forEach(row => {
-                const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0;
-                cells.forEach(td => {
-                    if(td.classList.contains("shift-cell") && !td.classList.contains("hidden-by-snipper")) {
-                        const val = td.innerText.trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
-                        if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(val === "") { td.style.background = "transparent"; }
-                    }
-                    if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
-                    if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
-                });
-            });
-        }
+        async function sifreKriptola(sifre) { const textAsBuffer = new TextEncoder().encode(sifre + "_SHIFTMASTER_2026_ZIRH"); const hashBuffer = await crypto.subtle.digest('SHA-256', textAsBuffer); const hashArray = Array.from(new Uint8Array(hashBuffer)); return hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 400); }
+        function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
+        function logAction(actionText, detay = "") { if(!currentUser) return; if(localStorage.getItem('sm_ghost_mode') === 'true') { console.log("Hayalet Modu: " + actionText); return; } const now = new Date(); db.ref("islem_loglari").push({ user: currentUser, action: actionText, detay: detay, time: now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}), date: now.toLocaleDateString('tr-TR'), timestamp: firebase.database.ServerValue.TIMESTAMP }); }
+        
+        function loadNews() { db.ref("haberler").on("value", snap => { const l = document.getElementById("newsList"); l.innerHTML = ""; if(snap.val()) { Object.entries(snap.val()).reverse().forEach(([id, val]) => { l.innerHTML += `<div class="news-item"><div><div style="font-size:12px; color:var(--accent); font-weight:800; margin-bottom:5px;">👤 ${val.user || 'Sistem'}</div><div class="news-text">${val.text}</div></div><div class="news-time">🕒 ${val.time}</div></div>`; }); } }); }
+        function addNews() { const i = document.getElementById("newsInput"); if(i.value.trim()) { db.ref("haberler").push({ text: i.value.trim(), user: currentUser, time: new Date().toLocaleString('tr-TR', {hour:'2-digit', minute:'2-digit'}) }); logAction(`Panoya yeni not bıraktı.`); i.value = ""; } }
 
+        function openExcelModal() { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'new'); }
+        function openExcelModalForTable(btn) { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'append'); window.currentTableWrapperForExcel = btn.closest('.table-wrapper'); }
+        function cleanExcelRows(raw) { let rows = raw.split("\n").filter(r => r.trim() !== ""); while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; } return rows; }
+        function importFromExcel() { const text = document.getElementById("excelInput").value; if(!text.trim()) return alert("Veri yapıştırın!"); const targetMode = document.getElementById('excelModal').getAttribute('data-target'); const rows = cleanExcelRows(text); if(targetMode === 'new') { const colsCount = rows[0].split("\t").length - 1; document.getElementById("colCount").value = colsCount > 0 ? colsCount : 30; startNewSession(); generateTable(true, rows.map(r => { const c = r.split("\t"); return { name: c[0] ? c[0].trim() : "İsimsiz", shifts: c.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }) }; }), "İçe Aktarılan Liste", new Date(), colsCount); } else if (targetMode === 'append' && window.currentTableWrapperForExcel) { const wrapper = window.currentTableWrapperForExcel; const tbody = wrapper.querySelector('tbody'); const colCount = parseInt(wrapper.getAttribute("data-colcount")); const startDt = new Date(wrapper.getAttribute("data-startdt")); rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }); tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); }); updateAllStats(); showToast("Veriler Tabloya Eklendi!"); } closeModal('excelModal'); }
+
+        db.ref("vardiya_kurallari").on('value', snap => { if(snap.val()) shiftRules = snap.val(); else shiftRules = defaultRules; renderContextMenu(); });
+        function renderContextMenu() { const grid = document.getElementById("dynamicMenuGrid"); grid.innerHTML = ""; Object.keys(shiftRules).forEach(sName => { let r = shiftRules[sName]; grid.innerHTML += `<div class="menu-item-wrapper"><div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div><div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div></div>`; }); grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; }
+        function deleteShiftRule(key, e) { e.stopPropagation(); if(confirm(`Vardiyayı sil?`)) db.ref("vardiya_kurallari/" + key).remove(); }
+        function applyColorToCell(colorOrGradient) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); let targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell; if(!targetCell) return; let val = targetCell.innerText.trim(); if(val === "") return alert("Önce vardiya adını yazın."); let safeKey = val.replace(/\./g, ':'); let existingRule = shiftRules[safeKey]; let defaultW = existingRule ? existingRule.w : "7.5"; let defaultN = existingRule ? existingRule.n : "0"; let wStr = prompt(`Gündüz Saati:`, defaultW); if(wStr === null) return; let nStr = prompt(`Gece Saati (Yoksa 0):`, defaultN); if(nStr === null) return; db.ref("vardiya_kurallari/" + safeKey).set({ w: parseFloat(wStr.replace(',', '.')) || 0, n: parseFloat(nStr.replace(',', '.')) || 0, color: colorOrGradient }); if (selectedCells.length > 0) { selectedCells.forEach(cell => { if(cell.innerText.trim() === val) cell.style.background = colorOrGradient; }); } else { activeCell.style.background = colorOrGradient; } updateAllStats(); document.getElementById("contextMenu").style.display = "none"; }
+        function applyCustomColorFromWheel(hexColor) { applyColorToCell(hexColor); }
+        function addGhostPinToCell() { if(!activeCell) return; let current = activeCell.getAttribute("data-pin") || ""; let n = prompt("Notunuz:", current); if(n !== null) { if(n.trim() === "") activeCell.removeAttribute("data-pin"); else activeCell.setAttribute("data-pin", n); saveHistory(); } document.getElementById("contextMenu").style.display="none"; }
+        function removeGhostPinFromCell() { if(!activeCell) return; activeCell.removeAttribute("data-pin"); saveHistory(); document.getElementById("contextMenu").style.display="none"; }
+
+        function generateTableFromSelected() { const sel = Array.from(document.querySelectorAll(".staff-chip.selected")).map(el => el.querySelector('span').innerText.trim()); if(sel.length===0) return alert("Seçim yapmadınız!"); startNewSession(); generateTable(false, sel, "Yeni Tablo"); }
+        function generateTable(isArchOrImp, data, tableName = "Yeni Liste", customStartDt = null, customColCount = null, insertAfterWrapper = null, savedNotes = "") { 
+            const cols = customColCount || parseInt(document.getElementById("colCount").value); let startDt = customStartDt; if (!(startDt instanceof Date) || isNaN(startDt.getTime())) { let dVal = document.getElementById("startDate").value; startDt = dVal ? new Date(dVal) : new Date(); } 
+            let h = `<table><thead><tr><th class="no-export" style="width: 30px; background: transparent; border: none; box-shadow: none;"></th><th style="display:flex; align-items:center; gap:8px; justify-content:center; border-left:none;"><input type="checkbox" onclick="toggleAllRows(this)" class="row-checkbox" style="width:18px;height:18px;"> PERSONEL</th>`; 
+            for(let i=0; i<cols; i++) { let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; if(i === cols - 1) lastUsedEndDate = new Date(d); } 
+            h += `<th class="total-summary-cell" style="color:var(--success);">TOPLAM</th></tr></thead><tbody class="table-body">`; 
+            if(isArchOrImp) data.forEach(r => { h += createRowHtml(r.name, cols, startDt, r.shifts); }); else data.forEach(n => { h += createRowHtml(n, cols, startDt); }); 
+            h += '</tbody></table>'; 
+            const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SİL</button> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ KES</button> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ TABLOYU SİL</button> </div> `; 
+            if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); 
+            saveHistory(); updateAllStats(); openModal('tableModalOverlay'); 
+        }
+        function createRowHtml(name, colCount, startDt, savedShifts = null) { 
+            let cells = `<td class="no-export" style="width: 30px; background: transparent !important; border: none !important; box-shadow: none !important;"><div class="nav-box" style="pointer-events:auto; display:flex; flex-direction:column; gap:2px;"><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,1)">▼</button></div></td>`; 
+            cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: 1px solid var(--glass-border);"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`; 
+            let shiftIdx = 0; 
+            for(let i=0; i<colCount; i++) { 
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
+                const txt = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].text : ""; const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent"; const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : ""; const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; 
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; 
+                shiftIdx++; if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; 
+            } 
+            cells += `<td class="total-summary-cell" style="background:rgba(2,6,23,0.9) !important;"></td>`; return `<tr>${cells}</tr>`; 
+        }
+        function updateAllStats() { document.querySelectorAll("table tbody tr").forEach(row => { const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0; cells.forEach(td => { if(td.classList.contains("shift-cell") && !td.classList.contains("hidden-by-snipper")) { const val = td.innerText.trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(val === "") { td.style.background = "transparent"; } } if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; } if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; } }); }); }
         function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
         function openShiftMenu(e, c) { e.preventDefault(); if (!c.classList.contains('selected-cell')) { document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); c.classList.add('selected-cell'); } activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
-        
-        function openStaffQuickMenu(e, btn) { 
-            e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; 
-            document.querySelectorAll('.select-icon.open').forEach(el => { if(el !== btn) el.classList.remove('open'); });
-            btn.classList.add('open');
-
-            const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; 
-            const poolNames = staffList.map(s => s.name); 
-            poolNames.forEach(n => { 
-                const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; 
-                d.onclick = () => { 
-                    saveHistory(); activeCell.innerText = n; m.style.display = "none"; btn.classList.remove('open'); 
-                }; 
-                m.appendChild(d); 
-            }); 
-            m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; 
-        }
-
+        function openStaffQuickMenu(e, btn) { e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; document.querySelectorAll('.select-icon.open').forEach(el => { if(el !== btn) el.classList.remove('open'); }); btn.classList.add('open'); const m = document.getElementById("staffSelectMenu"); m.innerHTML = ""; const poolNames = staffList.map(s => s.name); poolNames.forEach(n => { const d = document.createElement("div"); d.className = "menu-item"; d.innerText = n; d.onclick = () => { saveHistory(); activeCell.innerText = n; m.style.display = "none"; btn.classList.remove('open'); }; m.appendChild(d); }); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
         function saveHistory() { const cont = document.getElementById("tablesContainer").innerHTML; historyStack.push(cont); if(historyStack.length > 25) historyStack.shift(); }
         function undo() { if(historyStack.length > 0) { document.getElementById("tablesContainer").innerHTML = historyStack.pop(); updateAllStats(); } }
-
         let isDraggingCells = false; let startSelectCell = null;
-        document.addEventListener('mousedown', e => {
-            if(e.button !== 0) return; if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; 
-            const cell = e.target.closest('td, th');
-            if(cell && cell.closest('table') && !cell.closest('.table-header') && !cell.classList.contains('no-export')) { isDraggingCells = true; startSelectCell = cell; document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); cell.classList.add('selected-cell'); if (cell.classList.contains('shift-cell')) activeCell = cell; } else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn') && !e.target.closest('.mini-swatch') && e.target.id !== "customColorInput") { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
-        });
-        
-        document.addEventListener('mouseover', e => { 
-            if(isDraggingCells) { const cell = e.target.closest('td, th'); if(cell && cell.closest('table') === startSelectCell.closest('table') && !cell.classList.contains('no-export')) selectCellRange(startSelectCell, cell); } 
-            const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]');
-            const tooltip = document.getElementById('centralPinTooltip');
-            if(shiftCellWithPin && tooltip) { tooltip.innerText = shiftCellWithPin.getAttribute('data-pin'); tooltip.style.display = 'block'; }
-        });
-        document.addEventListener('mouseout', e => {
-            const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]');
-            const tooltip = document.getElementById('centralPinTooltip');
-            if(shiftCellWithPin && tooltip) { tooltip.style.display = 'none'; }
-        });
-
-        document.addEventListener('mouseup', () => { isDraggingCells = false; });
-        document.addEventListener('selectstart', e => { if(isDraggingCells) e.preventDefault(); }); 
-        
-        function selectCellRange(start, end) {
-            document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
-            const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tr')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').querySelectorAll('th, td')).indexOf(start); const endColIdx = Array.from(end.closest('tr').querySelectorAll('th, td')).indexOf(end);
-            const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx);
-            for(let r = minRow; r <= maxRow; r++) { const trCells = Array.from(rows[r].querySelectorAll('th, td')); for(let c = minCol; c <= maxCol; c++) { if(trCells[c] && !trCells[c].classList.contains('no-export')) trCells[c].classList.add('selected-cell'); } }
-        }
+        document.addEventListener('mousedown', e => { if(e.button !== 0) return; if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; const cell = e.target.closest('td, th'); if(cell && cell.closest('table') && !cell.closest('.table-header') && !cell.classList.contains('no-export')) { isDraggingCells = true; startSelectCell = cell; document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); cell.classList.add('selected-cell'); if (cell.classList.contains('shift-cell')) activeCell = cell; } else if (!e.target.closest('td') && !e.target.closest('th') && !e.target.closest('.custom-menu') && !e.target.closest('.btn') && !e.target.closest('.mini-swatch') && e.target.id !== "customColorInput") { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); } });
+        document.addEventListener('mouseover', e => { if(isDraggingCells) { const cell = e.target.closest('td, th'); if(cell && cell.closest('table') === startSelectCell.closest('table') && !cell.classList.contains('no-export')) selectCellRange(startSelectCell, cell); } const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]'); const tooltip = document.getElementById('centralPinTooltip'); if(shiftCellWithPin && tooltip) { tooltip.innerText = shiftCellWithPin.getAttribute('data-pin'); tooltip.style.display = 'block'; } });
+        document.addEventListener('mouseout', e => { const shiftCellWithPin = e.target.closest('.shift-cell[data-pin]'); const tooltip = document.getElementById('centralPinTooltip'); if(shiftCellWithPin && tooltip) { tooltip.style.display = 'none'; } });
+        document.addEventListener('mouseup', () => { isDraggingCells = false; }); document.addEventListener('selectstart', e => { if(isDraggingCells) e.preventDefault(); });
+        function selectCellRange(start, end) { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tr')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').querySelectorAll('th, td')).indexOf(start); const endColIdx = Array.from(end.closest('tr').querySelectorAll('th, td')).indexOf(end); const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx); for(let r = minRow; r <= maxRow; r++) { const trCells = Array.from(rows[r].querySelectorAll('th, td')); for(let c = minCol; c <= maxCol; c++) { if(trCells[c] && !trCells[c].classList.contains('no-export')) trCells[c].classList.add('selected-cell'); } } }
+        function toggleCheckboxFromCell(e, cell) { if(e.target.classList.contains('editable-name') || e.target.closest('.select-icon') || e.target.closest('.nav-box')) return; const cb = cell.querySelector('.row-checkbox'); if(cb && e.target !== cb) cb.checked = !cb.checked; } function toggleAllRows(mainCb) { const wrapper = mainCb.closest('table'); wrapper.querySelectorAll('tbody .row-checkbox').forEach(cb => cb.checked = mainCb.checked); } function moveRow(btn, dir) { const row = btn.closest('tr'); const tbody = row.parentElement; if (dir === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling); else if (dir === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row); saveHistory(); } function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let pName = prompt("Tablo adı:", wrapper.getAttribute("data-tablename")); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } } function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); } function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); const names = Array.from(wrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, null, wrapper); } } function safeAppendTable() { const wrappers = document.querySelectorAll(".table-wrapper"); if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); saveHistory(); const lastWrapper = wrappers[wrappers.length - 1]; const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate); } } function splitRowFromCell() { if(!activeCell) return; const cell = activeCell; const row = cell.closest('tr'); const tbody = row.parentElement; const allShiftCells = Array.from(row.querySelectorAll('.shift-cell')); const cellIndex = allShiftCells.indexOf(cell); if(cellIndex === -1) return; saveHistory(); const newRow = row.cloneNode(true); const origName = row.querySelector('.editable-name').innerText; newRow.querySelector('.editable-name').innerText = origName + " (Devamı)"; for(let i = cellIndex; i < allShiftCells.length; i++) { allShiftCells[i].innerText = ""; allShiftCells[i].style.background = "transparent"; allShiftCells[i].removeAttribute("data-pin"); } const newShiftCells = Array.from(newRow.querySelectorAll('.shift-cell')); for(let i = 0; i < cellIndex; i++) { newShiftCells[i].innerText = ""; newShiftCells[i].style.background = "transparent"; newShiftCells[i].removeAttribute("data-pin"); } tbody.insertBefore(newRow, row.nextSibling); updateAllStats(); document.getElementById("contextMenu").style.display = "none"; showToast("Satır bölündü! ✂️"); logAction("Satır böldü."); } function toggleTableCollapse(header, e) { if(e.target.tagName === 'BUTTON' || e.target.classList.contains('table-title') || e.target.classList.contains('mini-btn')) return; header.closest('.table-wrapper').classList.toggle('collapsed'); } function moveTableWrapper(btn, dir, e) { e.stopPropagation(); const wrapper = btn.closest('.table-wrapper'); if(dir === -1 && wrapper.previousElementSibling) wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling); else if (dir === 1 && wrapper.nextElementSibling) wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper); } function toggleSnippingMode(btn) { const table = btn.closest('.table-wrapper').querySelector('table'); table.classList.toggle('snipping-mode'); if(table.classList.contains('snipping-mode')) { btn.innerHTML = "🔴 KESİM AÇIK"; btn.classList.replace('btn-pink', 'btn-red'); } else { btn.innerHTML = "✂️ SÜTUN KES"; btn.classList.replace('btn-red', 'btn-pink'); } } function showAllColumns(btn) { saveHistory(); const table = btn.closest('.table-wrapper').querySelector('table'); table.querySelectorAll('.hidden-by-snipper').forEach(el => el.classList.remove('hidden-by-snipper')); } let activeHeaderCell = null; function editColumnDate() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); if(newVal && newVal.trim() !== "") { saveHistory(); activeHeaderCell.setAttribute("data-date", newVal); let parts = newVal.split("."); if(parts.length === 3) { let d = new Date(parts[2], parts[1]-1, parts[0]); activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); } } } function insertColumn(dir) { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; saveHistory(); const theadTr = activeHeaderCell.parentElement; const table = activeHeaderCell.closest('table'); const tbodyRows = table.querySelectorAll('tbody tr'); const insertIndex = dir === 'after' ? Array.from(theadTr.children).indexOf(activeHeaderCell) + 1 : Array.from(theadTr.children).indexOf(activeHeaderCell); let p = activeHeaderCell.getAttribute("data-date").split("."); let baseDate = new Date(p[2], p[1]-1, p[0]); if(dir === 'after') baseDate.setDate(baseDate.getDate() + 1); let newTh = document.createElement('th'); let fullDateStr = `${String(baseDate.getDate()).padStart(2,'0')}.${String(baseDate.getMonth()+1).padStart(2,'0')}.${baseDate.getFullYear()}`; newTh.setAttribute('data-date', fullDateStr); newTh.innerHTML = `${String(baseDate.getDate()).padStart(2,'0')}.${String(baseDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${baseDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; theadTr.insertBefore(newTh, theadTr.children[insertIndex]); tbodyRows.forEach(tr => { let newTd = document.createElement('td'); newTd.className = "shift-cell"; newTd.contentEditable = "true"; newTd.style.background = "transparent"; newTd.setAttribute("oncontextmenu", "openShiftMenu(event, this)"); newTd.setAttribute("oninput", "updateAllStats()"); tr.insertBefore(newTd, tr.children[insertIndex]); }); table.closest('.table-wrapper').setAttribute("data-colcount", parseInt(table.closest('.table-wrapper').getAttribute("data-colcount")) + 1); if(confirm("Sağdaki günleri 1 gün kaydıralım mı?")) recalculateDatesFrom(newTh, baseDate); updateAllStats(); showToast("Gün Eklendi!"); } function recalculateDatesFrom(startTh, startDate) { let currentTh = startTh.nextElementSibling; let currentDate = new Date(startDate); while(currentTh) { if(currentTh.hasAttribute("data-date")) { currentDate.setDate(currentDate.getDate() + 1); let fullDateStr = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}.${currentDate.getFullYear()}`; currentTh.setAttribute('data-date', fullDateStr); currentTh.innerHTML = `${String(currentDate.getDate()).padStart(2,'0')}.${String(currentDate.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${currentDate.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; } currentTh = currentTh.nextElementSibling; } showToast("Tarihler güncellendi!"); } function deleteColumn() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; if(!confirm("Sütunu silmek istediğinize emin misiniz?")) return; saveHistory(); const targetIndex = Array.from(activeHeaderCell.parentElement.children).indexOf(activeHeaderCell); activeHeaderCell.closest('table').querySelectorAll('tbody tr').forEach(tr => { if(tr.children[targetIndex]) tr.children[targetIndex].remove(); }); activeHeaderCell.closest('.table-wrapper').setAttribute("data-colcount", parseInt(activeHeaderCell.closest('.table-wrapper').getAttribute("data-colcount")) - 1); activeHeaderCell.remove(); updateAllStats(); showToast("Sütun Silindi!"); } function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); } } function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); } function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) closeModal('tableModalOverlay'); } }
+        document.addEventListener('click', e => { const th = e.target.closest('th'); if(th && th.closest('table.snipping-mode')) { const table = th.closest('table'); const tr = th.parentNode; let colIndex = Array.from(tr.children).indexOf(th); if(colIndex > 1) { saveHistory(); table.querySelectorAll('tr').forEach(row => { if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper'); }); } } });
+        window.onclick = (e) => { if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { document.getElementById("contextMenu").style.display = "none"; document.getElementById("staffSelectMenu").style.display = "none"; if(document.getElementById("headerContextMenu")) document.getElementById("headerContextMenu").style.display = "none"; document.querySelectorAll('.select-icon.open').forEach(icon => icon.classList.remove('open')); } };
 
         // =========================================
-        // KUSURSUZ EXCEL KOPYALAMA MOTORU
+        // KOPYALAMA VE EXCEL İŞLEMLERİ
         // =========================================
-        function getCleanCellText(cell) { 
-            if (cell.classList.contains('hidden-by-snipper') || cell.classList.contains('no-export')) return null;
-            if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
-            if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
-            let text = (cell.textContent || "").replace(/\n/g, " ").trim(); 
-            if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; 
-            return text; 
+        function getCleanCellText(cell) { if (cell.classList.contains('hidden-by-snipper') || cell.classList.contains('no-export')) return null; if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); let text = (cell.textContent || "").replace(/\n/g, " ").trim(); if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; return text; }
+        function getExcelCellHtml(cell) { if(cell.classList.contains('no-export') || cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" }; let text = getCleanCellText(cell); let bg = '#ffffff'; let color = '#000000'; if(cell.tagName === 'TH') { bg = '#d1d5db'; color = '#000000'; return { html: `<th style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px; font-weight: bold;">${text}</th>`, text: text }; } else { let cellBg = cell.style.background || cell.style.backgroundColor; if(cellBg && !cellBg.includes('transparent')) { let match = cellBg.match(/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})/); if(match) { bg = match[0]; color = '#ffffff'; } } return { html: `<td style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px;">${text}</td>`, text: text }; } }
+        function generateExcelClipboardData(selectedCellsOrRows, isRowMode) { let html = "<table border='1' style='border-collapse:collapse; font-family:sans-serif; text-align:center;'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = ""; if (isRowMode) { let table = selectedCellsOrRows[0].closest('table'); html += "<thead><tr>"; table.querySelectorAll('thead th').forEach(th => { let cd = getExcelCellHtml(th); if(cd.html) { html += cd.html; tsv += cd.text + "\t"; } }); html += "</tr></thead><tbody>\n"; tsv += "\n"; selectedCellsOrRows.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rData = []; tr.querySelectorAll('td').forEach(td => { let cd = getExcelCellHtml(td); if(cd.html) { html += cd.html; rData.push(cd.text); } }); html += "</tr>"; tsv += rData.join("\t") + "\n"; }); html += "</tbody>"; } else { selectedCellsOrRows.forEach(cell => { const cellRow = cell.closest('tr'); if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; } let cd = getExcelCellHtml(cell); if(cd.html) { trHtml += cd.html; rowData.push(cd.text); } }); if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; } } html += "</table>"; return { html, tsv }; }
+        function executeExcelCopy(html, tsv) { const container = document.createElement('div'); container.innerHTML = html; container.style.position = 'fixed'; container.style.top = '-9999px'; container.style.pointerEvents = 'none'; document.body.appendChild(container); const selection = window.getSelection(); const range = document.createRange(); range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range); try { document.execCommand('copy'); showToast("Panoya Kopyalandı! 📋"); } catch(e) { navigator.clipboard.writeText(tsv).then(() => showToast("Sadece metin kopyalandı! 📋")); } selection.removeAllRanges(); document.body.removeChild(container); }
+        function copyTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked'); if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) { const { html, tsv } = generateExcelClipboardData(selectedCells, false); executeExcelCopy(html, tsv); } else if(cbs.length > 0) { const { html, tsv } = generateExcelClipboardData(cbs, true); executeExcelCopy(html, tsv); } else { alert("Lütfen tablodan alan seçin!"); } }
+        function exportTableToExcel(btn) { const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); let html = "<table border='1' style='border-collapse:collapse; text-align:center; font-family:sans-serif;'>"; let tsv = ""; table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>"; executeExcelCopy(html, tsv); }
+        function exportAllToExcel() { const wrappers = document.querySelectorAll('.table-wrapper'); if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!"); let html = ""; let tsv = ""; wrappers.forEach(wrapper => { let tableName = wrapper.getAttribute("data-tablename"); html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse:collapse; text-align:center; font-family:sans-serif;">`; tsv += `${tableName}\n`; const table = wrapper.querySelector('table'); table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table><br><br>"; tsv += "\n\n"; }); executeExcelCopy(html, tsv); logAction("Tüm tabloları kopyaladı."); }
+        
+        document.addEventListener('copy', e => { const selected = document.querySelectorAll('.selected-cell'); if(selected.length > 0) { e.preventDefault(); const { html, tsv } = generateExcelClipboardData(selected, false); if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Seçili alan kopyalandı! 📋"); } } });
+        document.addEventListener('paste', e => { const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return; const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell')); if(selected.length > 0) { e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = cleanExcelRows(pasteData); if (rows.length === 1 && rows[0].split('\t').length === 1) { let val = rows[0].trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; selected.forEach(cell => { if(cell.classList.contains('hidden-by-snipper')) return; let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); cell.style.background = r ? r.color : "transparent"; }); } else { let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); let rowCells = Array.from(tr.querySelectorAll('td')); let startColIdx = rowCells.indexOf(startCell); for (let i = 0; i < rows.length; i++) { if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentTrCells = Array.from(currentTr.querySelectorAll('td')); for (let j = 0; j < cols.length; j++) { if (startColIdx + j >= currentTrCells.length) break; let targetCell = currentTrCells[startColIdx + j]; if (targetCell.classList.contains('shift-cell') && !targetCell.classList.contains('hidden-by-snipper')) { let val = cols[j].trim(); let oldPin = targetCell.getAttribute("data-pin"); targetCell.innerText = val; if(oldPin) targetCell.setAttribute("data-pin", oldPin); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; targetCell.style.background = r ? r.color : "transparent"; } } } } updateAllStats(); showToast("Yapıştırıldı! ✅"); } });
+        document.addEventListener('contextmenu', e => { const th = e.target.closest('th[data-date]'); if(th) { e.preventDefault(); activeHeaderCell = th; const menu = document.getElementById("headerContextMenu"); menu.style.display = "block"; let x = e.pageX; let y = e.pageY; if (x + 280 > window.innerWidth) x = window.innerWidth - 290; menu.style.left = x + "px"; menu.style.top = y + "px"; } });
+
+        // =========================================
+        // AI DAĞITIM MOTORU 
+        // =========================================
+        function openAiModal() {
+            const daySel = document.getElementById('aiDayShiftSelect'); const nightSel = document.getElementById('aiNightShiftSelect'); const offSel = document.getElementById('aiOffShiftSelect');
+            let optionsHtml = '<option value="" style="color:black;">-- Lütfen Seçiniz --</option>';
+            Object.keys(shiftRules).forEach(key => { optionsHtml += `<option value="${key}" style="color:black;">${key} (G:${shiftRules[key].w} / Gc:${shiftRules[key].n})</option>`; });
+            daySel.innerHTML = optionsHtml; nightSel.innerHTML = optionsHtml; offSel.innerHTML = optionsHtml;
+            openModal('aiGeneratorModal');
         }
 
-        function getExcelCellHtml(cell) {
-            if(cell.classList.contains('no-export') || cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
-            let text = getCleanCellText(cell); let bg = '#ffffff'; let color = '#000000';
-            if(cell.tagName === 'TH') { bg = '#d1d5db'; color = '#000000'; return { html: `<th style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px; font-weight: bold;">${text}</th>`, text: text }; } 
-            else { let cellBg = cell.style.background || cell.style.backgroundColor; if(cellBg && !cellBg.includes('transparent')) { let match = cellBg.match(/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})/); if(match) { bg = match[0]; color = '#ffffff'; } } return { html: `<td style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px;">${text}</td>`, text: text }; }
-        }
-
-        function generateExcelClipboardData(selectedCellsOrRows, isRowMode) {
-            let html = "<table border='1' style='border-collapse:collapse; font-family:sans-serif; text-align:center;'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
-            if (isRowMode) {
-                let table = selectedCellsOrRows[0].closest('table'); html += "<thead><tr>";
-                table.querySelectorAll('thead th').forEach(th => { let cd = getExcelCellHtml(th); if(cd.html) { html += cd.html; tsv += cd.text + "\t"; } });
-                html += "</tr></thead><tbody>\n"; tsv += "\n";
-                selectedCellsOrRows.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rData = []; tr.querySelectorAll('td').forEach(td => { let cd = getExcelCellHtml(td); if(cd.html) { html += cd.html; rData.push(cd.text); } }); html += "</tr>"; tsv += rData.join("\t") + "\n"; });
-                html += "</tbody>";
-            } else {
-                selectedCellsOrRows.forEach(cell => {
-                    const cellRow = cell.closest('tr');
-                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
-                    let cd = getExcelCellHtml(cell); if(cd.html) { trHtml += cd.html; rowData.push(cd.text); }
-                });
-                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; }
-            }
-            html += "</table>"; return { html, tsv };
-        }
-
-        function executeExcelCopy(html, tsv) {
-            const container = document.createElement('div'); container.innerHTML = html; container.style.position = 'fixed'; container.style.top = '-9999px'; container.style.pointerEvents = 'none'; document.body.appendChild(container);
-            const selection = window.getSelection(); const range = document.createRange(); range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range);
-            try { document.execCommand('copy'); showToast("Panoya Kopyalandı! 📋"); } catch(e) { navigator.clipboard.writeText(tsv).then(() => showToast("Sadece metin kopyalandı! 📋")); }
-            selection.removeAllRanges(); document.body.removeChild(container);
-        }
-
-        function copyTableRows(btn) {
-            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
-            const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
-            if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) { const { html, tsv } = generateExcelClipboardData(selectedCells, false); executeExcelCopy(html, tsv); } 
-            else if(cbs.length > 0) { const { html, tsv } = generateExcelClipboardData(cbs, true); executeExcelCopy(html, tsv); } 
-            else { alert("Lütfen tablodan mavi bir alan seçin veya personel kutucuklarını işaretleyin!"); }
-        }
-
-        function exportTableToExcel(btn) {
-            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
-            let html = "<table border='1' style='border-collapse:collapse; text-align:center; font-family:sans-serif;'>"; let tsv = "";
-            table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); 
-            html += "</table>"; executeExcelCopy(html, tsv);
-        }
-
-        function exportAllToExcel() {
-            const wrappers = document.querySelectorAll('.table-wrapper'); if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
-            let html = ""; let tsv = "";
-            wrappers.forEach(wrapper => {
-                let tableName = wrapper.getAttribute("data-tablename"); html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse:collapse; text-align:center; font-family:sans-serif;">`; tsv += `${tableName}\n`;
-                const table = wrapper.querySelector('table');
-                table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); 
-                html += "</table><br><br>"; tsv += "\n\n";
-            });
-            executeExcelCopy(html, tsv); logAction("Tüm tabloları kopyaladı.");
-        }
-
-        document.addEventListener('copy', e => {
-            const selected = document.querySelectorAll('.selected-cell');
-            if(selected.length > 0) { e.preventDefault(); const { html, tsv } = generateExcelClipboardData(selected, false); if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Seçili alan kopyalandı! 📋"); } }
-        });
-
-        document.addEventListener('paste', e => {
-            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
-            const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
-            if(selected.length > 0) {
-                e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = cleanExcelRows(pasteData);
-                if (rows.length === 1 && rows[0].split('\t').length === 1) {
-                    let val = rows[0].trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
-                    selected.forEach(cell => { if(cell.classList.contains('hidden-by-snipper')) return; let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); cell.style.background = r ? r.color : "transparent"; });
-                } else {
-                    let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); let rowCells = Array.from(tr.querySelectorAll('td')); let startColIdx = rowCells.indexOf(startCell);
-                    for (let i = 0; i < rows.length; i++) {
-                        if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentTrCells = Array.from(currentTr.querySelectorAll('td'));
-                        for (let j = 0; j < cols.length; j++) {
-                            if (startColIdx + j >= currentTrCells.length) break; let targetCell = currentTrCells[startColIdx + j];
-                            if (targetCell.classList.contains('shift-cell') && !targetCell.classList.contains('hidden-by-snipper')) {
-                                let val = cols[j].trim(); let oldPin = targetCell.getAttribute("data-pin"); targetCell.innerText = val; if(oldPin) targetCell.setAttribute("data-pin", oldPin); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; targetCell.style.background = r ? r.color : "transparent";
-                            }
-                        }
+        function startAiDistribution() {
+            let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value; let numTablesToGenerate = parseInt(document.getElementById('aiTableCount') ? document.getElementById('aiTableCount').value : 1) || 1;
+            if(!dayCode || !nightCode || !offCode) return alert("Lütfen Gündüz, Gece ve İzin kodlarını seçiniz!");
+            let reqG = [], reqN = [];
+            for(let i=1; i<=7; i++) { reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0; reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0; }
+            let baseTable = document.querySelector('.table-wrapper');
+            if(!baseTable) return alert("Ekranda işlem yapılacak açık bir tablo yok!");
+            let colCount = parseInt(baseTable.getAttribute("data-colcount")); let startDt = new Date(baseTable.getAttribute("data-startdt"));
+            let staffNames = Array.from(baseTable.querySelectorAll("tbody tr")).filter(tr => !tr.classList.contains('summary-row')).map(tr => tr.querySelector('.editable-name').innerText.trim());
+            saveHistory(); closeModal('aiGeneratorModal'); document.getElementById("masterArchiveTitle").innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
+            setTimeout(() => {
+                let simulations = []; let totalSimulations = 5000;
+                for(let sim = 0; sim < totalSimulations; sim++) {
+                    let simStaff = staffNames.map(name => ({ name: name, realShifts: [], shiftLog: [], weeklyWorkDays: 0, totalHours: 0, nightCount: 0, dayConsecutive: 0, lastShiftType: 'O' }));
+                    let unfilledSlots = 0;
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c); let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; });
+                        let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
+                        simStaff.forEach(s => { s.assignedToday = null; });
+                        simStaff.forEach(s => { if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { s.assignedToday = offCode; s.lastShiftType = 'O'; } });
+                        let poolN = simStaff.filter(s => !s.assignedToday); poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random()));
+                        let nAssigned = 0;
+                        for(let i=0; i<poolN.length && nAssigned<cReqN; i++) { poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; poolN[i].nightCount++; poolN[i].weeklyWorkDays++; poolN[i].dayConsecutive = 0; nAssigned++; }
+                        if(nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
+                        let poolG = simStaff.filter(s => !s.assignedToday && s.dayConsecutive < 2); poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let dAssigned = 0;
+                        for(let i=0; i<poolG.length && dAssigned<cReqG; i++) { poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; poolG[i].weeklyWorkDays++; poolG[i].dayConsecutive++; dAssigned++; }
+                        if(dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
+                        simStaff.forEach(s => {
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; }
+                            let codeChar = (s.assignedToday === nightCode) ? 'N' : (s.assignedToday === offCode ? 'O' : 'G');
+                            s.shiftLog.push(codeChar);
+                            let safeVal = s.assignedToday.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[s.assignedToday];
+                            s.realShifts.push({ text: s.assignedToday, bg: r ? r.color : "transparent" });
+                        });
                     }
+                    let penalty = 0; penalty += (unfilledSlots * 50000000); 
+                    let maxN = -1, minN = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.join(''); 
+                        penalty += ((seq.match(/NG/g) || []).length * 1000000); penalty += ((seq.match(/NN/g) || []).length * 1000000); penalty += ((seq.match(/GGG/g) || []).length * 500000); 
+                        maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
+                    });
+                    penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
                 }
-                updateAllStats(); showToast("Yapıştırıldı! ✅");
-            }
-        });
+                simulations.sort((a, b) => a.penalty - b.penalty); document.getElementById("tablesContainer").innerHTML = "";
+                for(let i=0; i<numTablesToGenerate; i++) {
+                    let bestSim = simulations[i]; let exportData = bestSim.staffData.map(s => ({ name: s.name, shifts: s.realShifts }));
+                    let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
+                    generateTable(true, exportData, `🤖 AI Alternatif ${i+1} - ${penaltyText}`, startDt, colCount);
+                }
+                document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                    let sumHtml = `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td class="no-export"></td><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (G / Gc)</td>`;
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c); let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        let targetG = reqG[reqIndex]; let targetN = reqN[reqIndex]; let dCount = 0, nCount = 0;
+                        wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => { let cell = tr.querySelectorAll('.shift-cell')[c]; if(cell) { let val = cell.innerText; if(val === nightCode || val.startsWith('16:') || val.startsWith('20:') || val.startsWith('24:') || val.includes('NÖBET')) nCount++; else if(val !== offCode && val !== "") dCount++; } });
+                        let isWarning = false; let gText = dCount; let nText = nCount;
+                        if(dCount < targetG) { gText = `<span style="color:#ef4444;">${dCount}</span>`; isWarning = true; }
+                        if(nCount < targetN) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
+                        let cellHtml = `${gText} / ${nText}`; if(isWarning) cellHtml = `<span style="color:#ef4444; font-size:12px;">⚠️</span><br>` + cellHtml;
+                        sumHtml += `<td style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;">${cellHtml}</td>`;
+                        if(dow === 0) sumHtml += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`;
+                    }
+                    sumHtml += `<td class="total-summary-cell"></td></tr>`; wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', sumHtml);
+                });
+                updateAllStats(); document.getElementById("masterArchiveTitle").innerHTML = "📁 AI Tarafından Üretildi"; showToast(`✨ AI V18: GELECEK HESAPLANDI! ✨`); logAction("Yapay Zeka tablo oluşturdu.");
+            }, 100);
+        }
 
-        function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); } }
-        function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); }
-        function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) closeModal('tableModalOverlay'); } }
-
-        document.addEventListener('click', e => { 
-            const th = e.target.closest('th'); if(th && th.closest('table.snipping-mode')) { const table = th.closest('table'); const tr = th.parentNode; let colIndex = Array.from(tr.children).indexOf(th); if(colIndex > 1) { saveHistory(); table.querySelectorAll('tr').forEach(row => { if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper'); }); } } 
-        });
-
-        window.onclick = (e) => { 
-            if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { 
-                document.getElementById("contextMenu").style.display = "none"; 
-                document.getElementById("staffSelectMenu").style.display = "none"; 
-                if(document.getElementById("headerContextMenu")) document.getElementById("headerContextMenu").style.display = "none"; 
-                document.querySelectorAll('.select-icon.open').forEach(icon => icon.classList.remove('open'));
-            } 
-        };
-        
         // =========================================
-        // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ
+        // TODAY SUMMARY
+        // =========================================
+        function showTodaySummary(selectedDateStr = null) {
+            openModal('todaySummaryModal');
+            let targetDate = new Date(); const datePicker = document.getElementById('summaryDatePicker');
+            const tzoffset = (new Date()).getTimezoneOffset() * 60000; const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
+            if (selectedDateStr) targetDate = new Date(selectedDateStr); else { if(!datePicker.value) datePicker.value = localISOTime; else targetDate = new Date(datePicker.value); }
+            targetDate.setHours(0,0,0,0);
+            const todayStr = `${String(targetDate.getDate()).padStart(2,'0')}.${String(targetDate.getMonth()+1).padStart(2,'0')}.${targetDate.getFullYear()}`; const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"]; document.getElementById('todaySummaryDateText').innerText = `Seçilen Gün: ${todayStr} - ${dayNames[targetDate.getDay()]}`;
+            const listDay = document.getElementById('listDay'); const listNight = document.getElementById('listNight'); const listOff = document.getElementById('listOff');
+            listDay.innerHTML = '<span style="color:#64748b;">⏳</span>'; listNight.innerHTML = '<span style="color:#64748b;">⏳</span>'; listOff.innerHTML = '<span style="color:#64748b;">⏳</span>';
+            let arcNode = aktifKadro === 'isci' ? "arsivlenmis_shiftler" : "arsivlenmis_shiftler_memur";
+            db.ref(arcNode).once("value").then(snap => {
+                listDay.innerHTML = ''; listNight.innerHTML = ''; listOff.innerHTML = ''; let dayCount = 0, nightCount = 0, offCount = 0;
+                if(snap.val()) {
+                    Object.values(snap.val()).forEach(archive => {
+                        let tables = archive.tables ? archive.tables : (archive.data ? [archive] : []);
+                        tables.forEach(t => {
+                            let startDt = t.startDate ? new Date(t.startDate) : null; if(!startDt) return; startDt.setHours(0,0,0,0);
+                            let timeDiff = targetDate.getTime() - startDt.getTime(); let dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+                            if(dayDiff >= 0 && dayDiff < (t.colCount || 30)) {
+                                t.data.forEach(row => {
+                                    if(!row.shifts || !row.shifts[dayDiff]) return; let shiftVal = row.shifts[dayDiff].text.trim().toUpperCase(); if(shiftVal === "" || shiftVal === "0") return;
+                                    let itemHtml = `<div style="padding:10px 5px; border-bottom:1px dashed rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; color:#e2e8f0;">👤 ${row.name}</span> <strong style="background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; color:#fff; border:1px solid rgba(255,255,255,0.2);">${shiftVal}</strong></div>`;
+                                    if(["HT", "İ", "R", "Yİ", "Nİ", "RT", "RAPOR", "İZİN"].includes(shiftVal)) { listOff.innerHTML += itemHtml; offCount++; } else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET") || shiftVal === "N") { listNight.innerHTML += itemHtml; nightCount++; } else { listDay.innerHTML += itemHtml; dayCount++; }
+                                });
+                            }
+                        });
+                    });
+                }
+                document.getElementById('cDay').innerText = dayCount; document.getElementById('cNight').innerText = nightCount; document.getElementById('cOff').innerText = offCount;
+                if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic;">Kimse bulunamadı.</div>'; if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic;">Kimse bulunamadı.</div>'; if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic;">Kimse bulunamadı.</div>';
+            });
+        }
+
+        // =========================================
+        // BOSS CONSOLE
+        // =========================================
+        function openBossConsole() { openModal('bossConsoleModal'); loadBossKurumlar(); }
+        function loadBossKurumlar() { const list = document.getElementById("bossKurumListesi"); list.innerHTML = '<div style="color:#ef4444;">Taranıyor... ⏳</div>'; originalRef("kurum_kayitlari").once("value").then(snap => { list.innerHTML = ""; if(snap.val()) { Object.entries(snap.val()).forEach(([kod, data]) => { list.innerHTML += ` <div class="boss-card" data-name="${(data.kurumAdi || "").toLowerCase()} ${(kod).toLowerCase()}" style="background:linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border:1px solid rgba(239,68,68,0.3); padding:20px; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;"> <div style="display:flex; justify-content:space-between; border-bottom:1px dashed rgba(239,68,68,0.3); padding-bottom:10px; margin-bottom:10px;"> <span style="color:#ef4444; font-weight:900; font-size:16px;">🏢 ${data.kurumAdi}</span> <span style="background:#ef4444; color:#fff; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:900; height: max-content;">${kod.toUpperCase()}</span> </div> <div style="font-size:12px; color:#cbd5e1; margin-bottom:15px; line-height:1.6;"> 👤 Yönetici: <b>${data.patronIsim || 'Bilinmiyor'}</b><br> ✉️ E-Posta: ${data.patronEmail || 'Bilinmiyor'} </div> <button class="btn" style="width:100%; background:rgba(239,68,68,0.1); border:1px solid #ef4444; color:#ef4444; justify-content:center;" onclick="sizIceri('${kod}', '${(data.kurumAdi||"").replace(/'/g, "\\'")}')">👻 HAYALET GİBİ SIZ</button> </div>`; }); } }); }
+        function filterBossList() { const val = document.getElementById("bossSearchInput").value.toLowerCase(); document.querySelectorAll(".boss-card").forEach(card => { if(card.getAttribute("data-name").includes(val)) card.style.display = "block"; else card.style.display = "none"; }); }
+        function sizIceri(kurumKod, kurumAdi) { if(confirm("DİKKAT: Sızıyorsunuz! Onaylıyor musunuz?")) { localStorage.setItem('sm_ghost_mode', 'true'); localStorage.setItem('sm_current_tenant', kurumKod); localStorage.setItem('sm_current_kurum_adi', kurumAdi); window.location.reload(); } }
+        function hayaletModdanCik() { localStorage.removeItem('sm_ghost_mode'); localStorage.setItem('sm_current_tenant', 'patron_base'); localStorage.setItem('sm_current_kurum_adi', 'YÖNETİM MERKEZİ'); window.location.reload(); }
+
+        // =========================================
+        // PWA KURULUM
+        // =========================================
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+        let deferredPrompt; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; let installBtn = document.getElementById('btnInstallApp'); if(installBtn) installBtn.style.display = 'inline-block'; });
+        function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then((choiceResult) => { if (choiceResult.outcome === 'accepted') document.getElementById('btnInstallApp').style.display = 'none'; deferredPrompt = null; }); } }
+
+        // =========================================
+        // ANTI-HIRSIZLIK KALKANI
         // =========================================
         document.addEventListener('contextmenu', event => event.preventDefault());
-
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault(); e.stopPropagation(); return false;
-            }
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); e.stopPropagation(); return false; }
             if (e.ctrlKey || e.metaKey) {
-                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
-                    e.preventDefault(); e.stopPropagation(); return false;
-                }
-                if (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's' || e.key === 'P' || e.key === 'p') {
-                    e.preventDefault(); e.stopPropagation(); return false;
-                }
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's' || e.key === 'P' || e.key === 'p') { e.preventDefault(); e.stopPropagation(); return false; }
             }
         });
+        document.addEventListener('selectstart', function(e) { if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name')) { e.preventDefault(); } });
 
-        document.addEventListener('selectstart', function(e) {
-            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name')) {
-                e.preventDefault();
-            }
-        });
-        
     </script>
 </body>
 </html>
+
 
 
 
