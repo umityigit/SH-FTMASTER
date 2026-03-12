@@ -918,7 +918,8 @@
         ];
 
         function loadStaffPool() {
-            db.ref(`sistem_verileri/${currentKurum}/havuz_${aktifKadro}`).on('value', snap => {
+            // HATA DÜZELTİLDİ: Veriler doğrudan seçilen kapıya göre (İşçi/Memur) çekiliyor!
+            db.ref("havuz_" + aktifKadro).on('value', snap => {
                 staffList = [];
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([key, val]) => {
@@ -949,7 +950,7 @@
         function toggleMainPoolGender(e, id, currentGender) {
             e.stopPropagation(); 
             let newGender = currentGender === 'E' ? 'K' : 'E';
-            db.ref(`sistem_verileri/${currentKurum}/havuz_${aktifKadro}/${id}`).update({ cinsiyet: newGender });
+            db.ref("havuz_" + aktifKadro + "/" + id).update({ cinsiyet: newGender });
         }
 
         function addStaff() {
@@ -967,7 +968,7 @@
                         let cevap = confirm(`Sistem bu ismi tanıyamadı!\n\n"${n}" isimli personel KADIN mı?\n\n[Tamam] = Kadın 👩\n[İptal] = Erkek 👨`);
                         cins = cevap ? "K" : "E";
                     }
-                    db.ref(`sistem_verileri/${currentKurum}/havuz_${aktifKadro}`).push({ isim: n, cinsiyet: cins });
+                    db.ref("havuz_" + aktifKadro).push({ isim: n, cinsiyet: cins });
                     addedCount++;
                 }
             });
@@ -977,15 +978,15 @@
 
         function removeStaff(e, id, name) {
             e.stopPropagation();
-            if(confirm(`${name} silinsin mi?`)) db.ref(`sistem_verileri/${currentKurum}/havuz_${aktifKadro}/${id}`).remove();
+            if(confirm(`${name} silinsin mi?`)) db.ref("havuz_" + aktifKadro + "/" + id).remove();
         }
 
         function clearStaffPool() {
             if(confirm(`TÜM ${aktifKadro.toUpperCase()} HAVUZUNU SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ?`)) {
-                db.ref(`sistem_verileri/${currentKurum}/havuz_${aktifKadro}`).remove();
+                db.ref("havuz_" + aktifKadro).remove();
             }
         }
-
+        
         // =========================================
         // EXCEL MODAL VE İÇE AKTARIM
         // =========================================
@@ -1357,3 +1358,4 @@
     </script>
 </body>
 </html>
+
