@@ -609,6 +609,84 @@
     </div>
 
     <script>
+
+        // -------------------------------------------------------------
+        // KOKPİT ARAYÜZÜ VE ZEKİ KİMLİK TANIMA MOTORU
+        // -------------------------------------------------------------
+        
+        // Ümit Abi'nin Sabit Kadın Personel Listesi (Sistem bunları asla unutmaz)
+        const kadinPersonelListesi = [
+            "AYŞE BOZKAYA", "AYŞENA KARA", "BETÜL ŞİMŞEK", "BURCU DERELİOĞLU", 
+            "FATMA ÇALIŞKAN", "FATMA IŞIK", "FATMA KOÇAR", "FUNDA POYRAZ", 
+            "GÜLBAHAR ÜNVER", "GÜLLÜ TOSUN", "HAFİSE DİKMEN", "HAFİZE ÖNAL", 
+            "HATİCE KARAKUŞ", "HATİCE YILDIRIM", "HURİYE ELMAS", "MAKBULE DENK", 
+            "MERVE ÖZ", "NAZMİYE DURAN", "NEJLA NİLİ", "ÖZLEM DURSUN", 
+            "SAFİYE DENECİ", "SEDA YILMAZ", "SONGÜL DİLEK", "SONGÜL ERDOĞAN", 
+            "SONGÜL ÖZTÜRK", "ÜMMÜ KURU", "ZELİHA ERSOY", "ZEYNEP BOZAN"
+        ];
+
+        // 1. Cinsiyet İkonunu Elle Değiştirme (Hata olursa tıklayıp düzeltmek için)
+        function toggleGender(btn) {
+            let chip = btn.parentElement;
+            let currentGender = chip.getAttribute("data-gender");
+            if(currentGender === "E") {
+                chip.setAttribute("data-gender", "K");
+                btn.innerText = "👩";
+            } else {
+                chip.setAttribute("data-gender", "E");
+                btn.innerText = "👨";
+            }
+        }
+
+        // 2. Kadroya Çip Ekleme (Yapay Zeka Taramalı)
+        function aiAddStaffChip(isim = null) {
+            let name = isim || document.getElementById('aiAddStaffInput').value.trim();
+            if(!name) return;
+            
+            let upperName = name.toUpperCase();
+            let cinsiyet = "E"; // Varsayılan Erkek
+            let isKadin = kadinPersonelListesi.some(k => upperName.includes(k)); // Hafızada var mı?
+
+            if (isKadin) {
+                // Hafızada buldu, otomatik Kadın yaptı
+                cinsiyet = "K";
+            } else if (!isim) {
+                // Elle yeni bir isim yazıldıysa ve listede yoksa kullanıcıya sor!
+                let cevap = confirm(`"${name}" isimli personel KADIN mı?\n\n[Tamam] = Kadın 👩\n[İptal] = Erkek 👨`);
+                cinsiyet = cevap ? "K" : "E";
+            }
+            
+            let container = document.getElementById('aiStaffChipContainer');
+            let icon = cinsiyet === "E" ? "👨" : "👩";
+            
+            let html = `
+            <div class="ai-staff-chip" data-gender="${cinsiyet}">
+                <span class="staff-name-text">${name}</span>
+                <button class="gender-btn" onclick="toggleGender(this)" title="Cinsiyeti Değiştir">${icon}</button> 
+                <span style="color:#ef4444; cursor:pointer; font-size:14px; margin-left:5px;" onclick="this.parentElement.remove()">×</span>
+            </div>`;
+            
+            container.insertAdjacentHTML('beforeend', html);
+            document.getElementById('aiAddStaffInput').value = ""; // Kutuyu temizle
+        }
+
+        // 3. Modalı açarken arkadaki tablodan isimleri otomatik okuyup kutuya doldurma
+        function openAiModal() {
+            populateAiShiftSelects();
+            document.getElementById('aiGeneratorModal').classList.add('show');
+            document.getElementById('aiGeneratorModal').style.display = 'flex';
+            
+            let baseTable = document.querySelector('.table-wrapper');
+            let container = document.getElementById('aiStaffChipContainer');
+            
+            // Eğer çip kutusu boşsa, tablodaki isimleri sırayla çip olarak ekle
+            if(baseTable && container && container.innerHTML.trim() === '') {
+                let names = Array.from(baseTable.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector('.editable-name').innerText.trim());
+                names.forEach(n => aiAddStaffChip(n)); // Tablodakileri eklerken üstteki tanıma motorunu kullanır
+            }
+        }
+    </script>
+        
         function openSupportModal() {
             document.getElementById('supportModal').style.display = 'flex';
             setTimeout(() => document.getElementById('supportModal').classList.add('show'), 10);
@@ -1773,6 +1851,7 @@ function startAiDistribution() {
     </script>
 </body>
 </html>
+
 
 
 
