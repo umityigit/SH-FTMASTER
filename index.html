@@ -278,32 +278,52 @@
             document.getElementById('form' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
         }
 
-        // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
+      // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
         async function sihirliGirisYap() {
             const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
             const sifre = document.getElementById("loginSifre").value;
-
             if(!kod || !sifre) return alert("Boş alan bırakmayın!");
+
+            // Ali'nin girdiği şifreyi veritabanındaki formatına (kriptoya) çeviriyoruz
+            let kriptoluSifre = await sifreKriptola(sifre);
 
             rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
                 if(!snap.exists()) return alert("Hatalı Kurum Kodu!");
                 const kurumData = snap.val();
 
-                auth.signInWithEmailAndPassword(kurumData.patronEmail, sifre).then((uc) => {
-                    // BAŞARILI GİRİŞ
+                // 1. ÖNCE PATRON (SEN) MİSİN DİYE BAKIYOR
+                auth.signInWithEmailAndPassword(kurumData.patronEmail, sifre).then(() => {
+                    // SEN İSEN GİRİŞ BAŞARILI
                     localStorage.setItem('sm_current_tenant', kod);
                     localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
                     localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
                     localStorage.setItem('sm_role', 'admin');
-
-                    // 🚪 LOGIN FORMUNU GİZLE, KAPILARI GÖSTER
+                    
                     document.getElementById("loginCard").style.display = "none";
                     document.getElementById("gateSelector").style.display = "block";
+                }).catch(err => {
+                    
+                    // 2. PATRON DEĞİLSEN, ALT YÖNETİCİ (ALİ) MİSİN DİYE VERİTABANINA BAKIYOR
+                    rtdb.ref('kurum_alt_yoneticileri/' + kod + '/' + kriptoluSifre).once('value').then(altSnap => {
+                        if(altSnap.exists()) {
+                            // ALİ İSE GİRİŞ BAŞARILI
+                            const altData = altSnap.val();
+                            localStorage.setItem('sm_current_tenant', kod);
+                            localStorage.setItem('sm_active_user', altData.isim.toUpperCase());
+                            localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
+                            localStorage.setItem('sm_role', altData.rol || 'user');
+                            
+                            document.getElementById("loginCard").style.display = "none";
+                            document.getElementById("gateSelector").style.display = "block";
+                        } else {
+                            // İKİSİ DE DEĞİLSE ŞİFRE GERÇEKTEN YANLIŞTIR
+                            alert("Şifre Yanlış!"); 
+                        }
+                    });
 
-                }).catch(err => alert("Şifre Yanlış!"));
+                });
             });
         }
-
         // DİĞER KAYIT VE GÜVENLİK KODLARIN BURADA DEVAM EDİYORDU (KORUNDU)
         (function() {
             document.addEventListener('contextmenu', e => e.preventDefault());
