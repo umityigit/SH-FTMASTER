@@ -254,12 +254,19 @@
                     <div id="logList" class="log-list"></div>
                 </div>
             </div>
+            
 
             <div class="card">
                 <h4 style="margin:0 0 20px 0; color:#fff; font-size:18px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📁 AKTİF ÇALIŞMA PLANLARI (PANODAKİLER)</h4>
                 <div id="archiveList" class="archive-grid"></div>
             </div>
-
+            <div class="card" style="border-color: var(--accent); background: rgba(56, 189, 248, 0.05); margin-top:25px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(56, 189, 248, 0.3); padding-bottom:10px; margin-bottom:20px;">
+        <h4 style="margin:0; color:var(--accent); font-size:18px;">🤖 SİHİRBAZ ÜRETİMİ (YENİ GELEN TABLOLAR)</h4>
+        <div onclick="triggerPatronModu()" style="cursor:pointer; font-size:18px; font-weight:900; text-shadow: 0 0 15px var(--accent); letter-spacing: 2px;">Aİ <span style="color:var(--cyan);">MASTER ERP</span></div>
+    </div>
+    <div id="aiArchiveList" class="archive-grid"></div>
+</div>
             <div class="card" style="border-color: var(--accent); background: rgba(56, 189, 248, 0.05);">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(56, 189, 248, 0.3); padding-bottom:10px; margin-bottom:20px;">
                     <h4 style="margin:0; color:var(--accent); font-size:18px;">🤖 SİHİRBAZ ÜRETİMİ (YENİ GELEN TABLOLAR)</h4>
@@ -273,7 +280,7 @@
                 <button class="btn btn-cyan" style="padding:15px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
                 <button class="btn btn-green" style="padding:15px 30px; font-size: 14px;" onclick="openExcelModal()">📥 EXCEL'DEN ÇEK</button>
                 
-                <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); padding:15px 30px; font-size:14px; margin-left:auto;" onclick="window.location.href='isci_sihirbaz.html'">🪄 YAPAY ZEKA SİHİRBAZINA GİT</button>
+                <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); padding:15px 30px; font-size:14px; margin-left:auto;" onclick="window.location.href='isci_sihirbaz.html'"='isci_sihirbaz.html'">🪄 YAPAY ZEKA SİHİRBAZINA GİT</button>
             </div>
 
             <div class="card">
@@ -462,6 +469,78 @@
     </div>
 
     <script>
+        // 🔥 Aİ SİHİRBAZI KÖPRÜSÜ 🔥
+        function loadAiArchives() {
+            db.ref("isci_sihirbaz_arsiv").on("value", snap => {
+                const l = document.getElementById("aiArchiveList");
+                if(!l) return; l.innerHTML = "";
+                if(snap.val()) {
+                    Object.entries(snap.val()).reverse().forEach(([id, val]) => {
+                        const div = document.createElement("div"); div.className = "archive-card"; div.style.borderColor = "var(--cyan)";
+                        div.innerHTML = `
+                            <div style="flex:1" onclick="importFromAi('${id}')">
+                                <b style="color:var(--cyan); font-size:16px;">🪄 ${val.name || 'AI Tablosu'}</b><br>
+                                <small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${val.days}</b> Gün</small>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;">
+                                <button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="importFromAi('${id}')">📥 PANOYA AL</button>
+                                <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delAiArchive(event, '${id}')">🗑️ SİL</button>
+                            </div>
+                        `; l.appendChild(div);
+                    });
+                } else { l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Sihirbazdan henüz gelen tablo yok.</div>"; }
+            });
+        }
+
+        function importFromAi(id) {
+            db.ref("isci_sihirbaz_arsiv").child(id).once("value", snap => {
+                const val = snap.val(); if(!val) return;
+                let sDate = val.start ? new Date(val.start) : new Date(); 
+                let cols = parseInt(val.days) || 30;
+                let exportData = val.rows.map(r => { return { name: r.name, shifts: r.shifts.map(s => ({ text: s.t !== undefined ? s.t : s.text, bg: s.b !== undefined ? s.b : s.bg, pin: s.pin || "" })) }; });
+                startNewSession(); 
+                generateTable(true, exportData, val.name || "AI Tablo", sDate, cols);
+                showToast("Sihirbaz Tablosu Pano'ya Çekildi! Kaydetmeyi unutmayın."); 
+                logAction("Sihirbazdan tablo çekti.");
+            });
+        }
+
+        function delAiArchive(e, id) { e.stopPropagation(); if(confirm("Sihirbaz taslağını silmek istediğinize emin misiniz?")) { db.ref("isci_sihirbaz_arsiv").child(id).remove(); } }
+
+        // 🔥 İŞLEM LOGLARI MOTORU 🔥
+        function loadLogs() {
+            db.ref("islem_loglari").limitToLast(50).on("value", snap => {
+                const l = document.getElementById("logList");
+                if(!l) return; l.innerHTML = "";
+                if(snap.val()) {
+                    let logs = [];
+                    snap.forEach(child => { logs.push(child.val()); });
+                    logs.reverse().forEach(val => {
+                        l.innerHTML += `
+                        <div class="log-item">
+                            <div><span class="log-user">👤 ${val.user}</span> <span style="color:#e2e8f0; margin-left:5px;">${val.action}</span></div>
+                            <div style="font-size:10px; color:#64748b; margin-top:5px; text-align:right;">${val.time} | ${val.date}</div>
+                        </div>`;
+                    });
+                } else { l.innerHTML = "<div style='color:#64748b; text-align:center; padding:20px; font-size:12px;'>Kayıtlı işlem yok.</div>"; }
+            });
+        }
+
+        // 👑 PATRON MODU TETİKLEYİCİSİ 👑
+        let devClickCount = 0;
+        function triggerPatronModu() {
+            devClickCount++;
+            if(devClickCount >= 5) { 
+                let pass = prompt("Sistem Kurucu Şifresini Giriniz:");
+                if(pass === "2026") { 
+                    localStorage.setItem("sm_role", "superadmin");
+                    alert("👑 PATRON MODU AKTİF! Sistemin tüm yetkileri açıldı. Sayfayı yenileyin.");
+                    window.location.reload();
+                } else { alert("Yanlış şifre!"); }
+                devClickCount = 0;
+            }
+            setTimeout(() => { devClickCount = 0; }, 2000);
+        }
         // 👑 GİZLİ KAPI: PATRON MODU TETİKLEYİCİ
         let devClickCount = 0;
         function triggerPatronModu() {
@@ -1275,64 +1354,46 @@
         // 🔥 KUSURSUZ BUGÜN KİMLER VAR (SAAT FARKLARINDAN ETKİLENMEZ) 🔥
         function showTodaySummary(tarihStr = null) {
             openModal('todaySummaryModal');
-            
-            let targetDate = new Date();
-            const datePicker = document.getElementById('summaryDatePicker');
-            
-            const tzoffset = (new Date()).getTimezoneOffset() * 60000; 
-            const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
-
-            if (selectedDateStr) { targetDate = new Date(selectedDateStr); } 
-            else { if(!datePicker.value) { datePicker.value = localISOTime; } else { targetDate = new Date(datePicker.value); } }
-            
-            targetDate.setHours(0,0,0,0);
+            let targetDate = tarihStr ? new Date(tarihStr) : new Date();
+            targetDate.setHours(0,0,0,0); // 🔥 GÜN KAYMASINI ÖNLEYEN KOD
             
             const todayStr = `${String(targetDate.getDate()).padStart(2,'0')}.${String(targetDate.getMonth()+1).padStart(2,'0')}.${targetDate.getFullYear()}`;
-            const dayNames = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-            document.getElementById('todaySummaryDateText').innerText = `Seçilen Gün: ${todayStr} - ${dayNames[targetDate.getDay()]}`;
+            document.getElementById('todaySummaryDateText').innerText = `Seçilen Gün: ${todayStr}`;
             
             const listDay = document.getElementById('listDay'); const listNight = document.getElementById('listNight'); const listOff = document.getElementById('listOff');
+            listDay.innerHTML = ''; listNight.innerHTML = ''; listOff.innerHTML = '';
+            let dayCount = 0, nightCount = 0, offCount = 0;
             
-            listDay.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>'; listNight.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>'; listOff.innerHTML = '<span style="color:#64748b;">Buluttan taranıyor... ⏳</span>';
-            
-            db.ref("arsivlenmis_shiftler").once("value").then(snap => {
-                listDay.innerHTML = ''; listNight.innerHTML = ''; listOff.innerHTML = '';
-                let dayCount = 0, nightCount = 0, offCount = 0;
+            document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                let startDt = new Date(wrapper.getAttribute("data-startdt"));
+                startDt.setHours(0,0,0,0); // 🔥 GÜN KAYMASINI ÖNLEYEN KOD
+                const tName = wrapper.getAttribute("data-tablename");
                 
-                if(snap.val()) {
-                    Object.values(snap.val()).forEach(archive => {
-                        let tables = archive.tables ? archive.tables : (archive.data ? [archive] : []);
-                        tables.forEach(t => {
-                            let startDt = t.startDate ? new Date(t.startDate) : null;
-                            if(!startDt) return;
-                            startDt.setHours(0,0,0,0);
+                let timeDiff = targetDate.getTime() - startDt.getTime();
+                let dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24)); // Round yerine Floor kullanıldı
+                
+                if(dayDiff >= 0 && dayDiff < parseInt(wrapper.getAttribute("data-colcount"))) {
+                    wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
+                        let name = tr.querySelector('.editable-name').innerText.trim();
+                        let cell = tr.querySelectorAll('.shift-cell')[dayDiff];
+                        if(cell && !cell.classList.contains('hidden-by-snipper')) {
+                            let shiftVal = cell.innerText.trim().toUpperCase();
+                            if(shiftVal === "" || shiftVal === "0") return; 
                             
-                            let timeDiff = targetDate.getTime() - startDt.getTime();
-                            let dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+                            let itemHtml = `<div style="padding:10px 5px; border-bottom:1px dashed rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; color:#e2e8f0;">👤 ${name}</span> <strong style="background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; color:#fff; border:1px solid rgba(255,255,255,0.2);">${shiftVal}</strong></div>`;
                             
-                            if(dayDiff >= 0 && dayDiff < (t.colCount || 30)) {
-                                t.data.forEach(row => {
-                                    if(!row.shifts || !row.shifts[dayDiff]) return;
-                                    let shiftVal = row.shifts[dayDiff].text.trim().toUpperCase();
-                                    if(shiftVal === "" || shiftVal === "0") return; 
-                                    
-                                    let itemHtml = `<div style="padding:10px 5px; border-bottom:1px dashed rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; color:#e2e8f0;">👤 ${row.name}</span> <strong style="background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:6px; color:#fff; border:1px solid rgba(255,255,255,0.2);">${shiftVal}</strong></div>`;
-                                    
-                                    if(["HT", "İ", "R", "Yİ", "Nİ", "RT", "RAPOR", "İZİN"].includes(shiftVal)) { listOff.innerHTML += itemHtml; offCount++; } 
-                                    else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET") || shiftVal === "N") { listNight.innerHTML += itemHtml; nightCount++; } 
-                                    else { listDay.innerHTML += itemHtml; dayCount++; }
-                                });
-                            }
-                        });
+                            if(["HT", "İ", "R", "RAPOR"].includes(shiftVal)) { listOff.innerHTML += itemHtml; offCount++; } 
+                            else if(shiftVal.startsWith("16:") || shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.includes("NÖBET")) { listNight.innerHTML += itemHtml; nightCount++; } 
+                            else { listDay.innerHTML += itemHtml; dayCount++; }
+                        }
                     });
                 }
-                
-                document.getElementById('cDay').innerText = dayCount; document.getElementById('cNight').innerText = nightCount; document.getElementById('cOff').innerText = offCount;
-                
-                if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gündüz mesaisinde kimse bulunamadı.</div>';
-                if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gece nöbetinde kimse bulunamadı.</div>';
-                if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli/raporlu kimse bulunamadı.</div>';
             });
+            
+            document.getElementById('cDay').innerText = dayCount; document.getElementById('cNight').innerText = nightCount; document.getElementById('cOff').innerText = offCount;
+            if(dayCount===0) listDay.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Gündüz kimse yok.</div>';
+            if(nightCount===0) listNight.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">Gece kimse yok.</div>';
+            if(offCount===0) listOff.innerHTML = '<div style="color:#64748b; font-style:italic; padding:10px;">İzinli kimse yok.</div>';
         }
 
         // =========================================
