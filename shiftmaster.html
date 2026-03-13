@@ -15,6 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#050b14">
 
     <style>
@@ -263,11 +264,6 @@
                 </div>
             </div>
 
-            <div class="card">
-                <h4 style="margin:0 0 20px 0; color:#fff; font-size:18px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📁 AKTİF ÇALIŞMA PLANLARI (PANODAKİLER)</h4>
-                <div id="archiveList" class="archive-grid"></div>
-            </div>
-
             <div class="card" style="border-color: var(--accent); background: rgba(56, 189, 248, 0.05);">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(56, 189, 248, 0.3); padding-bottom:10px; margin-bottom:20px;">
                     <h4 style="margin:0; color:var(--accent); font-size:18px;">🤖 SİHİRBAZ ÜRETİMİ (YENİ GELEN TABLOLAR)</h4>
@@ -276,13 +272,18 @@
                 <div id="aiArchiveList" class="archive-grid"></div>
             </div>
 
+            <div class="card">
+                <h4 style="margin:0 0 20px 0; color:#fff; font-size:18px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📁 AKTİF ÇALIŞMA PLANLARI (PANODAKİLER)</h4>
+                <div id="archiveList" class="archive-grid"></div>
+            </div>
+
             <div class="card" style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; background:linear-gradient(145deg, rgba(15,23,42,0.8), rgba(2,6,23,0.9));">
                 <div><label style="font-size:11px; color:var(--accent); font-weight:900; margin-left:5px; text-shadow:0 0 5px var(--accent);">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input" style="font-size:14px; padding:10px 15px;"></div>
                 <div><label style="font-size:11px; color:var(--accent); font-weight:900; margin-left:5px; text-shadow:0 0 5px var(--accent);">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:80px; text-align:center; font-size:16px; font-weight:900; padding:10px;"></div>
                 <button class="btn btn-cyan" style="padding:15px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
                 <button class="btn btn-green" style="padding:15px 30px; font-size: 14px;" onclick="openExcelModal()">📥 EXCEL'DEN ÇEK</button>
                 
-                <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); padding:15px 30px; font-size:14px; margin-left:auto;" onclick="window.location.href='isci_sihirbaz.html'">🪄 YAPAY ZEKA SİHİRBAZINA GİT</button>
+                <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); padding:15px 30px; font-size:14px; margin-left:auto;" onclick="window.location.href='isci_sihirbaz.html'">🪄 SİHİRLİ DAĞITIM (YAPAY ZEKA)</button>
             </div>
 
             <div class="card">
@@ -351,7 +352,7 @@
                     <button class="btn btn-cyan" onclick="exportAllToExcel()">📋 TÜMÜNÜ EXCEL'E KOPYALA</button>
                     <button class="btn btn-green" style="box-shadow:0 0 20px rgba(16,185,129,0.5);" onclick="saveMasterArchive()">💾 PANODA KAYDET</button>
                     <span style="width:2px; height:25px; background:rgba(255,255,255,0.2); margin:0 5px;"></span>
-                    <button class="btn" style="background:linear-gradient(135deg, #8b5cf6, #6d28d9); border:1px solid #a855f7; color:white; font-weight:900; box-shadow:0 0 15px rgba(139,92,246,0.5);" onclick="window.location.href='isci_sihirbaz.html'">🪄 YAPAY ZEKA SİHİRBAZINA GİT</button>
+                    <button class="btn" style="background:linear-gradient(135deg, #8b5cf6, #6d28d9); border:1px solid #a855f7; color:white; font-weight:900; box-shadow:0 0 15px rgba(139,92,246,0.5);" onclick="window.location.href='isci_sihirbaz.html'">🪄 SİHİRBAZA GİT</button>
                     <button class="btn btn-purple" onclick="safeAppendTable()">➕ YENİ TABLO EKLE</button>
                     <button class="btn btn-red" onclick="closeModal('tableModalOverlay')">❌ EKRANI KAPAT</button>
                 </div>
@@ -625,7 +626,14 @@
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
 
-                        loadStaffPool(); loadArchives(); loadPermanentArchives(); loadNews(); loadAiArchives(); loadLogs();
+                        // 🔥 BÜTÜN YÜKLEMELER BURADA YAPILIYOR 🔥
+                        loadStaffPool(); 
+                        loadArchives(); 
+                        loadPermanentArchives(); 
+                        loadNews(); 
+                        loadLogs(); // Loglar yüklenecek
+                        loadAiArchives(); // Sihirbazdan gelenler yüklenecek
+                        
                         logAction("Sisteme giriş yaptı.");
                     } else {
                         window.location.href = "index.html"; 
@@ -660,6 +668,7 @@
                     }
                 } else { alert("Oturum bulunamadı! Lütfen tekrar giriş yapın."); }
             } else if (role === 'superadmin') {
+                // 👑 SİSTEM KURUCUSU ŞİFRE DEĞİŞTİRME MOTORU 👑
                 let eskiSifre = prompt(`Sistem Kurucusu, güvenliğiniz için lütfen MEVCUT ŞİFRENİZİ girin:`);
                 if(!eskiSifre) return;
                 
@@ -670,16 +679,20 @@
                     
                     originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).once('value').then(snap => {
                         if(snap.exists()) {
+                            // Yeni şifreyi kaydet, eskisini yok et!
                             originalRef('kurum_alt_yoneticileri/patron_base/' + yeniKripto).set({ isim: "SİSTEM KURUCUSU", rol: "superadmin" }).then(() => {
                                 originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).remove().then(() => {
                                     alert("Kurucu şifreniz başarıyla güncellendi! Güvenlik için sistemden çıkış yapılıyor. Lütfen yeni şifrenizle girin."); 
                                     logout();
                                 });
                             });
-                        } else { alert("Mevcut (Eski) şifrenizi yanlış girdiniz! İşlem iptal edildi."); }
+                        } else {
+                            alert("Mevcut (Eski) şifrenizi yanlış girdiniz! İşlem iptal edildi.");
+                        }
                     });
                 }
             } else {
+                // Alt Yönetici Şifre Değiştirme
                 let eskiSifre = prompt(`Merhaba ${isim}, lütfen MEVCUT (ESKİ) ŞİFRENİZİ girin:`); if (!eskiSifre) return;
                 let yeniSifre = prompt("Lütfen YENİ ŞİFRENİZİ girin:"); if (!yeniSifre || yeniSifre.trim() === "") return;
                 eskiSifre = eskiSifre.trim(); yeniSifre = yeniSifre.trim();
@@ -707,8 +720,12 @@
             if(!isim || !sifre) return alert("Lütfen havuzdan isim seçin ve şifre belirleyin!");
             
             let kriptoluSifre = await sifreKriptola(sifre);
+            
             originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + kriptoluSifre).set({ isim: isim, rol: "user" }).then(() => { 
-                showToast("Yönetici Eklendi! ✅"); document.getElementById('sorumluIsim').value = ""; document.getElementById('sorumluSifre').value = ""; logAction(`Yeni yönetici atadı: ${isim}`); 
+                showToast("Yönetici Eklendi! ✅"); 
+                document.getElementById('sorumluIsim').value = ""; 
+                document.getElementById('sorumluSifre').value = ""; 
+                logAction(`Yeni yönetici atadı: ${isim} (Şifre Kriptolandı)`); 
             });
         }
 
@@ -717,6 +734,7 @@
                 const list = document.getElementById('sorumluListesi'); if(!list) return; list.innerHTML = "";
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([sif, data]) => { 
+                        // sif artık karmaşık bir kod olduğu için ekranda göstermiyoruz, "Kriptolu" yazıyoruz
                         list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
                             <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--success); margin-left:8px; background:rgba(16,185,129,0.1); padding:2px 8px; border-radius:6px; border:1px dashed var(--success);">🔒 Kriptolu</span></span>
                             <div style="display:flex; gap:10px; align-items:center;">
@@ -733,10 +751,13 @@
             e.stopPropagation(); 
             let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
             if(yeniSifre && yeniSifre.trim() !== "") {
-                yeniSifre = yeniSifre.trim(); let yeniKripto = await sifreKriptola(yeniSifre);
-                if(yeniKripto === eskiKripto) return; 
+                yeniSifre = yeniSifre.trim(); 
+                let yeniKripto = await sifreKriptola(yeniSifre);
+                if(yeniKripto === eskiKripto) return; // Şifre aynıysa işlem yapma
                 originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniKripto).set({ isim: isim, rol: "user" }).then(() => {
-                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKripto).remove().then(() => { showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); });
+                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKripto).remove().then(() => { 
+                        showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); 
+                    });
                 });
             }
         }
@@ -779,6 +800,7 @@
             }); 
         }
 
+        // 🔥 İŞLEM LOGLARINI YÜKLEYEN FONKSİYON 🔥
         function loadLogs() {
             db.ref("islem_loglari").limitToLast(50).on("value", snap => {
                 const l = document.getElementById("logList");
@@ -808,22 +830,19 @@
         
         function logAction(actionText, detay = "") { 
             if(!currentUser) return; 
-            if(localStorage.getItem('sm_ghost_mode') === 'true') { console.log("Hayalet Modu İşlemi: " + actionText); return; }
+            if(localStorage.getItem('sm_ghost_mode') === 'true') { console.log("Hayalet Modu: " + actionText); return; }
             const now = new Date();
             db.ref("islem_loglari").push({ user: currentUser, action: actionText, detay: detay, time: now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}), date: now.toLocaleDateString('tr-TR', {day: '2-digit', month: '2-digit', year: 'numeric'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); 
         }
 
-        // 🔥 YENİ: Aİ (SİHİRBAZ) TABLOLARINI ÇEKME KÖPRÜSÜ 🔥
+        // 🔥 Aİ (SİHİRBAZ) TABLOLARINI ÇEKME KÖPRÜSÜ 🔥
         function loadAiArchives() {
             db.ref("isci_sihirbaz_arsiv").on("value", snap => {
                 const l = document.getElementById("aiArchiveList");
-                if(!l) return;
-                l.innerHTML = "";
+                if(!l) return; l.innerHTML = "";
                 if(snap.val()) {
                     Object.entries(snap.val()).reverse().forEach(([id, val]) => {
-                        const div = document.createElement("div");
-                        div.className = "archive-card";
-                        div.style.borderColor = "var(--cyan)";
+                        const div = document.createElement("div"); div.className = "archive-card"; div.style.borderColor = "var(--cyan)";
                         div.innerHTML = `
                             <div style="flex:1" onclick="importFromAi('${id}')">
                                 <b style="color:var(--cyan); font-size:16px;">🪄 ${val.name || 'AI Tablosu'}</b><br>
@@ -833,46 +852,23 @@
                                 <button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="importFromAi('${id}')">📥 PANOYA AL</button>
                                 <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delAiArchive(event, '${id}')">🗑️ SİL</button>
                             </div>
-                        `;
-                        l.appendChild(div);
+                        `; l.appendChild(div);
                     });
-                } else {
-                    l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Sihirbazdan henüz gelen tablo yok.</div>";
-                }
+                } else { l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Sihirbazdan henüz gelen tablo yok.</div>"; }
             });
         }
 
         function importFromAi(id) {
             db.ref("isci_sihirbaz_arsiv").child(id).once("value", snap => {
-                const val = snap.val();
-                if(!val) return;
-                let sDate = val.start ? new Date(val.start) : new Date();
-                let cols = parseInt(val.days) || 30;
-                
-                let exportData = val.rows.map(r => {
-                    return {
-                        name: r.name,
-                        shifts: r.shifts.map(s => ({
-                            text: s.t !== undefined ? s.t : s.text,
-                            bg: s.b !== undefined ? s.b : s.bg,
-                            pin: s.pin || ""
-                        }))
-                    };
-                });
-                
-                startNewSession(); 
-                generateTable(true, exportData, val.name, sDate, cols);
-                showToast("AI Tablosu Ekrana Çekildi! Kaydetmeyi Unutmayın.");
-                logAction("Sihirbazdan tablo çekti.");
+                const val = snap.val(); if(!val) return;
+                let sDate = val.start ? new Date(val.start) : new Date(); let cols = parseInt(val.days) || 30;
+                let exportData = val.rows.map(r => { return { name: r.name, shifts: r.shifts.map(s => ({ text: s.t !== undefined ? s.t : s.text, bg: s.b !== undefined ? s.b : s.bg, pin: s.pin || "" })) }; });
+                startNewSession(); generateTable(true, exportData, val.name, sDate, cols);
+                showToast("AI Tablosu Ekrana Çekildi! Kaydetmeyi Unutmayın."); logAction("Sihirbazdan tablo çekti.");
             });
         }
 
-        function delAiArchive(e, id) {
-            e.stopPropagation();
-            if(confirm("Sihirbazdan gelen bu taslağı silmek istediğinize emin misiniz?")) {
-                db.ref("isci_sihirbaz_arsiv").child(id).remove();
-            }
-        }
+        function delAiArchive(e, id) { e.stopPropagation(); if(confirm("Sihirbazdan gelen bu taslağı silmek istediğinize emin misiniz?")) { db.ref("isci_sihirbaz_arsiv").child(id).remove(); } }
 
         function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; let count = 0; staffList = []; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); } document.getElementById("staffCounter").innerText = count; }); }
         function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; const lines = raw.split('\n'); lines.forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction(`${lines.length} personel ekledi.`); inp.value = ""; }
@@ -967,23 +963,11 @@
         function showAllColumns(btn) { saveHistory(); const table = btn.closest('.table-wrapper').querySelector('table'); table.querySelectorAll('.hidden-by-snipper').forEach(el => el.classList.remove('hidden-by-snipper')); }
         
         let activeHeaderCell = null;
-        function editColumnDate() { 
-            document.getElementById("headerContextMenu").style.display = "none"; 
-            if(!activeHeaderCell) return; 
-            let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); 
-            if(newVal && newVal.trim() !== "") { 
-                saveHistory(); 
-                activeHeaderCell.setAttribute("data-date", newVal); 
-                let parts = newVal.split("."); 
-                if(parts.length === 3) { 
-                    let d = new Date(parts[2], parts[1]-1, parts[0]); 
-                    activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; 
-                    if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); 
-                } 
-            } 
-        }
-
-        // 🔥 EKSİK OLAN FONKSİYONLAR BURAYA EKLENDİ 🔥
+        function editColumnDate() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); if(newVal && newVal.trim() !== "") { saveHistory(); activeHeaderCell.setAttribute("data-date", newVal); let parts = newVal.split("."); if(parts.length === 3) { let d = new Date(parts[2], parts[1]-1, parts[0]); activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); } } }
+        
+        // =========================================
+        // 🔥 SÜTUN EKLEME/SİLME FONKSİYONLARI 🔥
+        // =========================================
         function insertColumn(dir) { 
             document.getElementById("headerContextMenu").style.display = "none"; 
             if(!activeHeaderCell) return; 
@@ -1042,121 +1026,41 @@
             } 
         }
 
-        // 🔥 FARE VE EXCEL OLAYLARI 🔥
-        let isDraggingCells = false; let startSelectCell = null; let startSelectHeader = null;
+        // =========================================
+        // 🔥 ARŞİVLEME SİSTEMİ 🔥
+        // =========================================
+        function loadArchives() { db.ref("arsivlenmis_shiftler").on("value", snap => { const l = document.getElementById("archiveList"); l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', false)"><b style="color:var(--accent); font-size:16px; text-shadow:0 0 10px var(--glass-glow);">📁 ${val.name || 'İsimsiz'}</b><br><small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-orange" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button><button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } }); }
+        function loadPermanentArchives() { db.ref("kalici_depo").on("value", snap => { const l = document.getElementById("permanentArchiveList"); if(!l) return; l.innerHTML = ""; if(snap.val()) { let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); arr.forEach(({id, val}) => { let count = val.tables ? val.tables.length : 1; const div = document.createElement("div"); div.className = "archive-card"; div.style.border = "1px dashed rgba(255,255,255,0.2)"; div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', true)"><b style="color:#94a3b8; font-size:16px;">📦 ${val.name || 'İsimsiz'}</b><br><small style="color:#64748b; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-green" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="restoreFromPermanentArchive(event, '${id}')">♻️ PANOYA AL</button><button class="btn btn-red" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="delPermanentArchive(event, '${id}')">🗑️ SİL</button></div>`; l.appendChild(div); }); } else { l.innerHTML = "<div style='color:#64748b; font-size:12px; padding:10px; text-align:center;'>Geçmiş ayların deposu şu an boş...</div>"; } }); }
+        function sendToPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Depoya kaldır?")) { db.ref("arsivlenmis_shiftler").child(id).once("value", snap => { if(snap.val()) db.ref("kalici_depo").child(id).set(snap.val()).then(() => db.ref("arsivlenmis_shiftler").child(id).remove()); }); } }
+        function restoreFromPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Panoya geri al?")) { db.ref("kalici_depo").child(id).once("value", snap => { if(snap.val()) db.ref("arsivlenmis_shiftler").child(id).set(snap.val()).then(() => db.ref("kalici_depo").child(id).remove()); }); } }
+        function delPermanentArchive(e, id) { e.stopPropagation(); if(confirm("Kalıcı olarak sil?")) db.ref("kalici_depo").child(id).remove(); }
+        function delArchive(e, id) { e.stopPropagation(); if(confirm("Klasörü sil?")) db.ref("arsivlenmis_shiftler").child(id).remove(); }
+        function renameMasterArchive() { let mName = prompt("Klasör adı ne olsun?", currentMasterArchiveName); if(mName && mName.trim() !== "") { currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = (window.currentArchiveNode==="kalici_depo"?"📦 ":"📁 ") + currentMasterArchiveName; if(currentMasterArchiveId) db.ref(window.currentArchiveNode).child(currentMasterArchiveId).update({name: currentMasterArchiveName}); } }
+        function openArchive(id, name, isPermanent = false) { const sourceNode = isPermanent ? "kalici_depo" : "arsivlenmis_shiftler"; db.ref(sourceNode).child(id).once("value", snap => { const val = snap.val(); if(!val) return; currentMasterArchiveId = id; currentMasterArchiveName = name; window.currentArchiveNode = sourceNode; document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; document.getElementById("tablesContainer").innerHTML = ""; if(val.tables) { val.tables.forEach(t => { let sDate = t.startDate ? new Date(t.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(t.colCount) || 30; generateTable(true, t.data || [], t.tableName || "Tablo", sDate, cols, null, t.notes || ""); }); } else if(val.data) { let sDate = val.startDate ? new Date(val.startDate) : new Date(); if(isNaN(sDate.getTime())) sDate = new Date(); let cols = parseInt(val.colCount) || 30; generateTable(true, val.data, val.name || "Tablo", sDate, cols); } }); }
 
-        function initTableEvents() {
-            document.querySelectorAll('.shift-cell').forEach(cell => {
-                cell.onmousedown = (e) => { 
-                    if(e.target.tagName==='INPUT' || e.target.classList.contains('editable-name') || e.target.classList.contains('select-icon') || e.target.tagName==='BUTTON' || cell.closest('table').classList.contains('snipping-mode')) return; 
-                    if(e.button === 0) { isDraggingCells = true; startSelectCell = cell; clearTableSelection(); cell.classList.add('selected-cell'); } 
-                };
-                cell.onmouseenter = () => { if(isDraggingCells && !cell.closest('table').classList.contains('snipping-mode')) { clearTableSelection(); selectCellRange(startSelectCell, cell); } };
-                cell.oncontextmenu = (e) => { 
-                    if(cell.closest('table').classList.contains('snipping-mode')) { e.preventDefault(); e.stopPropagation(); return; }
-                    e.preventDefault(); 
-                    if(!cell.classList.contains('selected-cell')) { clearTableSelection(); cell.classList.add('selected-cell'); } 
-                    activeCell = cell; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; 
-                };
-                cell.onclick = (e) => { if(cell.closest('table').classList.contains('snipping-mode')) { saveHistory(); const idx = Array.from(cell.parentElement.children).indexOf(cell); const table = cell.closest('table'); table.querySelectorAll('tr').forEach(tr => { if(tr.children[idx]) tr.children[idx].classList.add('hidden-by-snipper'); }); updateAllStats(); } };
-            });
-
-            document.querySelectorAll('th:not(.no-export):not(.week-summary-cell):not(.total-summary-cell)').forEach(th => {
-                th.onmousedown = (e) => { if(e.button === 0) { isDraggingCells = true; startSelectHeader = th; clearTableSelection(); selectColumn(th); } };
-                th.onmouseenter = () => { if(isDraggingCells && startSelectHeader) { clearTableSelection(); selectColumnRange(startSelectHeader, th); } };
-                th.oncontextmenu = (e) => { e.preventDefault(); activeHeaderCell = th; const m = document.getElementById("headerContextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; };
-                th.onclick = () => { if(th.closest('table').classList.contains('snipping-mode')) { saveHistory(); const idx = Array.from(th.parentElement.children).indexOf(th); const table = th.closest('table'); table.querySelectorAll('tr').forEach(tr => { if(tr.children[idx]) tr.children[idx].classList.add('hidden-by-snipper'); }); updateAllStats(); } };
-            });
-        }
-
-        function clearTableSelection() { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
-        function selectCellRange(start, end) { const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tbody tr:not(.summary-row)')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').querySelectorAll('th, td')).indexOf(start); const endColIdx = Array.from(end.closest('tr').querySelectorAll('th, td')).indexOf(end); const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx); for(let r = minRow; r <= maxRow; r++) { for(let c = minCol; c <= maxCol; c++) { const target = rows[r].children[c]; if(target && target.classList.contains('shift-cell') && !target.classList.contains('hidden-by-snipper')) target.classList.add('selected-cell'); } } }
-        function selectColumn(th) { const table = th.closest('table'); const idx = Array.from(th.parentElement.children).indexOf(th); th.classList.add('selected-cell'); table.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => { if(tr.children[idx] && tr.children[idx].classList.contains('shift-cell') && !tr.children[idx].classList.contains('hidden-by-snipper')) tr.children[idx].classList.add('selected-cell'); }); }
-        function selectColumnRange(sTh, eTh) { const table = sTh.closest('table'); const sIdx = Array.from(sTh.parentElement.children).indexOf(sTh); const eIdx = Array.from(eTh.parentElement.children).indexOf(eTh); const minIdx = Math.min(sIdx, eIdx); const maxIdx = Math.max(sIdx, eIdx); const ths = table.querySelectorAll('thead th'); for(let i=minIdx; i<=maxIdx; i++) { if(ths[i] && !ths[i].classList.contains('no-export') && !ths[i].classList.contains('week-summary-cell') && !ths[i].classList.contains('total-summary-cell') && !ths[i].classList.contains('hidden-by-snipper')) { selectColumn(ths[i]); } } }
-
-        document.addEventListener('mouseup', () => { isDraggingCells = false; startSelectHeader = null; });
-        document.addEventListener('click', (e) => { if(!e.target.closest('.custom-menu')) { document.querySelectorAll('.custom-menu').forEach(m => m.style.display="none"); } });
-        
-        document.addEventListener('keydown', e => { 
-            if(e.ctrlKey && (e.key === 'a' || e.key === 'A')) { 
-                e.preventDefault(); 
-                document.querySelectorAll('.table-wrapper table:hover').forEach(t => t.querySelectorAll('.shift-cell:not(.hidden-by-snipper)').forEach(c => c.classList.add('selected-cell'))); 
-            } 
-            if(e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undoHistory(); } 
-        });
-
-        function copyTableRows(btn) {
-            const table = btn.closest('.table-wrapper').querySelector('table');
-            const selected = table.querySelectorAll('.selected-cell');
-            if(selected.length > 0) {
-                let html = "<table><tr>"; let tsv = ""; let currentRow = selected[0].closest('tr');
-                selected.forEach(cell => {
-                    if(cell.closest('tr') !== currentRow) { html += "</tr><tr>"; tsv += "\n"; currentRow = cell.closest('tr'); }
-                    html += `<td>${cell.innerText}</td>`; tsv += `${cell.innerText}\t`;
+        function saveMasterArchive() {
+            try {
+                if(!currentMasterArchiveId || document.getElementById("masterArchiveTitle").innerText.includes("Yeni Dosya")) { let mName = prompt("ANA KLASÖR adını girin:", "Vardiya Klasörü"); if(!mName) return; currentMasterArchiveName = mName.trim(); document.getElementById("masterArchiveTitle").innerText = "📁 " + currentMasterArchiveName; }
+                const tables = document.querySelectorAll('.table-wrapper'); if(tables.length === 0) return alert("Kaydedilecek Tablo yok!");
+                const tablesData = [];
+                tables.forEach((wrapper, index) => {
+                    let tName = wrapper.getAttribute("data-tablename");
+                    if(tName === "Yeni Liste" || tName === "Yeni Tablo" || tName === "İçe Aktarılan Liste") { let pName = prompt((index+1) + ". Tablo adı:", tName); if(pName && pName.trim() !== "") { tName = pName.trim(); wrapper.setAttribute("data-tablename", tName); wrapper.querySelector('.table-title').innerHTML = `📌 ${tName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } }
+                    const rowsData = []; wrapper.querySelectorAll("tbody tr").forEach(tr => { let nameEl = tr.querySelector(".editable-name"); if (!nameEl) return; let name = nameEl.innerText.trim(); let shifts = Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText.replace(/[\n\r]/g, ""), bg: td.style.background || "transparent", pin: td.getAttribute("data-pin") || "" })); rowsData.push({ name: name, shifts: shifts }); });
+                    let notesElement = wrapper.querySelector(".table-notes"); let notesVal = notesElement ? notesElement.value : ""; tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal });
                 });
-                html += "</tr></table>";
-                copyToClipboardFallback(html, tsv);
-            }
+                const saveData = { name: currentMasterArchiveName, date: new Date().toLocaleString('tr-TR'), tables: tablesData }; let targetNode = window.currentArchiveNode || "arsivlenmis_shiftler";
+                if(currentMasterArchiveId) { db.ref(targetNode).child(currentMasterArchiveId).update(saveData).then(() => { showToast("✅ Kaydedildi!"); logAction(`'${currentMasterArchiveName}' güncellendi.`); }); } 
+                else { const ref = db.ref("arsivlenmis_shiftler").push(); ref.set(saveData).then(() => { currentMasterArchiveId = ref.key; window.currentArchiveNode = "arsivlenmis_shiftler"; showToast("✅ Kaydedildi!"); }); }
+            } catch (error) { alert("Hata: " + error.message); }
         }
-        function pasteToTableRows(btn) {
-            const table = btn.closest('.table-wrapper').querySelector('table');
-            const selected = Array.from(table.querySelectorAll('.selected-cell.shift-cell'));
-            if(selected.length > 0) {
-                navigator.clipboard.readText().then(text => {
-                    saveHistory();
-                    let rows = text.split('\n').filter(r => r.trim() !== "");
-                    let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr:not(.summary-row)'));
-                    let startRowIdx = allTrs.indexOf(tr); let startColIdx = Array.from(tr.children).indexOf(startCell);
-
-                    for (let i = 0; i < rows.length; i++) {
-                        if (startRowIdx + i >= allTrs.length) break;
-                        let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t');
-                        for (let j = 0; j < cols.length; j++) {
-                            if (startColIdx + j >= currentTr.children.length) break;
-                            let targetCell = currentTr.children[startColIdx + j];
-                            if (targetCell.classList.contains('shift-cell') && !targetCell.classList.contains('hidden-by-snipper')) {
-                                let val = cols[j].trim(); targetCell.innerText = val;
-                                let sT = val.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[val];
-                                targetCell.style.background = rObj ? rObj.color : "transparent";
-                            }
-                        }
-                    }
-                    updateAllStats(); showToast("Yapıştırıldı! ✅");
-                });
-            } else { alert("Yapıştırmak için en az bir hücre seçmelisiniz."); }
-        }
-        
-        function copyToClipboardFallback(html, tsv) {
-            const tempInput = document.createElement("textarea"); tempInput.style.position = "absolute"; tempInput.style.left = "-9999px"; tempInput.value = tsv; document.body.appendChild(tempInput); tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput); showToast("Kopyalandı! 📋");
-        }
-        
-        function updateAllStats() {
-            document.querySelectorAll('.table-wrapper').forEach(wrapper => {
-                let totals = [];
-                wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
-                    let totalH = 0; let cells = tr.querySelectorAll('td');
-                    for (let i = 2; i < cells.length - 1; i++) {
-                        let c = cells[i];
-                        if (c.classList.contains('shift-cell') && !c.classList.contains('hidden-by-snipper')) {
-                            let val = c.innerText.trim();
-                            let sT = val.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[val];
-                            if (rObj) {
-                                totalH += (parseFloat(rObj.w) || 0) + (parseFloat(rObj.n) || 0);
-                            }
-                        }
-                    }
-                    let tCell = cells[cells.length - 1]; if (tCell) tCell.innerText = totalH;
-                });
-            });
-        }
-        function calcTable(btn) { saveHistory(); updateAllStats(); showToast("Hesaplandı!"); }
 
         // =========================================
         // 🔥 KUSURSUZ OPERASYON ÖZETİ (GÜNLÜK ÇALIŞANLAR) 🔥
         // =========================================
         function showTodaySummary(tarihStr = null) {
             const bugun = tarihStr ? new Date(tarihStr) : new Date();
-            bugun.setHours(0,0,0,0); 
+            bugun.setHours(0,0,0,0); // Saatleri sıfırla ki gün hesaplaması sapmasın!
             
             document.getElementById('summaryDatePicker').value = `${bugun.getFullYear()}-${String(bugun.getMonth()+1).padStart(2,'0')}-${String(bugun.getDate()).padStart(2,'0')}`;
             document.getElementById('todaySummaryDateText').innerText = bugun.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
@@ -1164,15 +1068,17 @@
 
             document.querySelectorAll('.table-wrapper').forEach(wrapper => {
                 const startDt = new Date(wrapper.getAttribute("data-startdt"));
-                startDt.setHours(0,0,0,0); 
+                startDt.setHours(0,0,0,0); // Tablo başlangıcını da sıfırla
                 const tName = wrapper.getAttribute("data-tablename");
                 
                 const timeDiff = bugun.getTime() - startDt.getTime();
-                const diffDays = Math.floor(timeDiff / (1000 * 3600 * 24)); 
+                const diffDays = Math.floor(timeDiff / (1000 * 3600 * 24)); // Kusursuz gün farkı
                 
+                // Eğer seçilen gün, tablonun tarih aralığındaysa
                 if (diffDays >= 0 && diffDays < parseInt(wrapper.getAttribute("data-colcount"))) {
                     wrapper.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
                         let name = tr.querySelector('.editable-name').innerText.trim();
+                        // Tüm hücreleri al (gizli veya özet hücreleri hariç)
                         let cells = Array.from(tr.querySelectorAll('.shift-cell')); 
                         let cell = cells[diffDays];
                         
@@ -1209,33 +1115,178 @@
         }
 
         // =========================================
-        // 🔥 EXCEL İNDİRME MOTORU 🔥
+        // 🔥 TABLO İÇİ FARE VE KLAVYE OLAYLARI 🔥
         // =========================================
-        function exportTableToExcel(btn) {
-            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); const clone = table.cloneNode(true);
-            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-            clone.querySelectorAll('.no-export').forEach(el => el.remove());
-            clone.querySelectorAll('.hidden-by-snipper').forEach(el => el.remove());
-            let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body>`;
-            html += `<table border="1" style="font-family:Arial; font-size:12px;">${clone.innerHTML}</table></body></html>`;
-            const blob = new Blob([html], { type: 'application/vnd.ms-excel' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.xls`; a.click(); logAction("Tabloyu Excel olarak indirdi.");
-        }
-        function exportAllToExcel() {
-            let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body>`;
-            document.querySelectorAll('.table-wrapper').forEach(wrapper => {
-                const table = wrapper.querySelector('table'); const clone = table.cloneNode(true);
-                clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-                clone.querySelectorAll('.no-export').forEach(el => el.remove());
-                clone.querySelectorAll('.hidden-by-snipper').forEach(el => el.remove());
-                html += `<h3>${wrapper.getAttribute('data-tablename')}</h3><table border="1" style="font-family:Arial; font-size:12px; margin-bottom:20px;">${clone.innerHTML}</table>`;
+        let isDraggingCells = false; let startSelectCell = null; let startSelectHeader = null;
+
+        function initTableEvents() {
+            document.querySelectorAll('.shift-cell').forEach(cell => {
+                cell.onmousedown = (e) => { 
+                    if(e.target.tagName==='INPUT' || e.target.classList.contains('editable-name') || e.target.classList.contains('select-icon') || e.target.tagName==='BUTTON' || cell.closest('table').classList.contains('snipping-mode')) return; 
+                    if(e.button === 0) { isDraggingCells = true; startSelectCell = cell; clearTableSelection(); cell.classList.add('selected-cell'); } 
+                };
+                cell.onmouseenter = () => { if(isDraggingCells && !cell.closest('table').classList.contains('snipping-mode')) { clearTableSelection(); selectCellRange(startSelectCell, cell); } };
+                cell.oncontextmenu = (e) => { 
+                    if(cell.closest('table').classList.contains('snipping-mode')) { e.preventDefault(); e.stopPropagation(); return; }
+                    e.preventDefault(); 
+                    if(!cell.classList.contains('selected-cell')) { clearTableSelection(); cell.classList.add('selected-cell'); } 
+                    activeCell = cell; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; 
+                };
+                cell.onclick = (e) => { if(cell.closest('table').classList.contains('snipping-mode')) { saveHistory(); const idx = Array.from(cell.parentElement.children).indexOf(cell); const table = cell.closest('table'); table.querySelectorAll('tr').forEach(tr => { if(tr.children[idx]) tr.children[idx].classList.add('hidden-by-snipper'); }); updateAllStats(); } };
             });
-            html += `</body></html>`;
-            const blob = new Blob([html], { type: 'application/vnd.ms-excel' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Tum_Vardiyalar.xls`; a.click(); logAction("Tüm tabloları Excel olarak indirdi.");
+
+            document.querySelectorAll('th:not(.no-export):not(.week-summary-cell):not(.total-summary-cell)').forEach(th => {
+                th.onmousedown = (e) => { if(e.button === 0) { isDraggingCells = true; startSelectHeader = th; clearTableSelection(); selectColumn(th); } };
+                th.onmouseenter = () => { if(isDraggingCells && startSelectHeader) { clearTableSelection(); selectColumnRange(startSelectHeader, th); } };
+                th.oncontextmenu = (e) => { e.preventDefault(); activeHeaderCell = th; const m = document.getElementById("headerContextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; };
+                th.onclick = () => { if(th.closest('table').classList.contains('snipping-mode')) { saveHistory(); const idx = Array.from(th.parentElement.children).indexOf(th); const table = th.closest('table'); table.querySelectorAll('tr').forEach(tr => { if(tr.children[idx]) tr.children[idx].classList.add('hidden-by-snipper'); }); updateAllStats(); } };
+            });
         }
 
+        function clearTableSelection() { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
+        function selectCellRange(start, end) { const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tbody tr:not(.summary-row)')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').children).indexOf(start); const endColIdx = Array.from(end.closest('tr').children).indexOf(end); const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx); for(let r = minRow; r <= maxRow; r++) { for(let c = minCol; c <= maxCol; c++) { const target = rows[r].children[c]; if(target && target.classList.contains('shift-cell') && !target.classList.contains('hidden-by-snipper')) target.classList.add('selected-cell'); } } }
+        function selectColumn(th) { const table = th.closest('table'); const idx = Array.from(th.parentElement.children).indexOf(th); th.classList.add('selected-cell'); table.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => { if(tr.children[idx] && tr.children[idx].classList.contains('shift-cell') && !tr.children[idx].classList.contains('hidden-by-snipper')) tr.children[idx].classList.add('selected-cell'); }); }
+        function selectColumnRange(sTh, eTh) { const table = sTh.closest('table'); const sIdx = Array.from(sTh.parentElement.children).indexOf(sTh); const eIdx = Array.from(eTh.parentElement.children).indexOf(eTh); const minIdx = Math.min(sIdx, eIdx); const maxIdx = Math.max(sIdx, eIdx); const ths = table.querySelectorAll('thead th'); for(let i=minIdx; i<=maxIdx; i++) { if(ths[i] && !ths[i].classList.contains('no-export') && !ths[i].classList.contains('week-summary-cell') && !ths[i].classList.contains('total-summary-cell') && !ths[i].classList.contains('hidden-by-snipper')) { selectColumn(ths[i]); } } }
+
+        document.addEventListener('mouseup', () => { isDraggingCells = false; startSelectHeader = null; });
+        document.addEventListener('click', (e) => { if(!e.target.closest('.custom-menu')) { document.querySelectorAll('.custom-menu').forEach(m => m.style.display="none"); } });
+        
+        document.addEventListener('keydown', e => { 
+            if(e.ctrlKey && (e.key === 'a' || e.key === 'A')) { 
+                e.preventDefault(); 
+                document.querySelectorAll('.table-wrapper table:hover').forEach(t => t.querySelectorAll('.shift-cell:not(.hidden-by-snipper)').forEach(c => c.classList.add('selected-cell'))); 
+            } 
+            if(e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undoHistory(); } 
+        });
+
         // =========================================
+        // 13. KUSURSUZ EXCEL KOPYALAMA MOTORU
+        // =========================================
+        function getCleanCellText(cell) { 
+            if (cell.classList.contains('hidden-by-snipper') || cell.classList.contains('no-export')) return null;
+            if (cell.tagName === 'TH' && cell.hasAttribute('data-date')) return cell.getAttribute('data-date'); 
+            if (cell.querySelector('.editable-name')) return cell.querySelector('.editable-name').textContent.trim(); 
+            let text = (cell.textContent || "").replace(/\n/g, " ").trim(); 
+            if (cell.tagName === 'TH' && text.includes("PERSONEL")) return "PERSONEL"; 
+            return text; 
+        }
+
+        function getExcelCellHtml(cell) {
+            if(cell.classList.contains('no-export') || cell.classList.contains('week-summary-cell') || cell.classList.contains('total-summary-cell') || cell.classList.contains('hidden-by-snipper')) return { html: "", text: "" };
+            let text = getCleanCellText(cell); let bg = '#ffffff'; let color = '#000000';
+            if(cell.tagName === 'TH') { bg = '#d1d5db'; color = '#000000'; return { html: `<th style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px; font-weight: bold;">${text}</th>`, text: text }; } 
+            else { let cellBg = cell.style.background || cell.style.backgroundColor; if(cellBg && !cellBg.includes('transparent')) { let match = cellBg.match(/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})/); if(match) { bg = match[0]; color = '#ffffff'; } } return { html: `<td style="background-color: ${bg}; color: ${color}; border: 1px solid #000000; padding: 5px;">${text}</td>`, text: text }; }
+        }
+
+        function generateExcelClipboardData(selectedCellsOrRows, isRowMode) {
+            let html = "<table border='1' style='border-collapse:collapse; font-family:sans-serif; text-align:center;'>"; let tsv = ""; let currentRow = null; let rowData = []; let trHtml = "";
+            if (isRowMode) {
+                let table = selectedCellsOrRows[0].closest('table'); html += "<thead><tr>";
+                table.querySelectorAll('thead th').forEach(th => { let cd = getExcelCellHtml(th); if(cd.html) { html += cd.html; tsv += cd.text + "\t"; } });
+                html += "</tr></thead><tbody>\n"; tsv += "\n";
+                selectedCellsOrRows.forEach(cb => { const tr = cb.closest('tr'); html += "<tr>"; let rData = []; tr.querySelectorAll('td').forEach(td => { let cd = getExcelCellHtml(td); if(cd.html) { html += cd.html; rData.push(cd.text); } }); html += "</tr>"; tsv += rData.join("\t") + "\n"; });
+                html += "</tbody>";
+            } else {
+                selectedCellsOrRows.forEach(cell => {
+                    const cellRow = cell.closest('tr');
+                    if(currentRow !== cellRow) { if(currentRow !== null) { tsv += rowData.join("\t") + "\n"; html += trHtml + "</tr>"; rowData = []; } currentRow = cellRow; trHtml = "<tr>"; }
+                    let cd = getExcelCellHtml(cell); if(cd.html) { trHtml += cd.html; rowData.push(cd.text); }
+                });
+                if(rowData.length > 0) { tsv += rowData.join("\t"); html += trHtml + "</tr>"; }
+            }
+            html += "</table>"; return { html, tsv };
+        }
+
+        function executeExcelCopy(html, tsv) {
+            const container = document.createElement('div'); container.innerHTML = html; container.style.position = 'fixed'; container.style.top = '-9999px'; container.style.pointerEvents = 'none'; document.body.appendChild(container);
+            const selection = window.getSelection(); const range = document.createRange(); range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range);
+            try { document.execCommand('copy'); showToast("Panoya Kopyalandı! 📋"); } catch(e) { navigator.clipboard.writeText(tsv).then(() => showToast("Sadece metin kopyalandı! 📋")); }
+            selection.removeAllRanges(); document.body.removeChild(container);
+        }
+
+        function copyTableRows(btn) {
+            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
+            const selectedCells = table.querySelectorAll('.selected-cell'); const cbs = table.querySelectorAll('tbody .row-checkbox:checked');
+            if (selectedCells.length > 0 && Array.from(selectedCells).some(c => c.tagName === 'TD')) { const { html, tsv } = generateExcelClipboardData(selectedCells, false); executeExcelCopy(html, tsv); } 
+            else if(cbs.length > 0) { const { html, tsv } = generateExcelClipboardData(cbs, true); executeExcelCopy(html, tsv); } 
+            else { alert("Lütfen tablodan mavi bir alan seçin veya personel kutucuklarını işaretleyin!"); }
+        }
+
+        function exportTableToExcel(btn) {
+            const wrapper = btn.closest('.table-wrapper'); const table = wrapper.querySelector('table'); 
+            let html = "<table border='1' style='border-collapse:collapse; text-align:center; font-family:sans-serif;'>"; let tsv = "";
+            table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); 
+            html += "</table>"; executeExcelCopy(html, tsv);
+        }
+
+        function exportAllToExcel() {
+            const wrappers = document.querySelectorAll('.table-wrapper'); if(wrappers.length === 0) return alert("Kopyalanacak tablo yok!");
+            let html = ""; let tsv = "";
+            wrappers.forEach(wrapper => {
+                let tableName = wrapper.getAttribute("data-tablename"); html += `<h3 style="color:black; font-family:sans-serif;">${tableName}</h3><table border='1' style="border-collapse:collapse; text-align:center; font-family:sans-serif;">`; tsv += `${tableName}\n`;
+                const table = wrapper.querySelector('table');
+                table.querySelectorAll("tr").forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll("th, td").forEach(cell => { let cd = getExcelCellHtml(cell); if (cd.html !== "") { html += cd.html; rowData.push(cd.text); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); 
+                html += "</table><br><br>"; tsv += "\n\n";
+            });
+            executeExcelCopy(html, tsv); logAction("Tüm tabloları kopyaladı.");
+        }
+
+        document.addEventListener('copy', e => {
+            const selected = document.querySelectorAll('.selected-cell');
+            if(selected.length > 0) { e.preventDefault(); const { html, tsv } = generateExcelClipboardData(selected, false); if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Seçili alan kopyalandı! 📋"); } }
+        });
+
+        document.addEventListener('paste', e => {
+            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
+            const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
+            if(selected.length > 0) {
+                e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = cleanExcelRows(pasteData);
+                if (rows.length === 1 && rows[0].split('\t').length === 1) {
+                    let val = rows[0].trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
+                    selected.forEach(cell => { if(cell.classList.contains('hidden-by-snipper')) return; let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); cell.style.background = r ? r.color : "transparent"; });
+                } else {
+                    let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); let rowCells = Array.from(tr.querySelectorAll('td')); let startColIdx = rowCells.indexOf(startCell);
+                    for (let i = 0; i < rows.length; i++) {
+                        if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentTrCells = Array.from(currentTr.querySelectorAll('td'));
+                        for (let j = 0; j < cols.length; j++) {
+                            if (startColIdx + j >= currentTrCells.length) break; let targetCell = currentTrCells[startColIdx + j];
+                            if (targetCell.classList.contains('shift-cell') && !targetCell.classList.contains('hidden-by-snipper')) {
+                                let val = cols[j].trim(); let oldPin = targetCell.getAttribute("data-pin"); targetCell.innerText = val; if(oldPin) targetCell.setAttribute("data-pin", oldPin); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; targetCell.style.background = r ? r.color : "transparent";
+                            }
+                        }
+                    }
+                }
+                updateAllStats(); showToast("Yapıştırıldı! ✅");
+            }
+        });
+
+        function deleteTableRows(btn) { const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked'); if(cbs.length === 0) return alert("Silinecek satırları seçin!"); if(confirm(cbs.length + " satırı silmek istiyor musunuz?")) { saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); } }
+        function calcTable(btn) { updateAllStats(); let old = btn.innerHTML; btn.innerHTML = "✅ HESAPLANDI"; setTimeout(() => btn.innerHTML = old, 1000); }
+        function closeTable(btn) { if(confirm("Bu matrisi ekrandan silmek istediğinize emin misiniz?")) { btn.closest('.table-wrapper').remove(); saveHistory(); if(document.querySelectorAll('.table-wrapper').length === 0) closeModal('tableModalOverlay'); } }
+
+        document.addEventListener('click', e => { 
+            const th = e.target.closest('th'); if(th && th.closest('table.snipping-mode')) { const table = th.closest('table'); const tr = th.parentNode; let colIndex = Array.from(tr.children).indexOf(th); if(colIndex > 1) { saveHistory(); table.querySelectorAll('tr').forEach(row => { if(row.children[colIndex]) row.children[colIndex].classList.add('hidden-by-snipper'); }); } } 
+        });
+
+        window.onclick = (e) => { 
+            if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { 
+                document.getElementById("contextMenu").style.display = "none"; 
+                document.getElementById("staffSelectMenu").style.display = "none"; 
+                if(document.getElementById("headerContextMenu")) document.getElementById("headerContextMenu").style.display = "none"; 
+                document.querySelectorAll('.select-icon.open').forEach(icon => icon.classList.remove('open'));
+            } 
+        };
+        
+        // 🔥 PWA (CİHAZA KURMA) MOTORU 🔥
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; let installBtn = document.getElementById('btnInstallApp'); if(installBtn) installBtn.style.display = 'inline-block'; });
+        function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then((choiceResult) => { if (choiceResult.outcome === 'accepted') { document.getElementById('btnInstallApp').style.display = 'none'; } deferredPrompt = null; }); } }
+
+        // ============================================================================
         // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ
-        // =========================================
+        // ============================================================================
         document.addEventListener('contextmenu', event => {
             if(!event.target.classList.contains('shift-cell') && !event.target.tagName.match(/^TH$/i)) event.preventDefault();
         });
