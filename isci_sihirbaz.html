@@ -207,6 +207,7 @@
             addInitialShifts();
         };
 
+        let autoSelectDone = false;
         function loadStaffPool() { 
             db.ref("personel_havuzu").on("value", snap => { 
                 const p = document.getElementById("mockStaffPool"); 
@@ -220,6 +221,26 @@
                         count++; 
                         p.innerHTML += `<div class="staff-item" id="staff-${index}" onclick="toggleStaff('${item.name}', ${index})"><span style="font-weight:800; font-size:12px;">${item.name}</span></div>`; 
                     }); 
+                    
+                    // 🔥 YENİ EKLENEN: LİSTEDEN GELEN İSİMLERİ OTOMATİK SEÇ
+                    if(!autoSelectDone) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const namesParam = urlParams.get('names');
+                        if (namesParam) {
+                            const namesToSelect = namesParam.split(',').filter(n => n.trim() !== "" && n !== "İSİM GİRİNİZ...");
+                            namesToSelect.forEach(n => {
+                                const idx = staffList.findIndex(s => s.name === n);
+                                if(idx > -1) toggleStaff(n, idx);
+                                else { selectedStaff.push(n); staffPreferences[n] = "AI"; } 
+                            });
+                            renderSelectedStaff();
+                            
+                            if (urlParams.get('mode') === 'inject') {
+                                document.querySelector(".btn-success").innerHTML = "📥 TABLOYA AKTAR VE KAPAT";
+                            }
+                        }
+                        autoSelectDone = true;
+                    }
                 } else { p.innerHTML = "<div style='color:#64748b; font-size:12px; grid-column:span 2; text-align:center;'>Havuzda personel yok.</div>"; }
             }); 
         }
@@ -510,6 +531,21 @@
       function saveAITableToPool() {
     let tName = document.getElementById('aiTableName').value.trim();
     if(!tName) return alert("Lütfen tabloya bir isim verin!");
+          // 🔥 YENİ EKLENEN ZIRH: EĞER TABLODAN AÇILDIYSA FİREBASE'E DEĞİL, DİREKT TABLOYA AKTAR
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('mode') === 'inject') {
+            const rows = [];
+            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                const name = tr.querySelector('b').innerText.trim();
+                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background, pin: "" }));
+                rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
+            });
+            
+            if (window.parent && typeof window.parent.receiveDataFromAiWizard === 'function') {
+                window.parent.receiveDataFromAiWizard(rows, document.getElementById('simStartDate').value, document.getElementById('simDays').value);
+                return; // İşlem bitti, kodun devamını okuma!
+            }
+        }
 
     // URL'den hedef klasör ID'sini al
     const urlParams = new URLSearchParams(window.location.search);
