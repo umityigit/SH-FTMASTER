@@ -86,12 +86,13 @@
         
         .card { background: var(--glass-bg); backdrop-filter: blur(20px); padding: 30px; border-radius: 25px; border-top: 1px solid var(--glass-border); border-left: 1px solid var(--glass-border); border-bottom: 1px solid rgba(0,0,0,0.5); border-right: 1px solid rgba(0,0,0,0.5); margin-bottom: 25px; box-shadow: 10px 10px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02); position: relative; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card:hover { box-shadow: 15px 15px 40px rgba(0,0,0,0.7), 0 0 30px var(--glass-glow); transform: translateY(-3px); }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7, var(--success)); box-shadow: 0 0 15px var(--accent); }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), #a855f7, var(--success)); box-shadow: 0 0 15px var(--accent); animation: glowPulse 2s infinite alternate; }
+        @keyframes glowPulse { from { opacity: 0.8; } to { opacity: 1; box-shadow: 0 0 25px var(--accent); } }
         
         .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 
         .btn { padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; color: white; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), inset -3px -3px 8px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.5); text-shadow: 1px 1px 3px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); }
-        .btn:hover { transform: translateY(-4px) scale(1.03); filter: brightness(1.2); box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4), inset -3px -3px 8px rgba(0,0,0,0.2), 0 8px 25px rgba(0,0,0,0.6); }
+        .btn:hover { transform: translateY(-4px) scale(1.05); filter: brightness(1.2); box-shadow: inset 2px 2px 5px rgba(255,255,255,0.4), inset -3px -3px 8px rgba(0,0,0,0.2), 0 10px 25px rgba(0,0,0,0.7); }
         .btn-cyan { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
         .btn-green { background: linear-gradient(135deg, #10b981, #059669); }
         .btn-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
@@ -101,6 +102,8 @@
 
         .glass-input { background: rgba(15, 23, 42, 0.5); border-top: 1px solid rgba(0,0,0,0.6); border-left: 1px solid rgba(0,0,0,0.6); border-bottom: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); color: white; padding: 14px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 500; transition: 0.3s; box-shadow: inset 3px 3px 8px rgba(0,0,0,0.6), inset -2px -2px 5px rgba(255,255,255,0.05); }
         .glass-input:focus { border-color: var(--accent); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8), 0 0 15px var(--glass-glow); background: rgba(15, 23, 42, 0.8); }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; transition: 0.3s; }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover { transform: scale(1.2); }
 
         .top-panels { display: flex; gap: 25px; margin-bottom: 30px; flex-wrap: wrap; }
         .news-container, .log-container { flex: 1; min-width: 320px; display: flex; flex-direction: column; }
@@ -126,13 +129,15 @@
         .emoji-picker.active { display: flex; }
         .emoji-item { cursor: pointer; font-size: 22px; transition: 0.2s; } .emoji-item:hover { transform: scale(1.5) translateY(-3px); }
 
-        .log-item { background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(15,23,42,0.8)); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 10px; font-size: 12px; display: flex; justify-content: space-between; color: #cbd5e1; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+        .log-item { background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(15,23,42,0.8)); border-left: 4px solid var(--warning); padding: 12px 15px; border-radius: 10px; font-size: 12px; display: flex; justify-content: space-between; color: #cbd5e1; box-shadow: 2px 2px 8px rgba(0,0,0,0.5); transition: 0.3s; }
+        .log-item:hover { transform: scale(1.02); border-left-color: var(--accent); background: linear-gradient(90deg, rgba(15,23,42,0.9), rgba(30,41,59,0.9)); }
         .log-user { color: var(--warning); font-weight: 800; text-shadow: 0 0 5px rgba(250, 204, 21, 0.5); }
 
         .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-height: 280px; overflow-y: auto; padding: 10px; }
-        .archive-card { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 1px 1px 3px rgba(255,255,255,0.1); position: relative; }
+        .archive-card { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 1px 1px 3px rgba(255,255,255,0.1); position: relative; overflow: hidden; }
         .archive-card::before { content: '📂'; position: absolute; font-size: 80px; opacity: 0.05; right: 10px; bottom: -10px; transform: rotate(-15deg); transition: 0.3s; }
         .archive-card:hover { transform: translateY(-8px) scale(1.03); border-color: var(--accent); box-shadow: 10px 15px 25px rgba(0,0,0,0.6), 0 0 20px var(--glass-glow); }
+        .archive-card:hover::before { transform: rotate(0deg) scale(1.2); opacity: 0.1; }
 
         .full-modal-overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(15px); z-index: 10005; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.4s; }
         .full-modal-content { background: var(--bg-light); width: 98%; height: 98%; border-radius: 30px; border: 2px solid var(--accent); box-shadow: 0 0 80px rgba(0,0,0,0.9), inset 0 0 30px var(--glass-glow); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(50px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -143,9 +148,11 @@
         .modal-header-bar { padding: 25px 35px; background: rgba(15,23,42,0.8); backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 10; }
         .modal-body-area { padding: 30px; flex: 1; overflow-y: auto; background: radial-gradient(circle at center, rgba(30,41,59,0.3), transparent); }
 
-        .table-wrapper { background: rgba(30,41,59,0.4); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+        .table-wrapper { background: rgba(30,41,59,0.4); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); transition: 0.3s; }
+        .table-wrapper:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(56, 189, 248, 0.2); }
         .table-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 15px; cursor: pointer; }
-        .table-title { font-size: 20px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px var(--glass-glow); }
+        .table-title { font-size: 20px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px var(--glass-glow); transition: 0.3s; }
+        .table-title:hover { color: #fff; transform: scale(1.02); }
         .scroll-area { overflow: auto; max-height: 65vh; border-radius: 15px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); }
         
         table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; table-layout: auto; padding: 5px; }
@@ -174,15 +181,20 @@
         .menu-item { width: 100%; padding: 14px 8px; cursor: pointer; border-radius: 12px; text-align: center; font-weight: 900; font-size: 12px; border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff !important; box-sizing: border-box; transition: all 0.2s ease-in-out; }
         .menu-item:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)) !important; transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.6); border-color: #fff; z-index: 2; position: relative; }
         
-        .delete-custom-btn { position: absolute; top: -6px; right: -6px; background: linear-gradient(135deg, var(--danger), #991b1b); color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid rgba(255,255,255,0.4); }
+        .delete-custom-btn { position: absolute; top: -6px; right: -6px; background: linear-gradient(135deg, var(--danger), #991b1b); color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid rgba(255,255,255,0.4); transition: 0.3s; }
+        .delete-custom-btn:hover { transform: scale(1.2) rotate(90deg); }
         
         .mini-swatch { height: 28px; border-radius: 50%; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.2); }
+        .mini-swatch:hover { transform: scale(1.2); border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        
         .stat-sub { display: inline-block; width: 45%; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; padding: 5px 0; border-radius: 6px; margin: 1px; font-weight: 900; background: rgba(0,0,0,0.5); }
 
         .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; } 
         .staff-chip { background: linear-gradient(145deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9)); border: 1px solid var(--glass-border); padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; color: #e2e8f0; transition: 0.3s; }
-        .staff-chip.selected { border-color: var(--success); background: linear-gradient(145deg, rgba(16, 185, 129, 0.3), rgba(15, 23, 42, 0.9)); color: white; }
-        .staff-del { margin-left: auto; color: var(--danger); font-size: 20px; font-weight: 900; cursor: pointer; padding: 2px 8px; border-radius: 8px; }
+        .staff-chip:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(56, 189, 248, 0.3); border-color: var(--accent); }
+        .staff-chip.selected { border-color: var(--success); background: linear-gradient(145deg, rgba(16, 185, 129, 0.3), rgba(15, 23, 42, 0.9)); color: white; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+        .staff-del { margin-left: auto; color: var(--danger); font-size: 20px; font-weight: 900; cursor: pointer; padding: 2px 8px; border-radius: 8px; transition: 0.3s; }
+        .staff-del:hover { background: rgba(239, 68, 68, 0.2); transform: scale(1.2); }
 
         .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: 2px; right: 2px; font-size: 14px; z-index: 10; animation: pinPulse 1.5s infinite; }
         @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.4) rotate(20deg); } 100% { transform: scale(1); } }
@@ -196,7 +208,8 @@
         @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
 
         .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; }
-        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        .sm-btn:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--accent); }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -224,8 +237,8 @@
         <div class="container">
             <div class="main-header card" style="margin-bottom:30px; padding:20px 30px;">
                 <div onclick="triggerPatronModu()" style="cursor:pointer; font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--accent);" id="welcomeText">👋 HOŞ GELDİN</div>
+                
                 <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                    
                     <button id="btnInstallApp" onclick="installApp()" style="display:none; background: linear-gradient(135deg, #38bdf8, #0284c7); color: white; padding: 12px 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-weight: 900; font-size: 13px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); font-family: 'Poppins', sans-serif;">
                         📱 UYGULAMAYI İNDİR
                     </button>
@@ -264,16 +277,16 @@
                 </div>
             </div>
 
-            <div class="card">
-                <h4 style="margin:0 0 20px 0; color:#fff; font-size:18px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📁 AKTİF ÇALIŞMA PLANLARI (PANODAKİLER)</h4>
-                <div id="archiveList" class="archive-grid"></div>
-            </div>
-
             <div class="card" style="border-color: var(--accent); background: rgba(56, 189, 248, 0.05);">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(56, 189, 248, 0.3); padding-bottom:10px; margin-bottom:20px;">
                     <h4 style="margin:0; color:var(--accent); font-size:18px;">🤖 SİHİRBAZ ÜRETİMİ (YENİ GELEN TABLOLAR)</h4>
                 </div>
                 <div id="aiArchiveList" class="archive-grid"></div>
+            </div>
+
+            <div class="card">
+                <h4 style="margin:0 0 20px 0; color:#fff; font-size:18px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📁 AKTİF ÇALIŞMA PLANLARI (PANODAKİLER)</h4>
+                <div id="archiveList" class="archive-grid"></div>
             </div>
 
             <div class="card" style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; background:linear-gradient(145deg, rgba(15,23,42,0.8), rgba(2,6,23,0.9));">
@@ -282,7 +295,7 @@
                 <button class="btn btn-cyan" style="padding:15px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
                 <button class="btn btn-green" style="padding:15px 30px; font-size: 14px;" onclick="openExcelModal()">📥 EXCEL'DEN ÇEK</button>
                 
-                <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); padding:15px 30px; font-size:14px; margin-left:auto;" onclick="window.location.href='isci_sihirbaz.html'">🪄 SİHİRLİ DAĞITIM (YAPAY ZEKA)</button>
+                <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); box-shadow: 0 0 15px rgba(168, 85, 247, 0.6); padding:15px 30px; font-size:14px; margin-left:auto;" onclick="window.location.href='isci_sihirbaz.html'">🪄 YAPAY ZEKA SİHİRBAZINA GİT</button>
             </div>
 
             <div class="card">
@@ -351,7 +364,6 @@
                     <button class="btn btn-cyan" onclick="exportAllToExcel()">📋 TÜMÜNÜ EXCEL'E KOPYALA</button>
                     <button class="btn btn-green" style="box-shadow:0 0 20px rgba(16,185,129,0.5);" onclick="saveMasterArchive()">💾 PANODA KAYDET</button>
                     <span style="width:2px; height:25px; background:rgba(255,255,255,0.2); margin:0 5px;"></span>
-                    <button class="btn" style="background:linear-gradient(135deg, #8b5cf6, #6d28d9); border:1px solid #a855f7; color:white; font-weight:900; box-shadow:0 0 15px rgba(139,92,246,0.5);" onclick="window.location.href='isci_sihirbaz.html'">🪄 YAPAY ZEKA SİHİRBAZINA GİT</button>
                     <button class="btn btn-purple" onclick="safeAppendTable()">➕ YENİ TABLO EKLE</button>
                     <button class="btn btn-red" onclick="closeModal('tableModalOverlay')">❌ EKRANI KAPAT</button>
                 </div>
@@ -459,6 +471,16 @@
     <div id="centralPinTooltip"></div>
 
     <div id="toast">İşlem Başarılı!</div>
+
+    <div class="sm-player" id="sm-player">
+        <button class="sm-btn" onclick="smMusic.prev()">⏮</button>
+        <button class="sm-btn" onclick="smMusic.toggle()" id="sm-play-btn" style="font-size:1.5rem; width:50px; height:50px;">▶</button>
+        <button class="sm-btn" onclick="smMusic.next()">⏭</button>
+        <div class="sm-track-info">
+            <span class="sm-title" id="sm-title">ShiftMaster Radyo</span>
+            <div style="display:flex; gap:3px; margin-top:5px; height:10px; align-items:flex-end;" id="sm-eq"></div>
+        </div>
+    </div>
 
     <script>
         // 👑 GİZLİ KAPI: PATRON MODU TETİKLEYİCİ
@@ -573,6 +595,16 @@
         const defaultRules = { '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' }, '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' }, '12:00-24:00': { w: 11, n: 4, color: 'linear-gradient(145deg, #f97316, #9a3412)' }, '08:00-16:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #0ea5e9, #0369a1)' }, '16:00-24:00': { w: 7.5, n: 4, color: 'linear-gradient(145deg, #3b82f6, #1d4ed8)' }, '24:00-08:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4338ca, #1e1b4b)' }, 'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' }, 'İ': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }, 'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' } };
         const colors = ['#fca5a5','#f87171','#ef4444','#dc2626','#b91c1c','#991b1b','#7f1d1d','#fde047','#fbbf24','#f59e0b','#d97706','#b45309','#92400e','#78350f','#6ee7b7','#34d399','#10b981','#059669','#047857','#065f46','#064e3b','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87'];
 
+        const smMusic = {
+            audio: new Audio(), isPlaying: false, index: 0, playlist: [ { name: "Kral FM", url: "https://kralfmwmp.radyotvonline.net/;" }, { name: "Power Türk", url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio" } ],
+            init() { this.audio.src = this.playlist[this.index].url; this.audio.volume = 0.5; document.getElementById('sm-title').innerText = this.playlist[this.index].name; },
+            toggle() { if (this.isPlaying) this.pause(); else this.play(); },
+            play() { this.audio.play().then(() => { this.isPlaying = true; document.getElementById('sm-play-btn').innerText = "⏸"; document.getElementById('sm-eq').innerHTML='<div style="width:4px; height:10px; background:var(--success); animation:eq 0.8s infinite alternate;"></div><div style="width:4px; height:15px; background:var(--success); animation:eq 0.8s infinite alternate 0.2s;"></div><div style="width:4px; height:8px; background:var(--success); animation:eq 0.8s infinite alternate 0.4s;"></div>'; }).catch(e => console.log(e)); },
+            pause() { this.audio.pause(); this.isPlaying = false; document.getElementById('sm-play-btn').innerText = "▶"; document.getElementById('sm-eq').innerHTML=''; },
+            next() { this.index = (this.index + 1) % this.playlist.length; this.changeTrack(); }, prev() { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.changeTrack(); },
+            changeTrack() { this.audio.src = this.playlist[this.index].url; document.getElementById('sm-title').innerText = this.playlist[this.index].name; if (this.isPlaying) this.play(); }
+        };
+
         window.onload = () => {
             try {
                 let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
@@ -605,7 +637,7 @@
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
                         }
 
-                        // 🔥 BÜTÜN YÜKLEMELER BURADA YAPILIYOR 🔥
+                        // 🔥 YÜKLEMELER BURADA 🔥
                         loadStaffPool(); 
                         loadArchives(); 
                         loadPermanentArchives(); 
@@ -622,11 +654,11 @@
             
             const colorGrid = document.getElementById('quickColorGrid'); 
             if(colorGrid) colors.forEach(c => { colorGrid.innerHTML += `<div class="mini-swatch" style="background:${c};" onclick="applyColorToCell('${c}')"></div>`; });
-            try { document.getElementById('startDate').valueAsDate = new Date(); } catch (e) {}
+            try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
         };
 
         function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
-        function logout() { currentUser = ""; localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
+        function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
 
         // 🔥 ASKERİ SINIF KRİPTO MOTORU (SHA-256) 🔥
         async function sifreKriptola(sifre) {
@@ -643,10 +675,11 @@
                 if (user) {
                     let yeniSifre = prompt(`Sayın Patron (${isim}), lütfen YENİ ŞİFRENİZİ girin:`);
                     if (yeniSifre && yeniSifre.trim() !== "") {
-                        user.updatePassword(yeniSifre).then(() => { showToast("Patron şifreniz güncellendi! ✅"); logAction("Patron şifresini değiştirdi."); }).catch(err => { alert("Güvenlik gereği çıkış yapıp tekrar giriş yapmanız gerekiyor. Lütfen giriş yapıp tekrar deneyin."); });
+                        user.updatePassword(yeniSifre).then(() => { showToast("Patron şifreniz güncellendi! ✅"); logAction("Patron şifresini değiştirdi."); }).catch(err => { alert("Güvenlik gereği çıkış yapıp tekrar giriş yapmanız gerekiyor. Lütfen giriş yapıp tekrar deneyin. Hata: " + err.message); });
                     }
                 } else { alert("Oturum bulunamadı! Lütfen tekrar giriş yapın."); }
             } else if (role === 'superadmin') {
+                // 👑 SİSTEM KURUCUSU ŞİFRE DEĞİŞTİRME MOTORU 👑
                 let eskiSifre = prompt(`Sistem Kurucusu, güvenliğiniz için lütfen MEVCUT ŞİFRENİZİ girin:`);
                 if(!eskiSifre) return;
                 
@@ -657,16 +690,20 @@
                     
                     originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).once('value').then(snap => {
                         if(snap.exists()) {
+                            // Yeni şifreyi kaydet, eskisini yok et!
                             originalRef('kurum_alt_yoneticileri/patron_base/' + yeniKripto).set({ isim: "SİSTEM KURUCUSU", rol: "superadmin" }).then(() => {
                                 originalRef('kurum_alt_yoneticileri/patron_base/' + eskiKripto).remove().then(() => {
                                     alert("Kurucu şifreniz başarıyla güncellendi! Güvenlik için sistemden çıkış yapılıyor. Lütfen yeni şifrenizle girin."); 
                                     logout();
                                 });
                             });
-                        } else { alert("Mevcut (Eski) şifrenizi yanlış girdiniz! İşlem iptal edildi."); }
+                        } else {
+                            alert("Mevcut (Eski) şifrenizi yanlış girdiniz! İşlem iptal edildi.");
+                        }
                     });
                 }
             } else {
+                // Alt Yönetici Şifre Değiştirme
                 let eskiSifre = prompt(`Merhaba ${isim}, lütfen MEVCUT (ESKİ) ŞİFRENİZİ girin:`); if (!eskiSifre) return;
                 let yeniSifre = prompt("Lütfen YENİ ŞİFRENİZİ girin:"); if (!yeniSifre || yeniSifre.trim() === "") return;
                 eskiSifre = eskiSifre.trim(); yeniSifre = yeniSifre.trim();
@@ -694,8 +731,12 @@
             if(!isim || !sifre) return alert("Lütfen havuzdan isim seçin ve şifre belirleyin!");
             
             let kriptoluSifre = await sifreKriptola(sifre);
+            
             originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + kriptoluSifre).set({ isim: isim, rol: "user" }).then(() => { 
-                showToast("Yönetici Eklendi! ✅"); document.getElementById('sorumluIsim').value = ""; document.getElementById('sorumluSifre').value = ""; logAction(`Yeni yönetici atadı: ${isim}`); 
+                showToast("Yönetici Eklendi! ✅"); 
+                document.getElementById('sorumluIsim').value = ""; 
+                document.getElementById('sorumluSifre').value = ""; 
+                logAction(`Yeni yönetici atadı: ${isim} (Şifre Kriptolandı)`); 
             });
         }
 
@@ -704,6 +745,7 @@
                 const list = document.getElementById('sorumluListesi'); if(!list) return; list.innerHTML = "";
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([sif, data]) => { 
+                        // sif artık karmaşık bir kod olduğu için ekranda göstermiyoruz, "Kriptolu" yazıyoruz
                         list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:rgba(0,0,0,0.5); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); align-items:center; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">
                             <span style="font-weight:800; color:#fff;">👤 ${data.isim} <span style="color:var(--success); margin-left:8px; background:rgba(16,185,129,0.1); padding:2px 8px; border-radius:6px; border:1px dashed var(--success);">🔒 Kriptolu</span></span>
                             <div style="display:flex; gap:10px; align-items:center;">
@@ -720,10 +762,13 @@
             e.stopPropagation(); 
             let yeniSifre = prompt(isim + " için YENİ ŞİFREYİ girin:");
             if(yeniSifre && yeniSifre.trim() !== "") {
-                yeniSifre = yeniSifre.trim(); let yeniKripto = await sifreKriptola(yeniSifre);
-                if(yeniKripto === eskiKripto) return; 
+                yeniSifre = yeniSifre.trim(); 
+                let yeniKripto = await sifreKriptola(yeniSifre);
+                if(yeniKripto === eskiKripto) return; // Şifre aynıysa işlem yapma
                 originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + yeniKripto).set({ isim: isim, rol: "user" }).then(() => {
-                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKripto).remove().then(() => { showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); });
+                    originalRef("kurum_alt_yoneticileri/" + tenantId + "/" + eskiKripto).remove().then(() => { 
+                        showToast(isim + " şifresi güncellendi! ✅"); logAction(`${isim} şifresini değiştirdi.`); 
+                    });
                 });
             }
         }
@@ -801,7 +846,7 @@
             db.ref("islem_loglari").push({ user: currentUser, action: actionText, detay: detay, time: now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}), date: now.toLocaleDateString('tr-TR', {day: '2-digit', month: '2-digit', year: 'numeric'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); 
         }
 
-        // 🔥 Aİ (SİHİRBAZ) TABLOLARINI ÇEKME KÖPRÜSÜ 🔥
+        // 🔥 Aİ (SİHİRBAZ) TABLOLARINI ÇEKME KÖPRÜSÜ (SORUNSUZ YÜKLEME) 🔥
         function loadAiArchives() {
             db.ref("isci_sihirbaz_arsiv").on("value", snap => {
                 const l = document.getElementById("aiArchiveList");
@@ -828,6 +873,7 @@
             db.ref("isci_sihirbaz_arsiv").child(id).once("value", snap => {
                 const val = snap.val(); if(!val) return;
                 
+                // Uyuşmazlığı gideren zeka burada:
                 let sDate = val.start ? new Date(val.start) : new Date(); 
                 let cols = parseInt(val.days) || 30;
                 let tName = val.name || "AI Tablo";
@@ -925,16 +971,13 @@
         function safeAppendTable() { const wrappers = document.querySelectorAll(".table-wrapper"); if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); saveHistory(); const lastWrapper = wrappers[wrappers.length - 1]; const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate); } }
         
         function takeFullScreenshot(btn) { 
-            const wrapper = btn.closest('.table-wrapper'); 
-            const captureArea = wrapper.querySelector(".scroll-area"); 
-            const table = wrapper.querySelector("table"); 
+            const wrapper = btn.closest('.table-wrapper'); const captureArea = wrapper.querySelector(".scroll-area"); const table = wrapper.querySelector("table"); 
             let oldText = btn.innerHTML; btn.innerHTML = "⏳ FOTO ALINIYOR..."; 
             const hiddenElements = table.querySelectorAll('.no-export'); hiddenElements.forEach(el => el.style.display = 'none');
             let oldOverflow = captureArea.style.overflow; let oldMaxHeight = captureArea.style.maxHeight; captureArea.style.overflow = 'visible'; captureArea.style.maxHeight = 'none'; 
             html2canvas(captureArea, { backgroundColor: "#0f172a", scale: 2, useCORS: true, windowWidth: table.scrollWidth + 50 }).then(canvas => { 
                 const link = document.createElement("a"); link.download = `Vardiya_${wrapper.getAttribute('data-tablename')}.png`; link.href = canvas.toDataURL(); link.click(); 
-                btn.innerHTML = oldText; captureArea.style.overflow = oldOverflow; captureArea.style.maxHeight = oldMaxHeight; 
-                hiddenElements.forEach(el => el.style.display = ''); logAction("Fotoğraf aldı."); 
+                btn.innerHTML = oldText; captureArea.style.overflow = oldOverflow; captureArea.style.maxHeight = oldMaxHeight; hiddenElements.forEach(el => el.style.display = ''); logAction("Fotoğraf aldı."); 
             }); 
         }
 
@@ -948,58 +991,26 @@
         function editColumnDate() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); if(newVal && newVal.trim() !== "") { saveHistory(); activeHeaderCell.setAttribute("data-date", newVal); let parts = newVal.split("."); if(parts.length === 3) { let d = new Date(parts[2], parts[1]-1, parts[0]); activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); } } }
         
         function insertColumn(dir) { 
-            document.getElementById("headerContextMenu").style.display = "none"; 
-            if(!activeHeaderCell) return; 
-            saveHistory(); 
-            const theadTr = activeHeaderCell.parentElement; 
-            const table = activeHeaderCell.closest('table'); 
-            const tbodyRows = table.querySelectorAll('tbody tr'); 
-            const cellIndex = Array.from(theadTr.children).indexOf(activeHeaderCell);
-            const insertIndex = dir === 'left' ? cellIndex : cellIndex + 1;
-
-            const newTh = document.createElement('th');
-            newTh.innerHTML = `00.00<br><span style="font-size:10px; opacity:0.7;">Yeni</span>`;
-            newTh.oncontextmenu = activeHeaderCell.oncontextmenu;
-            theadTr.insertBefore(newTh, theadTr.children[insertIndex] || null);
-
-            tbodyRows.forEach(tr => {
-                if(tr.classList.contains('summary-row')) {
-                    const newTd = document.createElement('td');
-                    newTd.className = "week-summary-cell";
-                    tr.insertBefore(newTd, tr.children[insertIndex] || null);
-                } else {
-                    const newTd = document.createElement('td');
-                    newTd.className = "shift-cell";
-                    newTd.contentEditable = "true";
-                    tr.insertBefore(newTd, tr.children[insertIndex] || null);
-                }
-            });
-            initTableEvents(); 
-            updateAllStats();
+            document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; saveHistory(); 
+            const theadTr = activeHeaderCell.parentElement; const table = activeHeaderCell.closest('table'); const tbodyRows = table.querySelectorAll('tbody tr'); 
+            const cellIndex = Array.from(theadTr.children).indexOf(activeHeaderCell); const insertIndex = dir === 'left' ? cellIndex : cellIndex + 1;
+            const newTh = document.createElement('th'); newTh.innerHTML = `00.00<br><span style="font-size:10px; opacity:0.7;">Yeni</span>`; newTh.oncontextmenu = activeHeaderCell.oncontextmenu; theadTr.insertBefore(newTh, theadTr.children[insertIndex] || null);
+            tbodyRows.forEach(tr => { if(tr.classList.contains('summary-row')) { const newTd = document.createElement('td'); newTd.className = "week-summary-cell"; tr.insertBefore(newTd, tr.children[insertIndex] || null); } else { const newTd = document.createElement('td'); newTd.className = "shift-cell"; newTd.contentEditable = "true"; tr.insertBefore(newTd, tr.children[insertIndex] || null); } });
+            initTableEvents(); updateAllStats();
         }
 
         function deleteColumn() { 
-            document.getElementById("headerContextMenu").style.display = "none"; 
-            if(!activeHeaderCell) return; 
-            saveHistory(); 
-            const theadTr = activeHeaderCell.parentElement; 
-            const table = activeHeaderCell.closest('table'); 
-            const tbodyRows = table.querySelectorAll('tbody tr'); 
+            document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; saveHistory(); 
+            const theadTr = activeHeaderCell.parentElement; const table = activeHeaderCell.closest('table'); const tbodyRows = table.querySelectorAll('tbody tr'); 
             const cellIndex = Array.from(theadTr.children).indexOf(activeHeaderCell); 
-            
-            theadTr.removeChild(activeHeaderCell); 
-            tbodyRows.forEach(tr => { if(tr.children[cellIndex]) tr.removeChild(tr.children[cellIndex]); }); 
+            theadTr.removeChild(activeHeaderCell); tbodyRows.forEach(tr => { if(tr.children[cellIndex]) tr.removeChild(tr.children[cellIndex]); }); 
             updateAllStats(); 
         }
 
         function recalculateDatesFrom(thElement, startDate) { 
             let currentTh = thElement.nextElementSibling; let d = new Date(startDate); 
             while(currentTh && !currentTh.classList.contains('total-summary-cell')) { 
-                if(!currentTh.classList.contains('week-summary-cell')) { 
-                    d.setDate(d.getDate() + 1); 
-                    currentTh.setAttribute("data-date", `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); 
-                    currentTh.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; 
-                } 
+                if(!currentTh.classList.contains('week-summary-cell')) { d.setDate(d.getDate() + 1); currentTh.setAttribute("data-date", `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`); currentTh.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; } 
                 currentTh = currentTh.nextElementSibling; 
             } 
         }
@@ -1021,6 +1032,7 @@
                 document.getElementById("masterArchiveTitle").innerText = (isPermanent ? "📦 " : "📁 ") + name; 
                 document.getElementById("tablesContainer").innerHTML = ""; 
                 
+                // Uyuşmazlık çözücü: Sihirbaz tablolarını ve normal tabloları aynı anda açar
                 if(val.tables) { 
                     val.tables.forEach(t => { 
                         let sDate = new Date(t.startDate || t.startdt || t.start || Date.now()); 
