@@ -436,25 +436,32 @@ document.getElementById('contactForm').onsubmit = function() {
                 alert("Başarılı!"); switchTab('giris');
             }).catch(e => alert(e.message));
         }
-   async function mailGonder() {
+   // Mail Uygulamasını Tetikler (Outlook, Apple Mail vb.)
+async function mailGonder() {
     const isim = document.getElementById('c_name').value.trim();
     const mesaj = document.getElementById('c_message').value.trim();
     const hedefEmail = "shiftmaster2026@gmail.com";
     
     if(!isim || !mesaj) {
-        alert("Lütfen adınızı ve mesajınızı eksiksiz yazın.");
+        alert("Lütfen adınızı ve mesajınızı yazın.");
         return;
     }
 
-    // Profesyonel mail içeriği hazırlığı
     const konu = encodeURIComponent("ShiftMaster Destek Talebi - " + isim);
     const govde = encodeURIComponent("Merhaba ShiftMaster Ekibi,\n\n" + mesaj + "\n\nSaygılarımla,\n" + isim);
     
-    // Mail uygulamasını tetikle
     window.location.href = `mailto:${hedefEmail}?subject=${konu}&body=${govde}`;
-    
-    // Formu kapat
     toggleContact(false);
+}
+
+// Gmail/Hotmail kullananlar için adresi kopyalar
+function adresiKopyala() {
+    const email = "shiftmaster2026@gmail.com";
+    navigator.clipboard.writeText(email).then(() => {
+        alert("E-posta adresi (shiftmaster2026@gmail.com) kopyalandı!\n\nŞimdi Gmail'e gidip alıcı kısmına yapıştırarak mesajınızı gönderebilirsiniz.");
+    }).catch(err => {
+        alert("Adres: shiftmaster2026@gmail.com");
+    });
 }
     
     </script>
@@ -518,19 +525,26 @@ document.getElementById('contactForm').onsubmit = function() {
         <span onclick="toggleContact(false)" style="position:absolute; top:20px; right:25px; font-size:28px; color:#64748b; cursor:pointer; font-weight:900;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#64748b'">×</span>
         
         <h2 style="color:#fff; font-size:22px; font-weight:900; margin-bottom:10px; text-align:center;">BİZE ULAŞIN</h2>
-        <p style="color:#94a3b8; font-size:13px; text-align:center; margin-bottom:25px;">Sorularınız için formu doldurmanız yeterlidir.</p>
+        <p style="color:#94a3b8; font-size:13px; text-align:center; margin-bottom:25px;">Sorularınız için aşağıdaki yöntemleri kullanabilirsiniz.</p>
         
-       <form id="contactForm">
-    <div class="input-group">
-        <label class="input-label">ADINIZ SOYADINIZ</label>
-        <input type="text" id="c_name" class="glass-input" required placeholder="Ad Soyad">
-    </div>
-    <div class="input-group" style="margin-top:15px;">
-        <label class="input-label">MESAJINIZ</label>
-        <textarea id="c_message" class="glass-input" style="height:100px; resize:none;" required placeholder="Nasıl yardımcı olabiliriz?"></textarea>
-    </div>
-    <button type="button" onclick="mailGonder()" class="btn-action btn-login" style="margin-top:20px;">MAİL OLARAK TASLAKLA</button>
-</form>
+        <form id="contactForm">
+            <div class="input-group">
+                <label class="input-label">ADINIZ SOYADINIZ</label>
+                <input type="text" id="c_name" class="glass-input" placeholder="Ad Soyad">
+            </div>
+            <div class="input-group" style="margin-top:15px;">
+                <label class="input-label">MESAJINIZ</label>
+                <textarea id="c_message" class="glass-input" style="height:100px; resize:none;" placeholder="Nasıl yardımcı olabiliriz?"></textarea>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button type="button" onclick="mailGonder()" class="btn-action btn-login">📬 MAİL UYGULAMASIYLA GÖNDER</button>
+                
+                <button type="button" onclick="adresiKopyala()" style="background: rgba(255,255,255,0.05); border: 1px solid #475569; color: #94a3b8; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;" onmouseover="this.style.background='rgba(56, 189, 248, 0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                    📋 ADRESİ KOPYALA (Gmail için)
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 </body>
