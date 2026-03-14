@@ -243,7 +243,6 @@
             </div>
         </div>
 
-        <div class="seo-footer">
         // 🔥 KURUMSAL SÖZLEŞME ÇALIŞTIRMA FONKSİYONU 🔥
 const legalTexts = {
     'gizlilik': "<b>GİZLİLİK POLİTİKASI</b><br><br>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.<br><br><b>1. Veri Paylaşımı:</b> Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.<br><br><b>2. Şifreleme:</b> Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.",
@@ -371,5 +370,11 @@ const legalTexts = {
             }).catch(e => alert(e.message));
         }
     </script>
+<div id="legalModal" class="modal-overlay" onclick="if(event.target.id==='legalModal') closeLegalModal()">
+        <div class="modal-box" style="max-width: 600px; text-align: left; background: radial-gradient(circle at top right, #0f172a, #050b14); border: 1px solid var(--accent);">
+            <div id="legalContent" style="font-size:13px; color:#cbd5e1; line-height:1.6; max-height:400px; overflow-y:auto; padding-right:10px;"></div>
+            <button class="btn btn-cyan" style="width:100%; margin-top:20px; justify-content:center; padding:15px;" onclick="closeLegalModal()">ANLADIM, KAPAT</button>
+        </div>
+    </div>
 </body>
 </html>
