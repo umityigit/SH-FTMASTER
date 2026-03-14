@@ -1030,19 +1030,14 @@ function raporuOlustur(filtreParam, pShiftleri) {
                 }
 
                 // 🔥 TC MASKELEME MANTIĞI 🔥
-                let tcHtml = tcNo;
-                if (tcNo && tcNo.length >= 5) {
-                    let maskedTc = tcNo.substring(0, 2) + "*******" + tcNo.substring(tcNo.length - 2);
-                    tcHtml = `<span class="tc-text" data-real="${tcNo}" data-masked="${maskedTc}">${maskedTc}</span> <span style="cursor:pointer; font-size:12px; margin-left:3px; user-select:none;" onclick="toggleTC(this)" title="Kilidi Aç">👁️</span>`;
-                }
-<span style="cursor: pointer; transition: 0.3s; color: var(--accent);" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'" onclick="toggleContact(true)">İletişim</span>
-               
-                h+=`<tr>
-                    <td class="kalin-yatay stick-1" contenteditable="true">${globalIndex++}</td>
-                    <td class="kalin-yatay stick-2" style="white-space:nowrap;">${tcHtml}</td>
-                    <td class="isim-yatay stick-3" contenteditable="true">${ad}</td>
-                    <td class="isim-yatay stick-4" contenteditable="true">${soyad}</td>
-                    <td class="kalin-yatay" contenteditable="true">0</td>`;
+let tcHtml = tcNo;
+if (tcNo && tcNo.length >= 5) {
+    let maskedTc = tcNo.substring(0, 2) + "*******" + tcNo.substring(tcNo.length - 2);
+    tcHtml = `<span class="tc-text" data-real="${tcNo}" data-masked="${maskedTc}">${maskedTc}</span> <span style="cursor:pointer; font-size:12px; margin-left:3px; user-select:none;" onclick="toggleTC(this)" title="Kilidi Aç">👁️</span>`;
+}
+                
+h+=`<tr>
+    <td class="kalin-yatay stick-1" contenteditable="true">${globalIndex++}</td>
                 
                 days.forEach((d, idx)=>{
                     let tamTarihStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()}`;
