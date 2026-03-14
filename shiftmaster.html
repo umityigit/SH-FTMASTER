@@ -802,6 +802,7 @@ function saveHistory() {
 }
 // YENİ EKLENEN: SİHİRBAZDAN TABLOYA DİREKT AKTARIM MOTORU
        // 🔥 YENİ NESİL: SİHİRBAZDAN TABLOYA AKTARIM & GEÇMİŞ HAFIZA MOTORU
+      // 🔥 YENİ NESİL: SİHİRBAZDAN TABLOYA AKTARIM & GEÇMİŞ HAFIZA MOTORU
         window.targetTableWrapperForAI = null;
         window.aiLastShifts = {}; // Sihirbaza fısıldanacak olan "Önceki Ayın Son Gün" verileri
 
@@ -809,7 +810,7 @@ function saveHistory() {
             const wrapper = btn.closest('.table-wrapper');
             window.targetTableWrapperForAI = wrapper;
 
-            // 1. Tarih ve Gün sayısını tablodan otomatik al (Müşteri uğraşmasın)
+            // 1. Tarih ve Gün sayısını tablodan otomatik al
             const sDateStr = wrapper.getAttribute("data-startdt");
             let startDateVal = "";
             if (sDateStr) {
@@ -822,36 +823,59 @@ function saveHistory() {
             const names = Array.from(wrapper.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector(".editable-name").innerText.trim());
             const namesParam = encodeURIComponent(names.join(','));
 
-            // 3. ÖNCEKİ TABLOYU BUL VE SON GÜNÜ HAFIZAYA AL (SÜPER ZEKA)
+            // 3. ÖNCEKİ TABLOYU BUL VE KUSURSUZ HAFIZA AL (ZIRHLI VERSİYON)
             window.aiLastShifts = {};
             const prevWrapper = wrapper.previousElementSibling;
             if (prevWrapper && prevWrapper.classList.contains('table-wrapper')) {
                 prevWrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => {
                     const nElement = tr.querySelector(".editable-name");
                     if(nElement) {
-                        const pName = nElement.innerText.trim();
-                        const shiftCells = tr.querySelectorAll(".shift-cell");
-                        if(shiftCells.length > 0) {
-                            const lastCellText = shiftCells[shiftCells.length - 1].innerText.trim();
-                            // Son gün Gece mi, Gündüz mü, İzin mi tespit et
-                            if (lastCellText.startsWith("20:") || lastCellText.startsWith("24:") || lastCellText.startsWith("00:") || lastCellText.includes("GECE")) {
-                                window.aiLastShifts[pName] = 'N'; // Night (Gece)
+                        let pName = nElement.innerText.trim().toUpperCase(); // İsimleri standartlaştır
+                        
+                        // Sadece "Gizlenmemiş" olan GERÇEK vardiya hücrelerini al
+                        const visibleCells = Array.from(tr.querySelectorAll(".shift-cell")).filter(c => !c.classList.contains('hidden-by-snipper'));
+                        
+                        if(visibleCells.length > 0) {
+                            // En son dolu hücreyi bul
+                            const lastCellText = visibleCells[visibleCells.length - 1].innerText.trim();
+                            let safeVal = lastCellText.replace(/\./g, ':'); 
+                            let noSpaceVal = safeVal.replace(/\s+/g, ''); 
+                            let r = shiftRules[safeVal] || shiftRules[lastCellText] || shiftRules[noSpaceVal];
+                            
+                            // GECE KONTROLÜ: Tanımlı vardiyada gece saati (n > 0) varsa, veya adında gece geçiyorsa kesin Gecedir!
+                            if ((r && r.n > 0) || lastCellText.toUpperCase().includes("GECE") || lastCellText.startsWith("20") || lastCellText.startsWith("24") || lastCellText.startsWith("00")) {
+                                window.aiLastShifts[pName] = 'N'; 
                             } else if (lastCellText === "HT" || lastCellText === "İ" || lastCellText === "R" || lastCellText === "") {
-                                window.aiLastShifts[pName] = 'O'; // Off (İzin)
+                                window.aiLastShifts[pName] = 'O'; 
                             } else {
-                                window.aiLastShifts[pName] = 'G'; // Gündüz
+                                window.aiLastShifts[pName] = 'G'; 
                             }
                         }
                     }
                 });
             }
 
-            // Sihirbazı açarken tarih ve gün sayılarını da URL'ye ekliyoruz
+            // Sihirbazı aç
             const wizardUrl = `isci_sihirbaz.html?mode=inject&names=${namesParam}&start=${startDateVal}&days=${colCountVal}`;
             document.getElementById('aiWizardFrame').src = wizardUrl;
             document.getElementById('targetFolderNameDisplay').innerText = `> Seçili Tabloya Veri Aktarılıyor...`;
             document.getElementById('aiWizardPopup').style.display = 'flex';
             setTimeout(() => document.getElementById('aiWizardPopup').classList.add('show'), 10);
+        }
+
+        function receiveDataFromAiWizard(aiRows, startDateStr, colCount) {
+            if (!window.targetTableWrapperForAI) return;
+            const oldWrapper = window.targetTableWrapperForAI;
+            
+            const tName = oldWrapper.getAttribute("data-tablename");
+            const sDate = new Date(startDateStr);
+            const notes = oldWrapper.querySelector(".table-notes") ? oldWrapper.querySelector(".table-notes").value : "";
+
+            generateTable(true, aiRows, tName, sDate, parseInt(colCount), oldWrapper, notes);
+            oldWrapper.remove();
+            
+            closeAiWizardPopup();
+            showToast("Sihirbaz verisi tabloya başarıyla işlendi! 🪄 (Sisteme Kaydetmeyi Unutmayın)");
         }
 
         function receiveDataFromAiWizard(aiRows, startDateStr, colCount) {
