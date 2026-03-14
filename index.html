@@ -244,11 +244,14 @@
         </div>
 
         <div class="seo-footer">
-        <a href="javascript:void(0)" onclick="openLegalModal('gizlilik')">Gizlilik Politikası</a> | 
-        <a href="javascript:void(0)" onclick="openLegalModal('kullanim')">Kullanım Koşulları</a> | 
-        <a href="javascript:void(0)" onclick="openLegalModal('guvenlik')">Veri Güvenliği</a> | 
-        <a href="mailto:destek@shiftmaster.com.tr">İletişim</a>
-        <div style="margin-top: 10px; font-size: 11px; opacity: 0.6;">© 2026 ShiftMaster. Tüm hakları saklıdır.</div>
+        // 🔥 KURUMSAL SÖZLEŞME ÇALIŞTIRMA FONKSİYONU 🔥
+const legalTexts = {
+    'gizlilik': "<b>GİZLİLİK POLİTİKASI</b><br><br>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.<br><br><b>1. Veri Paylaşımı:</b> Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.<br><br><b>2. Şifreleme:</b> Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.",
+    
+    'kullanim': "<b>KULLANIM KOŞULLARI VE SORUMLULUK REDDİ</b><br><br>ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.<br><br><b>Uyarı:</b> Sistem tarafından otomatik yapılan puantaj, mesai ve nöbet hesaplamaları 'referans' amaçlıdır. Nihai resmi bordro, SGK bildirgeleri ve maaş ödemelerinde mutlak kontrol yükümlülüğü kurumun (kullanıcının) kendisine aittir. ShiftMaster, hatalı veri girişinden veya hesaplama farklarından doğabilecek idari veya mali zararlardan sorumlu tutulamaz.",
+    
+    'guvenlik': "<b>VERİ GÜVENLİĞİ VE BULUT ALTYAPISI</b><br><br><b>1. Sunucu Güvenliği:</b> Platformumuzdaki tüm veri alışverişi 256-bit SSL sertifikası ile uçtan uca şifrelenmektedir. Tüm altyapımız Google Cloud ve Firebase sunucularında barındırılmakta olup, dünyanın en üst düzey siber güvenlik kalkanlarıyla korunmaktadır.<br><br><b>2. Erişim Yetkileri:</b> Kurum verilerine yalnızca o kurumun 'Patron' yetkisine sahip ana hesabı ve onun yetki verdiği alt yöneticiler ulaşabilir. Her kurumun veri tabanı birbirinden izole edilmiştir."
+};
     </div>
 </div>
 
