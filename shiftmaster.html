@@ -1417,6 +1417,7 @@ function saveHistory() {
         });
         // 📍 BUGÜN KİMLER VAR (OPERASYON ÖZETİ) MOTORU
         // 📍 BUGÜN KİMLER VAR (VERİTABANI RADARI) MOTORU
+        // 📍 BUGÜN KİMLER VAR (VERİTABANI RADARI) MOTORU - İZİN FİLTRELİ
         function showTodaySummary(selectedDate = null) {
             const modal = document.getElementById('todaySummaryModal');
             if(!modal) return;
@@ -1456,15 +1457,43 @@ function saveHistory() {
                                                 shiftVal = shiftVal.trim();
                                                 let name = row.name;
                                                 
-                                                // Klasör ismini etiket olarak ekle
+                                                // Klasör ismini etiket olarak ekle (Burası korundu, mükemmel kısım!)
                                                 let badge = `<span style="font-size:9px; color:#94a3b8; background:rgba(0,0,0,0.5); padding:2px 5px; border-radius:4px; margin-left:5px;">📁 ${archive.name}</span>`;
 
-                                                if (shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.startsWith("00:") || shiftVal.toUpperCase().includes("GECE")) {
+                                                // 🔥 YENİ İZİN FİLTRESİ: Tüm izin kodları burada tanımlı
+                                                let sValUpper = shiftVal.toUpperCase();
+                                                let izinKodlari = ["HT", "İ", "R", "Nİ", "Yİ", "Aİ", "İİ", ""];
+
+                                                if (sValUpper.startsWith("20:") || sValUpper.startsWith("24:") || sValUpper.startsWith("00:") || sValUpper.includes("GECE")) {
                                                     nightList.push(`<b>${name}</b> <span style="font-size:10px; color:var(--warning);">(${shiftVal})</span> ${badge}`);
-                                                } else if (shiftVal === "HT" || shiftVal === "İ" || shiftVal === "R" || shiftVal === "") {
+                                                } else if (izinKodlari.includes(sValUpper)) {
                                                     offList.push(`<b>${name}</b> <span style="font-size:10px; color:var(--danger);">(${shiftVal || 'Boş'})</span> ${badge}`);
                                                 } else {
                                                     dayList.push(`<b>${name}</b> <span style="font-size:10px; color:var(--cyan);">(${shiftVal})</span> ${badge}`);
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                // Sonuçları HTML'e yazdır
+                document.getElementById('listDay').innerHTML = dayList.length > 0 ? dayList.map(n => `<div style="padding:8px 5px; border-bottom:1px solid rgba(16,185,129,0.2);">☀️ ${n}</div>`).join('') : '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gündüz kaydı yok</div>';
+                document.getElementById('cDay').innerText = dayList.length;
+                
+                document.getElementById('listNight').innerHTML = nightList.length > 0 ? nightList.map(n => `<div style="padding:8px 5px; border-bottom:1px solid rgba(245,158,11,0.2);">🌙 ${n}</div>`).join('') : '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gece kaydı yok</div>';
+                document.getElementById('cNight').innerText = nightList.length;
+                
+                document.getElementById('listOff').innerHTML = offList.length > 0 ? offList.map(n => `<div style="padding:8px 5px; border-bottom:1px solid rgba(239,68,68,0.2);">🏖️ ${n}</div>`).join('') : '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli kaydı yok</div>';
+                document.getElementById('cOff').innerText = offList.length;
+                
+                document.getElementById('todaySummaryDateText').innerText = dateStr + " Tarihli Özet";
+                openModal('todaySummaryModal');
+            });
+        }
         
         // 👁️ KONTROL MERKEZİ (PATRON MODU) ARAMA VE SIZMA MOTORU - (ZIRHLI VERSİYON)
         window.openBossConsole = function() {
