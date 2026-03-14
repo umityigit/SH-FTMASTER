@@ -324,6 +324,67 @@
         const auth = firebase.auth();
         const rtdb = firebase.database();
 
+       // Güvenlik Duvarı Değişkenleri
+let yanlisDenemeSayisi = 0;
+let kilitSuresi = 0; // Saniye cinsinden
+
+function sihirliGirisYap() {
+    const btn = document.querySelector(".btn-login");
+    
+    // 1. Kilit kontrolü
+    if (kilitSuresi > 0) {
+        alert(`Çok fazla hatalı deneme! ${kilitSuresi} saniye bekleyin.`);
+        return;
+    }
+
+    const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
+    const sifre = document.getElementById("loginSifre").value.trim();
+
+    // 2. Master Giriş ve Normal Giriş İşlemleri
+    // (Burada senin mevcut giriş kodların çalışıyor...)
+    
+    // ÖRNEK HATA YÖNETİMİ (Catch kısımlarına veya hatalı şifre uyarılarına ekle):
+    // Giriş başarısız olduğunda şu fonksiyonu çağıracağız:
+    // girisHatasiYoneticisi(); 
+}
+
+function girisHatasiYoneticisi() {
+    yanlisDenemeSayisi++;
+    
+    if (yanlisDenemeSayisi >= 3 && yanlisDenemeSayisi < 6) {
+        kilitSuresi = 60; // 1 Dakika
+    } else if (yanlisDenemeSayisi >= 6 && yanlisDenemeSayisi < 9) {
+        kilitSuresi = 300; // 5 Dakika
+    } else if (yanlisDenemeSayisi >= 9) {
+        kilitSuresi = 3600; // 1 Saat
+    }
+
+    if (kilitSuresi > 0) {
+        kilitliButonGuncelle();
+    }
+}
+
+function kilitliButonGuncelle() {
+    const btn = document.querySelector(".btn-login");
+    if (kilitSuresi > 0) {
+        btn.disabled = true;
+        btn.innerText = `BLOKE: ${kilitSuresi} sn`;
+        btn.style.background = "linear-gradient(135deg, #450a0a, #7f1d1d)"; // Kırmızı/Siyah alarm rengi
+        
+        let timer = setInterval(() => {
+            kilitSuresi--;
+            btn.innerText = `BLOKE: ${kilitSuresi} sn`;
+            
+            if (kilitSuresi <= 0) {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.innerText = "SİSTEME GİRİŞ YAP";
+                btn.style.background = ""; // Eski rengine döner
+            }
+        }, 1000);
+    }
+}
+        
         // SLIDER VE TAB MOTORLARI
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -400,6 +461,9 @@ document.getElementById('contactForm').onsubmit = function() {
                             document.getElementById("gateSelector").style.display = "block";
                         } else {
                             alert("Şifre Yanlış!"); 
+                            // Şifre yanlış uyarısı verdiğin her yere bunu koy:
+                            girisHatasiYoneticisi(); 
+                            alert("Şifre Yanlış! Deneme: " + yanlisDenemeSayisi);
                         }
                     });
                 });
