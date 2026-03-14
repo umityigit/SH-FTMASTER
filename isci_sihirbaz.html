@@ -158,36 +158,10 @@
                 <h2 id="aiStatusTitle" style="margin:0; color:white; font-size: 20px; text-shadow: 0 0 10px var(--accent);">🏆 Aİ ÇIKTISI</h2>
                 <input type="text" id="aiTableName" class="glass-input" value="Siber Çizelge" style="width: 200px; font-size: 13px; font-weight: bold; border-color: var(--accent);">
             </div>
+            
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-orange" onclick="exportWizardToExcel()">📥 EXCEL'E AKTAR</button>
-                
-                function saveAITableToPool() {
-    let tName = document.getElementById('aiTableName').value.trim();
-    if(!tName) return alert("Lütfen tabloya bir isim verin!");
-
-    const rows = [];
-    document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
-        const name = tr.querySelector('b').innerText.trim();
-        const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
-        rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
-    });
-
-    const data = { 
-        name: tName, 
-        date: new Date().toLocaleString('tr-TR'), 
-        start: document.getElementById('simStartDate').value, 
-        days: document.getElementById('simDays').value, 
-        rows: rows 
-    };
-    
-    // Catch eklendi: Artık Firebase hata verirse ekranda göreceğiz!
-    db.ref("isci_sihirbaz_arsiv").push(data).then(() => { 
-        showToast("Tablo Ana Merkeze Başarıyla Gönderildi! 💾"); 
-        document.getElementById('resultModal').style.display='none'; 
-    }).catch(err => {
-        alert("Bağlantı veya Güvenlik Hatası: " + err.message);
-    });
-}
+                <button class="btn btn-success" style="box-shadow: 0 0 15px rgba(16,185,129,0.5); padding: 15px 25px; font-size: 14px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET (HAVUZA GÖNDER)</button>
                 <button class="btn btn-danger" onclick="document.getElementById('resultModal').style.display='none'">❌ KAPAT</button>
             </div>
         </div>
@@ -555,8 +529,11 @@
             db.ref("isci_sihirbaz_arsiv").push(data).then(() => { 
                 showToast("Tablo Ana Merkeze Başarıyla Gönderildi! 💾"); 
                 document.getElementById('resultModal').style.display='none'; 
+            }).catch(err => {
+                alert("Bağlantı veya Güvenlik Hatası: " + err.message);
             });
         }
+
         function showToast(m) { const x = document.getElementById('toast'); x.innerText=m; x.className="show"; setTimeout(()=>x.className="",3000); }
     </script>
 </body>
