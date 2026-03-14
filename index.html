@@ -243,35 +243,35 @@
             </div>
         </div>
 
-       // 🔥 KURUMSAL SÖZLEŞME ÇALIŞTIRMA FONKSİYONU 🔥
+       // 🔥 KURUMSAL SÖZLEŞME ÇALIŞTIRMA FONKSİYONU (RENKLİ & ŞIK VERSİYON) 🔥
         const legalTexts = {
-            'gizlilik': "<b>GİZLİLİK POLİTİKASI</b><br><br>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.<br><br><b>1. Veri Paylaşımı:</b> Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.<br><br><b>2. Şifreleme:</b> Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.",
+            'gizlilik': `
+                <h3 style='margin-top:0; color:var(--accent); font-size:20px; text-shadow:0 0 15px var(--accent-glow); border-bottom:1px dashed rgba(56,189,248,0.3); padding-bottom:10px;'>🔒 GİZLİLİK POLİTİKASI</h3>
+                <p style='font-size:13px;'>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.</p>
+                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:12px; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
+                    <b style='color:#fff; font-size:14px;'>1. Veri Paylaşımı:</b><br>Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.
+                </div>
+                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--success); box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
+                    <b style='color:#fff; font-size:14px;'>2. Şifreleme:</b><br>Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.
+                </div>`,
             
-            'kullanim': "<b>KULLANIM KOŞULLARI VE SORUMLULUK REDDİ</b><br><br>ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.<br><br><b>Uyarı:</b> Sistem tarafından otomatik yapılan puantaj, mesai ve nöbet hesaplamaları 'referans' amaçlıdır. Nihai resmi bordro, SGK bildirgeleri ve maaş ödemelerinde mutlak kontrol yükümlülüğü kurumun (kullanıcının) kendisine aittir. ShiftMaster, hatalı veri girişinden veya hesaplama farklarından doğabilecek idari veya mali zararlardan sorumlu tutulamaz.",
+            'kullanim': `
+                <h3 style='margin-top:0; color:var(--warning); font-size:20px; text-shadow:0 0 15px rgba(250,204,21,0.4); border-bottom:1px dashed rgba(250,204,21,0.3); padding-bottom:10px;'>⚖️ KULLANIM KOŞULLARI</h3>
+                <p style='font-size:13px;'>ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.</p>
+                <div style='background:rgba(239,68,68,0.1); padding:15px; border-radius:12px; border:1px solid rgba(239,68,68,0.3); color:#fca5a5; margin-top:15px;'>
+                    <b style='color:var(--danger); font-size:15px;'>⚠️ ÖNEMLİ UYARI:</b><br><br>Sistem tarafından otomatik yapılan puantaj, mesai ve nöbet hesaplamaları 'referans' amaçlıdır. Nihai resmi bordro, SGK bildirgeleri ve maaş ödemelerinde mutlak kontrol yükümlülüğü kurumun (kullanıcının) kendisine aittir. ShiftMaster, hatalı veri girişinden veya hesaplama farklarından doğabilecek idari veya mali zararlardan sorumlu tutulamaz.
+                </div>`,
             
-            'guvenlik': "<b>VERİ GÜVENLİĞİ VE BULUT ALTYAPISI</b><br><br><b>1. Sunucu Güvenliği:</b> Platformumuzdaki tüm veri alışverişi 256-bit SSL sertifikası ile uçtan uca şifrelenmektedir. Tüm altyapımız Google Cloud ve Firebase sunucularında barındırılmakta olup, dünyanın en üst düzey siber güvenlik kalkanlarıyla korunmaktadır.<br><br><b>2. Erişim Yetkileri:</b> Kurum verilerine yalnızca o kurumun 'Patron' yetkisine sahip ana hesabı ve onun yetki verdiği alt yöneticiler ulaşabilir. Her kurumun veri tabanı birbirinden izole edilmiştir."
+            'guvenlik': `
+                <h3 style='margin-top:0; color:var(--success); font-size:20px; text-shadow:0 0 15px rgba(16,185,129,0.4); border-bottom:1px dashed rgba(16,185,129,0.3); padding-bottom:10px;'>🛡️ VERİ GÜVENLİĞİ</h3>
+                <p style='font-size:13px;'>Platformumuzdaki altyapı standartları aşağıdaki gibidir:</p>
+                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--success); margin-bottom:12px; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
+                    <b style='color:#fff; font-size:14px;'>1. Sunucu Güvenliği:</b><br>Tüm veri alışverişi 256-bit SSL sertifikası ile uçtan uca şifrelenmektedir. Tüm altyapımız Google Cloud ve Firebase sunucularında barındırılmakta olup, dünyanın en üst düzey siber güvenlik kalkanlarıyla korunmaktadır.
+                </div>
+                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid #a855f7; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
+                    <b style='color:#fff; font-size:14px;'>2. Erişim Yetkileri:</b><br>Kurum verilerine yalnızca o kurumun 'Patron' yetkisine sahip ana hesabı ve onun yetki verdiği alt yöneticiler ulaşabilir. Her kurumun veri tabanı birbirinden izole edilmiştir.
+                </div>`
         };
-
-        function openLegalModal(type) {
-            const modal = document.getElementById('legalModal');
-            const contentDiv = document.getElementById('legalContent');
-            if(modal && contentDiv && legalTexts[type]) {
-                contentDiv.innerHTML = legalTexts[type];
-                modal.style.display = 'flex';
-                setTimeout(() => modal.classList.add('show'), 10);
-            }
-        }
-
-        function closeLegalModal() {
-            const modal = document.getElementById('legalModal');
-            if(modal) {
-                modal.classList.remove('show');
-                setTimeout(() => modal.style.display = 'none', 400);
-            }
-        }
-    </div>
-</div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ",
