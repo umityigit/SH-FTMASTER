@@ -495,29 +495,29 @@ document.getElementById('contactForm').onsubmit = function() {
 <div id="contactModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,11,20,0.9); backdrop-filter:blur(15px); z-index:9999999; justify-content:center; align-items:center; opacity:0; transition:0.4s;">
     <div style="background:linear-gradient(145deg, #0f172a, #050b14); border:1px solid var(--accent); border-radius:25px; padding:30px; max-width:450px; width:90%; position:relative; box-shadow:0 20px 70px rgba(0,0,0,0.9);">
         
-        <span onclick="toggleContact(false)" style="position:absolute; top:20px; right:25px; font-size:28px; color:#64748b; cursor:pointer; font-weight:900;">×</span>
+        <span onclick="toggleContact(false)" style="position:absolute; top:20px; right:25px; font-size:28px; color:#64748b; cursor:pointer; font-weight:900;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#64748b'">×</span>
         
         <h2 style="color:#fff; font-size:22px; font-weight:900; margin-bottom:10px; text-align:center;">BİZE ULAŞIN</h2>
-        <p style="color:#94a3b8; font-size:13px; text-align:center; margin-bottom:25px;">Destek ekibimiz en kısa sürede size dönüş yapacaktır.</p>
+        <p style="color:#94a3b8; font-size:13px; text-align:center; margin-bottom:25px;">Sorularınız için formu doldurmanız yeterlidir.</p>
         
-        <form action="https://formspree.io/f/shiftmaster2026@gmail.com" method="POST" id="contactForm">
+        <form action="https://formspree.io/f/mojknqdk" method="POST" id="contactForm">
             <div class="input-group">
                 <label class="input-label">ADINIZ SOYADINIZ</label>
-                <input type="text" name="name" class="glass-input" required placeholder="Örn: Ahmet Yılmaz">
+                <input type="text" name="name" class="glass-input" required placeholder="Ad Soyad">
             </div>
-            <div class="input-group">
+            <div class="input-group" style="margin-top:15px;">
                 <label class="input-label">TELEFON NUMARANIZ</label>
                 <input type="tel" name="phone" class="glass-input" required placeholder="05xx xxx xx xx">
             </div>
-            <div class="input-group">
+            <div class="input-group" style="margin-top:15px;">
                 <label class="input-label">E-POSTA ADRESİNİZ</label>
-                <input type="email" name="_replyto" class="glass-input" required placeholder="mail@ornek.com">
+                <input type="email" name="email" class="glass-input" required placeholder="mail@ornek.com">
             </div>
-            <div class="input-group">
+            <div class="input-group" style="margin-top:15px;">
                 <label class="input-label">MESAJINIZ</label>
-                <textarea name="message" class="glass-input" style="height:100px; resize:none;" placeholder="Nasıl yardımcı olabiliriz?"></textarea>
+                <textarea name="message" class="glass-input" style="height:100px; resize:none;" required placeholder="Nasıl yardımcı olabiliriz?"></textarea>
             </div>
-            <button type="submit" class="btn-action btn-login">BİZE GÖNDER</button>
+            <button type="submit" class="btn-action btn-login" style="margin-top:20px;">GÖNDER</button>
         </form>
     </div>
 </div>
