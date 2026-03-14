@@ -6,6 +6,7 @@
     <title>Aİ MASTER V15 | ShiftMaster Sihirbaz</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
         :root { --bg-dark: #020617; --bg-light: #0f172a; --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(56, 189, 248, 0.4); --accent: #38bdf8; --cyan: #06b6d4; --text: #f8fafc; --warning: #facc15; --danger: #f43f5e; --success: #10b981; --purple: #a855f7; }
@@ -159,7 +160,34 @@
             </div>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-orange" onclick="exportWizardToExcel()">📥 EXCEL'E AKTAR</button>
-                <button class="btn btn-success" style="box-shadow: 0 0 15px rgba(16,185,129,0.5); padding: 15px 25px; font-size: 14px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET (HAVUZA GÖNDER)</button>
+                
+                function saveAITableToPool() {
+    let tName = document.getElementById('aiTableName').value.trim();
+    if(!tName) return alert("Lütfen tabloya bir isim verin!");
+
+    const rows = [];
+    document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+        const name = tr.querySelector('b').innerText.trim();
+        const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
+        rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
+    });
+
+    const data = { 
+        name: tName, 
+        date: new Date().toLocaleString('tr-TR'), 
+        start: document.getElementById('simStartDate').value, 
+        days: document.getElementById('simDays').value, 
+        rows: rows 
+    };
+    
+    // Catch eklendi: Artık Firebase hata verirse ekranda göreceğiz!
+    db.ref("isci_sihirbaz_arsiv").push(data).then(() => { 
+        showToast("Tablo Ana Merkeze Başarıyla Gönderildi! 💾"); 
+        document.getElementById('resultModal').style.display='none'; 
+    }).catch(err => {
+        alert("Bağlantı veya Güvenlik Hatası: " + err.message);
+    });
+}
                 <button class="btn btn-danger" onclick="document.getElementById('resultModal').style.display='none'">❌ KAPAT</button>
             </div>
         </div>
