@@ -357,6 +357,7 @@
                 <div style="font-size:26px; font-weight:900; color:#fff; text-shadow:0 0 15px var(--accent); display:flex; align-items:center; gap:15px;">
                     <span id="masterArchiveTitle">📁 Yeni Dosya</span>
                     <button class="btn" style="background:rgba(255,255,255,0.1); color:var(--warning); border-color:transparent;" onclick="renameMasterArchive()">✏️ İSMİ DEĞİŞTİR</button>
+                    <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9);" onclick="openAiWizardForFolder()">A.I. İLE TABLO ÜRET</button>
                 </div>
                 <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
                     <button class="btn btn-cyan" onclick="exportAllToExcel()">📋 TÜMÜNÜ EXCEL'E KOPYALA</button>
@@ -481,6 +482,23 @@
     </div>
 
     <script>
+        function openAiWizardForFolder() {
+    if (!currentMasterArchiveId) return alert("Önce bir klasör açmalısınız!");
+    
+    const wizardUrl = `isci_sihirbaz.html?targetFolder=${currentMasterArchiveId}&folderName=${encodeURIComponent(currentMasterArchiveName)}`;
+    document.getElementById('aiWizardFrame').src = wizardUrl;
+    document.getElementById('targetFolderNameDisplay').innerText = `> Hedef: ${currentMasterArchiveName}`;
+    document.getElementById('aiWizardPopup').style.display = 'flex';
+    setTimeout(() => document.getElementById('aiWizardPopup').classList.add('show'), 10);
+}
+
+function closeAiWizardPopup() {
+    document.getElementById('aiWizardPopup').classList.remove('show');
+    setTimeout(() => {
+        document.getElementById('aiWizardPopup').style.display = 'none';
+        document.getElementById('aiWizardFrame').src = "";
+    }, 400);
+}
         // 👑 GİZLİ KAPI: PATRON MODU TETİKLEYİCİ
         let devClickCount = 0;
         function triggerPatronModu() {
@@ -1275,5 +1293,18 @@ function saveHistory() {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name') && !e.target.classList.contains('shift-cell')) { e.preventDefault(); }
         });
     </script>
+    <div id="aiWizardPopup" class="full-modal-overlay" style="z-index: 100020;">
+    <div class="full-modal-content" style="border-color: var(--purple); background: #020617;">
+        <div class="modal-header-bar" style="border-bottom-color: var(--purple); background: rgba(168, 85, 247, 0.1);">
+            <div style="font-size:22px; font-weight:900; color:#fff; text-shadow:0 0 15px var(--purple);">
+                🪄 YAPAY ZEKA MOTORU <span id="targetFolderNameDisplay" style="font-size:12px; color:var(--accent); margin-left:10px;"></span>
+            </div>
+            <button class="btn btn-red" onclick="closeAiWizardPopup()">❌ SİHİRBAZI KAPAT</button>
+        </div>
+        <div style="flex: 1; position: relative;">
+            <iframe id="aiWizardFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+        </div>
+    </div>
+</div>
 </body>
 </html>
