@@ -533,31 +533,21 @@
 
     <script>
         
-let tabloGecmisi = []; // Yapılan hamleleri burada saklayacağız
-const maxGecmis = 20;  // En fazla 20 geri alma hakkı tanıyalım (hafızayı yormasın)
-     
-        function gecmisiKaydet() {
-    const tabloHali = document.getElementById("vardiyaTablosu").innerHTML;
-    tabloGecmisi.push(tabloHali);
-    
-    // Eğer 20'den fazla kayıt olduysa en eskisini sil
-    if (tabloGecmisi.length > maxGecmis) {
-        tabloGecmisi.shift();
-    }
-}   
-       document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-        if (tabloGecmisi.length > 0) {
-            e.preventDefault(); // Tarayıcının kendi zayıf geri almasını durdur
+// KUSURSUZ GERİ ALMA (CTRL+Z) MOTORU
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
+        if (historyStack.length > 0) {
+            e.preventDefault(); // Tarayıcının metin geri almasını durdur
             
-            // Son kaydedilen hali al ve tabloya bas
-            const sonHal = tabloGecmisi.pop();
-            document.getElementById("vardiyaTablosu").innerHTML = sonHal;
+            // Son kaydedilen HTML'i al ve tüm masaya (container) yapıştır
+            const sonHal = historyStack.pop();
+            document.getElementById("tablesContainer").innerHTML = sonHal;
             
-            // Eğer hesaplama fonksiyonun varsa onu da tetikle ki toplamlar güncellensin
-            if(typeof tabloyuHesapla === "function") tabloyuHesapla();
+            // Renkleri ve toplamları kendine getir
+            updateAllStats();
             
-            console.log("Geri alındı!");
+            // Kullanıcıya şık bir bildirim ver
+            if(typeof showToast === 'function') showToast("Geri Alındı! ↩️");
         }
     }
 });
@@ -1253,7 +1243,7 @@ function saveHistory() {
         
         function createRowHtml(name, colCount, startDt, savedShifts = null) { 
             let cells = `<td class="no-export" style="width: 30px; background: transparent !important; border: none !important; box-shadow: none !important;"><div class="nav-box" style="pointer-events:auto; display:flex; flex-direction:column; gap:2px;"><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,1)">▼</button></div></td>`; 
-            cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: 1px solid var(--glass-border);"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`; 
+            cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" onfocus="saveHistory()" oninput="updateAllStats()"${pinAttr}>${txt}</td>`;
             let shiftIdx = 0; 
             for(let i=0; i<colCount; i++) { 
                 let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
