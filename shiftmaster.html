@@ -1465,19 +1465,26 @@ function saveHistory() {
                                                     offList.push(`<b>${name}</b> <span style="font-size:10px; color:var(--danger);">(${shiftVal || 'Boş'})</span> ${badge}`);
                                                 } else {
                                                     dayList.push(`<b>${name}</b> <span style="font-size:10px; color:var(--cyan);">(${shiftVal})</span> ${badge}`);
-                                               // 👁️ KONTROL MERKEZİ (PATRON MODU) ARAMA VE SIZMA MOTORU
-        function openBossConsole() {
-            document.getElementById('bossConsoleModal').style.display = 'flex';
-            setTimeout(() => document.getElementById('bossConsoleModal').classList.add('show'), 10);
+        
+        // 👁️ KONTROL MERKEZİ (PATRON MODU) ARAMA VE SIZMA MOTORU - (ZIRHLI VERSİYON)
+        window.openBossConsole = function() {
+            const modal = document.getElementById('bossConsoleModal');
+            if(!modal) {
+                alert("Hata: bossConsoleModal HTML'de bulunamadı!");
+                return;
+            }
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
             
-            // Tüm kurumları Firebase'den çek ve listele
-            db.ref("kurum_kayitlari").once("value").then(snap => {
+            // Tüm kurumları Firebase'den çek ve listele (originalRef ile direkt kök dizine iniyoruz)
+            originalRef("kurum_kayitlari").once("value").then(snap => {
                 const list = document.getElementById('bossKurumListesi');
+                if(!list) return;
                 list.innerHTML = "";
                 if(snap.val()) {
                     Object.entries(snap.val()).forEach(([kod, data]) => {
                         list.innerHTML += `
-                            <div class="archive-card boss-card" data-isim="${data.kurumAdi.toLowerCase()}" style="border-color:#ef4444; background:rgba(127,29,29,0.2);">
+                            <div class="archive-card boss-card" data-isim="${(data.kurumAdi || "").toLowerCase()}" style="border-color:#ef4444; background:rgba(127,29,29,0.2);">
                                 <div style="flex:1;">
                                     <b style="color:#fca5a5; font-size:16px;">🏢 ${data.kurumAdi}</b><br>
                                     <small style="color:#cbd5e1; font-size:11px;">Kod: <b>${kod}</b> | Patron: ${data.patronIsim}</small>
@@ -1489,37 +1496,30 @@ function saveHistory() {
                 } else {
                     list.innerHTML = "<div style='color:#fca5a5; grid-column:span 2; text-align:center;'>Sistemde henüz kayıtlı kurum yok.</div>";
                 }
+            }).catch(err => {
+                alert("Kurumlar yüklenirken hata oluştu: " + err.message);
             });
-        }
+        };
 
         // Komuta Üssü Arama Filtresi
-        function filterBossList() {
+        window.filterBossList = function() {
             let val = document.getElementById('bossSearchInput').value.toLowerCase();
             document.querySelectorAll('.boss-card').forEach(card => {
                 if(card.getAttribute('data-isim').includes(val)) card.style.display = "flex";
                 else card.style.display = "none";
             });
-        }
+        };
 
         // İstediğin Kurumun İçine Sızma Fonksiyonu
-        function patronaBaglan(e, kod, isim) {
+        window.patronaBaglan = function(e, kod, isim) {
             e.stopPropagation();
             if(confirm(`DİKKAT: "${isim}" adlı kurumun yönetim paneline sızmak üzeresiniz. Onaylıyor musunuz?`)) {
                 localStorage.setItem('sm_current_tenant', kod);
                 localStorage.setItem('sm_current_kurum_adi', isim);
-                showToast("Sisteme Bağlanılıyor...");
+                if (typeof showToast === "function") showToast("Sisteme Bağlanılıyor...");
                 setTimeout(() => window.location.reload(), 1000);
             }
-        }
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
+        };
                 
                 // Sonuçları HTML'e yazdır
                 document.getElementById('listDay').innerHTML = dayList.length > 0 ? dayList.map(n => `<div style="padding:8px 5px; border-bottom:1px solid rgba(16,185,129,0.2);">☀️ ${n}</div>`).join('') : '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gündüz kaydı yok</div>';
