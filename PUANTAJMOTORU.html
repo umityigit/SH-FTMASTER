@@ -292,7 +292,7 @@
         <a href="javascript:void(0)" onclick="openLegalModal('gizlilik')">Gizlilik Politikası</a> | 
         <a href="javascript:void(0)" onclick="openLegalModal('kullanim')">Kullanım Koşulları</a> | 
         <a href="javascript:void(0)" onclick="openLegalModal('guvenlik')">Veri Güvenliği</a> | 
-        <a href="mailto:destek@shiftmaster.com.tr">İletişim</a>
+        <a href="mailto:shiftmaster2026@gmail.com" style="color: var(--accent); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'">İletişim</a>
         <div style="margin-top: 10px; font-size: 11px; opacity: 0.6;">© 2026 ShiftMaster. Tüm hakları saklıdır.</div>
     </div>
 </div>
@@ -1073,7 +1073,8 @@ function raporuOlustur(filtreParam, pShiftleri) {
                     let maskedTc = tcNo.substring(0, 2) + "*******" + tcNo.substring(tcNo.length - 2);
                     tcHtml = `<span class="tc-text" data-real="${tcNo}" data-masked="${maskedTc}">${maskedTc}</span> <span style="cursor:pointer; font-size:12px; margin-left:3px; user-select:none;" onclick="toggleTC(this)" title="Kilidi Aç">👁️</span>`;
                 }
-
+<span style="cursor: pointer; transition: 0.3s; color: var(--accent);" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'" onclick="toggleContact(true)">İletişim</span>
+               
                 h+=`<tr>
                     <td class="kalin-yatay stick-1" contenteditable="true">${globalIndex++}</td>
                     <td class="kalin-yatay stick-2" style="white-space:nowrap;">${tcHtml}</td>
