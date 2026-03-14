@@ -532,6 +532,36 @@
     </div>
 
     <script>
+        
+let tabloGecmisi = []; // Yapılan hamleleri burada saklayacağız
+const maxGecmis = 20;  // En fazla 20 geri alma hakkı tanıyalım (hafızayı yormasın)
+     
+        function gecmisiKaydet() {
+    const tabloHali = document.getElementById("vardiyaTablosu").innerHTML;
+    tabloGecmisi.push(tabloHali);
+    
+    // Eğer 20'den fazla kayıt olduysa en eskisini sil
+    if (tabloGecmisi.length > maxGecmis) {
+        tabloGecmisi.shift();
+    }
+}   
+       document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        if (tabloGecmisi.length > 0) {
+            e.preventDefault(); // Tarayıcının kendi zayıf geri almasını durdur
+            
+            // Son kaydedilen hali al ve tabloya bas
+            const sonHal = tabloGecmisi.pop();
+            document.getElementById("vardiyaTablosu").innerHTML = sonHal;
+            
+            // Eğer hesaplama fonksiyonun varsa onu da tetikle ki toplamlar güncellensin
+            if(typeof tabloyuHesapla === "function") tabloyuHesapla();
+            
+            console.log("Geri alındı!");
+        }
+    }
+});
+       
         function openAiWizardForFolder() {
     if (!currentMasterArchiveId) return alert("Önce bir klasör açmalısınız!");
     
