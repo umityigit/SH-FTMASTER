@@ -650,12 +650,13 @@ function closeAiWizardPopup() {
 
                         // 🔥 ROL KONTROLÜ: PATRON İSE HER ŞEYİ AÇ!
                         // 🔥 ROL KONTROLÜ: PATRON İSE HER ŞEYİ AÇ!
+                       // 🔥 ROL KONTROLÜ: PATRON İSE HER ŞEYİ AÇ!
                         if (activeRole === 'superadmin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
                             if (btnBoss) btnBoss.style.display = 'inline-flex';
                             loadSorumlular(); 
                             openShiftMaster(); // PATRONU BEKLETMEDEN DİREKT İÇERİ AL
-                        }
+                        } else if (activeRole === 'admin') {
                         } else if (activeRole === 'admin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
                             if (btnBoss) btnBoss.style.display = 'none';
