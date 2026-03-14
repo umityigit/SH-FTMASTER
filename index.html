@@ -279,20 +279,22 @@
         }
 
             // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
+        // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
         async function sihirliGirisYap() {
             const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
-            const sifre = document.getElementById("loginSifre").value;
+            const sifre = document.getElementById("loginSifre").value.trim();
 
             // 👑 PATRON MODU (SÜPER YÖNETİCİ) GİZLİ GİRİŞİ 👑
-            if (kod === "patron" && sifre === "86488648") {
-                localStorage.setItem('sm_current_tenant', 'addh'); // Ana veritabanı (döngüye girmemesi için)
+            // İster sadece Kurum Kodu'na "patron-86488648" yaz, ister kodu "patron" şifreyi "86488648" yap. İkisi de çalışır!
+            if ((kod === "patron" && sifre === "86488648") || kod === "patron-86488648") {
+                localStorage.setItem('sm_current_tenant', 'addh'); 
                 localStorage.setItem('sm_active_user', 'SİSTEM KURUCUSU');
                 localStorage.setItem('sm_current_kurum_adi', 'MASTER KONTROL PANELİ');
                 localStorage.setItem('sm_role', 'superadmin');
                 
                 document.getElementById("loginCard").style.display = "none";
                 document.getElementById("gateSelector").style.display = "block";
-                return; // Aşağıdaki normal giriş sorgulamalarını yapmadan direkt içeri al!
+                return; // Normal giriş kodlarını çalıştırmadan direkt içeri atla!
             }
 
             if(!kod || !sifre) return alert("Boş alan bırakmayın!");
@@ -306,7 +308,6 @@
 
                 // 1. ÖNCE PATRON (SEN) MİSİN DİYE BAKIYOR
                 auth.signInWithEmailAndPassword(kurumData.patronEmail, sifre).then(() => {
-                    // SEN İSEN GİRİŞ BAŞARILI
                     localStorage.setItem('sm_current_tenant', kod);
                     localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
                     localStorage.setItem('sm_current_kurum_adi', kurumData.kurumAdi);
@@ -319,7 +320,6 @@
                     // 2. PATRON DEĞİLSEN, ALT YÖNETİCİ (ALİ) MİSİN DİYE VERİTABANINA BAKIYOR
                     rtdb.ref('kurum_alt_yoneticileri/' + kod + '/' + kriptoluSifre).once('value').then(altSnap => {
                         if(altSnap.exists()) {
-                            // ALİ İSE GİRİŞ BAŞARILI
                             const altData = altSnap.val();
                             localStorage.setItem('sm_current_tenant', kod);
                             localStorage.setItem('sm_active_user', altData.isim.toUpperCase());
@@ -329,7 +329,6 @@
                             document.getElementById("loginCard").style.display = "none";
                             document.getElementById("gateSelector").style.display = "block";
                         } else {
-                            // İKİSİ DE DEĞİLSE ŞİFRE GERÇEKTEN YANLIŞTIR
                             alert("Şifre Yanlış!"); 
                         }
                     });
