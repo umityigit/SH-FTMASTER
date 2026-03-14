@@ -52,7 +52,6 @@
 
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; width: 100%; max-width: 420px; box-shadow: 10px 10px 40px rgba(0,0,0,0.6); }
 
-        /* 🔥 YENİ: KAPI SEÇİM KARTI STİLLERİ 🔥 */
         #gateSelector { display: none; width: 100%; max-width: 420px; animation: fadeIn 0.5s ease-out; }
         .gate-btn { 
             width: 100%; padding: 25px; margin-bottom: 20px; border-radius: 20px; 
@@ -83,45 +82,6 @@
         .btn-action:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5); }
         
         #verificationNotice { display: none; margin-top: 20px; padding: 15px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border-left: 4px solid #ef4444; font-size: 12px; line-height: 1.5; color: #fca5a5; }
-
-        <div class="seo-footer" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
-            
-            <details style="cursor: pointer; width: 100%;">
-                <summary style="color: #94a3b8; font-size: 13px; font-weight: 800; outline: none; list-style: none; transition: color 0.3s;">
-                    ▶ GİZLİLİK POLİTİKASI
-                </summary>
-                <div style="margin-top: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.6; text-align: left; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                    ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.<br><br>
-                    <b>1. Veri Paylaşımı:</b> Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.<br>
-                    <b>2. Şifreleme:</b> Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.
-                </div>
-            </details>
-
-            <details style="cursor: pointer; width: 100%;">
-                <summary style="color: #94a3b8; font-size: 13px; font-weight: 800; outline: none; list-style: none; transition: color 0.3s;">
-                    ▶ KULLANIM KOŞULLARI
-                </summary>
-                <div style="margin-top: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.6; text-align: left; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                    ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.<br><br>
-                    <b style="color: var(--danger);">Önemli Uyarı:</b> Sistem tarafından otomatik yapılan puantaj, mesai ve nöbet hesaplamaları 'referans' amaçlıdır. Nihai resmi bordro, SGK bildirgeleri ve maaş ödemelerinde mutlak kontrol yükümlülüğü kurumun (kullanıcının) kendisine aittir. ShiftMaster, hatalı veri girişinden veya hesaplama farklarından doğabilecek idari veya mali zararlardan sorumlu tutulamaz.
-                </div>
-            </details>
-
-            <details style="cursor: pointer; width: 100%;">
-                <summary style="color: #94a3b8; font-size: 13px; font-weight: 800; outline: none; list-style: none; transition: color 0.3s;">
-                    ▶ VERİ GÜVENLİĞİ
-                </summary>
-                <div style="margin-top: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.6; text-align: left; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                    <b>1. Sunucu Güvenliği:</b> Platformumuzdaki tüm veri alışverişi 256-bit SSL sertifikası ile uçtan uca şifrelenmektedir. Tüm altyapımız Google Cloud ve Firebase sunucularında barındırılmakta olup, dünyanın en üst düzey siber güvenlik kalkanlarıyla korunmaktadır.<br><br>
-                    <b>2. Erişim Yetkileri:</b> Kurum verilerine yalnızca o kurumun 'Patron' yetkisine sahip ana hesabı ve onun yetki verdiği alt yöneticiler ulaşabilir. Her kurumun veri tabanı birbirinden izole edilmiştir.
-                </div>
-            </details>
-
-            <div style="margin-top: 15px;">
-                <a href="mailto:destek@shiftmaster.com.tr" style="color: var(--accent); text-decoration: none; font-weight: 800; font-size: 13px;">İLETİŞİM</a>
-            </div>
-            <div style="margin-top: 5px; font-size: 11px; opacity: 0.6;">© 2026 ShiftMaster. Tüm hakları saklıdır.</div>
-        </div>
 
         @media (max-width: 900px) { body { flex-direction: column; overflow: auto; } .slider-section { flex: none; height: 50vh; } .login-section { flex: none; padding: 20px; } }
     </style>
@@ -253,6 +213,7 @@
         <button id="btnInstallApp" onclick="installApp()" style="display:none; width: 100%; max-width: 420px; padding: 12px; border: 1px solid var(--accent); border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; background: rgba(56, 189, 248, 0.1); color: var(--accent); transition: all 0.3s; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);">
             ⬇️ SHIFTMASTER'I CİHAZINA KUR (MASAÜSTÜ/MOBİL)
         </button>
+        
        <div style="max-width: 1000px; margin: 50px auto; padding: 20px; text-align: center;">
             <h3 style="color: #fff; font-size: 22px; font-weight: 900; margin-bottom: 30px; text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);">
                 <span style="font-size: 28px; vertical-align: middle;">🛡️</span> DÜNYA STANDARTLARINDA VERİ GÜVENLİĞİ
@@ -279,52 +240,46 @@
             </div>
         </div>
 
-      <div style="max-width: 600px; margin: 40px auto; display: flex; flex-direction: column; gap: 15px;">
-
-        <details style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56,189,248,0.3); border-radius: 15px; padding: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
-            <summary style="color: var(--accent); font-size: 16px; font-weight: 900; outline: none; list-style: none; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px var(--accent-glow);">
-                🔒 GİZLİLİK POLİTİKASI <span style="font-size:10px; color:#64748b; font-weight:normal;"></span>
-            </summary>
-            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(56,189,248,0.2); font-size: 12px; color: #cbd5e1; line-height: 1.6;">
-                <p>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.</p>
-                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:12px; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
-                    <b style='color:#fff; font-size:14px;'>1. Veri Paylaşımı:</b><br>Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.
-                </div>
-                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--success); box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
-                    <b style='color:#fff; font-size:14px;'>2. Şifreleme:</b><br>Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.
-                </div>
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <div style="font-size: 13px; font-weight: 600; color: var(--accent); display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span style="cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'" onclick="acMetin('gizlilik')">Gizlilik Politikası</span>
+                <span style="color: #475569;">|</span>
+                <span style="cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'" onclick="acMetin('kullanim')">Kullanım Koşulları</span>
+                <span style="color: #475569;">|</span>
+                <span style="cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'" onclick="acMetin('guvenlik')">Veri Güvenliği</span>
+                <span style="color: #475569;">|</span>
+                <a href="mailto:destek@shiftmaster.com.tr" style="color: var(--accent); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'">İletişim</a>
             </div>
-        </details>
+            <div style="margin-top: 10px; font-size: 11px; opacity: 0.6; color: #94a3b8;">© 2026 ShiftMaster. Tüm hakları saklıdır.</div>
 
-        <details style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(250,204,21,0.3); border-radius: 15px; padding: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
-            <summary style="color: var(--warning); font-size: 16px; font-weight: 900; outline: none; list-style: none; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(250,204,21,0.4);">
-                ⚖️ KULLANIM KOŞULLARI <span style="font-size:10px; color:#64748b; font-weight:normal;"></span>
-            </summary>
-            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(250,204,21,0.2); font-size: 12px; color: #cbd5e1; line-height: 1.6;">
-                <p>ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.</p>
-                <div style='background:rgba(239,68,68,0.1); padding:15px; border-radius:12px; border:1px solid rgba(239,68,68,0.3); color:#fca5a5; margin-top:15px;'>
-                    <b style='color:var(--danger); font-size:15px;'>⚠️ ÖNEMLİ UYARI:</b><br><br>Sistem tarafından otomatik yapılan puantaj, mesai ve nöbet hesaplamaları 'referans' amaçlıdır. Nihai resmi bordro, SGK bildirgeleri ve maaş ödemelerinde mutlak kontrol yükümlülüğü kurumun (kullanıcının) kendisine aittir. ShiftMaster, hatalı veri girişinden veya hesaplama farklarından doğabilecek idari veya mali zararlardan sorumlu tutulamaz.
-                </div>
+            <div id="footerMetinKutusu" style="display: none; margin-top: 25px; font-size: 12px; color: #cbd5e1; text-align: left; line-height: 1.8; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; border-left: 3px solid var(--accent);">
             </div>
-        </details>
-
-        <details style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(16,185,129,0.3); border-radius: 15px; padding: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
-            <summary style="color: var(--success); font-size: 16px; font-weight: 900; outline: none; list-style: none; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(16,185,129,0.4);">
-                🛡️ VERİ GÜVENLİĞİ <span style="font-size:10px; color:#64748b; font-weight:normal;"></span>
-            </summary>
-            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(16,185,129,0.2); font-size: 12px; color: #cbd5e1; line-height: 1.6;">
-                <p>Platformumuzdaki altyapı standartları aşağıdaki gibidir:</p>
-                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--success); margin-bottom:12px; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
-                    <b style='color:#fff; font-size:14px;'>1. Sunucu Güvenliği:</b><br>Tüm veri alışverişi 256-bit SSL sertifikası ile uçtan uca şifrelenmektedir. Tüm altyapımız Google Cloud ve Firebase sunucularında barındırılmakta olup, dünyanın en üst düzey siber güvenlik kalkanlarıyla korunmaktadır.
-                </div>
-                <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid #a855f7; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
-                    <b style='color:#fff; font-size:14px;'>2. Erişim Yetkileri:</b><br>Kurum verilerine yalnızca o kurumun 'Patron' yetkisine sahip ana hesabı ve onun yetki verdiği alt yöneticiler ulaşabilir. Her kurumun veri tabanı birbirinden izole edilmiştir.
-                </div>
-            </div>
-        </details>
-
+        </div>
+        
     </div>
+
     <script>
+        // ALT BİLGİ DÜZ YAZI MOTORU
+        const altMetinler = {
+            'gizlilik': "<b style='color:white; font-size:14px;'>GİZLİLİK POLİTİKASI</b><br><br>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.<br><br><b>1. Veri Paylaşımı:</b> Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.<br><b>2. Şifreleme:</b> Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.",
+            
+            'kullanim': "<b style='color:white; font-size:14px;'>KULLANIM KOŞULLARI VE SORUMLULUK REDDİ</b><br><br>ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.<br><br><b style='color:#ef4444;'>Önemli Uyarı:</b> Sistem tarafından otomatik yapılan puantaj, mesai ve nöbet hesaplamaları 'referans' amaçlıdır. Nihai resmi bordro, SGK bildirgeleri ve maaş ödemelerinde mutlak kontrol yükümlülüğü kurumun (kullanıcının) kendisine aittir. ShiftMaster, hatalı veri girişinden veya hesaplama farklarından doğabilecek idari veya mali zararlardan sorumlu tutulamaz.",
+            
+            'guvenlik': "<b style='color:white; font-size:14px;'>VERİ GÜVENLİĞİ VE BULUT ALTYAPISI</b><br><br><b>1. Sunucu Güvenliği:</b> Platformumuzdaki tüm veri alışverişi 256-bit SSL sertifikası ile uçtan uca şifrelenmektedir. Tüm altyapımız Google Cloud ve Firebase sunucularında barındırılmakta olup, dünyanın en üst düzey siber güvenlik kalkanlarıyla korunmaktadır.<br><br><b>2. Erişim Yetkileri:</b> Kurum verilerine yalnızca o kurumun 'Patron' yetkisine sahip ana hesabı ve onun yetki verdiği alt yöneticiler ulaşabilir. Her kurumun veri tabanı birbirinden izole edilmiştir."
+        };
+
+        function acMetin(tur) {
+            const kutu = document.getElementById("footerMetinKutusu");
+            if(kutu.getAttribute("data-acik") === tur && kutu.style.display === "block") {
+                kutu.style.display = "none";
+                kutu.setAttribute("data-acik", "");
+            } else {
+                kutu.innerHTML = altMetinler[tur];
+                kutu.style.display = "block";
+                kutu.setAttribute("data-acik", tur);
+            }
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ",
             authDomain: "shiftmaster1-7fc5f.firebaseapp.com",
@@ -335,7 +290,7 @@
         const auth = firebase.auth();
         const rtdb = firebase.database();
 
-        // SLIDER VE TAB MOTORLARI (AYNEN KALDI)
+        // SLIDER VE TAB MOTORLARI
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
@@ -350,14 +305,10 @@
             document.getElementById('form' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
         }
 
-            // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
-        // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
         async function sihirliGirisYap() {
             const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
             const sifre = document.getElementById("loginSifre").value.trim();
 
-            // 👑 PATRON MODU (SÜPER YÖNETİCİ) GİZLİ GİRİŞİ 👑
-            // İster sadece Kurum Kodu'na "patron-86488648" yaz, ister kodu "patron" şifreyi "86488648" yap. İkisi de çalışır!
             if ((kod === "patron" && sifre === "86488648") || kod === "patron-86488648") {
                 localStorage.setItem('sm_current_tenant', 'addh'); 
                 localStorage.setItem('sm_active_user', 'SİSTEM KURUCUSU');
@@ -366,19 +317,17 @@
                 
                 document.getElementById("loginCard").style.display = "none";
                 document.getElementById("gateSelector").style.display = "block";
-                return; // Normal giriş kodlarını çalıştırmadan direkt içeri atla!
+                return; 
             }
 
             if(!kod || !sifre) return alert("Boş alan bırakmayın!");
 
-            // Ali'nin girdiği şifreyi veritabanındaki formatına (kriptoya) çeviriyoruz
             let kriptoluSifre = await sifreKriptola(sifre);
 
             rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
                 if(!snap.exists()) return alert("Hatalı Kurum Kodu!");
                 const kurumData = snap.val();
 
-                // 1. ÖNCE PATRON (SEN) MİSİN DİYE BAKIYOR
                 auth.signInWithEmailAndPassword(kurumData.patronEmail, sifre).then(() => {
                     localStorage.setItem('sm_current_tenant', kod);
                     localStorage.setItem('sm_active_user', kurumData.patronIsim.toUpperCase());
@@ -388,8 +337,6 @@
                     document.getElementById("loginCard").style.display = "none";
                     document.getElementById("gateSelector").style.display = "block";
                 }).catch(err => {
-                    
-                    // 2. PATRON DEĞİLSEN, ALT YÖNETİCİ (ALİ) MİSİN DİYE VERİTABANINA BAKIYOR
                     rtdb.ref('kurum_alt_yoneticileri/' + kod + '/' + kriptoluSifre).once('value').then(altSnap => {
                         if(altSnap.exists()) {
                             const altData = altSnap.val();
@@ -404,11 +351,10 @@
                             alert("Şifre Yanlış!"); 
                         }
                     });
-
                 });
             });
         }
-        // DİĞER KAYIT VE GÜVENLİK KODLARIN BURADA DEVAM EDİYORDU (KORUNDU)
+        
         (function() {
             document.addEventListener('contextmenu', e => e.preventDefault());
             document.addEventListener('keydown', function(e) {
