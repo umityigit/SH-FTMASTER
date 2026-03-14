@@ -1425,8 +1425,7 @@ function saveHistory() {
         document.addEventListener('selectstart', function(e) {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name') && !e.target.classList.contains('shift-cell')) { e.preventDefault(); }
         });
-        // 📍 BUGÜN KİMLER VAR (OPERASYON ÖZETİ) MOTORU
-        // 📍 BUGÜN KİMLER VAR (VERİTABANI RADARI) MOTORU
+        
         // 📍 BUGÜN KİMLER VAR (VERİTABANI RADARI) MOTORU - İZİN FİLTRELİ
         function showTodaySummary(selectedDate = null) {
             const modal = document.getElementById('todaySummaryModal');
