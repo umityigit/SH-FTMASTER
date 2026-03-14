@@ -612,16 +612,21 @@ function closeAiWizardPopup() {
         const colors = ['#fca5a5','#f87171','#ef4444','#dc2626','#b91c1c','#991b1b','#7f1d1d','#fde047','#fbbf24','#f59e0b','#d97706','#b45309','#92400e','#78350f','#6ee7b7','#34d399','#10b981','#059669','#047857','#065f46','#064e3b','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87'];
 
         // 🎵 SHIFTMASTER RADYO MOTORU (GÜNCEL VE KESİNTİSİZ LİNKLER)
+        // 🎵 SHIFTMASTER RADYO MOTORU (CORS ENGELİ OLMAYAN AÇIK FREKANSLAR)
         const smMusic = {
             audio: new Audio(), isPlaying: false, index: 0, 
             playlist: [ 
                 { name: "Power Türk", url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio" },
-                { name: "Joy Türk", url: "https://listen.karnaval.com/joyturk/mp3/128/icecast.audio" },
-                { name: "Süper FM", url: "https://listen.karnaval.com/superfm/mp3/128/icecast.audio" },
-                { name: "Virgin Radio", url: "https://listen.powerapp.com.tr/virginradio/mpeg/icecast.audio" },
-                { name: "Radyo Fenomen", url: "https://listen.radyofenomen.com/fenomen/128/icecast.audio" }
+                { name: "Power FM", url: "https://listen.powerapp.com.tr/powerfm/mpeg/icecast.audio" },
+                { name: "Power Pop", url: "https://listen.powerapp.com.tr/powerpop/mpeg/icecast.audio" },
+                { name: "Power Love", url: "https://listen.powerapp.com.tr/powerlove/mpeg/icecast.audio" },
+                { name: "Alem FM", url: "https://turkmedya.radyotvonline.net/alemfm" }
             ],
-            init() { this.audio.src = this.playlist[this.index].url; this.audio.volume = 0.5; document.getElementById('sm-title').innerText = this.playlist[this.index].name; },
+            init() { 
+                this.audio.src = this.playlist[this.index].url; 
+                this.audio.volume = 0.5; 
+                document.getElementById('sm-title').innerText = this.playlist[this.index].name; 
+            },
             toggle() { if (this.isPlaying) this.pause(); else this.play(); },
             play() { 
                 this.audio.play().then(() => { 
@@ -629,14 +634,30 @@ function closeAiWizardPopup() {
                     document.getElementById('sm-play-btn').innerText = "⏸"; 
                     document.getElementById('sm-eq').innerHTML='<div style="width:4px; height:10px; background:var(--success); animation:eq 0.8s infinite alternate;"></div><div style="width:4px; height:15px; background:var(--success); animation:eq 0.8s infinite alternate 0.2s;"></div><div style="width:4px; height:8px; background:var(--success); animation:eq 0.8s infinite alternate 0.4s;"></div>'; 
                 }).catch(e => { 
-                    alert("Radyo yayınına şu an ulaşılamıyor, lütfen başka bir kanal deneyin."); 
+                    console.log("Radyo bağlantı hatası: ", e);
+                    alert("Radyo yayınına şu an ulaşılamıyor (Sunucu engeli). Lütfen sıradaki kanala geçin."); 
                     this.pause(); 
                 }); 
             },
-            pause() { this.audio.pause(); this.isPlaying = false; document.getElementById('sm-play-btn').innerText = "▶"; document.getElementById('sm-eq').innerHTML=''; },
-            next() { this.index = (this.index + 1) % this.playlist.length; this.changeTrack(); }, 
-            prev() { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.changeTrack(); },
-            changeTrack() { this.audio.src = this.playlist[this.index].url; document.getElementById('sm-title').innerText = this.playlist[this.index].name; if (this.isPlaying) this.play(); }
+            pause() { 
+                this.audio.pause(); 
+                this.isPlaying = false; 
+                document.getElementById('sm-play-btn').innerText = "▶"; 
+                document.getElementById('sm-eq').innerHTML=''; 
+            },
+            next() { 
+                this.index = (this.index + 1) % this.playlist.length; 
+                this.changeTrack(); 
+            }, 
+            prev() { 
+                this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; 
+                this.changeTrack(); 
+            },
+            changeTrack() { 
+                this.audio.src = this.playlist[this.index].url; 
+                document.getElementById('sm-title').innerText = this.playlist[this.index].name; 
+                if (this.isPlaying) this.play(); 
+            }
         };
 
         window.onload = () => {
