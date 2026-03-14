@@ -1407,6 +1407,90 @@ function saveHistory() {
         document.addEventListener('selectstart', function(e) {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name') && !e.target.classList.contains('shift-cell')) { e.preventDefault(); }
         });
+        // 📍 BUGÜN KİMLER VAR (OPERASYON ÖZETİ) MOTORU
+        function showTodaySummary(selectedDate = null) {
+            const modal = document.getElementById('todaySummaryModal');
+            if(!modal) return;
+            
+            let d = selectedDate ? new Date(selectedDate) : new Date();
+            let dateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+            
+            document.getElementById('summaryDatePicker').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            document.getElementById('todaySummaryDateText').innerText = dateStr + " Tarihli Özet";
+            
+            let dayList = [], nightList = [], offList = [];
+            
+            // Ekrandaki tüm tabloları tara
+            document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                const table = wrapper.querySelector('table');
+                let colIdx = -1;
+                
+                // Seçili tarihin hangi sütunda olduğunu bul
+                table.querySelectorAll('thead th').forEach((th, idx) => {
+                    if(th.getAttribute('data-date') === dateStr) colIdx = idx;
+                });
+                
+                // O gün tabloda varsa isimleri topla
+                if(colIdx > -1) {
+                    table.querySelectorAll('tbody tr:not(.summary-row)').forEach(tr => {
+                        const nameEl = tr.querySelector('.editable-name');
+                        if(!nameEl) return;
+                        const name = nameEl.innerText.trim();
+                        const cells = tr.querySelectorAll('td');
+                        
+                        if(cells[colIdx] && !cells[colIdx].classList.contains('hidden-by-snipper')) {
+                            const shiftVal = cells[colIdx].innerText.trim();
+                            if (shiftVal.startsWith("20:") || shiftVal.startsWith("24:") || shiftVal.startsWith("00:") || shiftVal.toUpperCase().includes("GECE")) {
+                                nightList.push(`<b>${name}</b> <span style="font-size:10px; opacity:0.7;">(${shiftVal})</span>`);
+                            } else if (shiftVal === "HT" || shiftVal === "İ" || shiftVal === "R" || shiftVal === "") {
+                                offList.push(`<b>${name}</b> <span style="font-size:10px; opacity:0.7;">(${shiftVal || 'Boş'})</span>`);
+                            } else {
+                                dayList.push(`<b>${name}</b> <span style="font-size:10px; opacity:0.7;">(${shiftVal})</span>`);
+                            }
+                        }
+                    });
+                }
+            });
+            
+            document.getElementById('listDay').innerHTML = dayList.map(n => `<div style="padding:5px; border-bottom:1px solid rgba(16,185,129,0.2);">☀️ ${n}</div>`).join('') || '<div style="color:#64748b; font-style:italic;">Kayıt yok</div>';
+            document.getElementById('cDay').innerText = dayList.length;
+            
+            document.getElementById('listNight').innerHTML = nightList.map(n => `<div style="padding:5px; border-bottom:1px solid rgba(245,158,11,0.2);">🌙 ${n}</div>`).join('') || '<div style="color:#64748b; font-style:italic;">Kayıt yok</div>';
+            document.getElementById('cNight').innerText = nightList.length;
+            
+            document.getElementById('listOff').innerHTML = offList.map(n => `<div style="padding:5px; border-bottom:1px solid rgba(239,68,68,0.2);">🏖️ ${n}</div>`).join('') || '<div style="color:#64748b; font-style:italic;">Kayıt yok</div>';
+            document.getElementById('cOff').innerText = offList.length;
+            
+            openModal('todaySummaryModal');
+        }
+        // ============================================================================
+        // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ (FİNAL SÜRÜM)
+        // ============================================================================
+        
+        // 1. Sağ Tık Engelleme (Sadece vardiya hücrelerinde serbest)
+        document.addEventListener('contextmenu', event => {
+            if(!event.target.classList.contains('shift-cell') && !event.target.tagName.match(/^TH$/i)) {
+                event.preventDefault();
+            }
+        });
+
+        // 2. F12, Ctrl+Shift+I, Ctrl+U (Kaynak Kodu) Engelleme
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); e.stopPropagation(); return false; }
+            if (e.ctrlKey || e.metaKey) {
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'U' || e.key === 'u') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'S' || e.key === 's') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'P' || e.key === 'p') { e.preventDefault(); e.stopPropagation(); return false; }
+            }
+        });
+
+        // 3. İzinsiz Metin Seçimini Engelleme (Sadece Inputlar ve İsimler hariç)
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name') && !e.target.classList.contains('shift-cell')) { 
+                e.preventDefault(); 
+            }
+        });
     </script>
     <div id="aiWizardPopup" class="full-modal-overlay" style="z-index: 100020;">
     <div class="full-modal-content" style="border-color: var(--purple); background: #020617;">
