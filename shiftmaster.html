@@ -1243,7 +1243,10 @@ function saveHistory() {
         
         function createRowHtml(name, colCount, startDt, savedShifts = null) { 
             let cells = `<td class="no-export" style="width: 30px; background: transparent !important; border: none !important; box-shadow: none !important;"><div class="nav-box" style="pointer-events:auto; display:flex; flex-direction:column; gap:2px;"><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,-1)">▲</button><button class="mini-btn" style="padding:2px 5px; font-size:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; cursor:pointer;" onclick="moveRow(this,1)">▼</button></div></td>`; 
-            cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" onfocus="saveHistory()" oninput="updateAllStats()"${pinAttr}>${txt}</td>`;
+            
+            // PERSONEL İSİM HÜCRESİ (Geri geldi!)
+            cells += `<td onclick="toggleCheckboxFromCell(event, this)" style="cursor:pointer; border-left: 1px solid var(--glass-border);"><div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="row-checkbox"><div class="name-wrapper"><div class="editable-name" contenteditable="true" onfocus="saveHistory()">${name}</div><button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button></div></div></td>`; 
+            
             let shiftIdx = 0; 
             for(let i=0; i<colCount; i++) { 
                 let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
@@ -1251,7 +1254,10 @@ function saveHistory() {
                 const bg = (savedShifts && savedShifts[shiftIdx]) ? savedShifts[shiftIdx].bg : "transparent"; 
                 const pinText = (savedShifts && savedShifts[shiftIdx] && savedShifts[shiftIdx].pin) ? savedShifts[shiftIdx].pin : ""; 
                 const pinAttr = pinText ? ` data-pin="${pinText.replace(/"/g, '&quot;')}"` : ""; 
-                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; 
+                
+                // VARDİYA HÜCRESİ (onfocus eklendi ve yeri doğru!)
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${bg}" oncontextmenu="openShiftMenu(event, this)" onfocus="saveHistory()" oninput="updateAllStats()"${pinAttr}>${txt}</td>`; 
+                
                 shiftIdx++; 
                 if(d.getDay() === 0) cells += `<td class="week-summary-cell" style="background:rgba(51,65,85,0.8) !important;"></td>`; 
             } 
