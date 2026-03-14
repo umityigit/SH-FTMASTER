@@ -688,8 +688,8 @@ function closeAiWizardPopup() {
 
         function openShiftMaster() { 
             document.getElementById("appSelector").style.display = "none"; 
-            document.querySelector(".login-section").style.display = "none";
-            document.querySelector(".slider-section").style.display = "none";
+            if(document.querySelector(".login-section")) document.querySelector(".login-section").style.display = "none";
+            if(document.querySelector(".slider-section")) document.querySelector(".slider-section").style.display = "none";
             document.getElementById("mainContent").style.display = "block"; 
         }
         function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
