@@ -1390,6 +1390,34 @@ function closeLegalModal() {
     modal.classList.remove('show');
     setTimeout(() => modal.style.display = 'none', 400);
 }
+    // ============================================================================
+        // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ (FİNAL SÜRÜM)
+        // ============================================================================
+        
+        // 1. Sağ Tık Engelleme (Sadece vardiya hücrelerinde serbest)
+        document.addEventListener('contextmenu', event => {
+            if(!event.target.classList.contains('shift-cell') && !event.target.tagName.match(/^TH$/i)) {
+                event.preventDefault();
+            }
+        });
+
+        // 2. F12, Ctrl+Shift+I, Ctrl+U (Kaynak Kodu) Engelleme
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); e.stopPropagation(); return false; }
+            if (e.ctrlKey || e.metaKey) {
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'U' || e.key === 'u') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'S' || e.key === 's') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'P' || e.key === 'p') { e.preventDefault(); e.stopPropagation(); return false; }
+            }
+        });
+
+        // 3. İzinsiz Metin Seçimini Engelleme (Sadece Inputlar ve İsimler hariç)
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name') && !e.target.classList.contains('shift-cell')) { 
+                e.preventDefault(); 
+            }
+        });
 </script>
 </body>
 </html>
