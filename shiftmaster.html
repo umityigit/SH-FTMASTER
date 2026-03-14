@@ -1142,7 +1142,41 @@ function saveHistory() {
         function delAiArchive(e, id) { e.stopPropagation(); if(confirm("Sihirbazdan gelen bu taslağı silmek istediğinize emin misiniz?")) { db.ref("isci_sihirbaz_arsiv").child(id).remove(); } }
 
         function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("staffPool"); p.innerHTML = ""; const sSelect = document.getElementById("sorumluIsim"); if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; let count = 0; staffList = []; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); staffList.sort((a, b) => a.name.localeCompare(b.name)); staffList.forEach(item => { count++; p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${item.name}" style="display:none;"> <span>${item.name}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${item.name}</option>`; }); } document.getElementById("staffCounter").innerText = count; }); }
-        function addStaff() { const inp = document.getElementById("staffInput"); const raw = inp.value.trim(); if(!raw) return; const lines = raw.split('\n'); lines.forEach(line => { let name = line.trim(); if(name.includes('\t')) { let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); } else if(name.includes('-')) { let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); } if(name) { db.ref("personel_havuzu").push(name.toUpperCase()); } }); logAction(`${lines.length} personel ekledi.`); inp.value = ""; }
+        // 👥 PERSONEL EKLEME VE 50 KİŞİ LİMİTİ (FREEMIUM MOTORU)
+        function addStaff() { 
+            const inp = document.getElementById("staffInput"); 
+            const raw = inp.value.trim(); 
+            if(!raw) return; 
+
+            // Eklenecek kişi listesini temizleyip sayıyoruz
+            const lines = raw.split('\n').filter(line => line.trim() !== "");
+            
+            // Mevcut havuzdaki kişi sayısı (staffList zaten loadStaffPool içinde sayılıyor)
+            const mevcutSayi = staffList.length;
+            const eklenecekSayi = lines.length;
+
+            // 🛑 50 KİŞİ TİCARİ SINIR KONTROLÜ
+            if (mevcutSayi + eklenecekSayi > 50) {
+                alert("🛑 ÜCRETSİZ LİMİT DOLDU!\n\nÜcretsiz sürümde en fazla 50 personel ekleyebilirsiniz. (Şu anki: " + mevcutSayi + ")\n\nSınırsız personel eklemek ve profesyonel özellikleri açmak için Premium sürüme geçiş yapın.\n\nİletişim: destek@shiftmaster.com.tr");
+                return; // İşlemi burada kes, veritabanına kaydetme!
+            }
+
+            // Sınırı aşmadıysa eklemeye devam et
+            lines.forEach(line => { 
+                let name = line.trim(); 
+                if(name.includes('\t')) { 
+                    let p = name.split('\t'); name = p[1] ? p[1].trim() : p[0].trim(); 
+                } else if(name.includes('-')) { 
+                    let p = name.split('-'); name = p[1] ? p[1].trim() : p[0].trim(); 
+                } 
+                if(name) { 
+                    originalRef("personel_havuzu").push(name.toUpperCase()); 
+                } 
+            }); 
+            
+            logAction(`${lines.length} personel ekledi.`); 
+            inp.value = ""; 
+        }
         function removeStaff(e, id) { e.stopPropagation(); if(confirm("Kişiyi havuzdan sil?")) db.ref("personel_havuzu").child(id).remove(); }
         function clearStaffPool() { if(confirm("Tüm havuzu sil?")) db.ref("personel_havuzu").remove(); }
 
