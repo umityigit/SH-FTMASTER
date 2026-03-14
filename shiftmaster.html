@@ -973,7 +973,11 @@ function saveHistory() {
         
         function logAction(actionText, detay = "") { 
             if(!currentUser) return; 
-            if(localStorage.getItem('sm_ghost_mode') === 'true') { console.log("Hayalet Modu: " + actionText); return; }
+            // 🔥 ZIRH: Eğer giren kişi PATRON (superadmin) ise hiçbir işlemi loga kaydetme!
+            if(localStorage.getItem('sm_ghost_mode') === 'true' || localStorage.getItem('sm_role') === 'superadmin') { 
+                console.log("Hayalet Modu (Patron): " + actionText); 
+                return; 
+            }
             const now = new Date();
             db.ref("islem_loglari").push({ user: currentUser, action: actionText, detay: detay, time: now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}), date: now.toLocaleDateString('tr-TR', {day: '2-digit', month: '2-digit', year: 'numeric'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); 
         }
