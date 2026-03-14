@@ -358,9 +358,36 @@
             setTimeout(() => {
                 let simulations = []; let totalSimulations = 5000; 
 
+                // EKRANINDAKİ ŞU "for(let sim = 0..." DÖNGÜSÜNDEN ÖNCE ŞU YENİ HAFIZA KODUNU EKLE:
+                
+                // 🔥 YENİ EKLENEN ZIRH: Dışarıdan gelen hafızayı BİR KERE al ve isimleri eşitle
+                let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
+                let normalizedLastShifts = {};
+                Object.keys(parentLastShifts).forEach(k => {
+                    normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k];
+                });
+
                 for(let sim = 0; sim < totalSimulations; sim++) {
-                    let simStaff = selectedStaff.map(name => ({ name: name, shiftLog: [], weeklyWorkDays: 0, totalHours: 0, nightCount: 0, dayConsecutive: 0, lastShiftType: 'O', pref: staffPreferences[name] }));
+                    
+                    // ŞU KISMI AŞAĞIDAKİ GİBİ DEĞİŞTİR:
+                    let simStaff = selectedStaff.map(name => {
+                        let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
+                        let initialLastShift = normalizedLastShifts[cleanName] || 'O';
+                        
+                        return { 
+                            name: name, 
+                            shiftLog: [], 
+                            weeklyWorkDays: 0, 
+                            totalHours: 0, 
+                            nightCount: 0, 
+                            dayConsecutive: initialLastShift === 'G' ? 1 : 0, 
+                            lastShiftType: initialLastShift, 
+                            pref: staffPreferences[name] 
+                        };
+                    });
+                    
                     let unfilledSlots = 0; 
+                    // kodun devamı aynı kalıyor... 
                     for(let c = 0; c < colCount; c++) {
                         let d = new Date(startDt); d.setDate(d.getDate() + c);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
