@@ -800,6 +800,43 @@ function saveHistory() {
         if(historyStack.length > 20) historyStack.shift(); 
     } 
 }
+// YENİ EKLENEN: SİHİRBAZDAN TABLOYA DİREKT AKTARIM MOTORU
+        window.targetTableWrapperForAI = null;
+
+        function openAiWizardForSpecificTable(btn) {
+            const wrapper = btn.closest('.table-wrapper');
+            window.targetTableWrapperForAI = wrapper;
+
+            // Tablodaki mevcut isimleri otomatik topla
+            const names = Array.from(wrapper.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector(".editable-name").innerText.trim());
+            const namesParam = encodeURIComponent(names.join(','));
+
+            const wizardUrl = `isci_sihirbaz.html?mode=inject&names=${namesParam}`;
+            document.getElementById('aiWizardFrame').src = wizardUrl;
+            document.getElementById('targetFolderNameDisplay').innerText = `> Seçili Tabloya Veri Aktarılıyor...`;
+            document.getElementById('aiWizardPopup').style.display = 'flex';
+            setTimeout(() => document.getElementById('aiWizardPopup').classList.add('show'), 10);
+        }
+
+        function receiveDataFromAiWizard(aiRows, startDateStr, colCount) {
+            if (!window.targetTableWrapperForAI) return;
+            const oldWrapper = window.targetTableWrapperForAI;
+            
+            // Tablonun eski özelliklerini al
+            const tName = oldWrapper.getAttribute("data-tablename");
+            const sDate = new Date(startDateStr);
+            const notes = oldWrapper.querySelector(".table-notes") ? oldWrapper.querySelector(".table-notes").value : "";
+
+            // Eski tablonun hemen altına, sihirbazdan gelen verilerle YENİ tabloyu çiz
+            generateTable(true, aiRows, tName, sDate, parseInt(colCount), oldWrapper, notes);
+            
+            // Eski boş tabloyu ekrandan sil, yerine yenisi geçmiş oldu!
+            oldWrapper.remove();
+            
+            closeAiWizardPopup();
+            showToast("Sihirbaz verisi tabloya başarıyla işlendi! 🪄 (Sisteme Kaydetmeyi Unutmayın)");
+        }
+        
         function loadNews() { 
             db.ref("haberler").on("value", snap => { 
                 const l = document.getElementById("newsList"); l.innerHTML = ""; 
@@ -961,7 +998,7 @@ function saveHistory() {
             
             const wrapper = document.createElement("div"); wrapper.className = "table-wrapper"; 
             wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName); 
-            wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; 
+            wrapper.innerHTML = ` <div class="table-header" onclick="toggleTableCollapse(this, event)"> <div style="display:flex; flex-direction:column; gap:2px; margin-right:10px;"> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, -1, event)">▲</button> <button class="mini-btn" style="padding:2px 8px; font-size:10px; pointer-events:auto;" onclick="moveTableWrapper(this, 1, event)">▼</button> </div> <span class="table-title" style="cursor:pointer;" onclick="renameLocalTable(this); event.stopPropagation();">📌 ${tableName} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span></span> <span style="font-size:11px; color:#fff; font-weight:800; background:rgba(0,0,0,0.5); padding:8px 15px; border-radius:10px; margin-left:auto; border:1px solid rgba(255,255,255,0.2); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.8);">${startDt.toLocaleDateString('tr-TR')} / ${cols} Gün</span> </div> <div class="scroll-area">${h}</div> <div class="table-notes-container"><textarea class="table-notes glass-input" style="width: 100%; height: 60px; font-size:12px; color:#fff;" placeholder="Bu tabloyla ilgili notlarınızı yazın...">${savedNotes}</textarea></div> <div class="table-actions-bottom" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;"> <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button> <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); color:white; box-shadow: 0 0 10px rgba(168,85,247,0.5);" onclick="openAiWizardForSpecificTable(this)">🪄 SİHİRBAZLA DOLDUR</button> <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button> <button class="btn btn-orange" onclick="exportTableToExcel(this)">📤 EXCEL (PUANTAJ)</button> <button class="btn btn-purple" onclick="pasteToTableRows(this)">📥 YAPIŞTIR</button> <button class="btn" style="background:linear-gradient(135deg, #0f766e, #064e3b); color:white;" onclick="openExcelModalForTable(this)">📥 KUTUYA ÇEK</button> <button class="btn btn-red" onclick="deleteTableRows(this)">🗑️ SEÇİLİYİ SİL</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-pink" onclick="toggleSnippingMode(this)">✂️ SÜTUN KES</button> <button class="btn" style="background:linear-gradient(135deg, #64748b, #334155); color:white;" onclick="showAllColumns(this)">👁️ GÖSTER</button> <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span> <button class="btn btn-cyan" onclick="calcTable(this)">🔄 HESAPLA</button> <button class="btn btn-pink" onclick="takeFullScreenshot(this)">📸 FOTOĞRAF AL</button> <button class="btn" style="background:linear-gradient(135deg, #f59e0b, #b45309); color:white;" onclick="sendSingleTableToArchive(this)">📦 DEPOYA AT</button> <span style="flex-grow:1;"></span> <button class="btn btn-cyan" onclick="addTableWithSameStaff(this)">➕ YENİ TABLO</button> <button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger);" onclick="closeTable(this)">🗑️ SİL</button> </div> `; 
             if(insertAfterWrapper) insertAfterWrapper.parentNode.insertBefore(wrapper, insertAfterWrapper.nextSibling); else document.getElementById("tablesContainer").appendChild(wrapper); 
             saveHistory(); updateAllStats(); openModal('tableModalOverlay'); 
         }
