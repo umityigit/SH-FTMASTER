@@ -507,34 +507,62 @@
         function applyShiftToSelected(text, color) { saveHistory(); document.querySelectorAll('.selected-cell').forEach(c => { c.innerText = text; c.style.background = color; }); document.getElementById('ctxMenu').style.display = "none"; clearTableSelection(); updateTableStats(); }
 
         // 🔥 OLUŞTURULAN TABLOYU ANA SİSTEME (SHIFTMASTER'A) GÖNDERİR 🔥
-        function saveAITableToPool() {
-            let tName = document.getElementById('aiTableName').value.trim();
-            if(!tName) return alert("Lütfen tabloya bir isim verin!");
+      function saveAITableToPool() {
+    let tName = document.getElementById('aiTableName').value.trim();
+    if(!tName) return alert("Lütfen tabloya bir isim verin!");
 
-            const rows = [];
-            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
-                const name = tr.querySelector('b').innerText.trim();
-                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
-                rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
-            });
+    // URL'den hedef klasör ID'sini al
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetFolderId = urlParams.get('targetFolder');
 
-            const data = { 
-                name: tName, 
-                date: new Date().toLocaleString('tr-TR'), 
-                start: document.getElementById('simStartDate').value, 
-                days: document.getElementById('simDays').value, 
-                rows: rows 
-            };
+    const rows = [];
+    document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+        const name = tr.querySelector('b').innerText.trim();
+        const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ 
+            text: td.innerText, // 't' yerine 'text' kullanıyoruz uyuşmazlık olmasın
+            bg: td.style.background, // 'b' yerine 'bg'
+            pin: td.getAttribute("data-pin") || "" 
+        }));
+        rows.push({ name: name, shifts: shifts }); 
+    });
+
+    const newTableData = { 
+        tableName: tName, 
+        startDate: document.getElementById('simStartDate').value, 
+        colCount: document.getElementById('simDays').value, 
+        data: rows,
+        notes: "AI tarafından üretildi."
+    };
+
+    if (targetFolderId) {
+        // 📁 KLASÖR İÇİNE DİREKT KAYIT MODU
+        db.ref(`arsivlenmis_shiftler/${targetFolderId}/tables`).once('value', snap => {
+            let existingTables = snap.val() || [];
+            existingTables.push(newTableData);
             
-            db.ref("isci_sihirbaz_arsiv").push(data).then(() => { 
-                showToast("Tablo Ana Merkeze Başarıyla Gönderildi! 💾"); 
-                document.getElementById('resultModal').style.display='none'; 
-            }).catch(err => {
-                alert("Bağlantı veya Güvenlik Hatası: " + err.message);
+            db.ref(`arsivlenmis_shiftler/${targetFolderId}`).update({
+                tables: existingTables,
+                date: new Date().toLocaleString('tr-TR')
+            }).then(() => {
+                showToast("Tablo doğrudan klasöre eklendi! ✅");
+                // Ana sayfayı güncellemesi için bir işaret gönderilebilir veya popup kapatılabilir
+                setTimeout(() => { if(window.parent) window.parent.closeAiWizardPopup(); }, 1500);
             });
-        }
-
-        function showToast(m) { const x = document.getElementById('toast'); x.innerText=m; x.className="show"; setTimeout(()=>x.className="",3000); }
+        });
+    } else {
+        // 🤖 ESKİ USUL: HAVUZA (MAVİ KUTUYA) GÖNDER
+        db.ref("isci_sihirbaz_arsiv").push({
+            name: tName,
+            date: new Date().toLocaleString('tr-TR'),
+            start: document.getElementById('simStartDate').value,
+            days: document.getElementById('simDays').value,
+            rows: rows
+        }).then(() => { 
+            showToast("Tablo Havuza Gönderildi! 💾"); 
+            document.getElementById('resultModal').style.display='none'; 
+        });
+    }
+}
     </script>
 </body>
 </html>
