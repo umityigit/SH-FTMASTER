@@ -158,10 +158,9 @@
                 <h2 id="aiStatusTitle" style="margin:0; color:white; font-size: 20px; text-shadow: 0 0 10px var(--accent);">🏆 Aİ ÇIKTISI</h2>
                 <input type="text" id="aiTableName" class="glass-input" value="Siber Çizelge" style="width: 200px; font-size: 13px; font-weight: bold; border-color: var(--accent);">
             </div>
-            
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-orange" onclick="exportWizardToExcel()">📥 EXCEL'E AKTAR</button>
-                <button class="btn btn-success" style="box-shadow: 0 0 15px rgba(16,185,129,0.5); padding: 15px 25px; font-size: 14px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET (HAVUZA GÖNDER)</button>
+                <button class="btn btn-success" style="box-shadow: 0 0 15px rgba(16,185,129,0.5); padding: 15px 25px; font-size: 14px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET</button>
                 <button class="btn btn-danger" onclick="document.getElementById('resultModal').style.display='none'">❌ KAPAT</button>
             </div>
         </div>
@@ -181,7 +180,7 @@
     <div id="toast"></div>
 
     <script>
-        // 🔥 1. FİREBASE GERÇEK VERİTABANI BAĞLANTISI (Tenant Korumalı) 🔥
+        // 🔥 FİREBASE BAĞLANTISI 🔥
         const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -200,6 +199,7 @@
         let staffPreferences = {}; 
         let historyStack = [];
         let staffList = [];
+        let autoSelectDone = false; // İsimleri bir kere otomatik seçmesini sağlayan kilit
 
         window.onload = () => {
             loadStaffPool(); 
@@ -207,7 +207,7 @@
             addInitialShifts();
         };
 
-        let autoSelectDone = false;
+        // 🔥 YENİ AKILLI İSİM ÇEKME MOTORU 🔥
         function loadStaffPool() { 
             db.ref("personel_havuzu").on("value", snap => { 
                 const p = document.getElementById("mockStaffPool"); 
@@ -222,7 +222,7 @@
                         p.innerHTML += `<div class="staff-item" id="staff-${index}" onclick="toggleStaff('${item.name}', ${index})"><span style="font-weight:800; font-size:12px;">${item.name}</span></div>`; 
                     }); 
                     
-                    // 🔥 YENİ EKLENEN: LİSTEDEN GELEN İSİMLERİ OTOMATİK SEÇ
+                    // EĞER ANA PANELDEKİ TABLODAN AÇILDIYSA, İSİMLERİ OTOMATİK SEÇ
                     if(!autoSelectDone) {
                         const urlParams = new URLSearchParams(window.location.search);
                         const namesParam = urlParams.get('names');
@@ -235,8 +235,10 @@
                             });
                             renderSelectedStaff();
                             
+                            // Mod inject ise Kaydet butonunun yazısını değiştir
                             if (urlParams.get('mode') === 'inject') {
-                                document.querySelector(".btn-success").innerHTML = "📥 TABLOYA AKTAR VE KAPAT";
+                                const btn = document.querySelector(".btn-success");
+                                if(btn) btn.innerHTML = "📥 DİREKT TABLOYA AKTAR VE KAPAT";
                             }
                         }
                         autoSelectDone = true;
@@ -248,8 +250,16 @@
         function toggleStaff(name, index) {
             const el = document.getElementById(`staff-${index}`);
             const idx = selectedStaff.indexOf(name);
-            if(idx > -1) { selectedStaff.splice(idx, 1); delete staffPreferences[name]; el.classList.remove('selected'); } 
-            else { selectedStaff.push(name); staffPreferences[name] = "AI"; el.classList.add('selected'); }
+            if(idx > -1) { 
+                selectedStaff.splice(idx, 1); 
+                delete staffPreferences[name]; 
+                if(el) el.classList.remove('selected'); 
+            } 
+            else { 
+                selectedStaff.push(name); 
+                staffPreferences[name] = "AI"; 
+                if(el) el.classList.add('selected'); 
+            }
             renderSelectedStaff();
         }
 
@@ -278,6 +288,7 @@
                     </div>`;
             });
         }
+        
         function removeSelected(name) { const itemObj = staffList.find(x => x.name === name); if(itemObj) toggleStaff(name, staffList.indexOf(itemObj)); }
 
         const shiftGrid = document.getElementById("shiftDefinitionsGrid");
@@ -303,6 +314,7 @@
             `;
             shiftGrid.appendChild(card); renderSelectedStaff(); updateAiSelects();
         }
+        
         function addCustomShiftUI() { const colors = ['linear-gradient(135deg, #f43f5e, #9f1239)', 'linear-gradient(135deg, #d946ef, #86198f)', 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 'linear-gradient(135deg, #10b981, #047857)', 'linear-gradient(135deg, #f59e0b, #b45309)']; createShiftCard("Yeni Saat", "YENİ", colors[Math.floor(Math.random() * colors.length)], true, 0, 0); }
         function toggleCardState(cb) { const card = cb.closest('.shift-card'); if(cb.checked) card.classList.remove('inactive'); else card.classList.add('inactive'); renderSelectedStaff(); updateAiSelects(); }
         function getDefinedShifts() { let shifts = []; document.querySelectorAll('.shift-card').forEach(card => { if(card.querySelector('.shift-active-cb').checked) { shifts.push({ name: card.querySelector('.shift-name-inp').value, hours: card.querySelector('.shift-hours-inp').value, color: card.querySelector('.shift-color-inp').value, wH: parseFloat(card.querySelector('.shift-w-inp').value) || 0, nH: parseFloat(card.querySelector('.shift-n-inp').value) || 0 }); } }); return shifts; }
@@ -527,78 +539,58 @@
         function buildContextMenu() { const container = document.getElementById('dynamicMenuContainer'); container.innerHTML = ""; let definedShifts = getDefinedShifts(); definedShifts.forEach(s => { container.innerHTML += `<div class="menu-item" style="background:${s.color}; border-color: rgba(255,255,255,0.4);" onclick="applyShiftToSelected('${s.hours}', '${s.color}')">${s.name} <br><small>(${s.hours})</small></div>`; }); }
         function applyShiftToSelected(text, color) { saveHistory(); document.querySelectorAll('.selected-cell').forEach(c => { c.innerText = text; c.style.background = color; }); document.getElementById('ctxMenu').style.display = "none"; clearTableSelection(); updateTableStats(); }
 
-        // 🔥 OLUŞTURULAN TABLOYU ANA SİSTEME (SHIFTMASTER'A) GÖNDERİR 🔥
-      function saveAITableToPool() {
-    let tName = document.getElementById('aiTableName').value.trim();
-    if(!tName) return alert("Lütfen tabloya bir isim verin!");
-          // 🔥 YENİ EKLENEN ZIRH: EĞER TABLODAN AÇILDIYSA FİREBASE'E DEĞİL, DİREKT TABLOYA AKTAR
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mode') === 'inject') {
+        // 🔥 DİREKT TABLOYA AKTARIM VEYA HAVUZA GÖNDERİM MOTORU 🔥
+        function saveAITableToPool() {
+            let tName = document.getElementById('aiTableName').value.trim();
+            if(!tName) return alert("Lütfen tabloya bir isim verin!");
+
+            // Mod kontrolü: Eğer ana panelden "Sihirbazla Doldur" tıklanarak gelindiyse
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'inject') {
+                const rows = [];
+                document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                    const name = tr.querySelector('b').innerText.trim();
+                    // Ana panel t ve b yerine text ve bg anlıyor. Bu yüzden doğrudan ona uyumlu gönderiyoruz!
+                    const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ 
+                        text: td.innerText, 
+                        bg: td.style.background, 
+                        pin: td.getAttribute("data-pin") || "" 
+                    }));
+                    rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
+                });
+                
+                // Ana sayfanın (shiftmaster.html) içindeki fonksiyonu tetikleyip veriyi teslim ediyoruz
+                if (window.parent && typeof window.parent.receiveDataFromAiWizard === 'function') {
+                    window.parent.receiveDataFromAiWizard(rows, document.getElementById('simStartDate').value, document.getElementById('simDays').value);
+                    return; // Buradan sonra kod aşağıya (Firebase'e) gitmez, işlem burada biter!
+                }
+            }
+
+            // Normal Mod (Eğer direkt klasör açmadan sihirbaza girildiyse eski usul mavi kutuya/havuza düşer)
             const rows = [];
             document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
                 const name = tr.querySelector('b').innerText.trim();
-                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background, pin: "" }));
+                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
                 rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
             });
+
+            const data = { 
+                name: tName, 
+                date: new Date().toLocaleString('tr-TR'), 
+                start: document.getElementById('simStartDate').value, 
+                days: document.getElementById('simDays').value, 
+                rows: rows 
+            };
             
-            if (window.parent && typeof window.parent.receiveDataFromAiWizard === 'function') {
-                window.parent.receiveDataFromAiWizard(rows, document.getElementById('simStartDate').value, document.getElementById('simDays').value);
-                return; // İşlem bitti, kodun devamını okuma!
-            }
+            db.ref("isci_sihirbaz_arsiv").push(data).then(() => { 
+                showToast("Tablo Ana Merkeze Başarıyla Gönderildi! 💾"); 
+                document.getElementById('resultModal').style.display='none'; 
+            }).catch(err => {
+                alert("Bağlantı veya Güvenlik Hatası: " + err.message);
+            });
         }
 
-    // URL'den hedef klasör ID'sini al
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetFolderId = urlParams.get('targetFolder');
-
-    const rows = [];
-    document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
-        const name = tr.querySelector('b').innerText.trim();
-        const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ 
-            text: td.innerText, // 't' yerine 'text' kullanıyoruz uyuşmazlık olmasın
-            bg: td.style.background, // 'b' yerine 'bg'
-            pin: td.getAttribute("data-pin") || "" 
-        }));
-        rows.push({ name: name, shifts: shifts }); 
-    });
-
-    const newTableData = { 
-        tableName: tName, 
-        startDate: document.getElementById('simStartDate').value, 
-        colCount: document.getElementById('simDays').value, 
-        data: rows,
-        notes: "AI tarafından üretildi."
-    };
-
-    if (targetFolderId) {
-        // 📁 KLASÖR İÇİNE DİREKT KAYIT MODU
-        db.ref(`arsivlenmis_shiftler/${targetFolderId}/tables`).once('value', snap => {
-            let existingTables = snap.val() || [];
-            existingTables.push(newTableData);
-            
-            db.ref(`arsivlenmis_shiftler/${targetFolderId}`).update({
-                tables: existingTables,
-                date: new Date().toLocaleString('tr-TR')
-            }).then(() => {
-                showToast("Tablo doğrudan klasöre eklendi! ✅");
-                // Ana sayfayı güncellemesi için bir işaret gönderilebilir veya popup kapatılabilir
-                setTimeout(() => { if(window.parent) window.parent.closeAiWizardPopup(); }, 1500);
-            });
-        });
-    } else {
-        // 🤖 ESKİ USUL: HAVUZA (MAVİ KUTUYA) GÖNDER
-        db.ref("isci_sihirbaz_arsiv").push({
-            name: tName,
-            date: new Date().toLocaleString('tr-TR'),
-            start: document.getElementById('simStartDate').value,
-            days: document.getElementById('simDays').value,
-            rows: rows
-        }).then(() => { 
-            showToast("Tablo Havuza Gönderildi! 💾"); 
-            document.getElementById('resultModal').style.display='none'; 
-        });
-    }
-}
+        function showToast(m) { const x = document.getElementById('toast'); x.innerText=m; x.className="show"; setTimeout(()=>x.className="",3000); }
     </script>
 </body>
 </html>
