@@ -596,7 +596,7 @@ function closeAiWizardPopup() {
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
         const tenantId = localStorage.getItem('sm_current_tenant');
-        if (!tenantId) window.location.href = 'index.html';
+        // İptal edildi: if (!tenantId) window.location.href = 'index.html';;
 
         const originalRef = db.ref.bind(db);
         db.ref = function(path) {
@@ -649,10 +649,13 @@ function closeAiWizardPopup() {
                         const btnBoss = document.getElementById('btnBossConsole'); // Patron Butonu
 
                         // 🔥 ROL KONTROLÜ: PATRON İSE HER ŞEYİ AÇ!
+                        // 🔥 ROL KONTROLÜ: PATRON İSE HER ŞEYİ AÇ!
                         if (activeRole === 'superadmin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
                             if (btnBoss) btnBoss.style.display = 'inline-flex';
                             loadSorumlular(); 
+                            openShiftMaster(); // PATRONU BEKLETMEDEN DİREKT İÇERİ AL
+                        }
                         } else if (activeRole === 'admin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
                             if (btnBoss) btnBoss.style.display = 'none';
@@ -672,7 +675,8 @@ function closeAiWizardPopup() {
                         
                         logAction("Sisteme giriş yaptı.");
                     } else {
-                        window.location.href = "index.html"; 
+                        document.getElementById("appSelector").style.display = "none";
+                        document.getElementById("mainContent").style.display = "none";
                     }
                 }, 600); 
             }, 2500);
@@ -682,7 +686,12 @@ function closeAiWizardPopup() {
             try { document.getElementById('startDate').valueAsDate = new Date(); smMusic.init(); } catch (e) {}
         };
 
-        function openShiftMaster() { document.getElementById("appSelector").style.display = "none"; document.getElementById("mainContent").style.display = "block"; }
+        function openShiftMaster() { 
+            document.getElementById("appSelector").style.display = "none"; 
+            document.querySelector(".login-section").style.display = "none";
+            document.querySelector(".slider-section").style.display = "none";
+            document.getElementById("mainContent").style.display = "block"; 
+        }
         function logout() { currentUser = ""; try { smMusic.pause(); } catch(e) {} localStorage.removeItem('sm_current_tenant'); localStorage.removeItem('sm_current_kurum_adi'); localStorage.removeItem('sm_role'); localStorage.removeItem('sm_active_user'); window.location.href = 'index.html'; }
 
         // 🔥 ASKERİ SINIF KRİPTO MOTORU (SHA-256) 🔥
