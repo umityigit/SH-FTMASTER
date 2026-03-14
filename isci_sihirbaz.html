@@ -203,8 +203,17 @@
 
         window.onload = () => {
             loadStaffPool(); 
-            document.getElementById('simStartDate').valueAsDate = new Date();
             addInitialShifts();
+            
+            // 🔥 URL'den gelen Tarih ve Gün sayısını otomatik kutulara doldur
+            const urlParams = new URLSearchParams(window.location.search);
+            const startParam = urlParams.get('start');
+            const daysParam = urlParams.get('days');
+            
+            if (startParam) document.getElementById('simStartDate').value = startParam;
+            else document.getElementById('simStartDate').valueAsDate = new Date();
+            
+            if (daysParam) document.getElementById('simDays').value = daysParam;
         };
 
         // 🔥 YENİ AKILLI İSİM ÇEKME MOTORU 🔥
