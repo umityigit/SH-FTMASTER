@@ -289,7 +289,7 @@
 
             <div class="card" style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; background:linear-gradient(145deg, rgba(15,23,42,0.8), rgba(2,6,23,0.9));">
                 <div><label style="font-size:11px; color:var(--accent); font-weight:900; margin-left:5px; text-shadow:0 0 5px var(--accent);">BAŞLANGIÇ</label><br><input type="date" id="startDate" class="glass-input" style="font-size:14px; padding:10px 15px;"></div>
-                <div><label style="font-size:11px; color:var(--accent); font-weight:900; margin-left:5px; text-shadow:0 0 5px var(--accent);">GÜN</label><br><input type="number" id="colCount" value="30" class="glass-input" style="width:80px; text-align:center; font-size:16px; font-weight:900; padding:10px;"></div>
+                <div><label style="font-size:11px; color:var(--accent); font-weight:900; margin-left:5px; text-shadow:0 0 5px var(--accent);">GÜN</label><br><input type="number" id="colCount" value="28" class="glass-input" style="width:80px; text-align:center; font-size:16px; font-weight:900; padding:10px;"></div>
                 <button class="btn btn-cyan" style="padding:15px 30px; font-size: 14px;" onclick="generateTableFromSelected()">🚀 YENİ MATRİS OLUŞTUR</button>
                 <button class="btn btn-green" style="padding:15px 30px; font-size: 14px;" onclick="openExcelModal()">📥 EXCEL'DEN ÇEK</button>
                 
@@ -1082,8 +1082,30 @@ function saveHistory() {
         function moveRow(btn, dir) { const row = btn.closest('tr'); const tbody = row.parentElement; if (dir === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling); else if (dir === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row); saveHistory(); }
         function renameLocalTable(span) { const wrapper = span.closest('.table-wrapper'); let pName = prompt("Tablo adı:", wrapper.getAttribute("data-tablename")); if(pName && pName.trim() !== "") { wrapper.setAttribute("data-tablename", pName.trim()); span.innerHTML = `📌 ${pName.trim()} <span style="font-size:10px; opacity:0.6; color:#fff;">(İsmi Değiştir)</span>`; } }
         function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); const startDt = new Date(wrapper.getAttribute("data-startdt")); const cols = parseInt(wrapper.getAttribute("data-colcount")); const newRowHtml = createRowHtml("İSİM GİRİNİZ...", cols, startDt); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', newRowHtml); saveHistory(); updateAllStats(); }
-        function addTableWithSameStaff(btn) { const wrapper = btn.closest('.table-wrapper'); const names = Array.from(wrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, null, wrapper); } }
-        function safeAppendTable() { const wrappers = document.querySelectorAll(".table-wrapper"); if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); saveHistory(); const lastWrapper = wrappers[wrappers.length - 1]; const names = Array.from(lastWrapper.querySelectorAll("tbody tr")).map(tr => tr.querySelector(".editable-name").innerText); let nextDate = new Date(); if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate); } }
+        function addTableWithSameStaff(btn) { 
+            const wrapper = btn.closest('.table-wrapper'); 
+            // YENİ ZIRH: Üstteki tablo kaç günlüyse (Örn: 28) yenisi de o kadar gün olsun!
+            const prevCols = parseInt(wrapper.getAttribute("data-colcount")) || parseInt(document.getElementById("colCount").value) || 28;
+            const names = Array.from(wrapper.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector(".editable-name").innerText); 
+            let nextDate = new Date(); 
+            if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } 
+            const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); 
+            if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, prevCols, wrapper); } 
+        }
+
+        function safeAppendTable() { 
+            const wrappers = document.querySelectorAll(".table-wrapper"); 
+            if(wrappers.length === 0) return alert("Önce tablo oluşturun!"); 
+            saveHistory(); 
+            const lastWrapper = wrappers[wrappers.length - 1]; 
+            // YENİ ZIRH: Üstteki tablo kaç günlüyse yenisi de o kadar gün olsun!
+            const prevCols = parseInt(lastWrapper.getAttribute("data-colcount")) || parseInt(document.getElementById("colCount").value) || 28;
+            const names = Array.from(lastWrapper.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector(".editable-name").innerText); 
+            let nextDate = new Date(); 
+            if (lastUsedEndDate && !isNaN(lastUsedEndDate)) { nextDate = new Date(lastUsedEndDate); nextDate.setDate(nextDate.getDate() + 1); } 
+            const userDate = prompt("Tarih (Yıl-Ay-Gün)", `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`); 
+            if (userDate) { const pDate = new Date(userDate); if (!isNaN(pDate.getTime())) generateTable(false, names, "Yeni Tablo", pDate, prevCols); } 
+        }
         
         function takeFullScreenshot(btn) { 
             const wrapper = btn.closest('.table-wrapper'); const captureArea = wrapper.querySelector(".scroll-area"); const table = wrapper.querySelector("table"); 
