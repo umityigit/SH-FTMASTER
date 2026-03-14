@@ -775,7 +775,13 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; setTimeout(() => document.getElementById(id).classList.add('show'), 10); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); setTimeout(() => document.getElementById(id).style.display = 'none', 400); }
         function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
-
+function saveHistory() { 
+    const container = document.getElementById('tablesContainer'); 
+    if(container && container.innerHTML) { 
+        historyStack.push(container.innerHTML); 
+        if(historyStack.length > 20) historyStack.shift(); 
+    } 
+}
         function loadNews() { 
             db.ref("haberler").on("value", snap => { 
                 const l = document.getElementById("newsList"); l.innerHTML = ""; 
