@@ -1079,8 +1079,15 @@ function saveHistory() {
                     const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0;
                     cells.forEach(td => {
                         if(td.classList.contains("shift-cell") && !td.classList.contains("hidden-by-snipper")) {
-                            const val = td.innerText.trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
-                            if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } else if(val === "") { td.style.background = "transparent"; }
+                            const val = td.innerText.trim(); 
+                            let safeVal = val.replace(/\./g, ':'); 
+                            // YENİ EKLENEN ZIRH: Boşlukları silip de arar, böylece sihirbazdan gelen uyuşmazlık çözülür
+                            let noSpaceVal = safeVal.replace(/\s+/g, ''); 
+                            
+                            let r = shiftRules[safeVal] || shiftRules[val] || shiftRules[noSpaceVal];
+                            
+                            if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } 
+                            else if(val === "") { td.style.background = "transparent"; }
                         }
                         if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
                         if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
@@ -1088,7 +1095,6 @@ function saveHistory() {
                 });
             });
         }
-
         function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
         function openShiftMenu(e, c) { e.preventDefault(); if (!c.classList.contains('selected-cell')) { document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); c.classList.add('selected-cell'); } activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
         
