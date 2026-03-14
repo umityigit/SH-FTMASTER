@@ -243,35 +243,51 @@
             </div>
         </div>
 
-       // 🔥 KURUMSAL SÖZLEŞME ÇALIŞTIRMA FONKSİYONU (RENKLİ & ŞIK VERSİYON) 🔥
-        const legalTexts = {
-            'gizlilik': `
-                <h3 style='margin-top:0; color:var(--accent); font-size:20px; text-shadow:0 0 15px var(--accent-glow); border-bottom:1px dashed rgba(56,189,248,0.3); padding-bottom:10px;'>🔒 GİZLİLİK POLİTİKASI</h3>
-                <p style='font-size:13px;'>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.</p>
+      <div style="max-width: 600px; margin: 40px auto; display: flex; flex-direction: column; gap: 15px;">
+
+        <details style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56,189,248,0.3); border-radius: 15px; padding: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+            <summary style="color: var(--accent); font-size: 16px; font-weight: 900; outline: none; list-style: none; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px var(--accent-glow);">
+                🔒 GİZLİLİK POLİTİKASI <span style="font-size:10px; color:#64748b; font-weight:normal;">(Okumak için tıkla)</span>
+            </summary>
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(56,189,248,0.2); font-size: 12px; color: #cbd5e1; line-height: 1.6;">
+                <p>ShiftMaster, kullanıcılarına ait verileri (kurum bilgileri, personel isimleri, vardiya saatleri) 6698 sayılı KVKK standartlarına uygun olarak işler ve saklar.</p>
                 <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--accent); margin-bottom:12px; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
                     <b style='color:#fff; font-size:14px;'>1. Veri Paylaşımı:</b><br>Verileriniz hiçbir şekilde üçüncü şahıs şirketlere, reklam verenlere veya aracı kurumlara satılmaz/devredilmez.
                 </div>
                 <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--success); box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
                     <b style='color:#fff; font-size:14px;'>2. Şifreleme:</b><br>Şifreleriniz geri döndürülemez (hash) algoritmalarla korunmaktadır. Sistem kurucuları dahi şifrelerinizi göremez.
-                </div>`,
-            
-            'kullanim': `
-                <h3 style='margin-top:0; color:var(--warning); font-size:20px; text-shadow:0 0 15px rgba(250,204,21,0.4); border-bottom:1px dashed rgba(250,204,21,0.3); padding-bottom:10px;'>⚖️ KULLANIM KOŞULLARI</h3>
-                <p style='font-size:13px;'>ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.</p>
+                </div>
+            </div>
+        </details>
+
+        <details style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(250,204,21,0.3); border-radius: 15px; padding: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+            <summary style="color: var(--warning); font-size: 16px; font-weight: 900; outline: none; list-style: none; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(250,204,21,0.4);">
+                ⚖️ KULLANIM KOŞULLARI <span style="font-size:10px; color:#64748b; font-weight:normal;">(Okumak için tıkla)</span>
+            </summary>
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(250,204,21,0.2); font-size: 12px; color: #cbd5e1; line-height: 1.6;">
+                <p>ShiftMaster, kurumların vardiya süreçlerini ve puantaj hesaplamalarını dijitalleştiren bir asistan yazılımıdır.</p>
                 <div style='background:rgba(239,68,68,0.1); padding:15px; border-radius:12px; border:1px solid rgba(239,68,68,0.3); color:#fca5a5; margin-top:15px;'>
                     <b style='color:var(--danger); font-size:15px;'>⚠️ ÖNEMLİ UYARI:</b><br><br>Sistem tarafından otomatik yapılan puantaj, mesai ve nöbet hesaplamaları 'referans' amaçlıdır. Nihai resmi bordro, SGK bildirgeleri ve maaş ödemelerinde mutlak kontrol yükümlülüğü kurumun (kullanıcının) kendisine aittir. ShiftMaster, hatalı veri girişinden veya hesaplama farklarından doğabilecek idari veya mali zararlardan sorumlu tutulamaz.
-                </div>`,
-            
-            'guvenlik': `
-                <h3 style='margin-top:0; color:var(--success); font-size:20px; text-shadow:0 0 15px rgba(16,185,129,0.4); border-bottom:1px dashed rgba(16,185,129,0.3); padding-bottom:10px;'>🛡️ VERİ GÜVENLİĞİ</h3>
-                <p style='font-size:13px;'>Platformumuzdaki altyapı standartları aşağıdaki gibidir:</p>
+                </div>
+            </div>
+        </details>
+
+        <details style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(16,185,129,0.3); border-radius: 15px; padding: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+            <summary style="color: var(--success); font-size: 16px; font-weight: 900; outline: none; list-style: none; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(16,185,129,0.4);">
+                🛡️ VERİ GÜVENLİĞİ <span style="font-size:10px; color:#64748b; font-weight:normal;">(Okumak için tıkla)</span>
+            </summary>
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(16,185,129,0.2); font-size: 12px; color: #cbd5e1; line-height: 1.6;">
+                <p>Platformumuzdaki altyapı standartları aşağıdaki gibidir:</p>
                 <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid var(--success); margin-bottom:12px; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
                     <b style='color:#fff; font-size:14px;'>1. Sunucu Güvenliği:</b><br>Tüm veri alışverişi 256-bit SSL sertifikası ile uçtan uca şifrelenmektedir. Tüm altyapımız Google Cloud ve Firebase sunucularında barındırılmakta olup, dünyanın en üst düzey siber güvenlik kalkanlarıyla korunmaktadır.
                 </div>
                 <div style='background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border-left:4px solid #a855f7; box-shadow:inset 1px 1px 5px rgba(0,0,0,0.5);'>
                     <b style='color:#fff; font-size:14px;'>2. Erişim Yetkileri:</b><br>Kurum verilerine yalnızca o kurumun 'Patron' yetkisine sahip ana hesabı ve onun yetki verdiği alt yöneticiler ulaşabilir. Her kurumun veri tabanı birbirinden izole edilmiştir.
-                </div>`
-        };
+                </div>
+            </div>
+        </details>
+
+    </div>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ",
