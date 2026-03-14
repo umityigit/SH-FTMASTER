@@ -76,7 +76,8 @@
         
         .glass-input { width: 100%; box-sizing: border-box; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); color: white; padding: 15px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; transition: 0.3s; box-shadow: inset 3px 3px 8px rgba(0,0,0,0.6); }
         .glass-input:focus { border-color: var(--accent); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8); background: rgba(15, 23, 42, 0.8); }
-
+        .full-modal-overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(15px); z-index: 9999999 !important; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.4s; }
+        .custom-menu { display: none; position: absolute; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; z-index: 9999999 !important; width: 400px; padding: 20px; box-shadow: 0 30px 70px rgba(0,0,0,0.9), inset 0 0 20px var(--glass-glow); animation: menuPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .btn-action { width: 100%; padding: 16px; border: none; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 14px; cursor: pointer; background: linear-gradient(135deg, #10b981, #059669); color: white; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.3), 0 5px 15px rgba(0,0,0,0.5); margin-top: 10px; }
         .btn-login { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
         .btn-action:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5); }
