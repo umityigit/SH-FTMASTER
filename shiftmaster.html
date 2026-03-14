@@ -600,6 +600,7 @@ function closeAiWizardPopup() {
         function loadTickets() {
             originalRef("cozum_merkezi").on('value', snap => {
                 const list = document.getElementById('ticketList');
+                if(!list) return;
                 list.innerHTML = "";
                 const currentTenant = localStorage.getItem('sm_current_tenant');
                 const isSuperAdmin = localStorage.getItem('sm_role') === 'superadmin';
@@ -607,16 +608,22 @@ function closeAiWizardPopup() {
 
                 if(snap.val()) {
                     Object.entries(snap.val()).reverse().forEach(([id, t]) => {
+                        // Patron değilse sadece kendi kurumunun biletlerini görsün
                         if (!isSuperAdmin && t.tenant !== currentTenant) return;
                         
                         biletSayisi++;
                         let statusColor = t.status === 'Çözüldü' ? 'var(--success)' : (t.status === 'İnceleniyor' ? '#3b82f6' : 'var(--warning)');
                         let replyHtml = t.adminReply ? `<div class="admin-reply"><strong>⚡ YETKİLİ CEVABI:</strong><br>${t.adminReply}</div>` : '';
                         
+                        // Sadece Patronun Göreceği Kontrol Butonları
                         let patronButonu = ""; let kurumsalEtiket = "";
                         if (isSuperAdmin) { 
                             kurumsalEtiket = `<span style="color:#38bdf8; font-size:10px;">[${(t.tenant || "BİLİNMİYOR").toUpperCase()}]</span> `;
-                            patronButonu = `<button class="btn btn-green" style="margin-top:10px; padding:6px 12px; font-size:10px;" onclick="cevapYaz('${id}')">Cevapla & Çözüldü Yap</button>`;
+                            patronButonu = `
+                            <div style="display:flex; gap:10px; margin-top:12px; border-top:1px dashed rgba(255,255,255,0.1); padding-top:10px;">
+                                <button class="btn btn-green" style="padding:6px 12px; font-size:10px;" onclick="cevapYaz('${id}')">Cevapla & Çözüldü Yap</button>
+                                <button class="btn btn-red" style="padding:6px 12px; font-size:10px;" onclick="biletSil('${id}')">🗑️ Sil</button>
+                            </div>`;
                         }
 
                         list.innerHTML += `
@@ -638,7 +645,7 @@ function closeAiWizardPopup() {
                 }
             });
         }
-        
+       
         // =========================================
         // 1. FİREBASE BAĞLANTISI VE GÜVENLİK
         // =========================================
@@ -1690,6 +1697,28 @@ function saveHistory() {
                 e.preventDefault(); 
             }
         });
+   // 🎧 ÇÖZÜM MERKEZİ YÖNETİCİ MOTORU (CEVAPLAMA VE SİLME)
+        window.cevapYaz = function(id) {
+            let cevap = prompt("Kullanıcıya iletilecek cevabı yazın:\n(Bu işlem bileti otomatik olarak 'Çözüldü' yapar)");
+            if (cevap && cevap.trim() !== "") {
+                originalRef("cozum_merkezi").child(id).update({
+                    adminReply: cevap.trim(),
+                    status: "Çözüldü"
+                }).then(() => {
+                    if (typeof showToast === "function") showToast("Cevap başarıyla iletildi! ✅");
+                    logAction("Bir destek biletini cevapladı ve kapattı.");
+                }).catch(err => alert("Cevap gönderilirken hata oluştu: " + err.message));
+            }
+        };
+
+        window.biletSil = function(id) {
+            if(confirm("Bu destek biletini kalıcı olarak silmek istediğinize emin misiniz?")) {
+                originalRef("cozum_merkezi").child(id).remove().then(() => {
+                    if (typeof showToast === "function") showToast("Bilet sistemden silindi! 🗑️");
+                });
+            }
+        };
+    
     </script>
     <div id="aiWizardPopup" class="full-modal-overlay" style="z-index: 100020;">
     <div class="full-modal-content" style="border-color: var(--purple); background: #020617;">
