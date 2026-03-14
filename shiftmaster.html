@@ -646,11 +646,20 @@ function closeAiWizardPopup() {
                         document.getElementById("appSelector").style.display = "flex";
 
                         const btnSorumlu = document.getElementById('btnSorumluAta');
-                        if (activeRole === 'admin') {
+                        const btnBoss = document.getElementById('btnBossConsole'); // Patron Butonu
+
+                        // 🔥 ROL KONTROLÜ: PATRON İSE HER ŞEYİ AÇ!
+                        if (activeRole === 'superadmin') {
                             if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
+                            if (btnBoss) btnBoss.style.display = 'inline-flex';
+                            loadSorumlular(); 
+                        } else if (activeRole === 'admin') {
+                            if (btnSorumlu) btnSorumlu.style.display = 'inline-flex';
+                            if (btnBoss) btnBoss.style.display = 'none';
                             loadSorumlular(); 
                         } else {
                             if (btnSorumlu) btnSorumlu.style.display = 'none';
+                            if (btnBoss) btnBoss.style.display = 'none';
                         }
 
                         // 🔥 YÜKLEMELER BURADA 🔥
@@ -800,8 +809,7 @@ function saveHistory() {
         if(historyStack.length > 20) historyStack.shift(); 
     } 
 }
-// YENİ EKLENEN: SİHİRBAZDAN TABLOYA DİREKT AKTARIM MOTORU
-       // 🔥 YENİ NESİL: SİHİRBAZDAN TABLOYA AKTARIM & GEÇMİŞ HAFIZA MOTORU
+
       // 🔥 YENİ NESİL: SİHİRBAZDAN TABLOYA AKTARIM & GEÇMİŞ HAFIZA MOTORU
         window.targetTableWrapperForAI = null;
         window.aiLastShifts = {}; // Sihirbaza fısıldanacak olan "Önceki Ayın Son Gün" verileri
@@ -1457,6 +1465,52 @@ function saveHistory() {
                                                     offList.push(`<b>${name}</b> <span style="font-size:10px; color:var(--danger);">(${shiftVal || 'Boş'})</span> ${badge}`);
                                                 } else {
                                                     dayList.push(`<b>${name}</b> <span style="font-size:10px; color:var(--cyan);">(${shiftVal})</span> ${badge}`);
+                                               // 👁️ KONTROL MERKEZİ (PATRON MODU) ARAMA VE SIZMA MOTORU
+        function openBossConsole() {
+            document.getElementById('bossConsoleModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('bossConsoleModal').classList.add('show'), 10);
+            
+            // Tüm kurumları Firebase'den çek ve listele
+            db.ref("kurum_kayitlari").once("value").then(snap => {
+                const list = document.getElementById('bossKurumListesi');
+                list.innerHTML = "";
+                if(snap.val()) {
+                    Object.entries(snap.val()).forEach(([kod, data]) => {
+                        list.innerHTML += `
+                            <div class="archive-card boss-card" data-isim="${data.kurumAdi.toLowerCase()}" style="border-color:#ef4444; background:rgba(127,29,29,0.2);">
+                                <div style="flex:1;">
+                                    <b style="color:#fca5a5; font-size:16px;">🏢 ${data.kurumAdi}</b><br>
+                                    <small style="color:#cbd5e1; font-size:11px;">Kod: <b>${kod}</b> | Patron: ${data.patronIsim}</small>
+                                </div>
+                                <button class="btn btn-red" style="padding:8px 15px; font-size:11px; box-shadow:0 0 10px #ef4444;" onclick="patronaBaglan(event, '${kod}', '${data.kurumAdi}')">SİSTEMİNE GİR</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = "<div style='color:#fca5a5; grid-column:span 2; text-align:center;'>Sistemde henüz kayıtlı kurum yok.</div>";
+                }
+            });
+        }
+
+        // Komuta Üssü Arama Filtresi
+        function filterBossList() {
+            let val = document.getElementById('bossSearchInput').value.toLowerCase();
+            document.querySelectorAll('.boss-card').forEach(card => {
+                if(card.getAttribute('data-isim').includes(val)) card.style.display = "flex";
+                else card.style.display = "none";
+            });
+        }
+
+        // İstediğin Kurumun İçine Sızma Fonksiyonu
+        function patronaBaglan(e, kod, isim) {
+            e.stopPropagation();
+            if(confirm(`DİKKAT: "${isim}" adlı kurumun yönetim paneline sızmak üzeresiniz. Onaylıyor musunuz?`)) {
+                localStorage.setItem('sm_current_tenant', kod);
+                localStorage.setItem('sm_current_kurum_adi', isim);
+                showToast("Sisteme Bağlanılıyor...");
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        }
                                                 }
                                             }
                                         });
