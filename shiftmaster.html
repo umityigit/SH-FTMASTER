@@ -801,17 +801,53 @@ function saveHistory() {
     } 
 }
 // YENİ EKLENEN: SİHİRBAZDAN TABLOYA DİREKT AKTARIM MOTORU
+       // 🔥 YENİ NESİL: SİHİRBAZDAN TABLOYA AKTARIM & GEÇMİŞ HAFIZA MOTORU
         window.targetTableWrapperForAI = null;
+        window.aiLastShifts = {}; // Sihirbaza fısıldanacak olan "Önceki Ayın Son Gün" verileri
 
         function openAiWizardForSpecificTable(btn) {
             const wrapper = btn.closest('.table-wrapper');
             window.targetTableWrapperForAI = wrapper;
 
-            // Tablodaki mevcut isimleri otomatik topla
+            // 1. Tarih ve Gün sayısını tablodan otomatik al (Müşteri uğraşmasın)
+            const sDateStr = wrapper.getAttribute("data-startdt");
+            let startDateVal = "";
+            if (sDateStr) {
+                const d = new Date(sDateStr);
+                startDateVal = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+            const colCountVal = wrapper.getAttribute("data-colcount") || 30;
+
+            // 2. Tablodaki isimleri topla
             const names = Array.from(wrapper.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector(".editable-name").innerText.trim());
             const namesParam = encodeURIComponent(names.join(','));
 
-            const wizardUrl = `isci_sihirbaz.html?mode=inject&names=${namesParam}`;
+            // 3. ÖNCEKİ TABLOYU BUL VE SON GÜNÜ HAFIZAYA AL (SÜPER ZEKA)
+            window.aiLastShifts = {};
+            const prevWrapper = wrapper.previousElementSibling;
+            if (prevWrapper && prevWrapper.classList.contains('table-wrapper')) {
+                prevWrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => {
+                    const nElement = tr.querySelector(".editable-name");
+                    if(nElement) {
+                        const pName = nElement.innerText.trim();
+                        const shiftCells = tr.querySelectorAll(".shift-cell");
+                        if(shiftCells.length > 0) {
+                            const lastCellText = shiftCells[shiftCells.length - 1].innerText.trim();
+                            // Son gün Gece mi, Gündüz mü, İzin mi tespit et
+                            if (lastCellText.startsWith("20:") || lastCellText.startsWith("24:") || lastCellText.startsWith("00:") || lastCellText.includes("GECE")) {
+                                window.aiLastShifts[pName] = 'N'; // Night (Gece)
+                            } else if (lastCellText === "HT" || lastCellText === "İ" || lastCellText === "R" || lastCellText === "") {
+                                window.aiLastShifts[pName] = 'O'; // Off (İzin)
+                            } else {
+                                window.aiLastShifts[pName] = 'G'; // Gündüz
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Sihirbazı açarken tarih ve gün sayılarını da URL'ye ekliyoruz
+            const wizardUrl = `isci_sihirbaz.html?mode=inject&names=${namesParam}&start=${startDateVal}&days=${colCountVal}`;
             document.getElementById('aiWizardFrame').src = wizardUrl;
             document.getElementById('targetFolderNameDisplay').innerText = `> Seçili Tabloya Veri Aktarılıyor...`;
             document.getElementById('aiWizardPopup').style.display = 'flex';
@@ -822,15 +858,11 @@ function saveHistory() {
             if (!window.targetTableWrapperForAI) return;
             const oldWrapper = window.targetTableWrapperForAI;
             
-            // Tablonun eski özelliklerini al
             const tName = oldWrapper.getAttribute("data-tablename");
             const sDate = new Date(startDateStr);
             const notes = oldWrapper.querySelector(".table-notes") ? oldWrapper.querySelector(".table-notes").value : "";
 
-            // Eski tablonun hemen altına, sihirbazdan gelen verilerle YENİ tabloyu çiz
             generateTable(true, aiRows, tName, sDate, parseInt(colCount), oldWrapper, notes);
-            
-            // Eski boş tabloyu ekrandan sil, yerine yenisi geçmiş oldu!
             oldWrapper.remove();
             
             closeAiWizardPopup();
