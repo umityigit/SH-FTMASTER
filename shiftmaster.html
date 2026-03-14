@@ -1549,24 +1549,10 @@ function saveHistory() {
                 setTimeout(() => window.location.reload(), 1000);
             }
         };
-                
-                // Sonuçları HTML'e yazdır
-                document.getElementById('listDay').innerHTML = dayList.length > 0 ? dayList.map(n => `<div style="padding:8px 5px; border-bottom:1px solid rgba(16,185,129,0.2);">☀️ ${n}</div>`).join('') : '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gündüz kaydı yok</div>';
-                document.getElementById('cDay').innerText = dayList.length;
-                
-                document.getElementById('listNight').innerHTML = nightList.length > 0 ? nightList.map(n => `<div style="padding:8px 5px; border-bottom:1px solid rgba(245,158,11,0.2);">🌙 ${n}</div>`).join('') : '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte gece kaydı yok</div>';
-                document.getElementById('cNight').innerText = nightList.length;
-                
-                document.getElementById('listOff').innerHTML = offList.length > 0 ? offList.map(n => `<div style="padding:8px 5px; border-bottom:1px solid rgba(239,68,68,0.2);">🏖️ ${n}</div>`).join('') : '<div style="color:#64748b; font-style:italic; padding:10px;">Bu tarihte izinli kaydı yok</div>';
-                document.getElementById('cOff').innerText = offList.length;
-                
-                document.getElementById('todaySummaryDateText').innerText = dateStr + " Tarihli Özet";
-                openModal('todaySummaryModal');
-            });
-        }
+                  
         // ============================================================================
         // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ (FİNAL SÜRÜM)
-        // ============================================================================
+        //========================================================================
         
         // 1. Sağ Tık Engelleme (Sadece vardiya hücrelerinde serbest)
         document.addEventListener('contextmenu', event => {
