@@ -205,9 +205,47 @@
         @keyframes popUp { from { bottom: -50px; opacity: 0; transform: translateX(-50%) scale(0.5); } to { bottom: 40px; opacity: 1; transform: translateX(-50%) scale(1); } }
         @keyframes fadeout { from { bottom: 40px; opacity: 1; } to { bottom: -50px; opacity: 0; } }
 
-        .sm-player { position: fixed; bottom: 25px; right: 25px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 12px 25px; display: flex; align-items: center; gap: 20px; color: white; z-index: 9999; }
-        .sm-btn { background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; color: var(--accent); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
-        .sm-btn:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--accent); }
+       /* 📻 SHIFTMASTER RETRO-DİJİTAL RADYO TASARIMI */
+        .shift-radio-container {
+            position: fixed; bottom: 25px; right: 25px; z-index: 9999;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 2px solid #475569; border-radius: 12px;
+            padding: 15px; width: 280px;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.9), inset 2px 2px 10px rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; gap: 12px;
+            transition: 0.3s;
+        }
+        .shift-radio-container:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+        
+        /* Radyo Anteni Efekti */
+        .shift-radio-container::after { content: ''; position: absolute; top: -30px; right: 20px; width: 4px; height: 30px; background: linear-gradient(to top, #475569, #cbd5e1); border-radius: 4px 4px 0 0; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        
+        .radio-screen {
+            background: #022c22; border: 2px inset #065f46; border-radius: 6px;
+            padding: 8px 10px; height: 40px; display: flex; align-items: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 0 10px rgba(16, 185, 129, 0.2);
+            overflow: hidden; position: relative;
+        }
+        .radio-text-scroll {
+            color: #34d399; font-family: 'Courier New', Courier, monospace;
+            font-size: 13px; font-weight: 900; text-shadow: 0 0 8px #10b981;
+            white-space: nowrap; animation: scrollText 8s linear infinite;
+        }
+        @keyframes scrollText { 0% { transform: translateX(100%); } 100% { transform: translateX(-150%); } }
+        
+        .radio-controls { display: flex; justify-content: space-between; align-items: center; }
+        
+        .radio-btn {
+            background: linear-gradient(145deg, #334155, #1e293b);
+            border: 1px solid #64748b; color: #cbd5e1; border-radius: 50%;
+            width: 35px; height: 35px; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            transition: 0.2s; box-shadow: 2px 2px 5px rgba(0,0,0,0.6), inset 1px 1px 2px rgba(255,255,255,0.2); font-size: 12px;
+        }
+        .radio-btn:hover { background: var(--accent); color: #fff; border-color: #fff; box-shadow: 0 0 15px var(--accent); transform: scale(1.1); }
+        .radio-btn.play-btn { width: 45px; height: 45px; font-size: 18px; color: var(--success); border-color: var(--success); }
+        .radio-btn.play-btn:hover { background: var(--success); color: #fff; box-shadow: 0 0 20px var(--success); }
+        
+        .volume-slider { width: 70px; accent-color: var(--accent); cursor: pointer; height: 4px; background: #334155; border-radius: 5px; outline: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -471,13 +509,25 @@
 
     <div id="toast">İşlem Başarılı!</div>
 
-    <div class="sm-player" id="sm-player">
-        <button class="sm-btn" onclick="smMusic.prev()">⏮</button>
-        <button class="sm-btn" onclick="smMusic.toggle()" id="sm-play-btn" style="font-size:1.5rem; width:50px; height:50px;">▶</button>
-        <button class="sm-btn" onclick="smMusic.next()">⏭</button>
-        <div class="sm-track-info">
-            <span class="sm-title" id="sm-title">ShiftMaster Radyo</span>
-            <div style="display:flex; gap:3px; margin-top:5px; height:10px; align-items:flex-end;" id="sm-eq"></div>
+    <div class="shift-radio-container">
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; font-weight:900; letter-spacing:1px; margin-bottom:-5px;">
+            <span>📻 SHIFTMASTER FM</span>
+            <span id="radio-status" style="color:var(--danger); animation:pulse 2s infinite;">OFFLINE</span>
+        </div>
+        
+        <div class="radio-screen">
+            <div class="radio-text-scroll" id="radio-display-text">SİSTEM HAZIR - KANAL SEÇİNİZ...</div>
+        </div>
+        
+        <div class="radio-controls">
+            <button class="radio-btn" onclick="smMusic.prev()">⏮</button>
+            <button class="radio-btn play-btn" onclick="smMusic.toggle()" id="sm-play-btn">▶</button>
+            <button class="radio-btn" onclick="smMusic.next()">⏭</button>
+            
+            <div style="display:flex; align-items:center; gap:5px;">
+                <span style="font-size:14px;">🔊</span>
+                <input type="range" min="0" max="1" step="0.05" value="0.5" class="volume-slider" oninput="smMusic.setVolume(this.value)">
+            </div>
         </div>
     </div>
 
@@ -611,31 +661,33 @@ function closeAiWizardPopup() {
         const defaultRules = { '08:00-20:00': { w: 11, n: 0, color: 'linear-gradient(145deg, #f59e0b, #b45309)' }, '20:00-08:00': { w: 11, n: 11, color: 'linear-gradient(145deg, #1e3a8a, #020617)' }, '12:00-24:00': { w: 11, n: 4, color: 'linear-gradient(145deg, #f97316, #9a3412)' }, '08:00-16:00': { w: 7.5, n: 0, color: 'linear-gradient(145deg, #0ea5e9, #0369a1)' }, '16:00-24:00': { w: 7.5, n: 4, color: 'linear-gradient(145deg, #3b82f6, #1d4ed8)' }, '24:00-08:00': { w: 7.5, n: 7.5, color: 'linear-gradient(145deg, #4338ca, #1e1b4b)' }, 'HT': { w: 0, n: 0, color: 'linear-gradient(145deg, #14b8a6, #0f766e)' }, 'İ': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' }, 'R': { w: 0, n: 0, color: 'linear-gradient(145deg, #ef4444, #991b1b)' } };
         const colors = ['#fca5a5','#f87171','#ef4444','#dc2626','#b91c1c','#991b1b','#7f1d1d','#fde047','#fbbf24','#f59e0b','#d97706','#b45309','#92400e','#78350f','#6ee7b7','#34d399','#10b981','#059669','#047857','#065f46','#064e3b','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87'];
 
-        // 🎵 SHIFTMASTER RADYO MOTORU (GÜNCEL VE KESİNTİSİZ LİNKLER)
-        // 🎵 SHIFTMASTER RADYO MOTORU (CORS ENGELİ OLMAYAN AÇIK FREKANSLAR)
+      
+        // 🎵 SHIFTMASTER DİJİTAL RADYO MOTORU
         const smMusic = {
             audio: new Audio(), isPlaying: false, index: 0, 
             playlist: [ 
-                { name: "Power Türk", url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio" },
-                { name: "Power FM", url: "https://listen.powerapp.com.tr/powerfm/mpeg/icecast.audio" },
-                { name: "Power Pop", url: "https://listen.powerapp.com.tr/powerpop/mpeg/icecast.audio" },
-                { name: "Power Love", url: "https://listen.powerapp.com.tr/powerlove/mpeg/icecast.audio" },
-                { name: "Alem FM", url: "https://turkmedya.radyotvonline.net/alemfm" }
+                { name: "POWER TÜRK", url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio" },
+                { name: "POWER FM", url: "https://listen.powerapp.com.tr/powerfm/mpeg/icecast.audio" },
+                { name: "POWER POP", url: "https://listen.powerapp.com.tr/powerpop/mpeg/icecast.audio" },
+                { name: "POWER LOVE", url: "https://listen.powerapp.com.tr/powerlove/mpeg/icecast.audio" },
+                { name: "ALEM FM", url: "https://turkmedya.radyotvonline.net/alemfm" }
             ],
             init() { 
                 this.audio.src = this.playlist[this.index].url; 
                 this.audio.volume = 0.5; 
-                document.getElementById('sm-title').innerText = this.playlist[this.index].name; 
+                this.updateScreen("SİSTEM HAZIR | KANAL BEKLENİYOR...");
             },
             toggle() { if (this.isPlaying) this.pause(); else this.play(); },
             play() { 
+                this.updateScreen("BAĞLANILIYOR...");
                 this.audio.play().then(() => { 
                     this.isPlaying = true; 
                     document.getElementById('sm-play-btn').innerText = "⏸"; 
-                    document.getElementById('sm-eq').innerHTML='<div style="width:4px; height:10px; background:var(--success); animation:eq 0.8s infinite alternate;"></div><div style="width:4px; height:15px; background:var(--success); animation:eq 0.8s infinite alternate 0.2s;"></div><div style="width:4px; height:8px; background:var(--success); animation:eq 0.8s infinite alternate 0.4s;"></div>'; 
+                    document.getElementById('radio-status').innerText = "LIVE 🔴";
+                    document.getElementById('radio-status').style.color = "var(--danger)";
+                    this.updateScreen(`>> ŞU AN ÇALIŞIYOR: ${this.playlist[this.index].name} | CANLI YAYIN <<`);
                 }).catch(e => { 
-                    console.log("Radyo bağlantı hatası: ", e);
-                    alert("Radyo yayınına şu an ulaşılamıyor (Sunucu engeli). Lütfen sıradaki kanala geçin."); 
+                    this.updateScreen("BAĞLANTI HATASI - FREKANS KOPUK");
                     this.pause(); 
                 }); 
             },
@@ -643,20 +695,29 @@ function closeAiWizardPopup() {
                 this.audio.pause(); 
                 this.isPlaying = false; 
                 document.getElementById('sm-play-btn').innerText = "▶"; 
-                document.getElementById('sm-eq').innerHTML=''; 
+                document.getElementById('radio-status').innerText = "STANDBY";
+                document.getElementById('radio-status').style.color = "var(--warning)";
+                this.updateScreen(`${this.playlist[this.index].name} - DURAKLATILDI`);
             },
-            next() { 
-                this.index = (this.index + 1) % this.playlist.length; 
-                this.changeTrack(); 
-            }, 
-            prev() { 
-                this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; 
-                this.changeTrack(); 
-            },
+            next() { this.index = (this.index + 1) % this.playlist.length; this.changeTrack(); }, 
+            prev() { this.index = (this.index - 1 + this.playlist.length) % this.playlist.length; this.changeTrack(); },
             changeTrack() { 
                 this.audio.src = this.playlist[this.index].url; 
-                document.getElementById('sm-title').innerText = this.playlist[this.index].name; 
                 if (this.isPlaying) this.play(); 
+                else this.updateScreen(`FREKANS SEÇİLDİ: ${this.playlist[this.index].name} (PLAY'E BASIN)`);
+            },
+            setVolume(val) {
+                this.audio.volume = val;
+            },
+            updateScreen(text) {
+                const screen = document.getElementById('radio-display-text');
+                if(screen) {
+                    screen.innerText = text;
+                    // Yazı yenilendiğinde kayma animasyonunu sıfırla
+                    screen.style.animation = 'none';
+                    screen.offsetHeight; /* Trigger reflow */
+                    screen.style.animation = null; 
+                }
             }
         };
 
