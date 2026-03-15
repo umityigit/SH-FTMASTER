@@ -1543,11 +1543,11 @@ function autoFillDates() {
             });
         }
         function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
-        // --- AKILLI (SENSÖRLÜ) SAĞ TIK MENÜSÜ ---
+        // --- KUSURSUZ (AKILLI) SAĞ TIK MENÜSÜ ---
         function openShiftMenu(e, c) { 
             e.preventDefault(); 
             
-            // Tıklanan hücreyi seçili hale getir
+            // Tıklanan hücreyi seç
             if (!c.classList.contains('selected-cell')) { 
                 document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); 
                 c.classList.add('selected-cell'); 
@@ -1555,33 +1555,33 @@ function autoFillDates() {
             activeCell = c; 
             
             const m = document.getElementById("contextMenu"); 
-            
-            // Önce menüyü şeffaf olarak aç ki boyutunu (genişliğini) ölçebilelim
-            m.style.visibility = "hidden";
             m.style.display = "block"; 
             
             let menuGenislik = m.offsetWidth;
             let menuYukseklik = m.offsetHeight;
-            let ekranGenislik = window.innerWidth;
-            let ekranYukseklik = window.innerHeight;
             
-            // Farenin ekrandaki konumu
-            let x = e.clientX; 
-            let y = e.clientY; 
+            // Farenin sayfa üzerindeki mutlak konumu
+            let x = e.pageX; 
+            let y = e.pageY; 
             
-            // 🛡️ ÇARPIŞMA SENSÖRÜ: Sağ kenara çarpıyorsa sola aç!
-            if (x + menuGenislik > ekranGenislik) {
-                x = x - menuGenislik;
+            // 🛡️ SENSÖR 1: Menü sağdan taşıyorsa, ekranın sağ kenarına içeriden yasla
+            if (e.clientX + menuGenislik > window.innerWidth) {
+                x = window.innerWidth + window.scrollX - menuGenislik - 15;
             }
             
-            // 🛡️ ÇARPIŞMA SENSÖRÜ: Alt kenara çarpıyorsa yukarı aç!
-            if (y + menuYukseklik > ekranYukseklik) {
-                y = y - menuYukseklik;
+            // 🛡️ SENSÖR 2: Menü alttan taşıyorsa, ekranın alt kenarına içeriden yasla
+            if (e.clientY + menuYukseklik > window.innerHeight) {
+                y = window.innerHeight + window.scrollY - menuYukseklik - 15;
+            }
+
+            // 🛡️ SENSÖR 3: Menü çok uzunsa ve üstten de taşıyorsa, en tepeye kilitle!
+            if (y < window.scrollY) {
+                y = window.scrollY + 15;
             }
             
-            // Hesaplanan yeni ve güvenli koordinatları uygula (Scroll payını da ekle)
-            m.style.left = (x + window.scrollX) + "px"; 
-            m.style.top = (y + window.scrollY) + "px"; 
+            m.style.left = x + "px"; 
+            m.style.top = y + "px"; 
+        } 
             
             // Menüyü görünür yap
             m.style.visibility = "visible";
