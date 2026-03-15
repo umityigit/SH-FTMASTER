@@ -481,6 +481,7 @@
 
     <div id="headerContextMenu" class="custom-menu" style="width:280px; border-color:var(--warning);">
         <div class="menu-item" style="background:linear-gradient(135deg, #0ea5e9, #0369a1); padding:15px;" onclick="editColumnDate()">✏️ TARİHİ MANUEL DEĞİŞTİR</div>
+        <div class="menu-item" style="background:linear-gradient(135deg, #8b5cf6, #6d28d9); margin-top:10px; padding:15px;" onclick="autoFillDates()">⏩ TARİHİ İLERİYE DOĞRU DOLDUR</div>
         <div class="menu-item" style="background:linear-gradient(135deg, #10b981, #047857); margin-top:10px; padding:15px;" onclick="insertColumn('after')">➕ SAĞA YENİ GÜN (SÜTUN) EKLE</div>
         <div class="menu-item" style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; color:#ef4444 !important; margin-top:10px; padding:15px;" onclick="deleteColumn()">🗑️ DİKKAT: BU GÜNÜ KOMPLE SİL</div>
     </div>
@@ -1206,7 +1207,114 @@ function saveHistory() {
         function importFromExcel() { const text = document.getElementById("excelInput").value; if(!text.trim()) return alert("Veri yapıştırın!"); const targetMode = document.getElementById('excelModal').getAttribute('data-target'); const rows = cleanExcelRows(text); if(targetMode === 'new') { const colsCount = rows[0].split("\t").length - 1; document.getElementById("colCount").value = colsCount > 0 ? colsCount : 30; startNewSession(); generateTable(true, rows.map(r => { const c = r.split("\t"); return { name: c[0] ? c[0].trim() : "İsimsiz", shifts: c.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }) }; }), "İçe Aktarılan Liste", new Date(), colsCount); } else if (targetMode === 'append' && window.currentTableWrapperForExcel) { const wrapper = window.currentTableWrapperForExcel; const tbody = wrapper.querySelector('tbody'); const colCount = parseInt(wrapper.getAttribute("data-colcount")); const startDt = new Date(wrapper.getAttribute("data-startdt")); rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }); tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); }); updateAllStats(); showToast("Veriler Tabloya Eklendi!"); } closeModal('excelModal'); }
 
         db.ref("vardiya_kurallari").on('value', snap => { if(snap.val()) shiftRules = snap.val(); else shiftRules = defaultRules; renderContextMenu(); });
-        function renderContextMenu() { const grid = document.getElementById("dynamicMenuGrid"); grid.innerHTML = ""; Object.keys(shiftRules).forEach(sName => { let r = shiftRules[sName]; grid.innerHTML += `<div class="menu-item-wrapper"><div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div><div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div></div>`; }); grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; }
+        // --- 1. BAŞLIK (TARİH) SAĞ TIK MENÜSÜ FONKSİYONLARI ---
+function openHeaderMenu(e, th) {
+    e.preventDefault();
+    activeHeaderCell = th;
+    const menu = document.getElementById("headerContextMenu");
+    if(menu) {
+        menu.style.display = "block";
+        menu.style.left = e.pageX + "px";
+        menu.style.top = e.pageY + "px";
+    }
+}
+
+function autoFillDates() {
+    document.getElementById("headerContextMenu").style.display = "none";
+    if(!activeHeaderCell) return;
+    let dateStr = activeHeaderCell.getAttribute("data-date");
+    if(!dateStr) return;
+    let parts = dateStr.split(".");
+    let d = new Date(parts[2], parts[1]-1, parts[0]);
+    if(confirm("Bu tarihten itibaren sağa doğru tüm günler sırayla (takvime göre) yeniden hesaplansın mı?")) {
+        saveHistory();
+        recalculateDatesFrom(activeHeaderCell, d);
+        if(typeof showToast === 'function') showToast("Tarihler ileriye doğru güncellendi! 📅");
+    }
+}
+
+// --- 2. HÜCRE İÇİ (DİLLERE DESTAN) SAĞ TIK MENÜSÜ VE SÜRÜKLE BIRAK ---
+let vardiyaSiralamasi = [];
+db.ref("vardiya_siralamasi").on('value', snap => {
+    if(snap.val()) vardiyaSiralamasi = snap.val();
+    if(document.getElementById("dynamicMenuGrid")) renderContextMenu();
+});
+
+function renderContextMenu() { 
+    const grid = document.getElementById("dynamicMenuGrid"); 
+    if(!grid) return;
+    grid.innerHTML = ""; 
+    
+    // Sıralama kontrolü (Eksikleri ekle)
+    let mevcutAnahtarlar = Object.keys(shiftRules);
+    let guncelSiralama = vardiyaSiralamasi.filter(k => mevcutAnahtarlar.includes(k));
+    mevcutAnahtarlar.forEach(k => { if(!guncelSiralama.includes(k)) guncelSiralama.push(k); });
+    vardiyaSiralamasi = guncelSiralama;
+
+    // Butonları Çiz (Sürükle bırak özellikli)
+    vardiyaSiralamasi.forEach(sName => { 
+        let r = shiftRules[sName]; 
+        if(r) {
+            grid.innerHTML += `
+            <div class="menu-item-wrapper" draggable="true" ondragstart="dragStart(event, '${sName}')" ondragover="dragOver(event)" ondrop="drop(event, '${sName}')">
+                <div class="menu-item" style="background:${r.color}; cursor:grab;" onclick="setShift('${sName}','${r.color}')">${sName}</div>
+                <div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div>
+            </div>`; 
+        }
+    }); 
+    
+    // ➕ Hızlı Ekleme Butonu
+    grid.innerHTML += `
+    <div class="menu-item-wrapper">
+        <div class="menu-item" style="background:rgba(255,255,255,0.1); border:1px dashed #fff; color:#fff !important; font-size:20px; font-weight:bold; padding:8px;" onclick="hizliVardiyaEkle()">+</div>
+    </div>`;
+
+    grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; 
+}
+
+// Hızlı Vardiya Ekleme
+function hizliVardiyaEkle() {
+    document.getElementById("contextMenu").style.display = "none";
+    let ad = prompt("Yeni Vardiya/İzin Adı (Örn: Nİ, 08:00-16:00):");
+    if(!ad || !ad.trim()) return;
+    ad = ad.trim().toUpperCase();
+    
+    let renk = prompt("Renk Kodu (Örn: #10b981 veya red):", "#3b82f6");
+    if(!renk) renk = "#3b82f6";
+    
+    let t = parseFloat(prompt("Gündüz Mesai Saati:", "8")) || 0;
+    let g = parseFloat(prompt("Gece Mesaisi Saati (Yoksa 0):", "0")) || 0;
+    
+    db.ref("vardiya_kurallari/" + ad.replace(/\./g, ':')).set({ w: t, n: g, color: renk }).then(() => {
+        if(typeof showToast === 'function') showToast("Yeni buton menüye eklendi! ✨");
+    });
+}
+
+// Sürükle-Bırak (Drag & Drop) İşlemleri
+let draggedVardiya = null;
+function dragStart(e, name) { draggedVardiya = name; e.dataTransfer.effectAllowed = 'move'; e.target.style.opacity = '0.4'; }
+function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function drop(e, targetName) {
+    e.preventDefault();
+    let wrapper = e.target.closest('.menu-item-wrapper');
+    if(wrapper) wrapper.style.opacity = '1';
+    
+    if (draggedVardiya === targetName || !draggedVardiya) return;
+    
+    let fromIdx = vardiyaSiralamasi.indexOf(draggedVardiya);
+    let toIdx = vardiyaSiralamasi.indexOf(targetName);
+    
+    if (fromIdx > -1 && toIdx > -1) {
+        vardiyaSiralamasi.splice(fromIdx, 1);
+        vardiyaSiralamasi.splice(toIdx, 0, draggedVardiya);
+        db.ref("vardiya_siralamasi").set(vardiyaSiralamasi); // Yeni sırayı buluta kaydet
+    }
+}
+document.addEventListener('dragend', e => { 
+    if(e.target.classList && e.target.classList.contains('menu-item-wrapper')) {
+        e.target.style.opacity = '1'; 
+    }
+});
         function deleteShiftRule(key, e) { e.stopPropagation(); if(confirm(`Vardiyayı sil?`)) db.ref("vardiya_kurallari/" + key).remove(); }
         function applyColorToCell(colorOrGradient) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); let targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell; if(!targetCell) return; let val = targetCell.innerText.trim(); if(val === "") return alert("Önce vardiya adını yazın."); let safeKey = val.replace(/\./g, ':'); let existingRule = shiftRules[safeKey]; let defaultW = existingRule ? existingRule.w : "7.5"; let defaultN = existingRule ? existingRule.n : "0"; let wStr = prompt(`Gündüz Saati:`, defaultW); if(wStr === null) return; let nStr = prompt(`Gece Saati (Yoksa 0):`, defaultN); if(nStr === null) return; db.ref("vardiya_kurallari/" + safeKey).set({ w: parseFloat(wStr.replace(',', '.')) || 0, n: parseFloat(nStr.replace(',', '.')) || 0, color: colorOrGradient }); if (selectedCells.length > 0) { selectedCells.forEach(cell => { if(cell.innerText.trim() === val) cell.style.background = colorOrGradient; }); } else { activeCell.style.background = colorOrGradient; } updateAllStats(); document.getElementById("contextMenu").style.display = "none"; }
         function applyCustomColorFromWheel(hexColor) { applyColorToCell(hexColor); }
@@ -1225,7 +1333,7 @@ function saveHistory() {
             for(let i=0; i<cols; i++) { 
                 let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
                 let fullDateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; 
-                h += `<th data-date="${fullDateStr}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`; 
+                h += `<th data-date="${fullDateStr}" oncontextmenu="openHeaderMenu(event, this)">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`;
                 if(d.getDay() === 0) h += `<th class="week-summary-cell" style="color:var(--warning);">S | G</th>`; 
                 if(i === cols - 1) lastUsedEndDate = new Date(d); 
             } 
