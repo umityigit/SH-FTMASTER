@@ -636,7 +636,7 @@ lastAiMode = '8h';
                     simulations.push({ penalty: penalty, staffData: simStaff });
                 }
 
-                simulations.sort((a, b) => a.penalty - b.penalty); let bestSim = simulations[0];
+                let bestSim = selectBestSimulation(simulations);
                 let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 8 SAATLİK Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
@@ -869,12 +869,12 @@ let lastAiMode = null; // Alternatif üretimi hatırlamak için hafıza
         // MOTORLARIN EN SON KISMINA "RASTGELE EN İYİYİ SEÇME" ÖZELLİĞİ EKLENDİ
         function selectBestSimulation(simulations) {
             // Önce ceza puanına göre sırala
-            let bestSim = selectBestSimulation(simulations); 
+            simulations.sort((a, b) => a.penalty - b.penalty); 
             // En düşük (en iyi) ceza puanı ne?
             let minPenalty = simulations[0].penalty;
-            // Aynı kusursuzlukta kaç tablo var? (Örneğin 150 tane)
+            // Aynı kusursuzlukta kaç tablo var?
             let bestSims = simulations.filter(s => s.penalty === minPenalty);
-            // Onların içinden RASTGELE birini seç ki "Alternatif Üret"e basınca hep aynısı gelmesin!
+            // Onların içinden RASTGELE birini seç!
             return bestSims[Math.floor(Math.random() * bestSims.length)];
         }
         
