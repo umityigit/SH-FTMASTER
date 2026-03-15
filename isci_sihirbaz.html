@@ -41,9 +41,6 @@
         .magic-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); transform: scale(1.05); }
         .mega-btn { background: linear-gradient(135deg, #f43f5e, #9f1239); padding: 15px; font-size: 16px; font-weight: 900; border-radius: 15px; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(244,63,94,0.5); border: 1px solid #fda4af; color: white; cursor: pointer; transition: 0.3s; width: 100%; margin-top:10px;}
         .mega-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
-        .req-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; }
-        .req-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; text-align: center; box-shadow: inset 2px 2px 10px rgba(0,0,0,0.5);}
-        .req-day { color: #fff; font-weight: 900; margin-bottom: 10px; border-bottom: 1px dashed #475569; padding-bottom: 5px; font-size:12px; }
         .full-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2, 6, 23, 0.95); z-index:10000; display:none; flex-direction:column; padding:25px; box-sizing:border-box; backdrop-filter: blur(20px); animation: fadeIn 0.4s ease; }
         .table-container { border-radius: 15px; overflow: auto; border: 1px solid var(--accent); box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(56,189,248,0.2); background: rgba(15,23,42,0.6); max-height: 70vh; margin-top: 15px;}
         table { width:100%; border-collapse:separate; border-spacing: 3px; min-width: 1400px; padding: 10px; }
@@ -108,82 +105,123 @@
             </div>
 
             <div class="generator-area">
-                <div style="display:flex; gap:20px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); display: inline-flex;">
+                <div style="display:flex; gap:25px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 20px 35px; border-radius: 20px; border: 1px solid rgba(56,189,248,0.3); display: inline-flex; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(56,189,248,0.1);">
                     <div style="text-align:left;">
-                        <label style="font-size:11px; color:var(--cyan); font-weight:bold;">BAŞLANGIÇ TARİHİ</label><br>
-                        <input type="date" class="date-picker-light" id="simStartDate" style="width: 150px; margin-top:5px;">
+                        <label style="font-size:11px; color:var(--cyan); font-weight:900; letter-spacing:2px; text-shadow: 0 0 5px var(--cyan);">BAŞLANGIÇ TARİHİ</label><br>
+                        <input type="date" class="date-picker-light" id="simStartDate" style="width: 170px; margin-top:8px; border-radius: 10px; border: 2px solid var(--cyan); background: #f8fafc; color: #0f172a; font-family:'Poppins', sans-serif;">
                     </div>
-                    <div style="text-align:left;">
-                        <label style="font-size:11px; color:var(--cyan); font-weight:bold;">SÜRE (DÜZ HESAP)</label><br>
-                        <input type="number" class="glass-input" id="simDays" value="28" style="width: 150px; font-size: 18px; text-align: center; margin-top:5px; height: 48px; box-sizing: border-box;">
+                    <div style="text-align:left; border-left: 2px dashed rgba(255,255,255,0.15); padding-left: 25px;">
+                        <label style="font-size:11px; color:var(--warning); font-weight:900; letter-spacing:2px; text-shadow: 0 0 5px var(--warning);">SÜRE (GÜN)</label><br>
+                        <input type="number" class="glass-input" id="simDays" value="28" style="width: 100px; font-size: 22px; font-weight: 900; text-align: center; margin-top:8px; height: 46px; border-color: var(--warning); color: var(--warning); box-sizing: border-box;">
                     </div>
                 </div>
 
-                <h4 style="color: #fff; font-size: 18px; text-align: left; margin-bottom: 15px; border-bottom: 2px dashed rgba(255,255,255,0.2); padding-bottom:10px; margin-top: 30px;">📊 GÜNLÜK İHTİYAÇ TABLOSU (Geniş Çalışma Alanı)</h4>
-                <div class="req-grid" style="gap: 15px;">
-                    <div class="req-box" style="padding: 15px; background: rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                        <div class="req-day" style="font-size: 16px; color: var(--text); border-bottom: 2px solid #475569; margin-bottom: 15px;">PAZARTESİ</div>
-                        <div style="color:var(--cyan); font-size:12px; font-weight:bold; margin-bottom:5px;">☀️ Sabah/Gün</div>
-                        <input type="number" id="aiReq_G_1" value="2" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(6,182,212,0.1); border-color: var(--cyan);">
-                        <div style="color:var(--warning); font-size:12px; font-weight:bold; margin-bottom:5px;">🌤️ Öğle</div>
-                        <input type="number" id="aiReq_O_1" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(245,158,11,0.1); border-color: var(--warning);">
-                        <div style="color:var(--purple); font-size:12px; font-weight:bold; margin-bottom:5px;">🌙 Akşam/Gece</div>
-                        <input type="number" id="aiReq_N_1" value="1" class="glass-input" style="width: 100%; padding:10px; font-size:18px; text-align:center; background: rgba(168,85,247,0.1); border-color: var(--purple);">
+                <h4 style="color: #fff; font-size: 16px; text-align: center; margin-bottom: 20px; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom:10px; margin-top: 10px; letter-spacing: 3px; text-shadow: 0 0 15px var(--cyan);">📊 HAFTALIK KADRO İHTİYAÇ MATRİSİ</h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 40px;">
+                    <script>
+                        const days = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"];
+                        days.forEach((day, index) => {
+                            let i = index + 1;
+                            document.write(`
+                            <div style="background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(56,189,248,0.3)';">
+                                <div style="background: rgba(56, 189, 248, 0.15); color: var(--cyan); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(56, 189, 248, 0.2); text-shadow: 0 0 8px var(--cyan);">${day}</div>
+                                <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
+                                        <input type="number" id="aiReq_G_${i}" value="2" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
+                                        <input type="number" id="aiReq_O_${i}" value="1" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
+                                        <input type="number" id="aiReq_N_${i}" value="1" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                </div>
+                            </div>
+                            `);
+                        });
+                    </script>
+
+                    <script>
+                        const weekend = ["CUMARTESİ", "PAZAR"];
+                        weekend.forEach((day, index) => {
+                            let i = index + 6;
+                            document.write(`
+                            <div style="background: linear-gradient(180deg, rgba(244,63,94,0.1), rgba(2,6,23,0.95)); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--danger)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(244, 63, 94, 0.4)';">
+                                <div style="background: rgba(244, 63, 94, 0.2); color: var(--danger); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(244, 63, 94, 0.3); text-shadow: 0 0 8px var(--danger);">${day}</div>
+                                <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
+                                        <input type="number" id="aiReq_G_${i}" value="1" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
+                                        <input type="number" id="aiReq_O_${i}" value="1" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
+                                        <input type="number" id="aiReq_N_${i}" value="1" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                </div>
+                            </div>
+                            `);
+                        });
+                    </script>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: left;">
+                    
+                    <div style="border: 1px solid var(--cyan); background: linear-gradient(135deg, rgba(6,182,212,0.05), rgba(0,0,0,0.8)); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 20px;">
+                            <span style="font-size:24px;">🔵</span>
+                            <span class="section-label" style="color:var(--cyan); border-bottom:1px dashed var(--cyan); margin:0; padding-bottom:5px; flex:1;">8 SAATLİK (3'LÜ) DÖNÜŞÜMLER</span>
+                        </div>
+                        
+                        <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                            <select id="ai8_Sabah" class="glass-input" style="flex:1; border-color:var(--cyan); color:var(--cyan); font-weight:bold;"></select>
+                            <select id="ai8_Ogle" class="glass-input" style="flex:1; border-color:var(--warning); color:var(--warning); font-weight:bold;"></select>
+                            <select id="ai8_Aksam" class="glass-input" style="flex:1; border-color:var(--purple); color:var(--purple); font-weight:bold;"></select>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                            <select id="ai8_Off" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
+                            <button class="btn btn-cyan" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
+                        </div>
+                        
+                        <div class="rotation-grid" style="grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
+                            <button class="magic-btn" style="border-color:var(--cyan);" onclick="fireMagicRotation(3, 8)">🔄 1+1+1+1 (Hızlı 8/24)</button>
+                            <button class="magic-btn" style="border-color:var(--cyan);" onclick="fireMagicRotation(2, 8)">🔄 3+2+2+1 (İleri Kaydırma)</button>
+                            <button class="magic-btn" style="border-color:var(--cyan);" onclick="fireMagicRotation(1, 8)">🔄 2+2+2+2 (Kıta Sistemi)</button>
+                        </div>
+                        <button class="mega-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" onclick="startAiDistribution8h()">🚀 8S Aİ MOTORUNU BAŞLAT</button>
                     </div>
-                    <div class="req-box" style="padding: 15px; background: rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                        <div class="req-day" style="font-size: 16px; color: var(--text); border-bottom: 2px solid #475569; margin-bottom: 15px;">SALI</div>
-                        <div style="color:var(--cyan); font-size:12px; font-weight:bold; margin-bottom:5px;">☀️ Sabah/Gün</div>
-                        <input type="number" id="aiReq_G_2" value="2" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(6,182,212,0.1); border-color: var(--cyan);">
-                        <div style="color:var(--warning); font-size:12px; font-weight:bold; margin-bottom:5px;">🌤️ Öğle</div>
-                        <input type="number" id="aiReq_O_2" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(245,158,11,0.1); border-color: var(--warning);">
-                        <div style="color:var(--purple); font-size:12px; font-weight:bold; margin-bottom:5px;">🌙 Akşam/Gece</div>
-                        <input type="number" id="aiReq_N_2" value="1" class="glass-input" style="width: 100%; padding:10px; font-size:18px; text-align:center; background: rgba(168,85,247,0.1); border-color: var(--purple);">
+
+                    <div style="border: 1px solid var(--danger); background: linear-gradient(135deg, rgba(244,63,94,0.05), rgba(0,0,0,0.8)); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 20px;">
+                            <span style="font-size:24px;">🔴</span>
+                            <span class="section-label" style="color:var(--danger); border-bottom:1px dashed var(--danger); margin:0; padding-bottom:5px; flex:1;">12 SAATLİK (2'Lİ) DÖNÜŞÜMLER</span>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 20px;">
+                            <div style="display:flex; gap:10px;">
+                                <select id="aiDayShiftSelect" class="glass-input" style="flex:1; border-color:var(--cyan); color:var(--cyan); font-weight:bold;"></select>
+                                <select id="aiNightShiftSelect" class="glass-input" style="flex:1; border-color:var(--purple); color:var(--purple); font-weight:bold;"></select>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <select id="aiOffShiftSelect" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
+                                <button class="btn btn-danger" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
+                            </div>
+                        </div>
+                        
+                        <div style="height: 147px; display:flex; align-items:center; justify-content:center; border: 1px dashed rgba(244,63,94,0.2); border-radius:15px; margin-bottom:20px;">
+                            <span style="color:rgba(244,63,94,0.5); font-size:12px; font-weight:bold; letter-spacing:1px;">A.I. MASTER BEKLEMEDE...</span>
+                        </div>
+                        
+                        <button class="mega-btn" onclick="startAiDistribution12h()">🚀 12S Aİ MOTORUNU BAŞLAT</button>
                     </div>
-                    <div class="req-box" style="padding: 15px; background: rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                        <div class="req-day" style="font-size: 16px; color: var(--text); border-bottom: 2px solid #475569; margin-bottom: 15px;">ÇARŞAMBA</div>
-                        <div style="color:var(--cyan); font-size:12px; font-weight:bold; margin-bottom:5px;">☀️ Sabah/Gün</div>
-                        <input type="number" id="aiReq_G_3" value="2" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(6,182,212,0.1); border-color: var(--cyan);">
-                        <div style="color:var(--warning); font-size:12px; font-weight:bold; margin-bottom:5px;">🌤️ Öğle</div>
-                        <input type="number" id="aiReq_O_3" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(245,158,11,0.1); border-color: var(--warning);">
-                        <div style="color:var(--purple); font-size:12px; font-weight:bold; margin-bottom:5px;">🌙 Akşam/Gece</div>
-                        <input type="number" id="aiReq_N_3" value="1" class="glass-input" style="width: 100%; padding:10px; font-size:18px; text-align:center; background: rgba(168,85,247,0.1); border-color: var(--purple);">
-                    </div>
-                    <div class="req-box" style="padding: 15px; background: rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                        <div class="req-day" style="font-size: 16px; color: var(--text); border-bottom: 2px solid #475569; margin-bottom: 15px;">PERŞEMBE</div>
-                        <div style="color:var(--cyan); font-size:12px; font-weight:bold; margin-bottom:5px;">☀️ Sabah/Gün</div>
-                        <input type="number" id="aiReq_G_4" value="2" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(6,182,212,0.1); border-color: var(--cyan);">
-                        <div style="color:var(--warning); font-size:12px; font-weight:bold; margin-bottom:5px;">🌤️ Öğle</div>
-                        <input type="number" id="aiReq_O_4" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(245,158,11,0.1); border-color: var(--warning);">
-                        <div style="color:var(--purple); font-size:12px; font-weight:bold; margin-bottom:5px;">🌙 Akşam/Gece</div>
-                        <input type="number" id="aiReq_N_4" value="1" class="glass-input" style="width: 100%; padding:10px; font-size:18px; text-align:center; background: rgba(168,85,247,0.1); border-color: var(--purple);">
-                    </div>
-                    <div class="req-box" style="padding: 15px; background: rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                        <div class="req-day" style="font-size: 16px; color: var(--text); border-bottom: 2px solid #475569; margin-bottom: 15px;">CUMA</div>
-                        <div style="color:var(--cyan); font-size:12px; font-weight:bold; margin-bottom:5px;">☀️ Sabah/Gün</div>
-                        <input type="number" id="aiReq_G_5" value="2" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(6,182,212,0.1); border-color: var(--cyan);">
-                        <div style="color:var(--warning); font-size:12px; font-weight:bold; margin-bottom:5px;">🌤️ Öğle</div>
-                        <input type="number" id="aiReq_O_5" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(245,158,11,0.1); border-color: var(--warning);">
-                        <div style="color:var(--purple); font-size:12px; font-weight:bold; margin-bottom:5px;">🌙 Akşam/Gece</div>
-                        <input type="number" id="aiReq_N_5" value="1" class="glass-input" style="width: 100%; padding:10px; font-size:18px; text-align:center; background: rgba(168,85,247,0.1); border-color: var(--purple);">
-                    </div>
-                    <div class="req-box" style="padding: 15px; background: rgba(244,63,94,0.05); border: 2px solid var(--danger); border-radius: 15px;">
-                        <div class="req-day" style="font-size: 16px; color: var(--danger); border-bottom: 2px solid rgba(244,63,94,0.5); margin-bottom: 15px;">CUMARTESİ</div>
-                        <div style="color:var(--cyan); font-size:12px; font-weight:bold; margin-bottom:5px;">☀️ Sabah/Gün</div>
-                        <input type="number" id="aiReq_G_6" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(6,182,212,0.1); border-color: var(--cyan);">
-                        <div style="color:var(--warning); font-size:12px; font-weight:bold; margin-bottom:5px;">🌤️ Öğle</div>
-                        <input type="number" id="aiReq_O_6" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(245,158,11,0.1); border-color: var(--warning);">
-                        <div style="color:var(--purple); font-size:12px; font-weight:bold; margin-bottom:5px;">🌙 Akşam/Gece</div>
-                        <input type="number" id="aiReq_N_6" value="1" class="glass-input" style="width: 100%; padding:10px; font-size:18px; text-align:center; background: rgba(168,85,247,0.1); border-color: var(--purple);">
-                    </div>
-                    <div class="req-box" style="padding: 15px; background: rgba(244,63,94,0.05); border: 2px solid var(--danger); border-radius: 15px;">
-                        <div class="req-day" style="font-size: 16px; color: var(--danger); border-bottom: 2px solid rgba(244,63,94,0.5); margin-bottom: 15px;">PAZAR</div>
-                        <div style="color:var(--cyan); font-size:12px; font-weight:bold; margin-bottom:5px;">☀️ Sabah/Gün</div>
-                        <input type="number" id="aiReq_G_7" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(6,182,212,0.1); border-color: var(--cyan);">
-                        <div style="color:var(--warning); font-size:12px; font-weight:bold; margin-bottom:5px;">🌤️ Öğle</div>
-                        <input type="number" id="aiReq_O_7" value="1" class="glass-input" style="width: 100%; margin-bottom: 15px; padding:10px; font-size:18px; text-align:center; background: rgba(245,158,11,0.1); border-color: var(--warning);">
-                        <div style="color:var(--purple); font-size:12px; font-weight:bold; margin-bottom:5px;">🌙 Akşam/Gece</div>
-                        <input type="number" id="aiReq_N_7" value="1" class="glass-input" style="width: 100%; padding:10px; font-size:18px; text-align:center; background: rgba(168,85,247,0.1); border-color: var(--purple);">
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -383,7 +421,20 @@
             });
         }
 
-        
+        let lastAiMode = null; 
+
+        function regenerateAiTable() {
+            if (lastAiMode === '12h') startAiDistribution12h();
+            else if (lastAiMode === '8h') startAiDistribution8h();
+        }
+
+        function selectBestSimulation(simulations) {
+            simulations.sort((a, b) => a.penalty - b.penalty); 
+            let minPenalty = simulations[0].penalty;
+            let bestSims = simulations.filter(s => s.penalty === minPenalty);
+            return bestSims[Math.floor(Math.random() * bestSims.length)];
+        }
+
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - SABİT VARDİYA UYUMLU
         // ==========================================
@@ -391,7 +442,8 @@
             let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
             if(!dayCode || !nightCode || !offCode) return alert("Lütfen AI Motoru için Gündüz, Gece ve İzin kodlarını seçiniz!");
             if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
-lastAiMode = '12h';
+            lastAiMode = '12h';
+            
             let reqG = [], reqN = [];
             for(let i=1; i<=7; i++) { reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0; reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0; }
 
@@ -436,7 +488,6 @@ lastAiMode = '12h';
                                 let pDef = definedShifts.find(x => x.hours === s.pref);
                                 let sH = pDef ? (pDef.wH + pDef.nH) : 11; if(sH === 0) sH = 11;
 
-                                // Eğer haftalık 45 saati aştıysa veya 6 gündür aralıksız çalışıyorsa İZİN VER!
                                 if (s.weeklyHours + sH > 45 || s.dayConsecutive >= 6) {
                                     s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
                                 } else {
@@ -450,7 +501,6 @@ lastAiMode = '12h';
                         // 2. Aİ KURALLARI (Sadece AI Atanmış Serbest Çalışanlar İçin)
                         simStaff.forEach(s => { 
                             if (s.pref === "AI" && !s.assignedToday) {
-                                // 12 saatlikte Gece sonrası veya haftada 4 gün çalıştıysa izin verilir.
                                 if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
                                     s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
                                 } 
@@ -494,6 +544,7 @@ lastAiMode = '12h';
                     });
                     penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
                 }
+                
                 let bestSim = selectBestSimulation(simulations);
                 let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
@@ -509,7 +560,8 @@ lastAiMode = '12h';
             let oCode = document.getElementById('ai8_Ogle').value;
             let aCode = document.getElementById('ai8_Aksam').value;
             let offCode = document.getElementById('ai8_Off').value;
-lastAiMode = '8h';
+            lastAiMode = '8h';
+            
             if(!sCode || !oCode || !aCode || !offCode) return alert("Lütfen 8 Saatlik AI için tüm vardiya/izin kodlarını seçin!");
             if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
 
@@ -553,18 +605,16 @@ lastAiMode = '8h';
                         let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI (Kendi 45 Saat Kuralı Var)
+                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI
                         simStaff.forEach(s => {
                             if (s.pref !== "AI") {
                                 let pDef = definedShifts.find(x => x.hours === s.pref);
                                 let sH = pDef ? (pDef.wH + pDef.nH) : 7.5; if(sH === 0) sH = 7.5;
 
-                                // Eğer haftalık 45 saati aştıysa veya 6 gündür aralıksız çalışıyorsa İZİN VER!
                                 if (s.weeklyHours + sH > 45 || s.dayConsecutive >= 6) {
                                     s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
                                 } else {
                                     s.assignedToday = s.pref; s.weeklyHours += sH; s.weeklyWorkDays++; s.dayConsecutive++;
-                                    // Atanan vardiyanın adama yazılması ve günün ihtiyacından düşülmesi
                                     if (s.pref === aCode) { cReqA--; s.lastShiftType = 'A'; s.aCount++; }
                                     else if (s.pref === oCode) { cReqO--; s.lastShiftType = 'O'; }
                                     else { cReqS--; s.lastShiftType = 'S'; }
@@ -572,10 +622,9 @@ lastAiMode = '8h';
                             }
                         });
 
-                        // 2. Aİ KURALLARI (Sadece AI Atanmış Serbest Çalışanlar İçin)
+                        // 2. Aİ KURALLARI 
                         simStaff.forEach(s => {
                             if (s.pref === "AI" && !s.assignedToday) {
-                                // 8 saatlikte Akşam sonrası veya 5 gün üst üste çalışanlara İZİN ver
                                 if (s.lastShiftType === 'A' || s.lastShiftType === 'N' || s.weeklyWorkDays >= 5) {
                                     s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
                                 }
@@ -642,6 +691,7 @@ lastAiMode = '8h';
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
             }, 500);
         }
+
         // ==========================================
         // 🌪️ HAZIR ROTASYON MOTORLARI
         // ==========================================
@@ -859,25 +909,7 @@ lastAiMode = '8h';
                 alert("Bağlantı veya Güvenlik Hatası: " + err.message);
             });
         }
-let lastAiMode = null; // Alternatif üretimi hatırlamak için hafıza
 
-        function regenerateAiTable() {
-            if (lastAiMode === '12h') startAiDistribution12h();
-            else if (lastAiMode === '8h') startAiDistribution8h();
-        }
-
-        // MOTORLARIN EN SON KISMINA "RASTGELE EN İYİYİ SEÇME" ÖZELLİĞİ EKLENDİ
-        function selectBestSimulation(simulations) {
-            // Önce ceza puanına göre sırala
-            simulations.sort((a, b) => a.penalty - b.penalty); 
-            // En düşük (en iyi) ceza puanı ne?
-            let minPenalty = simulations[0].penalty;
-            // Aynı kusursuzlukta kaç tablo var?
-            let bestSims = simulations.filter(s => s.penalty === minPenalty);
-            // Onların içinden RASTGELE birini seç!
-            return bestSims[Math.floor(Math.random() * bestSims.length)];
-        }
-        
         function showToast(m) { const x = document.getElementById('toast'); x.innerText=m; x.className="show"; setTimeout(()=>x.className="",3000); }
         
         // ============================================================================
