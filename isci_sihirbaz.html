@@ -177,12 +177,12 @@
                 <h2 id="aiStatusTitle" style="margin:0; color:white; font-size: 20px; text-shadow: 0 0 10px var(--accent);">🏆 Aİ ÇIKTISI</h2>
                 <input type="text" id="aiTableName" class="glass-input" value="Siber Çizelge" style="width: 200px; font-size: 13px; font-weight: bold; border-color: var(--accent);">
             </div>
-            <div style="display:flex; gap:10px;">
+           <div style="display:flex; gap:10px;">
+                <button class="btn btn-cyan" onclick="regenerateAiTable()" style="box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);">🔄 ALTERNATİF ÜRET</button>
                 <button class="btn btn-orange" onclick="exportWizardToExcel()">📥 EXCEL'E AKTAR</button>
                 <button class="btn btn-success" style="box-shadow: 0 0 15px rgba(16,185,129,0.5); padding: 15px 25px; font-size: 14px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET</button>
                 <button class="btn btn-danger" onclick="document.getElementById('resultModal').style.display='none'">❌ KAPAT</button>
             </div>
-        </div>
 
         <div id="generatedTableContainer" class="table-container"></div>
         <div style="margin-top: 15px; text-align: center; color: var(--cyan); font-size: 12px; font-weight: bold;">
