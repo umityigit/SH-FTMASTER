@@ -1583,11 +1583,7 @@ function autoFillDates() {
             m.style.top = y + "px"; 
         } 
             
-            // Menüyü görünür yap
-            m.style.visibility = "visible";
-        }
-        
-        function openStaffQuickMenu(e, btn) { 
+            function openStaffQuickMenu(e, btn) { 
             e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; 
             document.querySelectorAll('.select-icon.open').forEach(el => { if(el !== btn) el.classList.remove('open'); });
             btn.classList.add('open');
