@@ -1543,7 +1543,49 @@ function autoFillDates() {
             });
         }
         function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
-        function openShiftMenu(e, c) { e.preventDefault(); if (!c.classList.contains('selected-cell')) { document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); c.classList.add('selected-cell'); } activeCell = c; const m = document.getElementById("contextMenu"); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; }
+        // --- AKILLI (SENSÖRLÜ) SAĞ TIK MENÜSÜ ---
+        function openShiftMenu(e, c) { 
+            e.preventDefault(); 
+            
+            // Tıklanan hücreyi seçili hale getir
+            if (!c.classList.contains('selected-cell')) { 
+                document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); 
+                c.classList.add('selected-cell'); 
+            } 
+            activeCell = c; 
+            
+            const m = document.getElementById("contextMenu"); 
+            
+            // Önce menüyü şeffaf olarak aç ki boyutunu (genişliğini) ölçebilelim
+            m.style.visibility = "hidden";
+            m.style.display = "block"; 
+            
+            let menuGenislik = m.offsetWidth;
+            let menuYukseklik = m.offsetHeight;
+            let ekranGenislik = window.innerWidth;
+            let ekranYukseklik = window.innerHeight;
+            
+            // Farenin ekrandaki konumu
+            let x = e.clientX; 
+            let y = e.clientY; 
+            
+            // 🛡️ ÇARPIŞMA SENSÖRÜ: Sağ kenara çarpıyorsa sola aç!
+            if (x + menuGenislik > ekranGenislik) {
+                x = x - menuGenislik;
+            }
+            
+            // 🛡️ ÇARPIŞMA SENSÖRÜ: Alt kenara çarpıyorsa yukarı aç!
+            if (y + menuYukseklik > ekranYukseklik) {
+                y = y - menuYukseklik;
+            }
+            
+            // Hesaplanan yeni ve güvenli koordinatları uygula (Scroll payını da ekle)
+            m.style.left = (x + window.scrollX) + "px"; 
+            m.style.top = (y + window.scrollY) + "px"; 
+            
+            // Menüyü görünür yap
+            m.style.visibility = "visible";
+        }
         
         function openStaffQuickMenu(e, btn) { 
             e.preventDefault(); e.stopPropagation(); activeCell = btn.previousElementSibling; 
