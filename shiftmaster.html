@@ -1234,87 +1234,105 @@ function autoFillDates() {
 }
 
 // --- 2. HÜCRE İÇİ (DİLLERE DESTAN) SAĞ TIK MENÜSÜ VE SÜRÜKLE BIRAK ---
-let vardiyaSiralamasi = [];
-db.ref("vardiya_siralamasi").on('value', snap => {
-    if(snap.val()) vardiyaSiralamasi = snap.val();
-    if(document.getElementById("dynamicMenuGrid")) renderContextMenu();
-});
+        let vardiyaSiralamasi = [];
+        
+        db.ref("vardiya_siralamasi").on('value', snap => {
+            if(snap.val()) {
+                // Firebase bazen dizileri objeye çevirir, bunu garantili Dizi (Array) yapalım:
+                vardiyaSiralamasi = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val());
+            }
+            if(document.getElementById("dynamicMenuGrid")) renderContextMenu();
+        });
 
-function renderContextMenu() { 
-    const grid = document.getElementById("dynamicMenuGrid"); 
-    if(!grid) return;
-    grid.innerHTML = ""; 
-    
-    // Sıralama kontrolü (Eksikleri ekle)
-    let mevcutAnahtarlar = Object.keys(shiftRules);
-    let guncelSiralama = vardiyaSiralamasi.filter(k => mevcutAnahtarlar.includes(k));
-    mevcutAnahtarlar.forEach(k => { if(!guncelSiralama.includes(k)) guncelSiralama.push(k); });
-    vardiyaSiralamasi = guncelSiralama;
+        function renderContextMenu() { 
+            const grid = document.getElementById("dynamicMenuGrid"); 
+            if(!grid) return;
+            grid.innerHTML = ""; 
+            
+            // Sıralama kontrolü (Eksikleri ekle ve temizle)
+            let mevcutAnahtarlar = Object.keys(shiftRules);
+            let guncelSiralama = vardiyaSiralamasi.filter(k => mevcutAnahtarlar.includes(k));
+            mevcutAnahtarlar.forEach(k => { if(!guncelSiralama.includes(k)) guncelSiralama.push(k); });
+            vardiyaSiralamasi = guncelSiralama;
 
-    // Butonları Çiz (Sürükle bırak özellikli)
-    vardiyaSiralamasi.forEach(sName => { 
-        let r = shiftRules[sName]; 
-        if(r) {
+            // Butonları Çiz (Sürükle bırak özellikli)
+            vardiyaSiralamasi.forEach(sName => { 
+                let r = shiftRules[sName]; 
+                if(r) {
+                    // ondragenter eklendi (Tarayıcı uyumluluğu için)
+                    grid.innerHTML += `
+                    <div class="menu-item-wrapper" draggable="true" ondragstart="dragStart(event, '${sName}')" ondragover="dragOver(event)" ondragenter="event.preventDefault()" ondrop="drop(event, '${sName}')">
+                        <div class="menu-item" style="background:${r.color}; cursor:grab;" onclick="setShift('${sName}','${r.color}')">${sName}</div>
+                        <div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div>
+                    </div>`; 
+                }
+            }); 
+            
+            // ➕ Hızlı Ekleme Butonu
             grid.innerHTML += `
-            <div class="menu-item-wrapper" draggable="true" ondragstart="dragStart(event, '${sName}')" ondragover="dragOver(event)" ondrop="drop(event, '${sName}')">
-                <div class="menu-item" style="background:${r.color}; cursor:grab;" onclick="setShift('${sName}','${r.color}')">${sName}</div>
-                <div class="delete-custom-btn" onclick="deleteShiftRule('${sName}', event)">x</div>
-            </div>`; 
+            <div class="menu-item-wrapper">
+                <div class="menu-item" style="background:rgba(255,255,255,0.1); border:1px dashed #fff; color:#fff !important; font-size:20px; font-weight:bold; padding:8px;" onclick="hizliVardiyaEkle()">+</div>
+            </div>`;
+
+            grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; 
         }
-    }); 
-    
-    // ➕ Hızlı Ekleme Butonu
-    grid.innerHTML += `
-    <div class="menu-item-wrapper">
-        <div class="menu-item" style="background:rgba(255,255,255,0.1); border:1px dashed #fff; color:#fff !important; font-size:20px; font-weight:bold; padding:8px;" onclick="hizliVardiyaEkle()">+</div>
-    </div>`;
 
-    grid.innerHTML += `<div class="menu-item" style="background:linear-gradient(145deg, #334155, #0f172a);" onclick="setShift('')">❌ SİL</div><div class="menu-item" style="background:linear-gradient(135deg, #ec4899, #be185d); color:#fff; grid-column:span 2;" onclick="splitRowFromCell()">✂️ BURADAN KES VE YENİ SATIRA AL</div>`; 
-}
+        // Hızlı Vardiya Ekleme
+        function hizliVardiyaEkle() {
+            document.getElementById("contextMenu").style.display = "none";
+            let ad = prompt("Yeni Vardiya/İzin Adı (Örn: Nİ, 08:00-16:00):");
+            if(!ad || !ad.trim()) return;
+            ad = ad.trim().toUpperCase();
+            
+            let renk = prompt("Renk Kodu (Örn: #10b981 veya red):", "#3b82f6");
+            if(!renk) renk = "#3b82f6";
+            
+            let t = parseFloat(prompt("Gündüz Mesai Saati:", "8")) || 0;
+            let g = parseFloat(prompt("Gece Mesaisi Saati (Yoksa 0):", "0")) || 0;
+            
+            db.ref("vardiya_kurallari/" + ad.replace(/\./g, ':')).set({ w: t, n: g, color: renk }).then(() => {
+                if(typeof showToast === 'function') showToast("Yeni buton menüye eklendi! ✨");
+            });
+        }
 
-// Hızlı Vardiya Ekleme
-function hizliVardiyaEkle() {
-    document.getElementById("contextMenu").style.display = "none";
-    let ad = prompt("Yeni Vardiya/İzin Adı (Örn: Nİ, 08:00-16:00):");
-    if(!ad || !ad.trim()) return;
-    ad = ad.trim().toUpperCase();
-    
-    let renk = prompt("Renk Kodu (Örn: #10b981 veya red):", "#3b82f6");
-    if(!renk) renk = "#3b82f6";
-    
-    let t = parseFloat(prompt("Gündüz Mesai Saati:", "8")) || 0;
-    let g = parseFloat(prompt("Gece Mesaisi Saati (Yoksa 0):", "0")) || 0;
-    
-    db.ref("vardiya_kurallari/" + ad.replace(/\./g, ':')).set({ w: t, n: g, color: renk }).then(() => {
-        if(typeof showToast === 'function') showToast("Yeni buton menüye eklendi! ✨");
-    });
-}
-
-// Sürükle-Bırak (Drag & Drop) İşlemleri
-let draggedVardiya = null;
-function dragStart(e, name) { draggedVardiya = name; e.dataTransfer.effectAllowed = 'move'; e.target.style.opacity = '0.4'; }
-function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
-function drop(e, targetName) {
-    e.preventDefault();
-    let wrapper = e.target.closest('.menu-item-wrapper');
-    if(wrapper) wrapper.style.opacity = '1';
-    
-    if (draggedVardiya === targetName || !draggedVardiya) return;
-    
-    let fromIdx = vardiyaSiralamasi.indexOf(draggedVardiya);
-    let toIdx = vardiyaSiralamasi.indexOf(targetName);
-    
-    if (fromIdx > -1 && toIdx > -1) {
-        vardiyaSiralamasi.splice(fromIdx, 1);
-        vardiyaSiralamasi.splice(toIdx, 0, draggedVardiya);
-        db.ref("vardiya_siralamasi").set(vardiyaSiralamasi); // Yeni sırayı buluta kaydet
-    }
-}
-document.addEventListener('dragend', e => { 
-    if(e.target.classList && e.target.classList.contains('menu-item-wrapper')) {
-        e.target.style.opacity = '1'; 
-    }
-});
+        // Sürükle-Bırak (Drag & Drop) İşlemleri
+        let draggedVardiya = null;
+        function dragStart(e, name) { 
+            draggedVardiya = name; 
+            e.dataTransfer.effectAllowed = 'move'; 
+            e.target.style.opacity = '0.4'; 
+        }
+        function dragOver(e) { 
+            e.preventDefault(); 
+            e.dataTransfer.dropEffect = 'move'; 
+        }
+        function drop(e, targetName) {
+            e.preventDefault();
+            let wrapper = e.target.closest('.menu-item-wrapper');
+            if(wrapper) wrapper.style.opacity = '1';
+            
+            if (draggedVardiya === targetName || !draggedVardiya) return;
+            
+            let fromIdx = vardiyaSiralamasi.indexOf(draggedVardiya);
+            let toIdx = vardiyaSiralamasi.indexOf(targetName);
+            
+            if (fromIdx > -1 && toIdx > -1) {
+                // Dizideki yerlerini değiştir
+                vardiyaSiralamasi.splice(fromIdx, 1);
+                vardiyaSiralamasi.splice(toIdx, 0, draggedVardiya);
+                
+                // EKRANI ANINDA YENİLE (İşte eksik olan sihir bu!)
+                renderContextMenu();
+                
+                // Değişikliği Firebase'e kaydet
+                db.ref("vardiya_siralamasi").set(vardiyaSiralamasi); 
+            }
+        }
+        document.addEventListener('dragend', e => { 
+            if(e.target.classList && e.target.classList.contains('menu-item-wrapper')) {
+                e.target.style.opacity = '1'; 
+            }
+        });
         function deleteShiftRule(key, e) { e.stopPropagation(); if(confirm(`Vardiyayı sil?`)) db.ref("vardiya_kurallari/" + key).remove(); }
         function applyColorToCell(colorOrGradient) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); let targetCell = selectedCells.length > 0 ? selectedCells[0] : activeCell; if(!targetCell) return; let val = targetCell.innerText.trim(); if(val === "") return alert("Önce vardiya adını yazın."); let safeKey = val.replace(/\./g, ':'); let existingRule = shiftRules[safeKey]; let defaultW = existingRule ? existingRule.w : "7.5"; let defaultN = existingRule ? existingRule.n : "0"; let wStr = prompt(`Gündüz Saati:`, defaultW); if(wStr === null) return; let nStr = prompt(`Gece Saati (Yoksa 0):`, defaultN); if(nStr === null) return; db.ref("vardiya_kurallari/" + safeKey).set({ w: parseFloat(wStr.replace(',', '.')) || 0, n: parseFloat(nStr.replace(',', '.')) || 0, color: colorOrGradient }); if (selectedCells.length > 0) { selectedCells.forEach(cell => { if(cell.innerText.trim() === val) cell.style.background = colorOrGradient; }); } else { activeCell.style.background = colorOrGradient; } updateAllStats(); document.getElementById("contextMenu").style.display = "none"; }
         function applyCustomColorFromWheel(hexColor) { applyColorToCell(hexColor); }
