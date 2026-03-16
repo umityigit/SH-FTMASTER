@@ -19,13 +19,16 @@
         .glass-input { background:rgba(0, 0, 0, 0.6); border:1px solid rgba(255,255,255,0.15); color:white; padding:10px 12px; border-radius:10px; outline:none; font-family: 'Poppins', sans-serif; font-size: 12px; transition: 0.3s; box-shadow: inset 3px 3px 8px rgba(0,0,0,0.8); }
         .glass-input:focus { border-color: var(--cyan); box-shadow: inset 0 0 10px rgba(6,182,212,0.4); }
         input[type="date"].date-picker-light { background-color: #f8fafc; color: #0f172a; border: 2px solid var(--cyan); font-weight: 900; font-size: 15px; padding: 12px 15px; cursor: pointer; }
+        .req-box input[type="number"] { -webkit-appearance: auto !important; -moz-appearance: auto !important; appearance: auto !important; cursor: pointer; font-size: 14px; font-weight: 900; }
         .btn { padding:12px 20px; border:none; border-radius:12px; font-weight:900; cursor:pointer; color:white; font-size:12px; display:inline-flex; align-items:center; gap:8px; transition:0.3s; text-transform: uppercase; box-shadow: inset 2px 2px 5px rgba(255,255,255,0.2), 0 5px 15px rgba(0,0,0,0.5); }
         .btn:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.2); }
         .btn-cyan { background: linear-gradient(135deg, #0ea5e9, #0369a1); } .btn-danger { background: linear-gradient(135deg, #f43f5e, #9f1239); } .btn-success { background: linear-gradient(135deg, #10b981, #047857); } .btn-orange { background: linear-gradient(135deg, #f59e0b, #b45309); }
         .staff-pool { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 10px; }
+        .staff-pool::-webkit-scrollbar { width: 5px; } .staff-pool::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 5px; }
         .staff-item { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s; border-left: 4px solid #475569; display: flex; justify-content: space-between; align-items: center; }
         .staff-item.selected { border-left-color: var(--success); background: linear-gradient(90deg, rgba(16,185,129,0.2), transparent); opacity: 0.5; pointer-events: none; }
         .selected-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-height: 250px; overflow-y: auto; padding-right: 10px;}
+        .selected-list::-webkit-scrollbar { width: 5px; } .selected-list::-webkit-scrollbar-thumb { background: var(--success); border-radius: 5px; }
         .selected-chip { background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(0,0,0,0.9)); border: 1px solid var(--success); padding: 10px 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
         .chip-select { background: rgba(0,0,0,0.8); color: var(--warning); border: 1px solid rgba(250,204,21,0.5); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; outline: none; cursor: pointer; width: 140px;}
         .shift-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
@@ -33,8 +36,8 @@
         .shift-card.inactive { opacity: 0.5; filter: grayscale(80%); }
         .generator-area { background: linear-gradient(180deg, rgba(15,23,42,0.8), rgba(2,6,23,0.9)); border: 1px solid var(--accent); border-radius: 30px; padding: 30px; text-align: center; box-shadow: 0 0 50px rgba(56,189,248,0.2), inset 0 0 30px rgba(0,0,0,0.8); }
         .section-label { font-size: 13px; font-weight: 900; letter-spacing: 2px; padding-bottom: 5px; margin-bottom: 15px; display: block; text-align: left; margin-top: 20px;}
-        .rotation-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px;}
-        .magic-btn { background: rgba(0,0,0,0.5); padding: 15px 10px; font-size: 12px; font-weight: 900; border-radius: 12px; border: 1px solid var(--cyan); color: white; cursor: pointer; transition: 0.3s; text-align: left; }
+        .rotation-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .magic-btn { background: rgba(0,0,0,0.5); padding: 15px 10px; font-size: 12px; font-weight: 900; border-radius: 12px; border: 1px solid var(--cyan); color: white; cursor: pointer; transition: 0.3s; }
         .magic-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); transform: scale(1.05); }
         .mega-btn { background: linear-gradient(135deg, #f43f5e, #9f1239); padding: 15px; font-size: 16px; font-weight: 900; border-radius: 15px; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(244,63,94,0.5); border: 1px solid #fda4af; color: white; cursor: pointer; transition: 0.3s; width: 100%; margin-top:10px;}
         .mega-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
@@ -46,8 +49,12 @@
         .shift-cell { cursor:cell; height:45px; background:rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); color:white; transition: 0.1s; letter-spacing: 0.5px; font-size: 13px;}
         .shift-cell:hover { border: 1px solid #fff; background: rgba(255,255,255,0.2); z-index: 50; transform: scale(1.08); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
         .selected-cell { background:linear-gradient(135deg, #0284c7, #0369a1) !important; outline: 2px solid #fff !important; color: #fff !important; box-shadow: 0 0 20px var(--cyan) !important; z-index: 40;}
+        .week-summary-col { background: rgba(0,0,0,0.5) !important; font-size: 11px; border-left: 1px dashed var(--purple) !important; border-right: 1px dashed var(--purple) !important; font-weight: 900; }
         .stat-cell { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); font-size: 14px; font-weight: 900; }
+        .stat-cell-n { background: rgba(245,158,11,0.1); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); font-size: 14px; font-weight: 900; }
         .context-menu { display:none; position:absolute; background:rgba(15,23,42,0.98); backdrop-filter: blur(25px); border:1px solid var(--accent); border-radius:15px; z-index:99999; width:220px; padding:10px; box-shadow:0 20px 50px rgba(0,0,0,0.9); }
+        .menu-item { padding:12px; cursor:pointer; border-radius:10px; font-size:13px; font-weight:900; margin-bottom:5px; transition:0.3s; color:white; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .menu-item:hover { transform: scale(1.05); border-color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.6); }
         #toast { visibility:hidden; position:fixed; bottom:40px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg, var(--success), #047857); border: 2px solid #6ee7b7; color:white; padding:18px 40px; border-radius:50px; z-index:999999; font-weight:900; font-size: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         #toast.show { visibility:visible; animation:toastPop 0.5s forwards, fadeOut 0.5s 2.5s forwards; }
         @keyframes toastPop { from { bottom:-50px; opacity:0; transform:translateX(-50%) scale(0.5); } to { bottom:40px; opacity:1; transform:translateX(-50%) scale(1); } }
@@ -62,27 +69,31 @@
             <div style="font-size:40px; text-shadow: 0 0 25px var(--cyan);">🚀</div>
             <div>
                 <div style="font-size:26px; font-weight:900; text-shadow: 0 0 15px var(--accent); letter-spacing: 2px;">Aİ <span style="color:var(--cyan);">MASTER SİHİRBAZ</span></div>
-                <div style="font-size:11px; color:#cbd5e1; letter-spacing: 3px;">V15 | KUSURSUZ VARDİYA ÜRETİM MOTORU</div>
+                <div style="font-size:11px; color:#cbd5e1; letter-spacing: 3px;">KUSURSUZ VARDİYA ÜRETİM MOTORU</div>
             </div>
         </div>
         <button class="btn btn-danger" style="padding: 12px 25px;" onclick="window.location.href='shiftmaster.html'">🔙 ANA PANELE DÖN</button>
     </div>
 
-    <div class="container">
+    <div class="container" style="animation: fadeIn 0.8s ease;">
         <div style="display: flex; flex-direction: column; gap: 25px;">
-            <div class="card" style="border-color: var(--success);">
+            <div class="card" style="border-color: var(--success); box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);">
                 <h3 class="card-title">
-                    <span style="color: var(--success);">🎯 HEDEF KADRO</span>
+                    <span style="color: var(--success);">🎯 HEDEF KADRO & SABİTLER</span>
                     <span id="selectedCount" style="background: var(--success); color:#000; padding: 2px 10px; border-radius: 8px; font-size: 12px;">0 Kişi</span>
                 </h3>
-                <div id="selectedStaffList" class="selected-list">
-                    <div style="color:#64748b; font-size:12px; font-style:italic; text-align:center;">Sağdan personel seçin...</div>
+                <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid var(--success); border-radius: 15px; padding: 15px; margin-top: 10px;">
+                    <div class="selected-list" id="selectedStaffList">
+                        <div style="color:#64748b; font-size:12px; font-style:italic; text-align:center;">Sağdan personel seçin...</div>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
                 <h3 class="card-title"><span>👥 PERSONEL HAVUZU</span></h3>
-                <div class="staff-pool" id="mockStaffPool"></div>
+                <div class="staff-pool" id="mockStaffPool">
+                    <div style="color:#64748b; font-size:12px; grid-column:span 2; text-align:center;">Sunucudan Yükleniyor...</div>
+                </div>
             </div>
         </div>
 
@@ -90,135 +101,333 @@
             <div class="card">
                 <h3 class="card-title"><span>⚙️ VARDİYA TASARIM ATÖLYESİ</span></h3>
                 <div class="shift-grid" id="shiftDefinitionsGrid"></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
-                    <button class="btn btn-cyan" onclick="addCustomShiftUI()">➕ YENİ TİP EKLE</button>
-                    <button class="btn btn-orange" onclick="saveAllShiftRulesToFirebase()">💾 AYARLARI HAFIZAYA AL</button>
-                </div>
+                <button class="btn btn-cyan" style="width: 100%; margin-top: 15px;" onclick="addCustomShiftUI()">➕ YENİ VARDİYA TİPİ OLUŞTUR</button>
             </div>
 
             <div class="generator-area">
-                <div style="display:flex; gap:25px; justify-content: center; margin-bottom: 25px;">
-                    <input type="date" class="date-picker-light" id="simStartDate">
-                    <input type="number" class="glass-input" id="simDays" value="28" style="width: 100px; font-size: 22px; font-weight: 900; text-align: center;">
+                <div style="display:flex; gap:25px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 20px 35px; border-radius: 20px; border: 1px solid rgba(56,189,248,0.3); display: inline-flex; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(56,189,248,0.1);">
+                    <div style="text-align:left;">
+                        <label style="font-size:11px; color:var(--cyan); font-weight:900; letter-spacing:2px; text-shadow: 0 0 5px var(--cyan);">BAŞLANGIÇ TARİHİ</label><br>
+                        <input type="date" class="date-picker-light" id="simStartDate" style="width: 170px; margin-top:8px; border-radius: 10px; border: 2px solid var(--cyan); background: #f8fafc; color: #0f172a; font-family:'Poppins', sans-serif;">
+                    </div>
+                    <div style="text-align:left; border-left: 2px dashed rgba(255,255,255,0.15); padding-left: 25px;">
+                        <label style="font-size:11px; color:var(--warning); font-weight:900; letter-spacing:2px; text-shadow: 0 0 5px var(--warning);">SÜRE (GÜN)</label><br>
+                        <input type="number" class="glass-input" id="simDays" value="28" style="width: 100px; font-size: 22px; font-weight: 900; text-align: center; margin-top:8px; height: 46px; border-color: var(--warning); color: var(--warning); box-sizing: border-box;">
+                    </div>
                 </div>
 
-                <h4 style="color: #fff; font-size: 16px; margin-bottom: 20px; letter-spacing: 3px;">📊 HAFTALIK KADRO İHTİYAÇ MATRİSİ</h4>
+                <h4 style="color: #fff; font-size: 16px; text-align: center; margin-bottom: 20px; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom:10px; margin-top: 10px; letter-spacing: 3px; text-shadow: 0 0 15px var(--cyan);">📊 HAFTALIK KADRO İHTİYAÇ MATRİSİ</h4>
                 
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 40px;" id="matrix_container">
-                    </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 40px;">
+                    <script>
+                        const days = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"];
+                        days.forEach((day, index) => {
+                            let i = index + 1;
+                            document.write(`
+                            <div style="background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(56,189,248,0.3)';">
+                                <div style="background: rgba(56, 189, 248, 0.15); color: var(--cyan); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(56, 189, 248, 0.2); text-shadow: 0 0 8px var(--cyan);">${day}</div>
+                                <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
+                                        <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
+                                        <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
+                                        <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                </div>
+                            </div>
+                            `);
+                        });
+                    </script>
+
+                    <script>
+                        const weekend = ["CUMARTESİ", "PAZAR"];
+                        weekend.forEach((day, index) => {
+                            let i = index + 6;
+                            document.write(`
+                            <div style="background: linear-gradient(180deg, rgba(244,63,94,0.1), rgba(2,6,23,0.95)); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--danger)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(244, 63, 94, 0.4)';">
+                                <div style="background: rgba(244, 63, 94, 0.2); color: var(--danger); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(244, 63, 94, 0.3); text-shadow: 0 0 8px var(--danger);">${day}</div>
+                                <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
+                                        <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
+                                        <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                        <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
+                                        <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                    </div>
+                                </div>
+                            </div>
+                            `);
+                        });
+                    </script>
+                </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: left;">
                     
-                    <div style="border: 1px solid var(--cyan); padding: 25px; border-radius: 25px;">
-                        <span class="section-label" style="color:var(--cyan); margin:0;">🔵 8 SAATLİK DÖNÜŞÜMLER</span>
-                        <div style="display:flex; gap:10px; margin: 15px 0;">
-                            <select id="ai8_Sabah" class="glass-input" style="flex:1;"></select>
-                            <select id="ai8_Ogle" class="glass-input" style="flex:1;"></select>
-                            <select id="ai8_Aksam" class="glass-input" style="flex:1;"></select>
-                            <select id="ai8_Off" class="glass-input" style="flex:1;"></select>
+                    <div style="border: 1px solid var(--cyan); background: linear-gradient(135deg, rgba(6,182,212,0.05), rgba(0,0,0,0.8)); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 20px;">
+                            <span style="font-size:24px;">🔵</span>
+                            <span class="section-label" style="color:var(--cyan); border-bottom:1px dashed var(--cyan); margin:0; padding-bottom:5px; flex:1;">8 SAATLİK (3'LÜ) DÖNÜŞÜMLER</span>
                         </div>
-                        <button class="mega-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1);" onclick="startAiDistribution8h()">🚀 8S Aİ MOTORUNU BAŞLAT</button>
+                        
+                        <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                            <select id="ai8_Sabah" class="glass-input" style="flex:1; border-color:var(--cyan); color:var(--cyan); font-weight:bold;"></select>
+                            <select id="ai8_Ogle" class="glass-input" style="flex:1; border-color:var(--warning); color:var(--warning); font-weight:bold;"></select>
+                            <select id="ai8_Aksam" class="glass-input" style="flex:1; border-color:var(--purple); color:var(--purple); font-weight:bold;"></select>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                            <select id="ai8_Off" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
+                            <button class="btn btn-cyan" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
+                            <button class="btn btn-orange" onclick="saveAllShiftRulesToFirebase()" style="padding: 10px 15px; border-radius:10px;" title="Kaydet">💾 KAYDET</button>
+                        </div>
+                        
+                        <div class="rotation-grid" style="grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
+                            <button class="magic-btn" style="border-color:var(--cyan);" onclick="fireMagicRotation(3, 8)">🔄 1+1+1+1 (Hızlı 8/24)</button>
+                            <button class="magic-btn" style="border-color:var(--cyan);" onclick="fireMagicRotation(2, 8)">🔄 3+2+2+1 (İleri Kaydırma)</button>
+                            <button class="magic-btn" style="border-color:var(--cyan);" onclick="fireMagicRotation(1, 8)">🔄 2+2+2+2 (Kıta Sistemi)</button>
+                        </div>
+                        <button class="mega-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" onclick="startAiDistribution8h()">🚀 8S Aİ MOTORUNU BAŞLAT</button>
                     </div>
 
-                    <div style="border: 1px solid var(--danger); padding: 25px; border-radius: 25px;">
-                        <span class="section-label" style="color:var(--danger); margin:0;">🔴 12 SAATLİK ÖZEL ŞABLONLAR</span>
-                        <div style="display:flex; gap:10px; margin: 15px 0;">
-                            <select id="aiDayShiftSelect" class="glass-input" style="flex:1;"></select>
-                            <select id="aiOffShiftSelect" class="glass-input" style="flex:1;"></select>
+                    <div style="border: 1px solid var(--danger); background: linear-gradient(135deg, rgba(244,63,94,0.05), rgba(0,0,0,0.8)); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 20px;">
+                            <span style="font-size:24px;">🔴</span>
+                            <span class="section-label" style="color:var(--danger); border-bottom:1px dashed var(--danger); margin:0; padding-bottom:5px; flex:1;">12 SAATLİK (2'Lİ) DÖNÜŞÜMLER</span>
                         </div>
-                        <div class="rotation-grid">
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('4_2')">🔄 8 Kişi (4/2 - 2/2 - 2/2...)</button>
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('3_2')">🔄 8 Kişi (3/2 - 3/2 - 2/2...)</button>
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('2_1')">🔄 4 Kişi (2/1 - 1/1 - 1/1...)</button>
+
+                        <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 20px;">
+                            <div style="display:flex; gap:10px;">
+                                <select id="aiDayShiftSelect" class="glass-input" style="flex:1; border-color:var(--cyan); color:var(--cyan); font-weight:bold;"></select>
+                                <select id="aiNightShiftSelect" class="glass-input" style="flex:1; border-color:var(--purple); color:var(--purple); font-weight:bold;"></select>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <select id="aiOffShiftSelect" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
+                                <button class="btn btn-danger" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
+                                <button class="btn btn-orange" onclick="saveAllShiftRulesToFirebase()" style="padding: 10px 15px; border-radius:10px;" title="Kaydet">💾 KAYDET</button>
+                            </div>
                         </div>
+                        
+                        <div class="rotation-grid" style="grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('4_2_8kisi')">🔄 8 Kişi (4/2 - 2/2 - 2/2 - 2/2...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('3_2_8kisi')">🔄 8 Kişi (3/2 - 3/2 - 2/2 - 3/2...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('2_1_4kisi')">🔄 4 Kişi (2/1 - 1/1 - 1/1 - 1/1...)</button>
+                        </div>
+                        
                         <button class="mega-btn" onclick="startAiDistribution12h()">🚀 12S Aİ MOTORUNU BAŞLAT</button>
                     </div>
+                    
                 </div>
-                <button class="btn btn-success" style="width:100%; margin-top:20px; background:linear-gradient(135deg, #1e293b, #0f172a); border:1px solid #475569;" onclick="createBlankTable()">📄 TERTEMİZ BOŞ TABLO OLUŞTUR (SIFIRLA)</button>
             </div>
         </div>
     </div>
 
-    <div id="resultModal" class="full-modal">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background: rgba(15,23,42,0.95); padding: 15px 25px; border-radius: 15px; border: 1px solid var(--accent);">
+    <div id="resultModal" class="full-modal" style="padding: 15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background: rgba(15,23,42,0.95); padding: 15px 25px; border-radius: 15px; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.8); flex-shrink: 0;">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <h2 id="aiStatusTitle" style="margin:0; color:white;">🏆 Aİ ÇIKTISI</h2>
-                <input type="text" id="aiTableName" class="glass-input" value="Yeni Çizelge" style="width: 250px; font-size: 16px; font-weight: bold;">
+                <h2 id="aiStatusTitle" style="margin:0; color:white; font-size: 22px; text-shadow: 0 0 10px var(--accent);">🏆 Aİ ÇIKTISI</h2>
+                <input type="text" id="aiTableName" class="glass-input" value="Siber Çizelge" style="width: 250px; font-size: 16px; font-weight: bold; border-color: var(--accent); padding: 10px;">
             </div>
             <div style="display:flex; gap:15px;">
-                <button class="btn btn-success" style="padding: 12px 30px; font-size: 16px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET</button>
-                <button class="btn btn-danger" onclick="document.getElementById('resultModal').style.display='none'">❌ KAPAT</button>
+                <button class="btn btn-cyan" onclick="regenerateAiTable()" style="box-shadow: 0 0 20px rgba(6, 182, 212, 0.6); padding: 12px 20px; font-size: 14px;">🔄 ALTERNATİF ÜRET</button>
+                <button class="btn btn-orange" onclick="exportWizardToExcel()" style="padding: 12px 20px; font-size: 14px;">📥 EXCEL'E AKTAR</button>
+                <button class="btn btn-success" style="box-shadow: 0 0 20px rgba(16,185,129,0.6); padding: 12px 30px; font-size: 16px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET</button>
+                <button class="btn btn-danger" onclick="document.getElementById('resultModal').style.display='none'" style="padding: 12px 20px; font-size: 14px;">❌ KAPAT</button>
             </div>
         </div>
-        <div id="generatedTableContainer" class="table-container"></div>
+
+        <div id="generatedTableContainer" class="table-container" style="flex: 1; height: 100%; max-height: none; margin-top: 0; border-radius: 15px; overflow: auto;"></div>
+        
+        <div style="margin-top: 10px; text-align: center; color: var(--cyan); font-size: 12px; font-weight: bold; flex-shrink: 0;">
+            ⌨️ KISAYOLLAR: <span style="color:white;">CTRL+A</span> (Tümünü Seç) | <span style="color:white;">CTRL+Z</span> (Geri Al) | <span style="color:white;">CTRL+C/V</span> (Kopyala/Yapıştır) | <span style="color:white;">SAĞ TIK</span> (Toplu Ata)
+        </div>
     </div>
 
+    <div id="ctxMenu" class="context-menu">
+        <div id="dynamicMenuContainer"></div>
+        <div style="border-top:1px dashed rgba(255,255,255,0.2); margin:8px 0;"></div>
+        <div class="menu-item" style="background: transparent; color: var(--danger); border-color: var(--danger);" onclick="applyShiftToSelected('')">🗑️ TEMİZLE</div>
+    </div>
+    
     <div id="toast"></div>
 
     <script>
+        // 🔥 FİREBASE BAĞLANTISI 🔥
         const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
         const tenantId = localStorage.getItem('sm_current_tenant');
+        if (!tenantId) { alert("Oturum hatası! Lütfen önce Ana Panele giriş yapın."); window.location.href = 'shiftmaster.html'; }
 
         const originalRef = db.ref.bind(db);
         db.ref = function(path) {
             if (tenantId === "addh") return originalRef(path); 
-            return path ? originalRef("kurumlar/" + tenantId + "/" + path) : originalRef("kurumlar/" + tenantId);
+            if (path) return originalRef("kurumlar/" + tenantId + "/" + path);
+            return originalRef("kurumlar/" + tenantId);
         };
 
         let selectedStaff = [];
-        let shiftRules = {};
+        let staffPreferences = {}; 
+        let historyStack = [];
+        let staffList = [];
+        let autoSelectDone = false; 
 
         window.onload = () => {
-            renderMatrixUI();
-            document.getElementById('simStartDate').valueAsDate = new Date();
-            loadStaffPool();
-            loadShiftRules();
+            loadStaffPool(); 
+            addInitialShifts();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const startParam = urlParams.get('start');
+            const daysParam = urlParams.get('days');
+            
+            if (startParam) document.getElementById('simStartDate').value = startParam;
+            else document.getElementById('simStartDate').valueAsDate = new Date();
+            
+            if (daysParam) document.getElementById('simDays').value = daysParam;
         };
 
-        function renderMatrixUI() {
-            const matrix = document.getElementById('matrix_container');
-            const dNames = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA", "CUMARTESİ", "PAZAR"];
-            dNames.forEach((day, i) => {
-                let idx = i + 1;
-                matrix.innerHTML += `
-                    <div style="background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.3); border-radius: 15px; overflow: hidden;">
-                        <div style="background: rgba(56,189,248,0.15); color: var(--cyan); font-weight: 900; padding: 10px; text-align: center; font-size: 12px;">${day}</div>
-                        <div style="padding: 10px; display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:10px; color:var(--cyan);">☀️ S/G</span>
-                                <input type="number" id="aiReq_G_${idx}" value="2" class="glass-input" style="width:40px; padding:5px; text-align:center;">
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:10px; color:var(--warning);">🌤️ ÖĞL</span>
-                                <input type="number" id="aiReq_O_${idx}" value="1" class="glass-input" style="width:40px; padding:5px; text-align:center;">
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:10px; color:var(--purple);">🌙 A/Gc</span>
-                                <input type="number" id="aiReq_N_${idx}" value="1" class="glass-input" style="width:40px; padding:5px; text-align:center;">
-                            </div>
+        function loadStaffPool() { 
+            db.ref("personel_havuzu").on("value", snap => { 
+                const p = document.getElementById("mockStaffPool"); 
+                p.innerHTML = ""; 
+                let count = 0; 
+                staffList = []; 
+                if(snap.val()) { 
+                    Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); 
+                    staffList.sort((a, b) => a.name.localeCompare(b.name)); 
+                    staffList.forEach((item, index) => { 
+                        count++; 
+                        p.innerHTML += `<div class="staff-item" id="staff-${index}" onclick="toggleStaff('${item.name}', ${index})"><span style="font-weight:800; font-size:12px;">${item.name}</span></div>`; 
+                    }); 
+                    
+                    if(!autoSelectDone) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const namesParam = urlParams.get('names');
+                        if (namesParam) {
+                            const namesToSelect = namesParam.split(',').filter(n => n.trim() !== "" && n !== "İSİM GİRİNİZ...");
+                            namesToSelect.forEach(n => {
+                                const idx = staffList.findIndex(s => s.name === n);
+                                if(idx > -1) toggleStaff(n, idx);
+                                else { selectedStaff.push(n); staffPreferences[n] = "AI"; } 
+                            });
+                            renderSelectedStaff();
+                            
+                            if (urlParams.get('mode') === 'inject') {
+                                const btn = document.querySelector(".btn-success");
+                                if(btn) btn.innerHTML = "📥 DİREKT TABLOYA AKTAR VE KAPAT";
+                            }
+                        }
+                        autoSelectDone = true;
+                    }
+                } else { p.innerHTML = "<div style='color:#64748b; font-size:12px; grid-column:span 2; text-align:center;'>Havuzda personel yok.</div>"; }
+            }); 
+        }
+
+        function toggleStaff(name, index) {
+            const el = document.getElementById(`staff-${index}`);
+            const idx = selectedStaff.indexOf(name);
+            if(idx > -1) { 
+                selectedStaff.splice(idx, 1); 
+                delete staffPreferences[name]; 
+                if(el) el.classList.remove('selected'); 
+            } 
+            else { 
+                selectedStaff.push(name); 
+                staffPreferences[name] = "AI"; 
+                if(el) el.classList.add('selected'); 
+            }
+            renderSelectedStaff();
+        }
+
+        function renderSelectedStaff() {
+            const box = document.getElementById('selectedStaffList');
+            document.getElementById('selectedCount').innerText = selectedStaff.length + " Kişi";
+            if(selectedStaff.length === 0) { box.innerHTML = '<div style="color:#64748b; font-size:12px; font-style:italic; padding: 10px; text-align:center;">Aşağıdan personel seçin...</div>'; return; }
+            
+            let definedShifts = getDefinedShifts();
+            let optionsHtml = `<option value="AI">🤖 Aİ MASTER (Serbest)</option>`;
+            definedShifts.forEach(s => { optionsHtml += `<option value="${s.hours}">📌 Sabit: ${s.hours}</option>`; });
+            
+            box.innerHTML = "";
+            selectedStaff.forEach(name => {
+                let currentPref = staffPreferences[name] || "AI";
+                if(currentPref !== "AI" && !definedShifts.some(s => s.hours === currentPref)) { currentPref = "AI"; staffPreferences[name] = "AI"; }
+                let thisSelect = optionsHtml.replace(`value="${currentPref}"`, `value="${currentPref}" selected`);
+
+                box.innerHTML += `
+                    <div class="selected-chip">
+                        <span style="font-size:12px; font-weight:900; color:white;">👤 ${name}</span>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <select class="chip-select" onchange="staffPreferences['${name}'] = this.value">${thisSelect}</select>
+                            <span onclick="removeSelected('${name}')" style="cursor:pointer; color:var(--danger); padding:4px 8px; border-radius:6px; font-weight:bold;">X</span>
                         </div>
                     </div>`;
             });
         }
+        
+        function removeSelected(name) { const itemObj = staffList.find(x => x.name === name); if(itemObj) toggleStaff(name, staffList.indexOf(itemObj)); }
 
-        function loadShiftRules() {
-            db.ref('vardiya_kurallari').on('value', snap => {
-                const grid = document.getElementById("shiftDefinitionsGrid");
-                grid.innerHTML = "";
-                if(snap.exists()) {
-                    shiftRules = snap.val();
-                    Object.entries(shiftRules).forEach(([key, val]) => {
-                        createShiftCard(key.replace(/:/g,'.'), val.name || key, val.color, true, val.w, val.n);
-                    });
-                } else {
-                    addInitialShifts();
+        const shiftGrid = document.getElementById("shiftDefinitionsGrid");
+        function addInitialShifts() {
+            createShiftCard("08:00 - 16:00", "SABAH", "linear-gradient(135deg, #0ea5e9, #0369a1)", true, 7.5, 0);
+            createShiftCard("16:00 - 24:00", "AKŞAM", "linear-gradient(135deg, #f59e0b, #b45309)", true, 7.5, 0);
+            createShiftCard("24:00 - 08:00", "GECE", "linear-gradient(135deg, #8b5cf6, #5b21b6)", true, 0, 7.5);
+            createShiftCard("08:00 - 20:00", "12S GÜNDÜZ", "linear-gradient(135deg, #10b981, #047857)", true, 11, 0);
+            createShiftCard("20:00 - 08:00", "12S GECE", "linear-gradient(135deg, #ef4444, #9f1239)", true, 0, 11);
+            createShiftCard("HT", "HAFTA TATİLİ", "linear-gradient(135deg, #14b8a6, #0f766e)", true, 0, 0);
+            createShiftCard("İ", "YILLIK İZİN", "linear-gradient(135deg, #f43f5e, #9f1239)", true, 0, 0);
+        }
+
+        function createShiftCard(hours, codeName, color, isActive, wH = 0, nH = 0) {
+            const card = document.createElement("div"); card.className = "shift-card" + (isActive ? "" : " inactive");
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="shift-active-cb" style="width:16px;height:16px; accent-color:var(--accent);" ${isActive ? 'checked' : ''} onchange="toggleCardState(this)"><input type="text" value="${codeName}" class="shift-name-inp glass-input" style="width: 80px; padding:5px; font-size:10px; font-weight:900; color:#fff; background:${color}; border:none;" onchange="renderSelectedStaff()"></div><span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:12px;" onclick="this.closest('.shift-card').remove(); renderSelectedStaff();">SİL</span>
+                </div>
+                <div style="margin-bottom:5px;"><input type="text" value="${hours}" class="shift-hours-inp glass-input" style="width: 100%; padding:8px; font-size:12px; text-align:center; font-weight:900; box-sizing:border-box;" onchange="renderSelectedStaff()"></div>
+                <div style="display:flex; gap:5px;"><input type="number" placeholder="G. Saat" value="${wH}" class="shift-w-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); updateAiSelects();"><input type="number" placeholder="Gc. Saat" value="${nH}" class="shift-n-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); updateAiSelects();"></div>
+                <div style="display:none;"><input type="hidden" class="shift-color-inp" value="${color}"></div>
+            `;
+            shiftGrid.appendChild(card); renderSelectedStaff(); updateAiSelects();
+        }
+        
+        function addCustomShiftUI() { const colors = ['linear-gradient(135deg, #f43f5e, #9f1239)', 'linear-gradient(135deg, #d946ef, #86198f)', 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 'linear-gradient(135deg, #10b981, #047857)', 'linear-gradient(135deg, #f59e0b, #b45309)']; createShiftCard("Yeni Saat", "YENİ", colors[Math.floor(Math.random() * colors.length)], true, 0, 0); }
+        function toggleCardState(cb) { const card = cb.closest('.shift-card'); if(cb.checked) card.classList.remove('inactive'); else card.classList.add('inactive'); renderSelectedStaff(); updateAiSelects(); }
+        function getDefinedShifts() { let shifts = []; document.querySelectorAll('.shift-card').forEach(card => { if(card.querySelector('.shift-active-cb').checked) { shifts.push({ name: card.querySelector('.shift-name-inp').value, hours: card.querySelector('.shift-hours-inp').value, color: card.querySelector('.shift-color-inp').value, wH: parseFloat(card.querySelector('.shift-w-inp').value) || 0, nH: parseFloat(card.querySelector('.shift-n-inp').value) || 0 }); } }); return shifts; }
+
+        function updateAiSelects() {
+            let shifts = getDefinedShifts(); 
+            let optionsHtml = '<option value="" style="color:#000;">-- Seç --</option>';
+            shifts.forEach(s => { optionsHtml += `<option value="${s.hours}" style="color:#000;">${s.name} (${s.hours})</option>`; });
+            
+            const selectors = [
+                'aiDayShiftSelect', 'aiNightShiftSelect', 'aiOffShiftSelect',
+                'ai8_Sabah', 'ai8_Ogle', 'ai8_Aksam', 'ai8_Off'
+            ];
+            
+            selectors.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    let currentVal = el.value;
+                    el.innerHTML = optionsHtml;
+                    if(shifts.some(s => s.hours === currentVal)) el.value = currentVal;
                 }
-                updateAiSelects();
             });
         }
 
+        // ==========================================
+        // 💾 HAFIZA (KAYDETME) FONKSİYONU 
+        // ==========================================
         function saveAllShiftRulesToFirebase() {
             const shifts = getDefinedShifts();
             const updates = {};
@@ -226,70 +435,605 @@
                 const key = s.hours.replace(/\./g, ':');
                 updates[key] = { w: s.wH, n: s.nH, color: s.color, name: s.name };
             });
-            db.ref('vardiya_kurallari').update(updates).then(() => { showToast("Vardiya Ayarları Kaydedildi! ✅"); });
+            db.ref('vardiya_kurallari').update(updates).then(() => {
+                showToast("Vardiya Ayarları Hafızaya Alındı! ✅");
+            }).catch(err => alert("Hata: " + err.message));
         }
 
+        // ==========================================
+        // 🔄 12 SAATLİK ÖZEL ŞABLON UYGULAMA MOTORU 
+        // ==========================================
         function uygulaOzelSablon(tip) {
-            if(selectedStaff.length === 0) return alert("Önce personel seçin!");
+            if(selectedStaff.length === 0) return alert("Lütfen sağ üstten personel seçin!");
             const daysCount = parseInt(document.getElementById('simDays').value);
-            const startDt = document.getElementById('simStartDate').value;
+            const startDtStr = document.getElementById('simStartDate').value;
             const dayCode = document.getElementById('aiDayShiftSelect').value || "08:00-20:00";
             const offCode = document.getElementById('aiOffShiftSelect').value || "HT";
             
-            let patterns = {
-                '4_2': [dayCode, dayCode, dayCode, dayCode, offCode, offCode, dayCode, dayCode, offCode, offCode, dayCode, dayCode, offCode, offCode],
-                '3_2': [dayCode, dayCode, dayCode, offCode, offCode, dayCode, dayCode, dayCode, offCode, offCode, dayCode, dayCode, offCode, offCode],
-                '2_1': [dayCode, dayCode, offCode]
-            };
+            let pattern = [];
+            let offsetMultiplier = 4;
+            
+            if (tip === '4_2_8kisi') {
+                pattern = [
+                    dayCode, dayCode, dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode
+                ];
+                offsetMultiplier = 4;
+            } else if (tip === '3_2_8kisi') {
+                pattern = [
+                    dayCode, dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode,
+                    dayCode, dayCode, offCode, offCode
+                ];
+                offsetMultiplier = 4;
+            } else if (tip === '2_1_4kisi') {
+                pattern = [
+                    dayCode, dayCode, offCode,
+                    dayCode, offCode,
+                    dayCode, offCode,
+                    dayCode, offCode,
+                    dayCode, dayCode, offCode,
+                    dayCode, offCode,
+                    dayCode, offCode
+                ];
+                offsetMultiplier = 4;
+            }
 
             let staffData = selectedStaff.map((name, idx) => {
-                let log = []; let p = patterns[tip];
-                for(let d=0; d<daysCount; d++) log.push(p[(d + (idx * 2)) % p.length]);
+                let log = [];
+                for(let d=0; d<daysCount; d++) {
+                    log.push(pattern[(d + (idx * offsetMultiplier)) % pattern.length]);
+                }
                 return {name: name, shiftLog: log};
             });
 
-            renderFinalTableWithSummary(staffData, startDt, daysCount);
+            document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Kusursuz Özel Şablon</span>`;
+            renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], dayCode, null, offCode);
             document.getElementById('resultModal').style.display = 'flex';
             showToast("Özel Şablon Uygulandı! 🚀");
         }
 
-        function createBlankTable() {
-            if(selectedStaff.length === 0) return alert("Önce personel seçin!");
-            const daysCount = parseInt(document.getElementById('simDays').value);
-            const startDt = document.getElementById('simStartDate').value;
-            let staffData = selectedStaff.map(name => ({name: name, shiftLog: new Array(daysCount).fill("")}));
-            renderFinalTableWithSummary(staffData, startDt, daysCount);
+        let lastAiMode = null; 
+
+        function regenerateAiTable() {
+            if (lastAiMode === '12h') startAiDistribution12h();
+            else if (lastAiMode === '8h') startAiDistribution8h();
+        }
+
+        function selectBestSimulation(simulations) {
+            simulations.sort((a, b) => a.penalty - b.penalty); 
+            let minPenalty = simulations[0].penalty;
+            let bestSims = simulations.filter(s => s.penalty === minPenalty);
+            return bestSims[Math.floor(Math.random() * bestSims.length)];
+        }
+
+        // ==========================================
+        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - SABİT VARDİYA UYUMLU
+        // ==========================================
+        function startAiDistribution12h() {
+            let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
+            if(!dayCode || !nightCode || !offCode) return alert("Lütfen AI Motoru için Gündüz, Gece ve İzin kodlarını seçiniz!");
+            if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
+            lastAiMode = '12h';
+            
+            let reqG = [], reqN = [];
+            for(let i=1; i<=7; i++) { reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0; reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0; }
+
+            let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
+            if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
+
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
+            document.getElementById('resultModal').style.display = 'flex';
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Nükleer Çekirdek Döngüde... Lütfen Bekleyin...</div>";
+
+            setTimeout(() => {
+                let simulations = []; let totalSimulations = 5000; 
+                let definedShifts = getDefinedShifts();
+
+                let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
+                let normalizedLastShifts = {};
+                Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
+
+                for(let sim = 0; sim < totalSimulations; sim++) {
+                    let simStaff = selectedStaff.map(name => {
+                        let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
+                        let initialLastShift = normalizedLastShifts[cleanName] || 'O';
+                        
+                        return { 
+                            name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, totalHours: 0, nightCount: 0, 
+                            dayConsecutive: initialLastShift === 'G' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name] 
+                        };
+                    });
+                    
+                    let unfilledSlots = 0; 
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; s.weeklyHours = 0; });
+                        
+                        let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
+                        simStaff.forEach(s => { s.assignedToday = null; });
+
+                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI (Kendi 45 Saat Kuralı Var)
+                        simStaff.forEach(s => {
+                            if (s.pref !== "AI") {
+                                let pDef = definedShifts.find(x => x.hours === s.pref);
+                                let sH = pDef ? (pDef.wH + pDef.nH) : 11; if(sH === 0) sH = 11;
+
+                                if (s.weeklyHours + sH > 45 || s.dayConsecutive >= 6) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
+                                } else {
+                                    s.assignedToday = s.pref; s.weeklyHours += sH; s.weeklyWorkDays++; s.dayConsecutive++;
+                                    if (s.pref === nightCode) { cReqN--; s.lastShiftType = 'N'; s.nightCount++; }
+                                    else { cReqG--; s.lastShiftType = 'G'; s.totalHours++; }
+                                }
+                            }
+                        });
+
+                        // 2. Aİ KURALLARI (Sadece AI Atanmış Serbest Çalışanlar İçin)
+                        simStaff.forEach(s => { 
+                            if (s.pref === "AI" && !s.assignedToday) {
+                                if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
+                                    s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
+                                } 
+                            } 
+                        });
+
+                        // 3. Aİ GECE ATAMASI
+                        let poolN = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random()));
+                        let nAssigned = 0; 
+                        for(let i=0; i<poolN.length && nAssigned<cReqN; i++) { 
+                            poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; 
+                            poolN[i].nightCount++; poolN[i].weeklyWorkDays++; poolN[i].weeklyHours += 11; poolN[i].dayConsecutive = 0; 
+                            nAssigned++; 
+                        }
+                        if(cReqN > 0 && nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
+
+                        // 4. Aİ GÜNDÜZ ATAMASI
+                        let poolG = simStaff.filter(s => s.pref === "AI" && !s.assignedToday && s.dayConsecutive < 2); 
+                        poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let dAssigned = 0; 
+                        for(let i=0; i<poolG.length && dAssigned<cReqG; i++) { 
+                            poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; 
+                            poolG[i].totalHours++; poolG[i].weeklyWorkDays++; poolG[i].weeklyHours += 11; poolG[i].dayConsecutive++; 
+                            dAssigned++; 
+                        }
+                        if(cReqG > 0 && dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
+
+                        // 5. KALANLARA İZİN
+                        simStaff.forEach(s => { 
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; } 
+                            s.shiftLog.push(s.assignedToday); 
+                        });
+                    }
+                    let penalty = 0; penalty += (unfilledSlots * 50000000); 
+                    let maxN = -1, minN = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.map(x => x === nightCode ? 'N' : (x === offCode ? 'O' : 'G')).join(''); 
+                        penalty += ((seq.match(/NG/g) || []).length * 1000000); penalty += ((seq.match(/NN/g) || []).length * 1000000); penalty += ((seq.match(/GGG/g) || []).length * 500000); 
+                        maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
+                    });
+                    penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
+                }
+                
+                let bestSim = selectBestSimulation(simulations);
+                let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
+                document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
+                renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
+            }, 500);
+        }
+
+        // ==========================================
+        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) - SABİT VARDİYA UYUMLU
+        // ==========================================
+        function startAiDistribution8h() {
+            let sCode = document.getElementById('ai8_Sabah').value;
+            let oCode = document.getElementById('ai8_Ogle').value;
+            let aCode = document.getElementById('ai8_Aksam').value;
+            let offCode = document.getElementById('ai8_Off').value;
+            lastAiMode = '8h';
+            
+            if(!sCode || !oCode || !aCode || !offCode) return alert("Lütfen 8 Saatlik AI için tüm vardiya/izin kodlarını seçin!");
+            if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
+
+            let reqS = [], reqO = [], reqA = [];
+            for(let i=1; i<=7; i++) {
+                reqS[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
+                reqO[i] = parseInt(document.getElementById('aiReq_O_'+i).value) || 0;
+                reqA[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
+            }
+
+            let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
+            if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
+
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 8 Saatlik Varyasyonlar Hesaplanıyor...";
+            document.getElementById('resultModal').style.display = 'flex';
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Yapay Zeka 3'lü Vardiya Kombinasyonlarını Çözüyor...</div>";
+
+            setTimeout(() => {
+                let simulations = []; let totalSimulations = 5000;
+                let definedShifts = getDefinedShifts();
+                let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
+                let normalizedLastShifts = {};
+                Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
+
+                for(let sim = 0; sim < totalSimulations; sim++) {
+                    let simStaff = selectedStaff.map(name => {
+                        let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
+                        let initialLastShift = normalizedLastShifts[cleanName] || 'X';
+                        return {
+                            name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, aCount: 0,
+                            dayConsecutive: initialLastShift !== 'X' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name], assignedToday: null
+                        };
+                    });
+
+                    let unfilledSlots = 0;
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; s.weeklyHours = 0; });
+
+                        let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
+                        simStaff.forEach(s => { s.assignedToday = null; });
+
+                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI
+                        simStaff.forEach(s => {
+                            if (s.pref !== "AI") {
+                                let pDef = definedShifts.find(x => x.hours === s.pref);
+                                let sH = pDef ? (pDef.wH + pDef.nH) : 7.5; if(sH === 0) sH = 7.5;
+
+                                if (s.weeklyHours + sH > 45 || s.dayConsecutive >= 6) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
+                                } else {
+                                    s.assignedToday = s.pref; s.weeklyHours += sH; s.weeklyWorkDays++; s.dayConsecutive++;
+                                    if (s.pref === aCode) { cReqA--; s.lastShiftType = 'A'; s.aCount++; }
+                                    else if (s.pref === oCode) { cReqO--; s.lastShiftType = 'O'; }
+                                    else { cReqS--; s.lastShiftType = 'S'; }
+                                }
+                            }
+                        });
+
+                        // 2. Aİ KURALLARI 
+                        simStaff.forEach(s => {
+                            if (s.pref === "AI" && !s.assignedToday) {
+                                if (s.lastShiftType === 'A' || s.lastShiftType === 'N' || s.weeklyWorkDays >= 5) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
+                                }
+                            }
+                        });
+
+                        // 3. Aİ AKŞAM ATAMASI
+                        let poolA = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolA.sort((a,b) => (a.aCount - b.aCount) || (0.5 - Math.random()));
+                        let aAssigned = 0;
+                        for(let i=0; i<poolA.length && aAssigned < cReqA; i++) { 
+                            poolA[i].assignedToday = aCode; poolA[i].lastShiftType = 'A'; 
+                            poolA[i].aCount++; poolA[i].weeklyWorkDays++; poolA[i].weeklyHours += 7.5; poolA[i].dayConsecutive++; 
+                            aAssigned++; 
+                        }
+                        if(cReqA > 0 && aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
+
+                        // 4. Aİ ÖĞLE ATAMASI
+                        let poolO = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolO.sort(() => 0.5 - Math.random());
+                        let oAssigned = 0;
+                        for(let i=0; i<poolO.length && oAssigned < cReqO; i++) { 
+                            poolO[i].assignedToday = oCode; poolO[i].lastShiftType = 'O'; 
+                            poolO[i].weeklyWorkDays++; poolO[i].weeklyHours += 7.5; poolO[i].dayConsecutive++; 
+                            oAssigned++; 
+                        }
+                        if(cReqO > 0 && oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
+
+                        // 5. Aİ SABAH ATAMASI
+                        let poolS = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolS.sort((a,b) => (b.dayConsecutive - a.dayConsecutive) || (0.5 - Math.random()));
+                        let sAssigned = 0;
+                        for(let i=0; i<poolS.length && sAssigned < cReqS; i++) { 
+                            poolS[i].assignedToday = sCode; poolS[i].lastShiftType = 'S'; 
+                            poolS[i].weeklyWorkDays++; poolS[i].weeklyHours += 7.5; poolS[i].dayConsecutive++; 
+                            sAssigned++; 
+                        }
+                        if(cReqS > 0 && sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
+
+                        // 6. KALANLARA İZİN
+                        simStaff.forEach(s => { 
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0; } 
+                            s.shiftLog.push(s.assignedToday); 
+                        });
+                    }
+
+                    let penalty = unfilledSlots * 5000000;
+                    let maxA = -1, minA = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.map(x => x === aCode ? 'A' : (x === oCode ? 'O' : (x === sCode ? 'S' : 'X'))).join('');
+                        penalty += ((seq.match(/AS/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/AO/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/AA/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/OS/g) || []).length * 500000); 
+                        maxA = Math.max(maxA, s.aCount); minA = Math.min(minA, s.aCount);
+                    });
+                    penalty += ((maxA - minA) * 100);
+                    simulations.push({ penalty: penalty, staffData: simStaff });
+                }
+
+                let bestSim = selectBestSimulation(simulations);
+                let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
+                document.getElementById("aiStatusTitle").innerHTML = `🏆 8 SAATLİK Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
+                renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
+            }, 500);
+        }
+
+        // ==========================================
+        // 🌪️ HAZIR ROTASYON MOTORLARI
+        // ==========================================
+        function fireMagicRotation(type, hourMode) {
+            if(selectedStaff.length === 0 || selectedStaff.length % 4 !== 0) { return alert("HATA: Bu rotasyonlar için seçilen personel sayısı 4'ün katı olmalıdır!"); }
+            const startDtStr = document.getElementById('simStartDate').value; const daysCount = parseInt(document.getElementById('simDays').value);
+            if(!startDtStr) return alert("Başlangıç tarihi seçin.");
+            let activeShifts = getDefinedShifts().filter(s => s.hours !== "HT" && s.hours !== "İ" && s.hours !== "R"); let fHT = getDefinedShifts().find(x => x.hours === "HT"); let HT = fHT ? fHT.hours : "HT"; 
+            let pattern = []; let offsets = [];
+            if(hourMode === 8) {
+                if(activeShifts.length < 3) return alert("8 Saatlik rotasyon için Atölyede en az 3 aktif çalışma vardiyası olmalı!");
+                let G = activeShifts[0].hours; let A = activeShifts[1].hours; let N = activeShifts[2].hours; 
+                if (type === 1) { pattern = [G, G, A, A, N, N, HT, HT]; offsets = [0, 6, 4, 2]; } else if (type === 2) { pattern = [G, G, G, A, A, N, N, HT]; offsets = [0, 6, 4, 2]; } else if (type === 3) { pattern = [G, A, N, HT]; offsets = [0, 3, 2, 1]; }
+            } 
+            else if (hourMode === 12) {
+                let twelveShifts = activeShifts.filter(s => s.name.includes("12") || s.wH >= 10 || s.nH >= 10); if(twelveShifts.length < 2) twelveShifts = activeShifts; 
+                if(twelveShifts.length < 2) return alert("12 Saatlik rotasyon için Atölyede en az 2 vardiya olmalı!");
+                let G12 = twelveShifts[0].hours; let N12 = twelveShifts[1].hours; 
+                if (type === 1) { pattern = [G12, N12, HT, HT]; offsets = [0, 3, 2, 1]; } else if (type === 2) { pattern = [G12, G12, N12, HT, HT]; offsets = [0, 4, 3, 2];  }
+            }
+            let finalStaffData = [];
+            for (let g = 0; g < selectedStaff.length; g += 4) {
+                let group = selectedStaff.slice(g, g + 4);
+                group.forEach((name, idx) => {
+                    let offset = offsets[idx % offsets.length] || 0; let cycleLen = pattern.length; let sLog = [];
+                    for(let day = 0; day < daysCount; day++) { sLog.push(pattern[(day + offset) % cycleLen]); }
+                    finalStaffData.push({name: name, shiftLog: sLog});
+                });
+            }
+            document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Kusursuz Rotasyon</span>`;
+            renderFinalTableWithSummary(finalStaffData, startDtStr, daysCount, [], [], null, null, null);
             document.getElementById('resultModal').style.display = 'flex';
         }
 
-        function loadStaffPool() { db.ref("personel_havuzu").on("value", snap => { const p = document.getElementById("mockStaffPool"); p.innerHTML = ""; if(snap.val()) { Object.entries(snap.val()).forEach(([id, name]) => { p.innerHTML += `<div class="staff-item" id="staff-${id}" onclick="toggleStaff('${name}', '${id}')"><b>${name}</b></div>`; }); } }); }
-        function toggleStaff(name, id) { const el = document.getElementById(`staff-${id}`); const idx = selectedStaff.indexOf(name); if(idx > -1) { selectedStaff.splice(idx, 1); el.classList.remove('selected'); } else { selectedStaff.push(name); el.classList.add('selected'); } renderSelectedStaff(); }
-        function renderSelectedStaff() { const box = document.getElementById('selectedStaffList'); document.getElementById('selectedCount').innerText = selectedStaff.length + " Kişi"; box.innerHTML = selectedStaff.length === 0 ? "Personel Seçin..." : selectedStaff.map(n => `<div class="selected-chip"><b>👤 ${n}</b><span onclick="removeSelected('${n}')" style="cursor:pointer;color:red;">X</span></div>`).join(''); }
-        function removeSelected(n) { selectedStaff = selectedStaff.filter(x => x !== n); renderSelectedStaff(); document.querySelectorAll('.staff-item').forEach(el => { if(el.innerText.includes(n)) el.classList.remove('selected'); }); }
-        function addInitialShifts() { createShiftCard("08:00-16:00","SABAH","#0ea5e9",true,7.5,0); createShiftCard("16:00-24:00","AKŞAM","#f59e0b",true,7.5,0); createShiftCard("08:00-20:00","12S GÜN","#10b981",true,11,0); createShiftCard("HT","TATİL","#14b8a6",true,0,0); }
-        function createShiftCard(h,n,c,a,w,nH) { const card = document.createElement("div"); card.className = "shift-card"; card.innerHTML = `<input type="text" value="${h}" class="shift-hours-inp glass-input" style="width:90%; background:${c}; margin-bottom:5px; font-weight:900;"><div style="display:flex; gap:2px;"><input type="number" value="${w}" class="shift-w-inp glass-input" style="width:45%;"><input type="number" value="${nH}" class="shift-n-inp glass-input" style="width:45%;"></div>`; document.getElementById("shiftDefinitionsGrid").appendChild(card); }
-        function getDefinedShifts() { let s = []; document.querySelectorAll('.shift-card').forEach(c => { s.push({ hours: c.querySelector('.shift-hours-inp').value, wH: parseFloat(c.querySelector('.shift-w-inp').value)||0, nH: parseFloat(c.querySelector('.shift-n-inp').value)||0, color: c.querySelector('.shift-hours-inp').style.background }); }); return s; }
-        function updateAiSelects() { let shifts = getDefinedShifts(); let h = shifts.map(s => `<option value="${s.hours}">${s.hours}</option>`).join(''); ['aiDayShiftSelect','aiOffShiftSelect','ai8_Sabah','ai8_Ogle','ai8_Aksam','ai8_Off'].forEach(id => { let el = document.getElementById(id); if(el) el.innerHTML = h; }); }
-        function renderFinalTableWithSummary(data, dt, days) { 
-            let h = `<table><thead><tr><th>AD SOYAD</th>`;
-            let dBase = new Date(dt);
-            for(let i=0; i<days; i++) { let d = new Date(dBase); d.setDate(dBase.getDate()+i); h += `<th>${d.getDate()}.${d.getMonth()+1}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></th>`; }
-            h += `<th>TOPLAM</th></tr></thead><tbody>`;
-            data.forEach(s => { h += `<tr><td style="text-align:left;"><b>${s.name}</b></td>`; s.shiftLog.forEach(v => { let f = getDefinedShifts().find(x=>x.hours===v); h += `<td class="shift-cell" style="background:${f?f.color:'transparent'}" contenteditable="true">${v}</td>`; }); h += `<td class="stat-cell">0</td></tr>`; });
-            h += `</tbody></table>`; document.getElementById('generatedTableContainer').innerHTML = h;
-        }
-        function saveAITableToPool() { 
-            let t = document.getElementById('aiTableName').value; 
-            let rows = [];
-            document.querySelectorAll('#generatedTableContainer tbody tr').forEach(tr => {
-                let name = tr.querySelector('b').innerText;
-                let shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
-                rows.push({ name: name, shifts: shifts });
+        // =========================================
+        // 📄 TERTEMİZ BOŞ TABLO OLUŞTUR
+        // =========================================
+        function createBlankTable() {
+            if(selectedStaff.length === 0) return alert("Önce sağ üstten personel seçin!");
+            const daysCount = parseInt(document.getElementById('simDays').value);
+            const startDtStr = document.getElementById('simStartDate').value;
+            
+            let staffData = selectedStaff.map(name => {
+                return {name: name, shiftLog: new Array(daysCount).fill("")};
             });
-            db.ref("isci_sihirbaz_arsiv").push({ name: t, date: new Date().toLocaleString('tr-TR'), start: document.getElementById('simStartDate').value, days: document.getElementById('simDays').value, rows: rows }).then(() => { showToast("Sisteme Gönderildi! 💾"); }); 
+
+            document.getElementById("aiStatusTitle").innerHTML = `🏆 TERTEMİZ ÇİZELGE <span style="color:var(--success); font-size:16px;">(Boş Şablon)</span>`;
+            renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], null, null, null);
+            document.getElementById('resultModal').style.display = 'flex';
         }
+
+        // =========================================
+        // 🎨 TABLOYU ÇİZME 
+        // =========================================
+        function renderFinalTableWithSummary(staffData, dateStr, daysCount, reqG, reqN, dayCode, nightCode, offCode) {
+            let container = document.getElementById('generatedTableContainer');
+            let h = `<table><thead><tr><th style="min-width:180px; text-align:left;">PERSONEL ADI</th>`;
+            let dBase = new Date(dateStr);
+            for(let i=0; i<daysCount; i++) {
+                let d = new Date(dBase); d.setDate(dBase.getDate() + i); let isWeekend = (d.getDay() === 0 || d.getDay() === 6);
+                h += `<th style="${isWeekend ? 'color:var(--warning);' : ''}"><div>${d.getDate()}.${d.getMonth()+1}</div><small style="opacity:0.8;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></th>`;
+                if (d.getDay() === 0) { h += `<th class="no-export week-summary-col" style="color:var(--purple); font-size:9px; width:50px;">HAFTA<br>ÖZETİ</th>`; }
+            }
+            h += `<th style="color:var(--cyan); min-width:60px;">G. SAAT</th><th style="color:var(--warning); min-width:60px;">GC. SAAT</th><th style="color:var(--success); min-width:60px;">TOPLAM</th></tr></thead><tbody id="aiGeneratedBody">`;
+
+            let definedShifts = getDefinedShifts();
+            staffData.forEach(s => {
+                h += `<tr><td style="text-align:left; background:rgba(0,0,0,0.8); border-left: 4px solid var(--accent);"><b style="font-size:12px; color:#fff;">${s.name}</b></td>`;
+                for(let c=0; c<daysCount; c++) {
+                    let shiftVal = s.shiftLog[c]; let fShift = definedShifts.find(x => x.hours === shiftVal); let bgColor = fShift ? fShift.color : "transparent";
+                    h += `<td class="shift-cell" style="background:${bgColor};" contenteditable="true" oninput="updateTableStats(); saveHistory();">${shiftVal}</td>`;
+                    let d = new Date(dBase); d.setDate(dBase.getDate() + c);
+                    if (d.getDay() === 0) { h += `<td class="no-export week-summary-col week-stat-cell"></td>`; }
+                }
+                h += `<td class="stat-cell total-w">0</td><td class="stat-cell-n total-n">0</td><td class="stat-cell-all total-all">0</td></tr>`;
+            });
+
+            if (dayCode && nightCode) {
+                h += `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (S / Ö / A)</td>`;
+                for(let c = 0; c < daysCount; c++) {
+                    let d = new Date(dBase); d.setDate(dBase.getDate() + c);
+                    h += `<td class="sum-col" style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;"></td>`;
+                    if (d.getDay() === 0) h += `<td class="no-export week-summary-col" style="background:rgba(51,65,85,0.2);"></td>`;
+                }
+                h += `<td colspan="3"></td></tr>`;
+            }
+            h += `</tbody></table>`; container.innerHTML = h;
+            initTableEvents(); updateTableStats(); saveHistory(); buildContextMenu();
+        }
+
+        function updateTableStats() {
+            let definedShifts = getDefinedShifts();
+            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                let totalW = 0; let totalN = 0; let weeklyW = 0; let weeklyN = 0;
+                let cells = tr.children;
+                for(let i=1; i<cells.length; i++) {
+                    let cell = cells[i];
+                    if (cell.classList.contains('shift-cell')) {
+                        let val = cell.innerText.trim(); let sDef = definedShifts.find(x => x.hours === val || x.name === val);
+                        if(sDef) { totalW += sDef.wH; totalN += sDef.nH; }
+                        if (val === "HT" || val === "İ" || val === "R" || val === "") {} 
+                        else if (val.startsWith("20:") || val.startsWith("24:") || val.startsWith("00:") || val.includes("GECE") || val.includes("AKŞAM") || val === document.getElementById('ai8_Aksam')?.value) { weeklyN++; } else { weeklyW++; }
+                    } else if (cell.classList.contains('week-stat-cell')) {
+                        cell.innerHTML = `<span style="color:var(--cyan);">${weeklyW}G</span> - <span style="color:var(--warning);">${weeklyN}N</span>`; weeklyW = 0; weeklyN = 0; 
+                    }
+                }
+                let tWCell = tr.querySelector('.total-w'); let tNCell = tr.querySelector('.total-n'); let tAllCell = tr.querySelector('.total-all');
+                if(tWCell) tWCell.innerText = totalW; if(tNCell) tNCell.innerText = totalN; if(tAllCell) tAllCell.innerText = totalW + totalN;
+            });
+
+            let summaryRow = document.querySelector('#aiGeneratedBody .summary-row');
+            if(summaryRow) {
+                let startDtStr = document.getElementById('simStartDate').value; if(!startDtStr) return;
+                let dBase = new Date(startDtStr); let daysCount = parseInt(document.getElementById('simDays').value) || 28;
+                let rows = document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)'); let sumCols = summaryRow.querySelectorAll('.sum-col');
+                for(let c = 0; c < daysCount; c++) {
+                    let d = new Date(dBase); d.setDate(dBase.getDate() + c); let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                    let targetG = parseInt(document.getElementById('aiReq_G_' + reqIndex).value) || 0; 
+                    let targetN = parseInt(document.getElementById('aiReq_N_' + reqIndex).value) || 0;
+                    let targetO = document.getElementById('aiReq_O_' + reqIndex) ? (parseInt(document.getElementById('aiReq_O_' + reqIndex).value) || 0) : 0;
+                    
+                    let dCount = 0, nCount = 0, oCount = 0;
+                    
+                    let aCode = document.getElementById('ai8_Aksam') ? document.getElementById('ai8_Aksam').value : null;
+                    let oCode = document.getElementById('ai8_Ogle') ? document.getElementById('ai8_Ogle').value : null;
+                    let n12Code = document.getElementById('aiNightShiftSelect') ? document.getElementById('aiNightShiftSelect').value : null;
+
+                    rows.forEach(tr => {
+                        let shiftCells = tr.querySelectorAll('.shift-cell'); let cell = shiftCells[c]; 
+                        if(cell) {
+                            let val = cell.innerText.trim();
+                            if (val === "HT" || val === "İ" || val === "R" || val === "") {} 
+                            else if (val === aCode || val === n12Code || val.startsWith("20:") || val.startsWith("24:") || val.startsWith("00:") || val.includes("GECE") || val.includes("AKŞAM")) { nCount++; } 
+                            else if (val === oCode) { oCount++; }
+                            else { dCount++; }
+                        }
+                    });
+                    let isWarning = false; let gText = dCount; let nText = nCount; let oText = oCount;
+                    if(dCount !== targetG) { gText = `<span style="color:#ef4444;">${dCount}</span>`; isWarning = true; }
+                    if(nCount !== targetN) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
+                    if(targetO > 0 || oCount > 0) {
+                        if(oCount !== targetO) { oText = `<span style="color:#ef4444;">${oCount}</span>`; isWarning = true; }
+                    }
+                    
+                    let cellHtml = (targetO > 0 || oCount > 0) ? `${gText} / ${oText} / ${nText}` : `${gText} / ${nText}`;
+                    if(isWarning) cellHtml = `<span style="color:#ef4444; font-size:12px;">⚠️</span><br>` + cellHtml;
+                    if(sumCols[c]) sumCols[c].innerHTML = cellHtml;
+                }
+            }
+        }
+
+        // 🔥 KLAVYE KISAYOLLARI VE KUSURSUZ PASTE 🔥
+        let isDraggingCells = false; let startSelectCell = null;
+        function initTableEvents() {
+            document.querySelectorAll('.shift-cell').forEach(cell => {
+                cell.onmousedown = (e) => { if(e.button === 0) { isDraggingCells = true; startSelectCell = cell; clearTableSelection(); cell.classList.add('selected-cell'); } };
+                cell.onmouseenter = () => { if(isDraggingCells) { clearTableSelection(); selectCellRange(startSelectCell, cell); } };
+                cell.oncontextmenu = (e) => { e.preventDefault(); if(!cell.classList.contains('selected-cell')) { clearTableSelection(); cell.classList.add('selected-cell'); } const m = document.getElementById('ctxMenu'); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; };
+                cell.onkeyup = () => { let val = cell.innerText.trim(); let fShift = getDefinedShifts().find(x => x.hours === val || x.name === val); cell.style.background = fShift ? fShift.color : "transparent"; updateTableStats();  };
+            });
+        }
+        function clearTableSelection() { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
+        function selectCellRange(start, end) { const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tr')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').children).indexOf(start); const endColIdx = Array.from(end.closest('tr').children).indexOf(end); const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx); for(let r = minRow; r <= maxRow; r++) { for(let c = minCol; c <= maxCol; c++) { const target = rows[r].children[c]; if(target && target.classList.contains('shift-cell')) target.classList.add('selected-cell'); } } }
+        document.addEventListener('mouseup', () => { isDraggingCells = false; });
+        document.addEventListener('click', (e) => { if(!e.target.closest('.context-menu')) document.getElementById('ctxMenu').style.display = "none"; });
+        document.addEventListener('keydown', e => { if (document.getElementById('resultModal').style.display !== 'flex') return; if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) { e.preventDefault(); document.querySelectorAll('.shift-cell').forEach(c => c.classList.add('selected-cell')); } if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undoHistory(); } });
+
+        document.addEventListener('copy', e => {
+            if (document.getElementById('resultModal').style.display !== 'flex') return;
+            const selected = document.querySelectorAll('.selected-cell');
+            if(selected.length > 0) { e.preventDefault(); let html = "<table><tr>"; let tsv = ""; let currentRow = selected[0].closest('tr'); selected.forEach(cell => { if(cell.closest('tr') !== currentRow) { html += "</tr><tr>"; tsv += "\n"; currentRow = cell.closest('tr'); } html += `<td>${cell.innerText}</td>`; tsv += `${cell.innerText}\t`; }); html += "</tr></table>"; if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Kopyalandı! 📋"); } }
+        });
+
+        document.addEventListener('paste', e => {
+            if (document.getElementById('resultModal').style.display !== 'flex') return;
+            const selected = Array.from(document.querySelectorAll('.selected-cell'));
+            if(selected.length > 0) { e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = pasteData.split('\n').filter(r => r.trim() !== ""); let startCell = selected[0]; let startTr = startCell.closest('tr'); let tbody = startTr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr:not(.summary-row)')); let startRowIdx = allTrs.indexOf(startTr); let shiftCells = Array.from(startTr.querySelectorAll('.shift-cell')); let startShiftColIdx = shiftCells.indexOf(startCell); let definedShifts = getDefinedShifts();
+                for (let i = 0; i < rows.length; i++) { if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentShiftCells = Array.from(currentTr.querySelectorAll('.shift-cell')); for (let j = 0; j < cols.length; j++) { if (startShiftColIdx + j >= currentShiftCells.length) break; let targetCell = currentShiftCells[startShiftColIdx + j]; let val = cols[j].trim(); targetCell.innerText = val; let fShift = definedShifts.find(x => x.hours === val || x.name === val); targetCell.style.background = fShift ? fShift.color : "transparent"; } }
+                updateTableStats(); showToast("Yapıştırıldı! ✅");
+            }
+        });
+
+        function exportWizardToExcel() { let table = document.querySelector("#generatedTableContainer table"); if(!table) return alert("Tablo bulunamadı!"); let clone = table.cloneNode(true); clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable')); clone.querySelectorAll('.no-export').forEach(el => el.remove()); let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body><table border="1" style="font-family:sans-serif; text-align:center;">`; html += clone.innerHTML; html += `</table></body></html>`; const blob = new Blob([html], { type: 'application/vnd.ms-excel' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI_Vardiya_${new Date().toLocaleDateString('tr-TR')}.xls`; a.click(); }
+        function saveHistory() { const tableContainer = document.getElementById('generatedTableContainer'); if(tableContainer && tableContainer.innerHTML) { historyStack.push(tableContainer.innerHTML); if(historyStack.length > 20) historyStack.shift(); } }
+        function undoHistory() { if(historyStack.length > 1) { historyStack.pop(); document.getElementById('generatedTableContainer').innerHTML = historyStack[historyStack.length - 1]; initTableEvents(); showToast("Geri Alındı ↩️"); } else { showToast("Daha fazla geri alınamaz!"); } }
+        function buildContextMenu() { const container = document.getElementById('dynamicMenuContainer'); container.innerHTML = ""; let definedShifts = getDefinedShifts(); definedShifts.forEach(s => { container.innerHTML += `<div class="menu-item" style="background:${s.color}; border-color: rgba(255,255,255,0.4);" onclick="applyShiftToSelected('${s.hours}', '${s.color}')">${s.name} <br><small>(${s.hours})</small></div>`; }); }
+        function applyShiftToSelected(text, color) { saveHistory(); document.querySelectorAll('.selected-cell').forEach(c => { c.innerText = text; c.style.background = color; }); document.getElementById('ctxMenu').style.display = "none"; clearTableSelection(); updateTableStats(); }
+
+        // 🔥 DİREKT TABLOYA AKTARIM VEYA HAVUZA GÖNDERİM MOTORU 🔥
+        function saveAITableToPool() {
+            let tName = document.getElementById('aiTableName').value.trim();
+            if(!tName) return alert("Lütfen tabloya bir isim verin!");
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'inject') {
+                const rows = [];
+                document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                    const name = tr.querySelector('b').innerText.trim();
+                    const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ 
+                        text: td.innerText, 
+                        bg: td.style.background, 
+                        pin: td.getAttribute("data-pin") || "" 
+                    }));
+                    rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
+                });
+                
+                if (window.parent && typeof window.parent.receiveDataFromAiWizard === 'function') {
+                    window.parent.receiveDataFromAiWizard(rows, document.getElementById('simStartDate').value, document.getElementById('simDays').value);
+                    return; 
+                }
+            }
+
+            const rows = [];
+            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                const name = tr.querySelector('b').innerText.trim();
+                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
+                rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
+            });
+
+            const data = { 
+                name: tName, 
+                date: new Date().toLocaleString('tr-TR'), 
+                start: document.getElementById('simStartDate').value, 
+                days: document.getElementById('simDays').value, 
+                rows: rows 
+            };
+            
+            db.ref("isci_sihirbaz_arsiv").push(data).then(() => { 
+                showToast("Tablo Ana Merkeze Başarıyla Gönderildi! 💾"); 
+                document.getElementById('resultModal').style.display='none'; 
+            }).catch(err => {
+                alert("Bağlantı veya Güvenlik Hatası: " + err.message);
+            });
+        }
+
         function showToast(m) { const x = document.getElementById('toast'); x.innerText=m; x.className="show"; setTimeout(()=>x.className="",3000); }
-        function addCustomShiftUI() { createShiftCard("00:00","YENİ","#a855f7",true,0,0); }
+        
+        // ============================================================================
+        // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ (FİNAL SÜRÜM)
+        // ============================================================================
+        document.addEventListener('contextmenu', event => {
+            if(!event.target.classList.contains('shift-cell') && !event.target.tagName.match(/^TH$/i)) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); e.stopPropagation(); return false; }
+            if (e.ctrlKey || e.metaKey) {
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'U' || e.key === 'u') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'S' || e.key === 's') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'P' || e.key === 'p') { e.preventDefault(); e.stopPropagation(); return false; }
+            }
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name') && !e.target.classList.contains('shift-cell')) { 
+                e.preventDefault(); 
+            }
+        });
     </script>
 </body>
 </html>
