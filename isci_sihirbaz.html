@@ -72,7 +72,10 @@
                 <div style="font-size:11px; color:#cbd5e1; letter-spacing: 3px;">KUSURSUZ VARDİYA ÜRETİM MOTORU</div>
             </div>
         </div>
-        <button class="btn btn-danger" style="padding: 12px 25px;" onclick="window.location.href='shiftmaster.html'">🔙 ANA PANELE DÖN</button>
+        <div style="display:flex; gap: 15px;">
+            <button class="btn btn-cyan" style="padding: 12px 25px; box-shadow: 0 0 15px var(--cyan);" onclick="window.location.reload()">🔄 SİHİRBAZI YENİLE</button>
+            <button class="btn btn-danger" style="padding: 12px 25px;" onclick="window.location.href='shiftmaster.html'">🔙 ANA PANELE DÖN</button>
+        </div>
     </div>
 
     <div class="container" style="animation: fadeIn 0.8s ease;">
@@ -188,6 +191,8 @@
                         </div>
                         <div style="display:flex; gap:10px; margin-bottom: 20px;">
                             <select id="ai8_Off" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
+                            <button class="btn btn-cyan" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
+                            <button class="btn btn-orange" onclick="saveAllShiftRulesToFirebase()" style="padding: 10px 15px; border-radius:10px;" title="Kaydet">💾 KAYDET</button>
                         </div>
                         
                         <div class="rotation-grid" style="grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
@@ -211,6 +216,8 @@
                             </div>
                             <div style="display:flex; gap:10px;">
                                 <select id="aiOffShiftSelect" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
+                                <button class="btn btn-danger" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
+                                <button class="btn btn-orange" onclick="saveAllShiftRulesToFirebase()" style="padding: 10px 15px; border-radius:10px;" title="Kaydet">💾 KAYDET</button>
                             </div>
                         </div>
                         
@@ -584,7 +591,7 @@
                         let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI
+                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI (Kendi 45 Saat Kuralı Var)
                         simStaff.forEach(s => {
                             if (s.pref !== "AI") {
                                 let pDef = definedShifts.find(x => x.hours === s.pref);
@@ -600,7 +607,7 @@
                             }
                         });
 
-                        // 2. Aİ KURALLARI 
+                        // 2. Aİ KURALLARI (Sadece AI Atanmış Serbest Çalışanlar İçin)
                         simStaff.forEach(s => { 
                             if (s.pref === "AI" && !s.assignedToday) {
                                 if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
