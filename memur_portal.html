@@ -108,10 +108,31 @@
         #toast.show { visibility:visible; animation:toastPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.5s 2.5s forwards; }
         @keyframes toastPop { from { bottom:-50px; opacity:0; transform:translateX(-50%) scale(0.5); } to { bottom:40px; opacity:1; transform:translateX(-50%) scale(1); } }
         @keyframes fadeOut { to { opacity:0; bottom:-50px; } }
+   /* 🔥 GOOGLE TRANSLATE İÇİN HAVALI TASARIM 🔥 */
+        .translate-wrapper {
+            position: fixed; top: 15px; right: 20px; z-index: 9999999;
+            background: rgba(15, 23, 42, 0.8); border: 1px solid var(--accent);
+            padding: 8px 15px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px);
+        }
+        .translate-wrapper span { font-size: 12px; font-weight: 900; color: var(--accent); letter-spacing: 1px; text-shadow: 0 0 5px var(--accent); }
+        .goog-te-combo { padding: 5px; border-radius: 8px; border: 1px solid var(--accent); background: var(--bg-dark); color: white; font-family: 'Poppins', sans-serif; outline: none; font-weight: bold;}
+    
     </style>
 </head>
 <body>
 
+    <div class="translate-wrapper">
+        <span>🌍 LANGUAGE:</span>
+        <div id="google_translate_element"></div>
+    </div>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'tr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+    }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
     <div id="gateModal" class="full-modal" style="justify-content:center; align-items:center; background: radial-gradient(circle at center, #0f172a, #020617); z-index: 999999;">
         <h2 style="font-size:36px; color:white; font-weight:900; text-shadow: 0 0 20px var(--accent); margin-bottom: 10px;">Hangi Sisteme Geçeceksiniz?</h2>
         <p style="color:#cbd5e1; margin-bottom: 40px; letter-spacing: 2px;">Lütfen çalışmak istediğiniz paneli seçin.</p>
@@ -703,6 +724,33 @@
             fillUnvanSelect(); loadPool(); loadArchive(); updateZorunlu(); 
             document.getElementById('startDate').valueAsDate = new Date();
         };
+   // ============================================================================
+        // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ (FİNAL SÜRÜM)
+        // ============================================================================
+        document.addEventListener('contextmenu', event => {
+            // Inputlara ve tablo hücrelerine sağ tık serbest, diğer yerler yasak
+            if(!event.target.tagName.match(/^INPUT$/i) && !event.target.tagName.match(/^TH$/i) && !event.target.tagName.match(/^TD$/i)) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); e.stopPropagation(); return false; }
+            if (e.ctrlKey || e.metaKey) {
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'U' || e.key === 'u') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'S' || e.key === 's') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'P' || e.key === 'p') { e.preventDefault(); e.stopPropagation(); return false; }
+            }
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            // Inputlar haricinde metin seçimi yasak
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') { 
+                e.preventDefault(); 
+            }
+        });
+    
     </script>
 </body>
 </html>
