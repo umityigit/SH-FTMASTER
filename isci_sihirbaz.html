@@ -60,10 +60,6 @@
         @keyframes toastPop { from { bottom:-50px; opacity:0; transform:translateX(-50%) scale(0.5); } to { bottom:40px; opacity:1; transform:translateX(-50%) scale(1); } }
         @keyframes fadeOut { to { opacity:0; bottom:-50px; } }
         @keyframes fadeIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
-        
-        /* Matris animasyonu için */
-        .matrix-flash { animation: flashCell 1s ease-out; }
-        @keyframes flashCell { 0% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -77,7 +73,6 @@
             </div>
         </div>
         <div style="display:flex; gap: 15px;">
-            <button class="btn btn-cyan" style="padding: 12px 25px; box-shadow: 0 0 15px var(--cyan);" onclick="window.location.reload()">🔄 SİHİRBAZI YENİLE</button>
             <button class="btn btn-danger" style="padding: 12px 25px;" onclick="window.location.href='shiftmaster.html'">🔙 ANA PANELE DÖN</button>
         </div>
     </div>
@@ -113,7 +108,7 @@
             </div>
 
             <div class="generator-area">
-                <div style="display:flex; gap:25px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 20px 35px; border-radius: 20px; border: 1px solid rgba(56,189,248,0.3); display: inline-flex; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(56,189,248,0.1);">
+                <div style="display:flex; gap:25px; justify-content: center; margin-bottom: 25px; background: rgba(0,0,0,0.6); padding: 20px 35px; border-radius: 20px; border: 1px solid rgba(56,189,248,0.3); display: inline-flex; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(56,189,248,0.1); align-items: flex-end;">
                     <div style="text-align:left;">
                         <label style="font-size:11px; color:var(--cyan); font-weight:900; letter-spacing:2px; text-shadow: 0 0 5px var(--cyan);">BAŞLANGIÇ TARİHİ</label><br>
                         <input type="date" class="date-picker-light" id="simStartDate" style="width: 170px; margin-top:8px; border-radius: 10px; border: 2px solid var(--cyan); background: #f8fafc; color: #0f172a; font-family:'Poppins', sans-serif;">
@@ -121,6 +116,10 @@
                     <div style="text-align:left; border-left: 2px dashed rgba(255,255,255,0.15); padding-left: 25px;">
                         <label style="font-size:11px; color:var(--warning); font-weight:900; letter-spacing:2px; text-shadow: 0 0 5px var(--warning);">SÜRE (GÜN)</label><br>
                         <input type="number" class="glass-input" id="simDays" value="28" style="width: 100px; font-size: 22px; font-weight: 900; text-align: center; margin-top:8px; height: 46px; border-color: var(--warning); color: var(--warning); box-sizing: border-box;">
+                    </div>
+                    <div style="text-align:left; border-left: 2px dashed rgba(255,255,255,0.15); padding-left: 25px; display:flex; gap:10px;">
+                        <button class="btn btn-cyan" style="height: 46px; padding: 0 20px; font-size: 14px;" onclick="window.location.reload()">🔄 SIFIRLA / YENİLE</button>
+                        <button class="btn btn-danger" style="height: 46px; padding: 0 30px; font-size: 16px; box-shadow: 0 0 15px var(--danger);" onclick="startAiDistribution12h()">🚀 OLUŞTUR</button>
                     </div>
                 </div>
 
@@ -135,15 +134,15 @@
                             <div style="background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(56,189,248,0.3)';">
                                 <div style="background: rgba(56, 189, 248, 0.15); color: var(--cyan); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(56, 189, 248, 0.2); text-shadow: 0 0 8px var(--cyan);">${day}</div>
                                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
-                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
                                         <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
                                         <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
                                         <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
                                         <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
                                         <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
                                         <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
@@ -161,15 +160,15 @@
                             <div style="background: linear-gradient(180deg, rgba(244,63,94,0.1), rgba(2,6,23,0.95)); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--danger)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(244, 63, 94, 0.4)';">
                                 <div style="background: rgba(244, 63, 94, 0.2); color: var(--danger); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(244, 63, 94, 0.3); text-shadow: 0 0 8px var(--danger);">${day}</div>
                                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
-                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
                                         <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
                                         <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
                                         <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
                                         <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
                                         <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
                                         <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
@@ -226,9 +225,9 @@
                         </div>
                         
                         <div class="rotation-grid" style="grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('4_2_8kisi')">🔄 8 Kişi (4/2 - 2/2...)</button>
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('3_2_8kisi')">🔄 8 Kişi (3/2 - 3/2...)</button>
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('2_1_4kisi')">🔄 4 Kişi (2/1 - 1/1...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="fillMatrixWithTemplate('4_2_8kisi')">🔄 8 Kişi (4/2 - 2/2 - 2/2...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="fillMatrixWithTemplate('3_2_8kisi')">🔄 8 Kişi (3/2 - 3/2 - 2/2...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="fillMatrixWithTemplate('2_1_4kisi')">🔄 4 Kişi (2/1 - 1/1 - 1/1...)</button>
                         </div>
                         
                         <button class="mega-btn" onclick="startAiDistribution12h()">🚀 12S Aİ MOTORUNU BAŞLAT</button>
@@ -290,7 +289,7 @@
         let historyStack = [];
         let staffList = [];
         let autoSelectDone = false; 
-        let shiftRules = {}; // Bulunamayan renkler için can simidi
+        let shiftRules = {}; 
 
         window.onload = () => {
             loadStaffPool(); 
@@ -305,7 +304,6 @@
             
             if (daysParam) document.getElementById('simDays').value = daysParam;
 
-            // Eğer ana sayfadan "Sihirbazla Doldur" denilerek gelindiyse, butonu özel isimlendir:
             if (urlParams.get('mode') === 'inject') {
                 const btn = document.getElementById("btnTransfer");
                 if(btn) btn.innerHTML = "📥 DİREKT TABLOYA AKTAR VE KAPAT";
@@ -392,7 +390,7 @@
         function addInitialShifts() {
             db.ref('vardiya_kurallari').on('value', snap => {
                 if(snap.exists()) {
-                    shiftRules = snap.val(); // Hafızaya kaydet
+                    shiftRules = snap.val(); 
                     shiftGrid.innerHTML = "";
                     Object.entries(shiftRules).forEach(([key, val]) => {
                         createShiftCard(key.replace(/:/g,'.'), val.name || key, val.color, true, val.w, val.n);
@@ -410,7 +408,6 @@
             });
         }
 
-        // 🔥 OTO-KAYIT (BEYİN SENKRONİZASYONU) 🔥
         function autoSaveRules() {
             const shifts = getDefinedShifts();
             const updates = {};
@@ -427,22 +424,17 @@
             showToast("Ayarlar Ana Sisteme Sabitlendi! 💾✅");
         }
 
-        // 🎨 AKILLI RENK BULUCU (Eksik Renk Kalmayacak) 🎨
         function getShiftColor(val) {
             if(!val) return "transparent";
             val = val.trim();
-            // Önce ekrandaki kartlarda ara
             let definedShifts = getDefinedShifts();
             let fShift = definedShifts.find(x => x.hours.trim() === val || x.name.trim() === val);
             if(fShift) return fShift.color;
-            
-            // Bulamazsan Firebase'den (shiftRules) ara
             let key1 = val.replace(/\./g, ':');
             let key2 = val.replace(/\s+/g, '');
             if(shiftRules[key1]) return shiftRules[key1].color;
             if(shiftRules[key2]) return shiftRules[key2].color;
             if(shiftRules[val]) return shiftRules[val].color;
-            
             return "transparent";
         }
 
@@ -493,80 +485,45 @@
         }
 
         // ==========================================
-        // 🎯 YARDIMCI: MATRİS DOLDURUCU 
+        // 🔥 AKILLI MATRİS DOLDURUCU (Gündüz & Gece Olarak İşler)
         // ==========================================
-        function fillMatrixInputs(g, o, n) {
-            for(let i=1; i<=7; i++) {
-                let elG = document.getElementById('aiReq_G_'+i);
-                let elO = document.getElementById('aiReq_O_'+i);
-                let elN = document.getElementById('aiReq_N_'+i);
-                if(elG) { elG.value = g; elG.style.backgroundColor = "rgba(6, 182, 212, 0.4)"; }
-                if(elO) { elO.value = o; elO.style.backgroundColor = "rgba(245, 158, 11, 0.4)"; }
-                if(elN) { elN.value = n; elN.style.backgroundColor = "rgba(168, 85, 247, 0.4)"; }
+        function fillMatrixWithTemplate(tip) {
+            let pattern = [];
+            // Şablon kuralları: [Gündüz Sayısı, Gece Sayısı] sırasıyla Pazartesi'den Pazar'a
+            if (tip === '4_2_8kisi') {
+                pattern = [[4,2], [2,2], [2,2], [2,2], [4,2], [2,2], [2,2]];
+            } else if (tip === '3_2_8kisi') {
+                pattern = [[3,2], [3,2], [2,2], [3,2], [3,2], [2,2], [2,2]];
+            } else if (tip === '2_1_4kisi') {
+                pattern = [[2,1], [1,1], [1,1], [1,1], [2,1], [1,1], [1,1]];
+            }
+
+            for(let i=0; i<7; i++) {
+                let dayIdx = i + 1;
+                let gInput = document.getElementById('aiReq_G_' + dayIdx);
+                let oInput = document.getElementById('aiReq_O_' + dayIdx);
+                let nInput = document.getElementById('aiReq_N_' + dayIdx);
+
+                if(gInput) { 
+                    gInput.value = pattern[i][0]; 
+                    gInput.parentElement.style.backgroundColor = "rgba(6, 182, 212, 0.4)"; 
+                }
+                if(oInput) { 
+                    oInput.value = 0; 
+                    oInput.parentElement.style.backgroundColor = "rgba(245, 158, 11, 0.4)"; 
+                }
+                if(nInput) { 
+                    nInput.value = pattern[i][1]; 
+                    nInput.parentElement.style.backgroundColor = "rgba(168, 85, 247, 0.4)"; 
+                }
+
                 setTimeout(() => {
-                    if(elG) elG.style.backgroundColor = "transparent";
-                    if(elO) elO.style.backgroundColor = "transparent";
-                    if(elN) elN.style.backgroundColor = "transparent";
+                    if(gInput) gInput.parentElement.style.backgroundColor = "rgba(0,0,0,0.6)";
+                    if(oInput) oInput.parentElement.style.backgroundColor = "rgba(0,0,0,0.6)";
+                    if(nInput) nInput.parentElement.style.backgroundColor = "rgba(0,0,0,0.6)";
                 }, 800);
             }
-        }
-
-        // ==========================================
-        // 🔄 12 SAATLİK ÖZEL ŞABLON UYGULAMA MOTORU 
-        // ==========================================
-        function uygulaOzelSablon(tip) {
-            if(selectedStaff.length === 0) return alert("Lütfen sağ üstten personel seçin!");
-            const daysCount = parseInt(document.getElementById('simDays').value);
-            const startDtStr = document.getElementById('simStartDate').value;
-            const dayCode = document.getElementById('aiDayShiftSelect').value || "08:00-20:00";
-            const nightCode = document.getElementById('aiNightShiftSelect').value || "20:00-08:00";
-            const offCode = document.getElementById('aiOffShiftSelect').value || "HT";
-            
-            let pattern = [];
-            let offsetMultiplier = 1;
-            
-            if (tip === '4_2_8kisi') {
-                fillMatrixInputs(2, 0, 2); // 8 kişi için günde 4 çalışan
-                pattern = [
-                    dayCode, dayCode, dayCode, dayCode, offCode, offCode,
-                    nightCode, nightCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode,
-                    nightCode, nightCode, offCode, offCode
-                ];
-                offsetMultiplier = 2; 
-            } else if (tip === '3_2_8kisi') {
-                fillMatrixInputs(2, 0, 2);
-                pattern = [
-                    dayCode, dayCode, dayCode, offCode, offCode,
-                    nightCode, nightCode, nightCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode,
-                    nightCode, nightCode, offCode, offCode
-                ];
-                offsetMultiplier = 2;
-            } else if (tip === '2_1_4kisi') {
-                fillMatrixInputs(1, 0, 1); // 4 kişi için günde 2 çalışan
-                pattern = [
-                    dayCode, dayCode, offCode,
-                    nightCode, offCode,
-                    dayCode, offCode,
-                    nightCode, offCode
-                ];
-                offsetMultiplier = 2;
-            }
-
-            let staffData = selectedStaff.map((name, idx) => {
-                let log = [];
-                for(let d=0; d<daysCount; d++) {
-                    log.push(pattern[(d + (idx * offsetMultiplier)) % pattern.length]);
-                }
-                return {name: name, shiftLog: log};
-            });
-
-            document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Özel Şablon (Gündüz & Gece Dağıtımlı)</span>`;
-            renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], dayCode, nightCode, offCode);
-            document.getElementById('resultModal').style.display = 'flex';
-            autoSaveRules();
-            showToast("Matris Dolduruldu ve Şablon Uygulandı! Önizleme Ekranındasınız. 🚀");
+            showToast("Haftalık Matris Dolduruldu! 🚀 Şimdi 'OLUŞTUR' butonuna basabilirsiniz.");
         }
 
         let lastAiMode = null; 
@@ -846,7 +803,6 @@
             let activeShifts = getDefinedShifts().filter(s => s.hours !== "HT" && s.hours !== "İ" && s.hours !== "R"); let fHT = getDefinedShifts().find(x => x.hours === "HT"); let HT = fHT ? fHT.hours : "HT"; 
             let pattern = []; let offsets = [];
             if(hourMode === 8) {
-                fillMatrixInputs(1, 1, 1);
                 if(activeShifts.length < 3) return alert("8 Saatlik rotasyon için Atölyede en az 3 aktif çalışma vardiyası olmalı!");
                 let G = activeShifts[0].hours; let A = activeShifts[1].hours; let N = activeShifts[2].hours; 
                 if (type === 1) { pattern = [G, G, A, A, N, N, HT, HT]; offsets = [0, 6, 4, 2]; } else if (type === 2) { pattern = [G, G, G, A, A, N, N, HT]; offsets = [0, 6, 4, 2]; } else if (type === 3) { pattern = [G, A, N, HT]; offsets = [0, 3, 2, 1]; }
@@ -864,7 +820,6 @@
             renderFinalTableWithSummary(finalStaffData, startDtStr, daysCount, [], [], null, null, null);
             document.getElementById('resultModal').style.display = 'flex';
             autoSaveRules();
-            showToast("Matris Güncellendi ve Şablon Çizildi!");
         }
 
         // =========================================
