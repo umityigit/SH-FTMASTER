@@ -60,6 +60,10 @@
         @keyframes toastPop { from { bottom:-50px; opacity:0; transform:translateX(-50%) scale(0.5); } to { bottom:40px; opacity:1; transform:translateX(-50%) scale(1); } }
         @keyframes fadeOut { to { opacity:0; bottom:-50px; } }
         @keyframes fadeIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+        
+        /* Matris animasyonu için */
+        .matrix-flash { animation: flashCell 1s ease-out; }
+        @keyframes flashCell { 0% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -133,15 +137,15 @@
                                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                                     <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                         <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
-                                        <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                        <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
                                     <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                         <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
-                                        <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                        <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
                                     <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                         <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
-                                        <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                        <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
                                 </div>
                             </div>
@@ -159,15 +163,15 @@
                                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                                     <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                         <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
-                                        <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                        <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
                                     <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                         <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
-                                        <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                        <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
                                     <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                         <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
-                                        <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif;">
+                                        <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
                                 </div>
                             </div>
@@ -222,9 +226,9 @@
                         </div>
                         
                         <div class="rotation-grid" style="grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('4_2_8kisi')">🔄 8 Kişi (4/2 - 2/2 - 2/2 - 2/2...)</button>
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('3_2_8kisi')">🔄 8 Kişi (3/2 - 3/2 - 2/2 - 3/2...)</button>
-                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('2_1_4kisi')">🔄 4 Kişi (2/1 - 1/1 - 1/1 - 1/1...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('4_2_8kisi')">🔄 8 Kişi (4/2 - 2/2...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('3_2_8kisi')">🔄 8 Kişi (3/2 - 3/2...)</button>
+                            <button class="magic-btn" style="border-color:var(--danger);" onclick="uygulaOzelSablon('2_1_4kisi')">🔄 4 Kişi (2/1 - 1/1...)</button>
                         </div>
                         
                         <button class="mega-btn" onclick="startAiDistribution12h()">🚀 12S Aİ MOTORUNU BAŞLAT</button>
@@ -245,7 +249,7 @@
             <div style="display:flex; gap:15px;">
                 <button class="btn btn-cyan" onclick="regenerateAiTable()" style="box-shadow: 0 0 20px rgba(6, 182, 212, 0.6); padding: 12px 20px; font-size: 14px;">🔄 ALTERNATİF ÜRET</button>
                 <button class="btn btn-orange" onclick="exportWizardToExcel()" style="padding: 12px 20px; font-size: 14px;">📥 EXCEL'E AKTAR</button>
-                <button class="btn btn-success" style="box-shadow: 0 0 20px rgba(16,185,129,0.6); padding: 12px 30px; font-size: 16px;" onclick="saveAITableToPool()">💾 ANA SİSTEME KAYDET</button>
+                <button id="btnTransfer" class="btn btn-success" style="box-shadow: 0 0 20px rgba(16,185,129,0.6); padding: 12px 30px; font-size: 16px;" onclick="saveAITableToPool()">📥 ANA TABLOYA AKTAR</button>
                 <button class="btn btn-danger" onclick="document.getElementById('resultModal').style.display='none'" style="padding: 12px 20px; font-size: 14px;">❌ KAPAT</button>
             </div>
         </div>
@@ -286,6 +290,7 @@
         let historyStack = [];
         let staffList = [];
         let autoSelectDone = false; 
+        let shiftRules = {}; // Bulunamayan renkler için can simidi
 
         window.onload = () => {
             loadStaffPool(); 
@@ -299,6 +304,12 @@
             else document.getElementById('simStartDate').valueAsDate = new Date();
             
             if (daysParam) document.getElementById('simDays').value = daysParam;
+
+            // Eğer ana sayfadan "Sihirbazla Doldur" denilerek gelindiyse, butonu özel isimlendir:
+            if (urlParams.get('mode') === 'inject') {
+                const btn = document.getElementById("btnTransfer");
+                if(btn) btn.innerHTML = "📥 DİREKT TABLOYA AKTAR VE KAPAT";
+            }
         };
 
         function loadStaffPool() { 
@@ -326,11 +337,6 @@
                                 else { selectedStaff.push(n); staffPreferences[n] = "AI"; } 
                             });
                             renderSelectedStaff();
-                            
-                            if (urlParams.get('mode') === 'inject') {
-                                const btn = document.querySelector(".btn-success");
-                                if(btn) btn.innerHTML = "📥 DİREKT TABLOYA AKTAR VE KAPAT";
-                            }
                         }
                         autoSelectDone = true;
                     }
@@ -384,10 +390,11 @@
 
         const shiftGrid = document.getElementById("shiftDefinitionsGrid");
         function addInitialShifts() {
-            db.ref('vardiya_kurallari').once('value').then(snap => {
+            db.ref('vardiya_kurallari').on('value', snap => {
                 if(snap.exists()) {
+                    shiftRules = snap.val(); // Hafızaya kaydet
                     shiftGrid.innerHTML = "";
-                    Object.entries(snap.val()).forEach(([key, val]) => {
+                    Object.entries(shiftRules).forEach(([key, val]) => {
                         createShiftCard(key.replace(/:/g,'.'), val.name || key, val.color, true, val.w, val.n);
                     });
                 } else {
@@ -411,14 +418,32 @@
                 const key = s.hours.replace(/\./g, ':');
                 updates[key] = { w: s.wH, n: s.nH, color: s.color, name: s.name };
             });
-            db.ref('vardiya_kurallari').set(updates); 
-            updateAiSelects();
+            db.ref('vardiya_kurallari').update(updates); 
             buildContextMenu();
         }
 
         function saveAllShiftRulesToFirebase() {
             autoSaveRules();
             showToast("Ayarlar Ana Sisteme Sabitlendi! 💾✅");
+        }
+
+        // 🎨 AKILLI RENK BULUCU (Eksik Renk Kalmayacak) 🎨
+        function getShiftColor(val) {
+            if(!val) return "transparent";
+            val = val.trim();
+            // Önce ekrandaki kartlarda ara
+            let definedShifts = getDefinedShifts();
+            let fShift = definedShifts.find(x => x.hours.trim() === val || x.name.trim() === val);
+            if(fShift) return fShift.color;
+            
+            // Bulamazsan Firebase'den (shiftRules) ara
+            let key1 = val.replace(/\./g, ':');
+            let key2 = val.replace(/\s+/g, '');
+            if(shiftRules[key1]) return shiftRules[key1].color;
+            if(shiftRules[key2]) return shiftRules[key2].color;
+            if(shiftRules[val]) return shiftRules[val].color;
+            
+            return "transparent";
         }
 
         function createShiftCard(hours, codeName, color, isActive, wH = 0, nH = 0) {
@@ -468,6 +493,25 @@
         }
 
         // ==========================================
+        // 🎯 YARDIMCI: MATRİS DOLDURUCU 
+        // ==========================================
+        function fillMatrixInputs(g, o, n) {
+            for(let i=1; i<=7; i++) {
+                let elG = document.getElementById('aiReq_G_'+i);
+                let elO = document.getElementById('aiReq_O_'+i);
+                let elN = document.getElementById('aiReq_N_'+i);
+                if(elG) { elG.value = g; elG.style.backgroundColor = "rgba(6, 182, 212, 0.4)"; }
+                if(elO) { elO.value = o; elO.style.backgroundColor = "rgba(245, 158, 11, 0.4)"; }
+                if(elN) { elN.value = n; elN.style.backgroundColor = "rgba(168, 85, 247, 0.4)"; }
+                setTimeout(() => {
+                    if(elG) elG.style.backgroundColor = "transparent";
+                    if(elO) elO.style.backgroundColor = "transparent";
+                    if(elN) elN.style.backgroundColor = "transparent";
+                }, 800);
+            }
+        }
+
+        // ==========================================
         // 🔄 12 SAATLİK ÖZEL ŞABLON UYGULAMA MOTORU 
         // ==========================================
         function uygulaOzelSablon(tip) {
@@ -475,44 +519,39 @@
             const daysCount = parseInt(document.getElementById('simDays').value);
             const startDtStr = document.getElementById('simStartDate').value;
             const dayCode = document.getElementById('aiDayShiftSelect').value || "08:00-20:00";
+            const nightCode = document.getElementById('aiNightShiftSelect').value || "20:00-08:00";
             const offCode = document.getElementById('aiOffShiftSelect').value || "HT";
             
             let pattern = [];
-            let offsetMultiplier = 4;
+            let offsetMultiplier = 1;
             
             if (tip === '4_2_8kisi') {
+                fillMatrixInputs(2, 0, 2); // 8 kişi için günde 4 çalışan
                 pattern = [
                     dayCode, dayCode, dayCode, dayCode, offCode, offCode,
+                    nightCode, nightCode, offCode, offCode,
                     dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode
+                    nightCode, nightCode, offCode, offCode
                 ];
-                offsetMultiplier = 4;
+                offsetMultiplier = 2; 
             } else if (tip === '3_2_8kisi') {
+                fillMatrixInputs(2, 0, 2);
                 pattern = [
                     dayCode, dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, dayCode, offCode, offCode,
+                    nightCode, nightCode, nightCode, offCode, offCode,
                     dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode,
-                    dayCode, dayCode, offCode, offCode
+                    nightCode, nightCode, offCode, offCode
                 ];
-                offsetMultiplier = 4;
+                offsetMultiplier = 2;
             } else if (tip === '2_1_4kisi') {
+                fillMatrixInputs(1, 0, 1); // 4 kişi için günde 2 çalışan
                 pattern = [
                     dayCode, dayCode, offCode,
+                    nightCode, offCode,
                     dayCode, offCode,
-                    dayCode, offCode,
-                    dayCode, offCode,
-                    dayCode, dayCode, offCode,
-                    dayCode, offCode,
-                    dayCode, offCode
+                    nightCode, offCode
                 ];
-                offsetMultiplier = 4;
+                offsetMultiplier = 2;
             }
 
             let staffData = selectedStaff.map((name, idx) => {
@@ -523,11 +562,11 @@
                 return {name: name, shiftLog: log};
             });
 
-            document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Kusursuz Özel Şablon</span>`;
-            renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], dayCode, null, offCode);
+            document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Özel Şablon (Gündüz & Gece Dağıtımlı)</span>`;
+            renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], dayCode, nightCode, offCode);
             document.getElementById('resultModal').style.display = 'flex';
             autoSaveRules();
-            showToast("Özel Şablon Uygulandı! 🚀");
+            showToast("Matris Dolduruldu ve Şablon Uygulandı! Önizleme Ekranındasınız. 🚀");
         }
 
         let lastAiMode = null; 
@@ -545,7 +584,7 @@
         }
 
         // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - SABİT VARDİYA UYUMLU
+        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
         // ==========================================
         function startAiDistribution12h() {
             let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
@@ -591,7 +630,7 @@
                         let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI (Kendi 45 Saat Kuralı Var)
+                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI
                         simStaff.forEach(s => {
                             if (s.pref !== "AI") {
                                 let pDef = definedShifts.find(x => x.hours === s.pref);
@@ -607,7 +646,7 @@
                             }
                         });
 
-                        // 2. Aİ KURALLARI (Sadece AI Atanmış Serbest Çalışanlar İçin)
+                        // 2. Aİ KURALLARI 
                         simStaff.forEach(s => { 
                             if (s.pref === "AI" && !s.assignedToday) {
                                 if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
@@ -663,7 +702,7 @@
         }
 
         // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) - SABİT VARDİYA UYUMLU
+        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) 
         // ==========================================
         function startAiDistribution8h() {
             let sCode = document.getElementById('ai8_Sabah').value;
@@ -715,7 +754,6 @@
                         let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI
                         simStaff.forEach(s => {
                             if (s.pref !== "AI") {
                                 let pDef = definedShifts.find(x => x.hours === s.pref);
@@ -732,7 +770,6 @@
                             }
                         });
 
-                        // 2. Aİ KURALLARI 
                         simStaff.forEach(s => {
                             if (s.pref === "AI" && !s.assignedToday) {
                                 if (s.lastShiftType === 'A' || s.lastShiftType === 'N' || s.weeklyWorkDays >= 5) {
@@ -741,7 +778,6 @@
                             }
                         });
 
-                        // 3. Aİ AKŞAM ATAMASI
                         let poolA = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
                         poolA.sort((a,b) => (a.aCount - b.aCount) || (0.5 - Math.random()));
                         let aAssigned = 0;
@@ -752,7 +788,6 @@
                         }
                         if(cReqA > 0 && aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
 
-                        // 4. Aİ ÖĞLE ATAMASI
                         let poolO = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
                         poolO.sort(() => 0.5 - Math.random());
                         let oAssigned = 0;
@@ -763,7 +798,6 @@
                         }
                         if(cReqO > 0 && oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
 
-                        // 5. Aİ SABAH ATAMASI
                         let poolS = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
                         poolS.sort((a,b) => (b.dayConsecutive - a.dayConsecutive) || (0.5 - Math.random()));
                         let sAssigned = 0;
@@ -774,7 +808,6 @@
                         }
                         if(cReqS > 0 && sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
 
-                        // 6. KALANLARA İZİN
                         simStaff.forEach(s => { 
                             if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0; } 
                             s.shiftLog.push(s.assignedToday); 
@@ -813,6 +846,7 @@
             let activeShifts = getDefinedShifts().filter(s => s.hours !== "HT" && s.hours !== "İ" && s.hours !== "R"); let fHT = getDefinedShifts().find(x => x.hours === "HT"); let HT = fHT ? fHT.hours : "HT"; 
             let pattern = []; let offsets = [];
             if(hourMode === 8) {
+                fillMatrixInputs(1, 1, 1);
                 if(activeShifts.length < 3) return alert("8 Saatlik rotasyon için Atölyede en az 3 aktif çalışma vardiyası olmalı!");
                 let G = activeShifts[0].hours; let A = activeShifts[1].hours; let N = activeShifts[2].hours; 
                 if (type === 1) { pattern = [G, G, A, A, N, N, HT, HT]; offsets = [0, 6, 4, 2]; } else if (type === 2) { pattern = [G, G, G, A, A, N, N, HT]; offsets = [0, 6, 4, 2]; } else if (type === 3) { pattern = [G, A, N, HT]; offsets = [0, 3, 2, 1]; }
@@ -830,6 +864,7 @@
             renderFinalTableWithSummary(finalStaffData, startDtStr, daysCount, [], [], null, null, null);
             document.getElementById('resultModal').style.display = 'flex';
             autoSaveRules();
+            showToast("Matris Güncellendi ve Şablon Çizildi!");
         }
 
         // =========================================
@@ -851,7 +886,7 @@
         }
 
         // =========================================
-        // 🎨 TABLOYU ÇİZME 
+        // 🎨 TABLOYU ÇİZME VE AKILLI RENKLENDİRME
         // =========================================
         function renderFinalTableWithSummary(staffData, dateStr, daysCount, reqG, reqN, dayCode, nightCode, offCode) {
             let container = document.getElementById('generatedTableContainer');
@@ -864,11 +899,11 @@
             }
             h += `<th style="color:var(--cyan); min-width:60px;">G. SAAT</th><th style="color:var(--warning); min-width:60px;">GC. SAAT</th><th style="color:var(--success); min-width:60px;">TOPLAM</th></tr></thead><tbody id="aiGeneratedBody">`;
 
-            let definedShifts = getDefinedShifts();
             staffData.forEach(s => {
                 h += `<tr><td style="text-align:left; background:rgba(0,0,0,0.8); border-left: 4px solid var(--accent);"><b style="font-size:12px; color:#fff;">${s.name}</b></td>`;
                 for(let c=0; c<daysCount; c++) {
-                    let shiftVal = s.shiftLog[c]; let fShift = definedShifts.find(x => x.hours === shiftVal); let bgColor = fShift ? fShift.color : "transparent";
+                    let shiftVal = s.shiftLog[c]; 
+                    let bgColor = getShiftColor(shiftVal); 
                     h += `<td class="shift-cell" style="background:${bgColor};" contenteditable="true" oninput="updateTableStats(); saveHistory();">${shiftVal}</td>`;
                     let d = new Date(dBase); d.setDate(dBase.getDate() + c);
                     if (d.getDay() === 0) { h += `<td class="no-export week-summary-col week-stat-cell"></td>`; }
@@ -897,7 +932,10 @@
                 for(let i=1; i<cells.length; i++) {
                     let cell = cells[i];
                     if (cell.classList.contains('shift-cell')) {
-                        let val = cell.innerText.trim(); let sDef = definedShifts.find(x => x.hours === val || x.name === val);
+                        let val = cell.innerText.trim(); 
+                        cell.style.background = getShiftColor(val); 
+                        
+                        let sDef = definedShifts.find(x => x.hours === val || x.name === val);
                         if(sDef) { totalW += sDef.wH; totalN += sDef.nH; }
                         if (val === "HT" || val === "İ" || val === "R" || val === "") {} 
                         else if (val.startsWith("20:") || val.startsWith("24:") || val.startsWith("00:") || val.includes("GECE") || val.includes("AKŞAM") || val === document.getElementById('ai8_Aksam')?.value) { weeklyN++; } else { weeklyW++; }
@@ -957,7 +995,7 @@
                 cell.onmousedown = (e) => { if(e.button === 0) { isDraggingCells = true; startSelectCell = cell; clearTableSelection(); cell.classList.add('selected-cell'); } };
                 cell.onmouseenter = () => { if(isDraggingCells) { clearTableSelection(); selectCellRange(startSelectCell, cell); } };
                 cell.oncontextmenu = (e) => { e.preventDefault(); if(!cell.classList.contains('selected-cell')) { clearTableSelection(); cell.classList.add('selected-cell'); } const m = document.getElementById('ctxMenu'); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; };
-                cell.onkeyup = () => { let val = cell.innerText.trim(); let fShift = getDefinedShifts().find(x => x.hours === val || x.name === val); cell.style.background = fShift ? fShift.color : "transparent"; updateTableStats();  };
+                cell.onkeyup = () => { let val = cell.innerText.trim(); cell.style.background = getShiftColor(val); updateTableStats();  };
             });
         }
         function clearTableSelection() { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
@@ -975,8 +1013,8 @@
         document.addEventListener('paste', e => {
             if (document.getElementById('resultModal').style.display !== 'flex') return;
             const selected = Array.from(document.querySelectorAll('.selected-cell'));
-            if(selected.length > 0) { e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = pasteData.split('\n').filter(r => r.trim() !== ""); let startCell = selected[0]; let startTr = startCell.closest('tr'); let tbody = startTr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr:not(.summary-row)')); let startRowIdx = allTrs.indexOf(startTr); let shiftCells = Array.from(startTr.querySelectorAll('.shift-cell')); let startShiftColIdx = shiftCells.indexOf(startCell); let definedShifts = getDefinedShifts();
-                for (let i = 0; i < rows.length; i++) { if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentShiftCells = Array.from(currentTr.querySelectorAll('.shift-cell')); for (let j = 0; j < cols.length; j++) { if (startShiftColIdx + j >= currentShiftCells.length) break; let targetCell = currentShiftCells[startShiftColIdx + j]; let val = cols[j].trim(); targetCell.innerText = val; let fShift = definedShifts.find(x => x.hours === val || x.name === val); targetCell.style.background = fShift ? fShift.color : "transparent"; } }
+            if(selected.length > 0) { e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = pasteData.split('\n').filter(r => r.trim() !== ""); let startCell = selected[0]; let startTr = startCell.closest('tr'); let tbody = startTr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr:not(.summary-row)')); let startRowIdx = allTrs.indexOf(startTr); let shiftCells = Array.from(startTr.querySelectorAll('.shift-cell')); let startShiftColIdx = shiftCells.indexOf(startCell); 
+                for (let i = 0; i < rows.length; i++) { if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentShiftCells = Array.from(currentTr.querySelectorAll('.shift-cell')); for (let j = 0; j < cols.length; j++) { if (startShiftColIdx + j >= currentShiftCells.length) break; let targetCell = currentShiftCells[startShiftColIdx + j]; let val = cols[j].trim(); targetCell.innerText = val; targetCell.style.background = getShiftColor(val); } }
                 updateTableStats(); showToast("Yapıştırıldı! ✅");
             }
         });
@@ -985,7 +1023,7 @@
         function saveHistory() { const tableContainer = document.getElementById('generatedTableContainer'); if(tableContainer && tableContainer.innerHTML) { historyStack.push(tableContainer.innerHTML); if(historyStack.length > 20) historyStack.shift(); } }
         function undoHistory() { if(historyStack.length > 1) { historyStack.pop(); document.getElementById('generatedTableContainer').innerHTML = historyStack[historyStack.length - 1]; initTableEvents(); showToast("Geri Alındı ↩️"); } else { showToast("Daha fazla geri alınamaz!"); } }
         function buildContextMenu() { const container = document.getElementById('dynamicMenuContainer'); container.innerHTML = ""; let definedShifts = getDefinedShifts(); definedShifts.forEach(s => { container.innerHTML += `<div class="menu-item" style="background:${s.color}; border-color: rgba(255,255,255,0.4);" onclick="applyShiftToSelected('${s.hours}', '${s.color}')">${s.name} <br><small>(${s.hours})</small></div>`; }); }
-        function applyShiftToSelected(text, color) { saveHistory(); document.querySelectorAll('.selected-cell').forEach(c => { c.innerText = text; c.style.background = color; }); document.getElementById('ctxMenu').style.display = "none"; clearTableSelection(); updateTableStats(); }
+        function applyShiftToSelected(text, color) { saveHistory(); document.querySelectorAll('.selected-cell').forEach(c => { c.innerText = text; c.style.background = getShiftColor(text); }); document.getElementById('ctxMenu').style.display = "none"; clearTableSelection(); updateTableStats(); }
 
         // 🔥 DİREKT TABLOYA AKTARIM VEYA HAVUZA GÖNDERİM MOTORU 🔥
         function saveAITableToPool() {
@@ -993,30 +1031,23 @@
             if(!tName) return alert("Lütfen tabloya bir isim verin!");
 
             const urlParams = new URLSearchParams(window.location.search);
+            const rows = [];
+            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                const name = tr.querySelector('b').innerText.trim();
+                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ 
+                    text: td.innerText.trim(), 
+                    bg: td.style.background, 
+                    pin: td.getAttribute("data-pin") || "" 
+                }));
+                rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
+            });
+
             if (urlParams.get('mode') === 'inject') {
-                const rows = [];
-                document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
-                    const name = tr.querySelector('b').innerText.trim();
-                    const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ 
-                        text: td.innerText, 
-                        bg: td.style.background, 
-                        pin: td.getAttribute("data-pin") || "" 
-                    }));
-                    rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
-                });
-                
                 if (window.parent && typeof window.parent.receiveDataFromAiWizard === 'function') {
                     window.parent.receiveDataFromAiWizard(rows, document.getElementById('simStartDate').value, document.getElementById('simDays').value);
                     return; 
                 }
             }
-
-            const rows = [];
-            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
-                const name = tr.querySelector('b').innerText.trim();
-                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ t: td.innerText, b: td.style.background }));
-                rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
-            });
 
             const data = { 
                 name: tName, 
