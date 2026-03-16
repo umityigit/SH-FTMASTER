@@ -102,6 +102,7 @@
                 <h3 class="card-title"><span>⚙️ VARDİYA TASARIM ATÖLYESİ</span></h3>
                 <div class="shift-grid" id="shiftDefinitionsGrid"></div>
                 <button class="btn btn-cyan" style="width: 100%; margin-top: 15px;" onclick="addCustomShiftUI()">➕ YENİ VARDİYA TİPİ OLUŞTUR</button>
+                <button class="btn btn-orange" style="width: 100%; margin-top: 10px;" onclick="saveAllShiftRulesToFirebase()">💾 AYARLARI ANA MERKEZE KAYDET</button>
             </div>
 
             <div class="generator-area">
@@ -187,8 +188,6 @@
                         </div>
                         <div style="display:flex; gap:10px; margin-bottom: 20px;">
                             <select id="ai8_Off" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
-                            <button class="btn btn-cyan" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
-                            <button class="btn btn-orange" onclick="saveAllShiftRulesToFirebase()" style="padding: 10px 15px; border-radius:10px;" title="Kaydet">💾 KAYDET</button>
                         </div>
                         
                         <div class="rotation-grid" style="grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
@@ -212,8 +211,6 @@
                             </div>
                             <div style="display:flex; gap:10px;">
                                 <select id="aiOffShiftSelect" class="glass-input" style="flex:1; border-color:var(--success); color:var(--success); font-weight:bold;"></select>
-                                <button class="btn btn-danger" onclick="addCustomShiftUI()" style="padding: 10px 15px; border-radius:10px;" title="Yeni Ekle">➕ YENİ</button>
-                                <button class="btn btn-orange" onclick="saveAllShiftRulesToFirebase()" style="padding: 10px 15px; border-radius:10px;" title="Kaydet">💾 KAYDET</button>
                             </div>
                         </div>
                         
@@ -227,6 +224,7 @@
                     </div>
                     
                 </div>
+                <button class="btn btn-success" style="width:100%; margin-top:20px; background:linear-gradient(135deg, #1e293b, #0f172a); border:1px solid #475569;" onclick="createBlankTable()">📄 TERTEMİZ BOŞ TABLO OLUŞTUR (SIFIRLA)</button>
             </div>
         </div>
     </div>
@@ -379,30 +377,67 @@
 
         const shiftGrid = document.getElementById("shiftDefinitionsGrid");
         function addInitialShifts() {
-            createShiftCard("08:00 - 16:00", "SABAH", "linear-gradient(135deg, #0ea5e9, #0369a1)", true, 7.5, 0);
-            createShiftCard("16:00 - 24:00", "AKŞAM", "linear-gradient(135deg, #f59e0b, #b45309)", true, 7.5, 0);
-            createShiftCard("24:00 - 08:00", "GECE", "linear-gradient(135deg, #8b5cf6, #5b21b6)", true, 0, 7.5);
-            createShiftCard("08:00 - 20:00", "12S GÜNDÜZ", "linear-gradient(135deg, #10b981, #047857)", true, 11, 0);
-            createShiftCard("20:00 - 08:00", "12S GECE", "linear-gradient(135deg, #ef4444, #9f1239)", true, 0, 11);
-            createShiftCard("HT", "HAFTA TATİLİ", "linear-gradient(135deg, #14b8a6, #0f766e)", true, 0, 0);
-            createShiftCard("İ", "YILLIK İZİN", "linear-gradient(135deg, #f43f5e, #9f1239)", true, 0, 0);
+            db.ref('vardiya_kurallari').once('value').then(snap => {
+                if(snap.exists()) {
+                    shiftGrid.innerHTML = "";
+                    Object.entries(snap.val()).forEach(([key, val]) => {
+                        createShiftCard(key.replace(/:/g,'.'), val.name || key, val.color, true, val.w, val.n);
+                    });
+                } else {
+                    createShiftCard("08:00 - 16:00", "SABAH", "linear-gradient(135deg, #0ea5e9, #0369a1)", true, 7.5, 0);
+                    createShiftCard("16:00 - 24:00", "AKŞAM", "linear-gradient(135deg, #f59e0b, #b45309)", true, 7.5, 0);
+                    createShiftCard("24:00 - 08:00", "GECE", "linear-gradient(135deg, #8b5cf6, #5b21b6)", true, 0, 7.5);
+                    createShiftCard("08:00 - 20:00", "12S GÜNDÜZ", "linear-gradient(135deg, #10b981, #047857)", true, 11, 0);
+                    createShiftCard("20:00 - 08:00", "12S GECE", "linear-gradient(135deg, #ef4444, #9f1239)", true, 0, 11);
+                    createShiftCard("HT", "HAFTA TATİLİ", "linear-gradient(135deg, #14b8a6, #0f766e)", true, 0, 0);
+                    createShiftCard("İ", "YILLIK İZİN", "linear-gradient(135deg, #f43f5e, #9f1239)", true, 0, 0);
+                }
+                updateAiSelects();
+            });
+        }
+
+        // 🔥 OTO-KAYIT (BEYİN SENKRONİZASYONU) 🔥
+        function autoSaveRules() {
+            const shifts = getDefinedShifts();
+            const updates = {};
+            shifts.forEach(s => {
+                const key = s.hours.replace(/\./g, ':');
+                updates[key] = { w: s.wH, n: s.nH, color: s.color, name: s.name };
+            });
+            db.ref('vardiya_kurallari').set(updates); 
+            updateAiSelects();
+            buildContextMenu();
+        }
+
+        function saveAllShiftRulesToFirebase() {
+            autoSaveRules();
+            showToast("Ayarlar Ana Sisteme Sabitlendi! 💾✅");
         }
 
         function createShiftCard(hours, codeName, color, isActive, wH = 0, nH = 0) {
             const card = document.createElement("div"); card.className = "shift-card" + (isActive ? "" : " inactive");
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="shift-active-cb" style="width:16px;height:16px; accent-color:var(--accent);" ${isActive ? 'checked' : ''} onchange="toggleCardState(this)"><input type="text" value="${codeName}" class="shift-name-inp glass-input" style="width: 80px; padding:5px; font-size:10px; font-weight:900; color:#fff; background:${color}; border:none;" onchange="renderSelectedStaff()"></div><span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:12px;" onclick="this.closest('.shift-card').remove(); renderSelectedStaff();">SİL</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" class="shift-active-cb" style="width:16px;height:16px; accent-color:var(--accent);" ${isActive ? 'checked' : ''} onchange="toggleCardState(this)">
+                        <input type="text" value="${codeName}" class="shift-name-inp glass-input" style="width: 80px; padding:5px; font-size:10px; font-weight:900; color:#fff; background:${color}; border:none;" onchange="renderSelectedStaff(); autoSaveRules();">
+                    </div>
+                    <span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:12px;" onclick="this.closest('.shift-card').remove(); renderSelectedStaff(); autoSaveRules();">SİL</span>
                 </div>
-                <div style="margin-bottom:5px;"><input type="text" value="${hours}" class="shift-hours-inp glass-input" style="width: 100%; padding:8px; font-size:12px; text-align:center; font-weight:900; box-sizing:border-box;" onchange="renderSelectedStaff()"></div>
-                <div style="display:flex; gap:5px;"><input type="number" placeholder="G. Saat" value="${wH}" class="shift-w-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); updateAiSelects();"><input type="number" placeholder="Gc. Saat" value="${nH}" class="shift-n-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); updateAiSelects();"></div>
+                <div style="margin-bottom:5px;">
+                    <input type="text" value="${hours}" class="shift-hours-inp glass-input" style="width: 100%; padding:8px; font-size:12px; text-align:center; font-weight:900; box-sizing:border-box;" onchange="renderSelectedStaff(); autoSaveRules();">
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <input type="number" placeholder="G. Saat" value="${wH}" class="shift-w-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); autoSaveRules();">
+                    <input type="number" placeholder="Gc. Saat" value="${nH}" class="shift-n-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); autoSaveRules();">
+                </div>
                 <div style="display:none;"><input type="hidden" class="shift-color-inp" value="${color}"></div>
             `;
             shiftGrid.appendChild(card); renderSelectedStaff(); updateAiSelects();
         }
         
-        function addCustomShiftUI() { const colors = ['linear-gradient(135deg, #f43f5e, #9f1239)', 'linear-gradient(135deg, #d946ef, #86198f)', 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 'linear-gradient(135deg, #10b981, #047857)', 'linear-gradient(135deg, #f59e0b, #b45309)']; createShiftCard("Yeni Saat", "YENİ", colors[Math.floor(Math.random() * colors.length)], true, 0, 0); }
-        function toggleCardState(cb) { const card = cb.closest('.shift-card'); if(cb.checked) card.classList.remove('inactive'); else card.classList.add('inactive'); renderSelectedStaff(); updateAiSelects(); }
+        function addCustomShiftUI() { const colors = ['linear-gradient(135deg, #f43f5e, #9f1239)', 'linear-gradient(135deg, #d946ef, #86198f)', 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 'linear-gradient(135deg, #10b981, #047857)', 'linear-gradient(135deg, #f59e0b, #b45309)']; createShiftCard("Yeni Saat", "YENİ", colors[Math.floor(Math.random() * colors.length)], true, 0, 0); autoSaveRules(); }
+        function toggleCardState(cb) { const card = cb.closest('.shift-card'); if(cb.checked) card.classList.remove('inactive'); else card.classList.add('inactive'); renderSelectedStaff(); autoSaveRules(); }
         function getDefinedShifts() { let shifts = []; document.querySelectorAll('.shift-card').forEach(card => { if(card.querySelector('.shift-active-cb').checked) { shifts.push({ name: card.querySelector('.shift-name-inp').value, hours: card.querySelector('.shift-hours-inp').value, color: card.querySelector('.shift-color-inp').value, wH: parseFloat(card.querySelector('.shift-w-inp').value) || 0, nH: parseFloat(card.querySelector('.shift-n-inp').value) || 0 }); } }); return shifts; }
 
         function updateAiSelects() {
@@ -423,21 +458,6 @@
                     if(shifts.some(s => s.hours === currentVal)) el.value = currentVal;
                 }
             });
-        }
-
-        // ==========================================
-        // 💾 HAFIZA (KAYDETME) FONKSİYONU 
-        // ==========================================
-        function saveAllShiftRulesToFirebase() {
-            const shifts = getDefinedShifts();
-            const updates = {};
-            shifts.forEach(s => {
-                const key = s.hours.replace(/\./g, ':');
-                updates[key] = { w: s.wH, n: s.nH, color: s.color, name: s.name };
-            });
-            db.ref('vardiya_kurallari').update(updates).then(() => {
-                showToast("Vardiya Ayarları Hafızaya Alındı! ✅");
-            }).catch(err => alert("Hata: " + err.message));
         }
 
         // ==========================================
@@ -499,6 +519,7 @@
             document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Kusursuz Özel Şablon</span>`;
             renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], dayCode, null, offCode);
             document.getElementById('resultModal').style.display = 'flex';
+            autoSaveRules();
             showToast("Özel Şablon Uygulandı! 🚀");
         }
 
@@ -563,7 +584,7 @@
                         let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI (Kendi 45 Saat Kuralı Var)
+                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI
                         simStaff.forEach(s => {
                             if (s.pref !== "AI") {
                                 let pDef = definedShifts.find(x => x.hours === s.pref);
@@ -579,7 +600,7 @@
                             }
                         });
 
-                        // 2. Aİ KURALLARI (Sadece AI Atanmış Serbest Çalışanlar İçin)
+                        // 2. Aİ KURALLARI 
                         simStaff.forEach(s => { 
                             if (s.pref === "AI" && !s.assignedToday) {
                                 if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
@@ -630,6 +651,7 @@
                 let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
+                autoSaveRules();
             }, 500);
         }
 
@@ -770,6 +792,7 @@
                 let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 8 SAATLİK Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
+                autoSaveRules();
             }, 500);
         }
 
@@ -787,12 +810,6 @@
                 let G = activeShifts[0].hours; let A = activeShifts[1].hours; let N = activeShifts[2].hours; 
                 if (type === 1) { pattern = [G, G, A, A, N, N, HT, HT]; offsets = [0, 6, 4, 2]; } else if (type === 2) { pattern = [G, G, G, A, A, N, N, HT]; offsets = [0, 6, 4, 2]; } else if (type === 3) { pattern = [G, A, N, HT]; offsets = [0, 3, 2, 1]; }
             } 
-            else if (hourMode === 12) {
-                let twelveShifts = activeShifts.filter(s => s.name.includes("12") || s.wH >= 10 || s.nH >= 10); if(twelveShifts.length < 2) twelveShifts = activeShifts; 
-                if(twelveShifts.length < 2) return alert("12 Saatlik rotasyon için Atölyede en az 2 vardiya olmalı!");
-                let G12 = twelveShifts[0].hours; let N12 = twelveShifts[1].hours; 
-                if (type === 1) { pattern = [G12, N12, HT, HT]; offsets = [0, 3, 2, 1]; } else if (type === 2) { pattern = [G12, G12, N12, HT, HT]; offsets = [0, 4, 3, 2];  }
-            }
             let finalStaffData = [];
             for (let g = 0; g < selectedStaff.length; g += 4) {
                 let group = selectedStaff.slice(g, g + 4);
@@ -805,6 +822,7 @@
             document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Kusursuz Rotasyon</span>`;
             renderFinalTableWithSummary(finalStaffData, startDtStr, daysCount, [], [], null, null, null);
             document.getElementById('resultModal').style.display = 'flex';
+            autoSaveRules();
         }
 
         // =========================================
@@ -822,6 +840,7 @@
             document.getElementById("aiStatusTitle").innerHTML = `🏆 TERTEMİZ ÇİZELGE <span style="color:var(--success); font-size:16px;">(Boş Şablon)</span>`;
             renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], null, null, null);
             document.getElementById('resultModal').style.display = 'flex';
+            autoSaveRules();
         }
 
         // =========================================
@@ -911,10 +930,10 @@
                         }
                     });
                     let isWarning = false; let gText = dCount; let nText = nCount; let oText = oCount;
-                    if(dCount !== targetG) { gText = `<span style="color:#ef4444;">${dCount}</span>`; isWarning = true; }
-                    if(nCount !== targetN) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
+                    if(dCount !== targetG && targetG !== 0) { gText = `<span style="color:#ef4444;">${dCount}</span>`; isWarning = true; }
+                    if(nCount !== targetN && targetN !== 0) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
                     if(targetO > 0 || oCount > 0) {
-                        if(oCount !== targetO) { oText = `<span style="color:#ef4444;">${oCount}</span>`; isWarning = true; }
+                        if(oCount !== targetO && targetO !== 0) { oText = `<span style="color:#ef4444;">${oCount}</span>`; isWarning = true; }
                     }
                     
                     let cellHtml = (targetO > 0 || oCount > 0) ? `${gText} / ${oText} / ${nText}` : `${gText} / ${nText}`;
