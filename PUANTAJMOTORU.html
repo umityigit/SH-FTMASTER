@@ -438,35 +438,21 @@ const firebaseConfig = {
 // Çift başlatmayı önleyen güvenlik kilidi
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.database();
-    // 🔥 PUANTAJ MOTORU İÇİN ÇOKLU KURUM (TENANT) ZIRHI 🔥
-        const tenantId = localStorage.getItem('sm_current_tenant') || "addh";
-        const originalRef = db.ref.bind(db);
-        db.ref = function(path) {
-            if (path && path.toString().startsWith("kurumlar/")) return originalRef(path);
-            if (tenantId === "addh") return originalRef(path); 
-            if (path) return originalRef("kurumlar/" + tenantId + "/" + path);
-            return originalRef("kurumlar/" + tenantId);
-        };
     
-// 🔥 PUANTAJ MOTORU KURUMSAL İZOLASYON VE KLASÖR ÇEVİRMENİ 🔥
-const tenantId = localStorage.getItem('sm_current_tenant');
-if (!tenantId) window.location.href = 'index.html'; // Şifresiz girenleri at
+// 🔥 PUANTAJ MOTORU İÇİN ÇOKLU KURUM (TENANT) ZIRHI (BİRLEŞTİRİLDİ) 🔥
+const tenantId = localStorage.getItem('sm_current_tenant') || "addh";
+if (!localStorage.getItem('sm_current_tenant')) window.location.href = 'index.html'; // Şifresiz girenleri at
 
 const originalRef = db.ref.bind(db);
 db.ref = function(path) {
-    // Eski "staff" kelimelerini otomatik "personel_havuzu"na yönlendirir
-    if (path === "staff") path = "personel_havuzu"; 
-
-    // Ümit Abinin ana dosyalarıysa direkt köke git
+    if (path === "staff") path = "personel_havuzu"; // Eski uyumluluk
+    if (path && path.toString().startsWith("kurumlar/")) return originalRef(path);
     if (tenantId === "addh") return originalRef(path); 
-    
-    // Diğer hastanelerse kendi odalarına (kurumlar/hastaneadi/...) git
     if (path) return originalRef("kurumlar/" + tenantId + "/" + path);
     return originalRef("kurumlar/" + tenantId);
 };
 
 function showToast(msg) { let x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(() => x.className = "", 3000); }
-
 // =========================================
 // 2. DİNAMİK AÇILIŞ VE İSİMLENDİRME
 // =========================================
