@@ -2144,29 +2144,7 @@ function toggleTablePublish(btn) {
                 });
             }
         };
-    // 1. DÜZELTİLMİŞ: Puantaj Çekme Motoru (Çoklu Kurum Uyumlu)
-   // 🔥 %100 İZOLE KURUM (TENANT) YÖNLENDİRİCİSİ
-    function getTenantId() { return localStorage.getItem("tenantId") || "addh"; }
-    
-    function getHavuzYolu() {
-        let t = getTenantId();
-        return t === "addh" ? "personel_havuzu" : "kurumlar/" + t + "/personel_havuzu";
-    }
-    
-    function getPuantajYolu() {
-        let t = getTenantId();
-        return t === "addh" ? "puantaj_motoru_ayarlar" : "kurumlar/" + t + "/puantaj_motoru_ayarlar";
-    }
-
-    // 1. ZIRHLI: Puantaj Çekme Motoru (Asla başka kuruma sızmaz)
-    window.pullFromPuantaj = function() {
-        if(!confirm("Puantaj Motorundaki tüm personeller (TC kimlikleri ile birlikte) Ana Havuza çekilecek. Onaylıyor musunuz?")) return;
-        
-        let py = getPuantajYolu();
-        let hy = getHavuzYolu();
-
-        db.ref(py).once("value").then(snap => {
-            let data = snap.// 🔥 %100 İZOLE KURUM (TENANT) YÖNLENDİRİCİSİ (HAFIZA ADI DÜZELTİLDİ)
+   // 🔥 %100 İZOLE KURUM (TENANT) YÖNLENDİRİCİSİ (HAFIZA ADI DÜZELTİLDİ)
     function getTenantId() { return localStorage.getItem("sm_current_tenant") || "addh"; }
     
     function getHavuzYolu() {
