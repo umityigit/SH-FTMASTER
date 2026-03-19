@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
     <style>
-        :root { --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); --accent: #38bdf8; --text: #f8fafc; }
+        :root { --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); --accent: #38bdf8; --text: #f8fafc; --purple: #8b5cf6; }
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: radial-gradient(circle at top right, #1e293b, #050b14); color: var(--text); min-height: 100vh; }
         
         #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
@@ -60,6 +60,17 @@
         <div id="tablesContainer"></div>
     </div>
 
+    <div id="staffMsgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
+        <div style="background:#1e293b; padding:20px; border-radius:15px; width:90%; max-width:400px; border:2px solid #38bdf8;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <b id="msgTargetName" style="color:white;">TALEBİNİZİ YAZIN</b>
+                <button onclick="document.getElementById('staffMsgModal').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
+            </div>
+            <textarea id="staffMsgBody" style="width:100%; box-sizing:border-box; height:120px; background:#0f172a; color:white; border:1px solid #475569; border-radius:10px; padding:10px; margin-bottom:15px; font-family:'Poppins';" placeholder="Yöneticinize iletmek istediğiniz notu yazın..."></textarea>
+            <button onclick="sendStaffMessage()" style="width:100%; background:#38bdf8; color:black; font-weight:900; padding:12px; border:none; border-radius:10px; cursor:pointer; font-family:'Poppins';">🚀 YÖNETİCİYE İLET</button>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
@@ -69,7 +80,7 @@
         let aktifKurumId = "";
         let aktifPersonelAd = ""; 
 
-        // 🔥 KUSURSUZ İSİM TEMİZLEYİCİ (Boşluk, büyük/küçük harf, İ/I sorunlarını çözer)
+        // KUSURSUZ İSİM TEMİZLEYİCİ
         const temizle = (str) => {
             if(!str) return "";
             return str.replace(/İ/g,'I').replace(/ı/g,'I').replace(/Ş/g,'S').replace(/ş/g,'S')
@@ -91,7 +102,6 @@
                 let havuz = snap.val() ? Object.values(snap.val()) : [];
                 let temizArananAd = temizle(ad);
                 
-                // TC'yi olduğu gibi ara, İsmi temizleyip ara!
                 let eslesme = havuz.find(kisi => kisi.includes(tc) && temizle(kisi).includes(temizArananAd));
                 
                 if(eslesme) {
@@ -128,13 +138,10 @@
                         let tablolar = archive.tables ? archive.tables : (archive.data ? [archive] : []);
                         
                         tablolar.forEach(table => {
-                            // 1. KURAL: Tablo yayınlanmış mı?
                             if(table.isPublished === true || table.isPublished === "true") {
                                 
                                 let tData = table.data || table.rows || [];
                                 let arananAd = temizle(aktifPersonelAd);
-                                
-                                // 2. KURAL: Adam bu tabloda var mı?
                                 let adaminSatiriVarMi = tData.some(r => temizle(r.name).includes(arananAd));
                                 
                                 if(adaminSatiriVarMi) {
@@ -160,21 +167,22 @@
                                         let rowStyle = kendiSatiriMi ? `background: rgba(56, 189, 248, 0.15); box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.3);` : ``;
                                         let nameStyle = kendiSatiriMi ? `color: var(--accent); font-weight: 900; font-size: 14px;` : ``;
                                         let starIcon = kendiSatiriMi ? ` ⭐` : ``;
+                                        
+                                        // 🔥 İŞTE MESAJ BUTONU BURADA SADECE KİŞİNİN KENDİ İSMİNDE ÇIKAR 🔥
+                                        let msgBtn = kendiSatiriMi ? `<span style="cursor:pointer; font-size:16px; margin-left:8px;" onclick="openStaffMsgModal('${row.name}')" title="Yöneticiye Talebini İlet">✉️</span>` : ``;
 
-                                       html += '<td style="${nameStyle}">${row.name}${starIcon} <span style="cursor:pointer; font-size:16px;" onclick="openStaffMsgModal(\\'${row.name}\\')" title="Yöneticiye Mesaj Yaz">✉️</span></td>';
+                                        html += `<tr style="${rowStyle}"><td style="${nameStyle}">${row.name}${starIcon}${msgBtn}</td>`;
                                         
                                         for(let i=0; i<cols; i++) {
                                             let s = row.shifts ? row.shifts[i] : null;
                                             let text = (s && s.text) ? s.text : "";
                                             let safeKey = text.replace(/\./g, ':').toUpperCase();
                                             let bg = shiftRules[safeKey] ? shiftRules[safeKey].color : "transparent";
-                                            
                                             let cellBorder = kendiSatiriMi ? `border-color: rgba(56, 189, 248, 0.4);` : ``;
                                             html += `<td style="background:${bg}; ${cellBorder}">${text}</td>`;
                                         }
                                         html += `</tr>`;
                                     });
-                                    
                                     html += `</tbody></table></div>`;
                                     container.innerHTML += html;
                                 }
@@ -195,60 +203,39 @@
             let btn = document.getElementById("btnGuncelle");
             let oldText = btn.innerHTML;
             btn.innerHTML = "⏳ YÜKLENİYOR...";
-            btn.style.opacity = "0.7";
-            
             tablolariGetir(); 
-            
-            setTimeout(() => {
-                btn.innerHTML = "✅ GÜNCELLENDİ";
-                btn.style.background = "#10b981"; 
-                setTimeout(() => {
-                    btn.innerHTML = oldText;
-                    btn.style.background = "#3b82f6"; 
-                    btn.style.opacity = "1";
-                }, 2000);
-            }, 800);
+            setTimeout(() => { btn.innerHTML = "✅ GÜNCELLENDİ"; setTimeout(() => { btn.innerHTML = oldText; }, 2000); }, 800);
         }
 
         function cikisYap() { window.location.reload(); }
+
+        // ==========================================
+        // PERSONEL MESAJ GÖNDERME MOTORU
+        // ==========================================
+        function openStaffMsgModal(name) {
+            document.getElementById("msgTargetName").innerText = "SAYIN " + name.toUpperCase('tr') + ", TALEBİNİZ:";
+            window.currentSendingStaff = name.toUpperCase('tr');
+            document.getElementById("staffMsgModal").style.display = "flex";
+        }
+
+        function sendStaffMessage() {
+            let mesaj = document.getElementById("staffMsgBody").value.trim();
+            if(!mesaj) return alert("Mesaj boş olamaz!");
+            
+            db.ref("ortak_mesajlar").push({
+                kisi: window.currentSendingStaff,
+                mesaj: mesaj,
+                tarih: new Date().toLocaleString('tr-TR'),
+                durum: 'bekliyor',
+                tenant: aktifKurumId 
+            }).then(() => {
+                alert("Talebiniz başarıyla yöneticinize iletildi! ✅\nSistemi kontrol edebilirsiniz.");
+                document.getElementById("staffMsgBody").value = "";
+                document.getElementById("staffMsgModal").style.display = "none";
+            }).catch(err => {
+                alert("Hata oluştu: " + err.message);
+            });
+        }
     </script>
-<div id="staffMsgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
-    <div style="background:#1e293b; padding:20px; border-radius:15px; width:90%; max-width:400px; border:2px solid #38bdf8;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-            <b id="msgTargetName" style="color:white;">TALEBİNİZİ YAZIN</b>
-            <button onclick="document.getElementById('staffMsgModal').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
-        </div>
-        <textarea id="staffMsgBody" style="width:100%; height:100px; background:#0f172a; color:white; border:1px solid #475569; border-radius:10px; padding:10px; margin-bottom:15px;" placeholder="Yöneticinize iletmek istediğiniz notu yazın..."></textarea>
-        <button onclick="sendStaffMessage()" style="width:100%; background:#38bdf8; color:black; font-weight:900; padding:12px; border:none; border-radius:10px; cursor:pointer;">🚀 YÖNETİCİYE GÖNDER</button>
-    </div>
-</div>
-
-<script>
-// PERSONEL MESAJ GÖNDERME MOTORU (JS)
-function openStaffMsgModal(name) {
-    document.getElementById("msgTargetName").innerText = "SAYIN " + name + ", TALEBİNİZ:";
-    window.currentSendingStaff = name;
-    document.getElementById("staffMsgModal").style.display = "flex";
-}
-
-function sendStaffMessage() {
-    let mesaj = document.getElementById("staffMsgBody").value.trim();
-    if(!mesaj) return alert("Mesaj boş olamaz!");
-    
-    // personel_portal.html içindeki aktifKurumId'yi kullanıyoruz
-    db.ref("ortak_mesajlar").push({
-        kisi: window.currentSendingStaff,
-        mesaj: mesaj,
-        tarih: new Date().toLocaleString('tr-TR'),
-        durum: 'bekliyor',
-        tenant: aktifKurumId 
-    }).then(() => {
-        alert("Mesajınız başarıyla iletildi! ✅");
-        document.getElementById("staffMsgBody").value = "";
-        document.getElementById("staffMsgModal").style.display = "none";
-    });
-}
-</script>
-
 </body>
 </html>
