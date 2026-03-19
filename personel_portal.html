@@ -105,6 +105,15 @@
         function tablolariGetir() {
             let arsivYolu = aktifKurumId === "addh" ? "arsivlenmis_shiftler" : `kurumlar/${aktifKurumId}/arsivlenmis_shiftler`;
             
+            // 🔥 KUSURSUZ İSİM EŞLEŞTİRİCİ MOTOR (Boşlukları ve İ/I karmaşasını yok eder)
+            const temizle = (str) => {
+                if(!str) return "";
+                return str.replace(/İ/g,'I').replace(/ı/g,'I').replace(/Ş/g,'S').replace(/ş/g,'S')
+                          .replace(/Ğ/g,'G').replace(/ğ/g,'G').replace(/Ü/g,'U').replace(/ü/g,'U')
+                          .replace(/Ö/g,'O').replace(/ö/g,'O').replace(/Ç/g,'C').replace(/ç/g,'C')
+                          .replace(/i/g,'I').toUpperCase().replace(/\s+/g, '');
+            };
+            
             db.ref(arsivYolu).once("value").then(snap => {
                 const container = document.getElementById("tablesContainer");
                 container.innerHTML = "";
@@ -112,68 +121,74 @@
 
                 if(snap.val()) {
                     Object.values(snap.val()).forEach(archive => {
-                        if(archive.tables) {
-                            archive.tables.forEach(table => {
-                                // 1. KURAL: Tablo yayınlanmış mı?
-                                if(table.isPublished === true || table.isPublished === "true") {
+                        let tablolar = archive.tables ? archive.tables : (archive.data ? [archive] : []);
+                        
+                        tablolar.forEach(table => {
+                            // 1. KURAL: Tablo yayınlanmış mı?
+                            if(table.isPublished === true || table.isPublished === "true") {
+                                
+                                let tData = table.data || table.rows || [];
+                                let arananAd = temizle(aktifPersonelAd);
+                                
+                                // 🔥 2. KURAL: Bu personelin adı (temizlenmiş haliyle) bu tabloda var mı?
+                                let adaminSatiriVarMi = tData.some(r => temizle(r.name).includes(arananAd));
+                                
+                                // Eğer adam bu tabloda varsa, tablonun TAMAMINI çiz
+                                if(adaminSatiriVarMi) {
+                                    yayinlananVarmi = true;
                                     
-                                    // 🔥 2. KURAL: Bu personelin adı bu tabloda var mı?
-                                    let adaminSatiriVarMi = table.data ? table.data.some(r => r.name.toUpperCase('tr').includes(aktifPersonelAd)) : false;
+                                    let html = `<div class="table-wrapper">
+                                        <div class="table-title">📌 ${archive.name || 'Klasör'} - ${table.tableName || table.name || 'Tablo'}</div>
+                                        <table><thead><tr><th>PERSONEL</th>`;
                                     
-                                    // Eğer adam bu tabloda varsa, tablonun TAMAMINI çiz
-                                    if(adaminSatiriVarMi) {
-                                        yayinlananVarmi = true;
+                                    let startDt = new Date(table.startDate || table.startdt || Date.now());
+                                    let cols = parseInt(table.colCount || table.days) || 30;
+                                    
+                                    for(let i=0; i<cols; i++) {
+                                        let d = new Date(startDt); d.setDate(startDt.getDate() + i);
+                                        let dStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+                                        html += `<th>${dStr}<br><span style="font-size:9px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`;
+                                    }
+                                    html += `</tr></thead><tbody>`;
+
+                                    // 🔥 HERKESİ ÇİZ VE KENDİNİ PARLAT
+                                    tData.forEach(row => {
+                                        let kendiSatiriMi = temizle(row.name).includes(arananAd);
                                         
-                                        let html = `<div class="table-wrapper">
-                                            <div class="table-title">📌 ${archive.name || 'Klasör'} - ${table.tableName || 'Tablo'}</div>
-                                            <table><thead><tr><th>PERSONEL</th>`;
-                                        
-                                        let startDt = new Date(table.startDate || table.startdt || Date.now());
-                                        let cols = parseInt(table.colCount || table.days) || 30;
+                                        let rowStyle = kendiSatiriMi ? `background: rgba(56, 189, 248, 0.15); box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.3);` : ``;
+                                        let nameStyle = kendiSatiriMi ? `color: var(--accent); font-weight: 900; font-size: 14px;` : ``;
+                                        let starIcon = kendiSatiriMi ? ` ⭐` : ``;
+
+                                        html += `<tr style="${rowStyle}"><td style="${nameStyle}">${row.name}${starIcon}</td>`;
                                         
                                         for(let i=0; i<cols; i++) {
-                                            let d = new Date(startDt); d.setDate(startDt.getDate() + i);
-                                            let dStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
-                                            html += `<th>${dStr}<br><span style="font-size:9px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`;
+                                            let s = row.shifts ? row.shifts[i] : null;
+                                            let text = (s && s.text) ? s.text : "";
+                                            let safeKey = text.replace(/\./g, ':').toUpperCase();
+                                            let bg = shiftRules[safeKey] ? shiftRules[safeKey].color : "transparent";
+                                            
+                                            let cellBorder = kendiSatiriMi ? `border-color: rgba(56, 189, 248, 0.4);` : ``;
+                                            html += `<td style="background:${bg}; ${cellBorder}">${text}</td>`;
                                         }
-                                        html += `</tr></thead><tbody>`;
-
-                                        // 🔥 HERKESİ ÇİZ VE KENDİNİ PARLAT
-                                        if(table.data) {
-                                            table.data.forEach(row => {
-                                                // Bu satır giriş yapan kişiye mi ait?
-                                                let kendiSatiriMi = row.name.toUpperCase('tr').includes(aktifPersonelAd);
-                                                
-                                                // Kendisiyse satırı hafif mavi yap ve ismini vurgula
-                                                let rowStyle = kendiSatiriMi ? `background: rgba(56, 189, 248, 0.15); box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.3);` : ``;
-                                                let nameStyle = kendiSatiriMi ? `color: var(--accent); font-weight: 900; font-size: 14px;` : ``;
-                                                let starIcon = kendiSatiriMi ? ` ⭐` : ``;
-
-                                                html += `<tr style="${rowStyle}"><td style="${nameStyle}">${row.name}${starIcon}</td>`;
-                                                
-                                                for(let i=0; i<cols; i++) {
-                                                    let s = row.shifts[i];
-                                                    let text = (s && s.text) ? s.text : "";
-                                                    let safeKey = text.replace(/\./g, ':').toUpperCase();
-                                                    let bg = shiftRules[safeKey] ? shiftRules[safeKey].color : "transparent";
-                                                    
-                                                    // Kendisine ait hücrelerin border'ını biraz daha belirgin yapabiliriz (Opsiyonel)
-                                                    let cellBorder = kendiSatiriMi ? `border-color: rgba(56, 189, 248, 0.4);` : ``;
-                                                    
-                                                    html += `<td style="background:${bg}; ${cellBorder}">${text}</td>`;
-                                                }
-                                                html += `</tr>`;
-                                            });
-                                        }
-                                        
-                                        html += `</tbody></table></div>`;
-                                        container.innerHTML += html;
-                                    }
+                                        html += `</tr>`;
+                                    });
+                                    
+                                    html += `</tbody></table></div>`;
+                                    container.innerHTML += html;
                                 }
-                            });
-                        }
+                            }
+                        });
                     });
                 }
+                
+                if(!yayinlananVarmi) {
+                    container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; border:1px dashed #475569; border-radius:15px; font-weight:bold;">Şu anda adınıza tanımlanmış aktif bir vardiya bulunmamaktadır.</div>`;
+                }
+            }).catch(err => {
+                // Eğer kodda bir çökme olursa ekrana kırmızı yazıyla sebebini basar
+                document.getElementById("tablesContainer").innerHTML = `<div style="color:red; text-align:center; padding:20px;">Bir hata oluştu: ${err.message}</div>`;
+            });
+        }
                 
                 if(!yayinlananVarmi) {
                     container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; border:1px dashed #475569; border-radius:15px; font-weight:bold;">Şu anda adınıza tanımlanmış aktif bir vardiya bulunmamaktadır.</div>`;
