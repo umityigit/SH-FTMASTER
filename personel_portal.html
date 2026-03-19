@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Personel Vardiya Portalı</title>
+<link href="https://www.google.com/search?q=https://fonts.googleapis.com/css2%3Ffamily%3DPoppins:wght%40300%3B400%3B600%3B800%3B900%26display%3Dswap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+
+<style>
+    :root { --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); --accent: #38bdf8; --text: #f8fafc; }
+    body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: radial-gradient(circle at top right, #1e293b, #050b14); color: var(--text); min-height: 100vh; }
+    
+    #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    .login-box { background: rgba(15,23,42,0.8); padding: 40px; border-radius: 20px; border: 1px solid var(--accent); box-shadow: 0 0 30px rgba(56,189,248,0.2); width: 90%; max-width: 350px; text-align: center; backdrop-filter: blur(10px); }
+    .glass-input { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.4); border: 1px solid #475569; padding: 15px; border-radius: 10px; color: white; margin-bottom: 20px; font-family: 'Poppins'; outline: none; text-align: center; font-size: 16px; font-weight: 600; }
+    .glass-input:focus { border-color: var(--accent); box-shadow: inset 0 0 10px rgba(56,189,248,0.2); }
+    .btn { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(2,132,199,0.5); }
+
+    #dashboard { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--accent); padding-bottom: 20px; margin-bottom: 30px; }
+    
+    /* Tablo Okuma Modu Stilleri */
+    .table-wrapper { background: var(--card); border: 1px solid #475569; border-radius: 15px; padding: 20px; margin-bottom: 30px; overflow-x: auto; }
+    .table-title { font-size: 20px; font-weight: 900; color: var(--accent); margin-bottom: 15px; display: inline-block; }
+    table { border-collapse: collapse; width: max-content; }
+    th, td { border: 1px solid rgba(255,255,255,0.1); padding: 10px; text-align: center; font-size: 12px; font-weight: 600; }
+    th { background: rgba(0,0,0,0.5); color: var(--accent); position: sticky; top: 0; }
+    td:nth-child(1) { position: sticky; left: 0; background: #1e293b; font-weight: 800; border-right: 2px solid var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+    <div class="login-box">
+        <h2 style="color:var(--accent); margin-top:0;">PERSONEL GİRİŞİ</h2>
+        <p style="font-size:12px; color:#94a3b8; margin-bottom:25px;">Sadece yayınlanan listeleri görebilirsiniz.</p>
+        
+        <input type="text" id="inpKurum" class="glass-input" placeholder="Kurum Kodu (Örn: addh)" value="addh">
+        <input type="text" id="inpAd" class="glass-input" placeholder="Ad Soyad">
+        <input type="password" id="inpTc" class="glass-input" placeholder="TC Kimlik (İlk 6 Hane)" maxlength="6">
+        
+        <button class="btn" onclick="girisYap()">SİSTEME GİR</button>
+    </div>
+</div>
+
+<div id="dashboard">
+    <div class="header" style="display:flex; flex-wrap:wrap; gap:15px; align-items:center; justify-content:space-between;">
+            <div>
+                <h2 style="margin:0; color:white;">YAYINLANAN VARDİYALAR</h2>
+                <span id="personelIsimSpan" style="color:var(--accent); font-size:14px; font-weight:800;"></span>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button onclick="window.location.href='index.html'" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">🏠 ANA SAYFA</button>
+                <button id="btnGuncelle" onclick="tablolariGuncelle()" style="background:#3b82f6; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(59,130,246,0.4); transition:0.3s;">🔄 GÜNCELLE</button>
+                <button onclick="cikisYap()" style="background:#ef4444; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(239,68,68,0.4); transition:0.3s;">🚪 ÇIKIŞ</button>
+            </div>
+        </div>
+
+  
+<script>
+    // Firebase Bağlantısı
+    const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+    firebase.initializeApp(firebaseConfig); 
+    const db = firebase.database();
+    
+    let shiftRules = {};
+    let aktifKurumId = "";
+
+    function girisYap() {
+        let kurum = document.getElementById("inpKurum").value.trim().toLowerCase();
+        let ad = document.getElementById("inpAd").value.trim().toUpperCase('tr');
+        let tc = document.getElementById("inpTc").value.trim();
+
+        if(!kurum || !ad || tc.length < 6) return alert("Lütfen Kurum Kodu, Ad Soyad ve TC'nizin ilk 6 hanesini eksiksiz girin.");
+
+        // 🛡️ GÜVENLİK: Personel Havuzunda bu adam var mı?
+        let havuzYolu = kurum === "addh" ? "personel_havuzu" : `kurumlar/${kurum}/personel_havuzu`;
+        
+        db.ref(havuzYolu).once("value").then(snap => {
+            let havuz = snap.val() ? Object.values(snap.val()) : [];
+            
+            // TC - İSİM eşleşmesini ara (Örn: "12345678912 - UMIT ABI" içinde "123456" ve "UMIT ABI" geçiyor mu?)
+            let eslesme = havuz.find(kisi => kisi.includes(tc) && kisi.includes(ad));
+            
+            if(eslesme) {
+                aktifKurumId = kurum;
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("dashboard").style.display = "block";
+                document.getElementById("personelIsimSpan").innerText = "Hoş Geldin, " + ad;
+                
+                // Renkleri yükle ve tabloları çiz
+                kurallariYukleVeTablolariCiz();
+            } else {
+                alert("Kimlik Doğrulama Başarısız!\n\nKurum yetkiliniz sizi sisteme kaydederken TC Kimlik numaranızla kaydetmemiş olabilir veya bilgilerinizi hatalı girdiniz.");
+            }
+        });
+    }
+
+    function kurallariYukleVeTablolariCiz() {
+        let kuralYolu = aktifKurumId === "addh" ? "vardiya_kurallari" : `kurumlar/${aktifKurumId}/vardiya_kurallari`;
+        db.ref(kuralYolu).once("value").then(snap => {
+            if(snap.val()) shiftRules = snap.val();
+            tablolariGetir();
+        });
+    }
+
+    function tablolariGetir() {
+        let arsivYolu = aktifKurumId === "addh" ? "arsivlenmis_shiftler" : `kurumlar/${aktifKurumId}/arsivlenmis_shiftler`;
+        
+        db.ref(arsivYolu).once("value").then(snap => {
+            const container = document.getElementById("tablesContainer");
+            container.innerHTML = "";
+            let yayinlananVarmi = false;
+
+            if(snap.val()) {
+                Object.values(snap.val()).forEach(archive => {
+                    // SADECE YAYINLANANLARI GÖSTER (isPublished === true)
+                    if(archive.isPublished && archive.tables) {
+                        yayinlananVarmi = true;
+                        
+                        archive.tables.forEach(table => {
+                            let html = `<div class="table-wrapper">
+                                <div class="table-title">📌 ${archive.name} - ${table.tableName || 'Tablo'}</div>
+                                <table><thead><tr><th>PERSONEL</th>`;
+                            
+                            let startDt = new Date(table.startDate || table.startdt);
+                            let cols = parseInt(table.colCount || table.days) || 30;
+                            
+                            for(let i=0; i<cols; i++) {
+                                let d = new Date(startDt); d.setDate(startDt.getDate() + i);
+                                let dStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+                                html += `<th>${dStr}<br><span style="font-size:9px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span></th>`;
+                            }
+                            html += `</tr></thead><tbody>`;
+
+                            if(table.data) {
+                                table.data.forEach(row => {
+                                    html += `<tr><td>${row.name}</td>`;
+                                    for(let i=0; i<cols; i++) {
+                                        let s = row.shifts[i];
+                                        let text = (s && s.text) ? s.text : "";
+                                        let safeKey = text.replace(/\./g, ':').toUpperCase();
+                                        let bg = shiftRules[safeKey] ? shiftRules[safeKey].color : "transparent";
+                                        html += `<td style="background:${bg};">${text}</td>`;
+                                    }
+                                    html += `</tr>`;
+                                });
+                            }
+                            html += `</tbody></table></div>`;
+                            container.innerHTML += html;
+                        });
+                    }
+                });
+            }
+            
+            if(!yayinlananVarmi) {
+                container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; border:1px dashed #475569; border-radius:15px;">Şu anda sizin için yayınlanmış aktif bir vardiya tablosu bulunmamaktadır.</div>`;
+            }
+        });
+    }
+
+    function cikisYap() { window.location.reload(); }
+function tablolariGuncelle() {
+            let btn = document.getElementById("btnGuncelle");
+            let oldText = btn.innerHTML;
+            btn.innerHTML = "⏳ YÜKLENİYOR...";
+            btn.style.opacity = "0.7";
+            
+            // Veritabanından en güncel tabloları tekrar çeker
+            tablolariGetir(); 
+            
+            setTimeout(() => {
+                btn.innerHTML = "✅ GÜNCELLENDİ";
+                btn.style.background = "#10b981"; // Başarılı olunca yeşil yanar
+                setTimeout(() => {
+                    btn.innerHTML = oldText;
+                    btn.style.background = "#3b82f6"; // Geri eski maviye döner
+                    btn.style.opacity = "1";
+                }, 2000);
+            }, 800);
+        }
+  
+</script>
+</body>
+</html>
+
+
