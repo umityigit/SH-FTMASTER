@@ -2144,7 +2144,127 @@ function toggleTablePublish(btn) {
                 });
             }
         };
-    
+    // 1. DÜZELTİLMİŞ: Puantaj Çekme Motoru (Çoklu Kurum Uyumlu)
+    window.pullFromPuantaj = function() {
+        if(!confirm("Puantaj Motorundaki tüm personeller (TC kimlikleri ile birlikte arka plana) Ana Havuza çekilecek. Onaylıyor musunuz?")) return;
+        
+        // db.ref yerine originalRef kullanıldı
+        originalRef("puantaj_motoru_ayarlar").once("value").then(snap => {
+            let data = snap.val();
+            if(!data || !data.gruplar) return alert("Puantaj motorunda kayıtlı personel bulunamadı!");
+            
+            let eklenecekler = [];
+            data.gruplar.forEach(grup => {
+                if(grup.kisiler) {
+                    grup.kisiler.forEach(kisi => {
+                        if(!eklenecekler.includes(kisi)) eklenecekler.push(kisi);
+                    });
+                }
+            });
+            
+            if(eklenecekler.length === 0) return alert("Eklenecek personel bulunamadı.");
+            
+            originalRef("personel_havuzu").once("value").then(havuzSnap => {
+                let mevcutHavuz = havuzSnap.val() ? Object.values(havuzSnap.val()) : [];
+                let eklenenSayi = 0;
+                
+                eklenecekler.forEach(yeniKisi => {
+                    if(!mevcutHavuz.includes(yeniKisi)) {
+                        originalRef("personel_havuzu").push(yeniKisi);
+                        eklenenSayi++;
+                    }
+                });
+                
+                if(eklenenSayi > 0) {
+                    if(typeof showToast === "function") showToast(eklenenSayi + " personel Puantajdan başarıyla çekildi! ✅");
+                    if(typeof logAction === "function") logAction(`${eklenenSayi} personeli Puantaj motorundan havuza çekti.`);
+                } else {
+                    alert("Puantajdaki tüm personeller zaten havuzda mevcut.");
+                }
+            });
+        });
+    };
+
+    // 2. DÜZELTİLMİŞ: Havuz Yükleme (Çoklu Kurum Uyumlu)
+    window.loadStaffPool = function() { 
+        originalRef("personel_havuzu").on("value", snap => { 
+            const p = document.getElementById("staffPool"); 
+            if(p) p.innerHTML = ""; 
+            const sSelect = document.getElementById("sorumluIsim"); 
+            if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; 
+            let count = 0; 
+            window.staffList = []; 
+            
+            if(snap.val()) { 
+                Object.entries(snap.val()).forEach(([id, name]) => { window.staffList.push({id: id, name: name}); }); 
+                
+                window.staffList.sort((a, b) => {
+                    let nameA = a.name.includes("-") ? a.name.split("-")[1].trim() : a.name;
+                    let nameB = b.name.includes("-") ? b.name.split("-")[1].trim() : b.name;
+                    return nameA.localeCompare(nameB, 'tr');
+                }); 
+                
+                window.staffList.forEach(item => { 
+                    count++; 
+                    let displayAdi = item.name.includes("-") ? item.name.split("-")[1].trim() : item.name;
+                    if(p) p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${displayAdi}" style="display:none;"> <span>${displayAdi}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; 
+                    if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${displayAdi}</option>`; 
+                }); 
+            } 
+            const counter = document.getElementById("staffCounter");
+            if(counter) counter.innerText = count; 
+        }); 
+    };
+
+    // 3. DÜZELTİLMİŞ: Elle Personel Ekleme (Çoklu Kurum Uyumlu)
+    window.addStaff = function() { 
+        const inp = document.getElementById("staffInput"); 
+        if(!inp) return;
+        const raw = inp.value.trim(); 
+        if(!raw) return; 
+
+        const lines = raw.split('\n').filter(line => line.trim() !== "");
+        const mevcutSayi = window.staffList ? window.staffList.length : 0;
+        const eklenecekSayi = lines.length;
+
+        if (mevcutSayi + eklenecekSayi > 50) {
+            alert("🛑 ÜCRETSİZ LİMİT DOLDU!\n\nÜcretsiz sürümde en fazla 50 personel ekleyebilirsiniz.");
+            return; 
+        }
+
+        lines.forEach(line => { 
+            let kayit = line.trim(); 
+            if(kayit.includes('\t')) { 
+                let p = kayit.split('\t'); 
+                let sutun1 = p[0].trim();
+                let sutun2 = p[1] ? p[1].trim() : "";
+                if (sutun1.match(/^\d+$/) && sutun2) { kayit = sutun1 + " - " + sutun2; } 
+                else { kayit = sutun2 || sutun1; }
+            } 
+            if(kayit) { originalRef("personel_havuzu").push(kayit.toUpperCase('tr')); } 
+        }); 
+        
+        if(typeof logAction === "function") logAction(`${lines.length} personel ekledi.`); 
+        inp.value = ""; 
+    };
+
+    // 4. EMNİYET SÜBABI: Havuz Silme ve Boşaltma İşlemleri de Kuruma Özel Olsun
+    window.clearStaffPool = function() {
+        if(confirm("Havuzdaki TÜM PERSONEL kalıcı olarak silinecek. Emin misiniz?")) {
+            originalRef("personel_havuzu").remove().then(() => {
+                if(typeof showToast === "function") showToast("Havuz temizlendi! 💣");
+            });
+        }
+    };
+
+    window.removeStaff = function(e, id) {
+        e.stopPropagation();
+        if(confirm("Bu personeli havuzdan silmek istediğinize emin misiniz?")) {
+            originalRef("personel_havuzu").child(id).remove().then(() => {
+                if(typeof showToast === "function") showToast("Personel silindi! 🗑️");
+            });
+        }
+    };
     </script>
     <div id="aiWizardPopup" class="full-modal-overlay" style="z-index: 100020;">
     <div class="full-modal-content" style="border-color: var(--purple); background: #020617;">
