@@ -198,7 +198,7 @@
                     <label class="input-label">GİRİŞ ŞİFRESİ</label>
                     <input type="password" id="loginSifre" class="glass-input" placeholder="••••••••" autocomplete="off">
                 </div>
-                <button onclick="sihirliGirisYap()" class="btn-action btn-login">SİSTEME GİRİŞ YAP</button>
+                <button onclick="localStorage.setItem('tenantId', document.getElementById('loginKurumKod').value.trim().toLowerCase()); sihirliGirisYap()" class="btn-action btn-login">SİSTEME GİRİŞ YAP</button>
                 <div id="verificationNotice"></div>
             </div>
 
@@ -229,9 +229,8 @@
                         <input type="password" id="regSifre2" class="glass-input" placeholder="••••••••">
                     </div>
                 </div>
-                <button onclick="patronKaydiOlustur()" class="btn-action">KURUM OLUŞTUR VE ONAYLA</button>
+                <button onclick="localStorage.setItem('tenantId', document.getElementById('regKurumKod').value.trim().toLowerCase()); patronKaydiOlustur()" class="btn-action">KURUM OLUŞTUR VE ONAYLA</button>
             </div>
-        </div>
 
         <div style="margin-top: 20px; font-size: 11px; color: #475569; font-weight: 600;">
             POWERED BY GOOGLE CLOUD & FIREBASE
