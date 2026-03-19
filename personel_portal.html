@@ -28,6 +28,11 @@
         th, td { border: 1px solid rgba(255,255,255,0.1); padding: 10px; text-align: center; font-size: 12px; font-weight: 600; }
         th { background: rgba(0,0,0,0.5); color: var(--accent); position: sticky; top: 0; }
         td:nth-child(1) { position: sticky; left: 0; background: #1e293b; font-weight: 800; border-right: 2px solid var(--accent); }
+
+        @keyframes pulseAlert { 0% { transform: scale(1); box-shadow: 0 0 10px red; } 50% { transform: scale(1.1); box-shadow: 0 0 20px red; } 100% { transform: scale(1); box-shadow: 0 0 10px red; } }
+        .emoji-btn { cursor:pointer; font-size:20px; transition:0.2s; filter:grayscale(1); padding:5px; border-radius:50%; }
+        .emoji-btn:hover { transform:scale(1.3); filter:none; background:rgba(255,255,255,0.1); }
+        .emoji-btn.active { filter:none; transform:scale(1.2); background:rgba(56,189,248,0.2); }
     </style>
 </head>
 <body>
@@ -36,11 +41,9 @@
         <div class="login-box">
             <h2 style="color:var(--accent); margin-top:0;">PERSONEL GİRİŞİ</h2>
             <p style="font-size:12px; color:#94a3b8; margin-bottom:25px;">Sadece size ait yayınlanan vardiyaları görebilirsiniz.</p>
-            
             <input type="text" id="inpKurum" class="glass-input" placeholder="Kurum Kodu (Örn: addh)" value="addh">
             <input type="text" id="inpAd" class="glass-input" placeholder="Ad Soyad">
             <input type="password" id="inpTc" class="glass-input" placeholder="TC Kimlik (İlk 6 Hane)" maxlength="6">
-            
             <button class="btn" onclick="girisYap()">SİSTEME GİR</button>
         </div>
     </div>
@@ -53,9 +56,9 @@
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <button onclick="openStaffMsgModal()" style="background:var(--purple); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(139,92,246,0.5); transition:0.3s; display:flex; align-items:center; gap:5px;">
-                    ✉️ YÖNETİCİYE MESAJ GÖNDER
+                    ✉️ YÖNETİCİYE TALEBİNİ İLET
                 </button>
-                <button onclick="openStaffInbox()" style="background:linear-gradient(135deg, #10b981, #059669); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(16,185,129,0.5); transition:0.3s; display:flex; align-items:center; gap:5px;">
+                <button id="btnInbox" onclick="openStaffInbox()" style="background:linear-gradient(135deg, #10b981, #059669); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(16,185,129,0.5); transition:0.3s; display:flex; align-items:center; gap:5px;">
                     📬 TALEPLERİM VE YANITLAR
                 </button>
                 <button onclick="window.location.href='index.html'" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">🏠 ANA SAYFA</button>
@@ -72,18 +75,18 @@
                 <b id="msgTargetName" style="color:white; font-size:15px;">TALEBİNİZİ YAZIN</b>
                 <button onclick="document.getElementById('staffMsgModal').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
             </div>
-            <textarea id="staffMsgBody" style="width:100%; box-sizing:border-box; height:120px; background:#0f172a; color:white; border:1px solid #475569; border-radius:10px; padding:10px; margin-bottom:15px; font-family:'Poppins'; resize:none;" placeholder="Yöneticinize iletmek istediğiniz talebi veya notu detaylıca yazın..."></textarea>
-            <button onclick="sendStaffMessage()" style="width:100%; background:var(--purple); color:white; font-weight:900; padding:15px; border:none; border-radius:10px; cursor:pointer; font-family:'Poppins'; font-size:14px; box-shadow:0 4px 15px rgba(139,92,246,0.4);">🚀 TALEBİ YÖNETİCİYE İLET</button>
+            <textarea id="staffMsgBody" style="width:100%; box-sizing:border-box; height:120px; background:#0f172a; color:white; border:1px solid #475569; border-radius:10px; padding:10px; margin-bottom:15px; font-family:'Poppins'; resize:none;" placeholder="Yöneticinize iletmek istediğiniz talebi detaylıca yazın..."></textarea>
+            <button onclick="sendStaffMessage()" style="width:100%; background:var(--purple); color:white; font-weight:900; padding:15px; border:none; border-radius:10px; cursor:pointer; font-family:'Poppins'; font-size:14px; box-shadow:0 4px 15px rgba(139,92,246,0.4);">🚀 YÖNETİCİYE İLET</button>
         </div>
     </div>
 
     <div id="staffInboxModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
-        <div style="background:#1e293b; padding:20px; border-radius:15px; width:90%; max-width:550px; border:2px solid #10b981; box-shadow:0 0 30px rgba(16,185,129,0.3); display:flex; flex-direction:column; max-height:85vh;">
+        <div style="background:#1e293b; padding:20px; border-radius:15px; width:90%; max-width:600px; border:2px solid #10b981; box-shadow:0 0 40px rgba(16,185,129,0.3); display:flex; flex-direction:column; max-height:85vh;">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:10px;">
-                <b style="color:white; font-size:16px;">📬 TALEPLERİM VE YÖNETİCİ YANITLARI</b>
+                <b style="color:white; font-size:18px;">📬 TALEPLERİM VE YANITLAR</b>
                 <button onclick="document.getElementById('staffInboxModal').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
             </div>
-            <div id="staffInboxContainer" style="overflow-y:auto; flex:1; padding-right:5px; display:flex; flex-direction:column; gap:12px;">
+            <div id="staffInboxContainer" style="overflow-y:auto; flex:1; padding-right:5px; display:flex; flex-direction:column; gap:15px;">
                 </div>
         </div>
     </div>
@@ -127,8 +130,9 @@
                     document.getElementById("dashboard").style.display = "block";
                     document.getElementById("personelIsimSpan").innerText = "Hoş Geldin, " + ad.toUpperCase('tr');
                     kurallariYukleVeTablolariCiz();
+                    baslatMesajDinleyici(); // 🔥 BİLDİRİM MOTORUNU BAŞLATIR
                 } else {
-                    alert("Kimlik Doğrulama Başarısız!\n\nSistemde kaydınız bulunamadı. Lütfen TC'nizin ilk 6 hanesini ve isminizi doğru yazdığınızdan emin olun.");
+                    alert("Kimlik Doğrulama Başarısız!\n\nSistemde kaydınız bulunamadı.");
                 }
             }).catch(err => alert("Bağlantı Hatası: " + err.message));
         }
@@ -152,21 +156,15 @@
                 if(snap.val()) {
                     Object.values(snap.val()).forEach(archive => {
                         let tablolar = archive.tables ? archive.tables : (archive.data ? [archive] : []);
-                        
                         tablolar.forEach(table => {
                             if(table.isPublished === true || table.isPublished === "true") {
-                                
                                 let tData = table.data || table.rows || [];
                                 let arananAd = temizle(aktifPersonelAd);
                                 let adaminSatiriVarMi = tData.some(r => temizle(r.name).includes(arananAd));
                                 
                                 if(adaminSatiriVarMi) {
                                     yayinlananVarmi = true;
-                                    
-                                    let html = `<div class="table-wrapper">
-                                        <div class="table-title">📌 ${archive.name || 'Klasör'} - ${table.tableName || table.name || 'Tablo'}</div>
-                                        <table><thead><tr><th>PERSONEL</th>`;
-                                    
+                                    let html = `<div class="table-wrapper"><div class="table-title">📌 ${archive.name || 'Klasör'} - ${table.tableName || table.name || 'Tablo'}</div><table><thead><tr><th>PERSONEL</th>`;
                                     let startDt = new Date(table.startDate || table.startdt || Date.now());
                                     let cols = parseInt(table.colCount || table.days) || 30;
                                     
@@ -179,13 +177,11 @@
 
                                     tData.forEach(row => {
                                         let kendiSatiriMi = temizle(row.name).includes(arananAd);
-                                        
                                         let rowStyle = kendiSatiriMi ? `background: rgba(56, 189, 248, 0.15); box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.3);` : ``;
                                         let nameStyle = kendiSatiriMi ? `color: var(--accent); font-weight: 900; font-size: 14px;` : ``;
                                         let starIcon = kendiSatiriMi ? ` ⭐` : ``;
                                         
                                         html += `<tr style="${rowStyle}"><td style="${nameStyle}">${row.name}${starIcon}</td>`;
-                                        
                                         for(let i=0; i<cols; i++) {
                                             let s = row.shifts ? row.shifts[i] : null;
                                             let text = (s && s.text) ? s.text : "";
@@ -203,27 +199,19 @@
                         });
                     });
                 }
-                
-                if(!yayinlananVarmi) {
-                    container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; border:1px dashed #475569; border-radius:15px; font-weight:bold;">Şu anda adınıza tanımlanmış aktif bir vardiya bulunmamaktadır.</div>`;
-                }
-            }).catch(err => {
-                document.getElementById("tablesContainer").innerHTML = `<div style="color:red; text-align:center; padding:20px;">Bir hata oluştu: ${err.message}</div>`;
+                if(!yayinlananVarmi) container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; border:1px dashed #475569; border-radius:15px; font-weight:bold;">Adınıza tanımlanmış aktif bir vardiya bulunmamaktadır.</div>`;
             });
         }
 
         function tablolariGuncelle() {
-            let btn = document.getElementById("btnGuncelle");
-            let oldText = btn.innerHTML;
-            btn.innerHTML = "⏳ YÜKLENİYOR...";
-            tablolariGetir(); 
-            setTimeout(() => { btn.innerHTML = "✅ GÜNCELLENDİ"; setTimeout(() => { btn.innerHTML = oldText; }, 2000); }, 800);
+            let btn = document.getElementById("btnGuncelle"); let oldText = btn.innerHTML; btn.innerHTML = "⏳ YÜKLENİYOR...";
+            tablolariGetir(); setTimeout(() => { btn.innerHTML = "✅ GÜNCELLENDİ"; setTimeout(() => { btn.innerHTML = oldText; }, 2000); }, 800);
         }
 
         function cikisYap() { window.location.reload(); }
 
         // ==========================================
-        // 1. PERSONEL MESAJ GÖNDERME MOTORU
+        // YENİ NESİL BİLDİRİM VE REAKSİYON MOTORU (MESSENGER MODE)
         // ==========================================
         function openStaffMsgModal() {
             let isim = aktifPersonelAd.toUpperCase('tr');
@@ -237,7 +225,6 @@
             if(!mesaj) return alert("Lütfen yöneticinize iletmek istediğiniz notu yazın.");
             
             let msjYolu = aktifKurumId === "addh" ? "ortak_mesajlar" : `kurumlar/${aktifKurumId}/ortak_mesajlar`;
-            
             db.ref(msjYolu).push({
                 kisi: aktifPersonelAd.toUpperCase('tr'),
                 mesaj: mesaj,
@@ -248,55 +235,108 @@
                 alert("Talebiniz başarıyla yöneticinize iletildi! ✅");
                 document.getElementById("staffMsgBody").value = "";
                 document.getElementById("staffMsgModal").style.display = "none";
-            }).catch(err => {
-                alert("Güvenlik Duvarı Hatası: " + err.message);
             });
         }
 
-        // ==========================================
-        // 2. YENİ: PERSONEL KENDİ TALEPLERİNİ OKUMA MOTORU
-        // ==========================================
-        function openStaffInbox() {
-            document.getElementById("staffInboxModal").style.display = "flex";
-            const container = document.getElementById("staffInboxContainer");
-            container.innerHTML = "<p style='color:#94a3b8; text-align:center; padding:20px;'>Geçmiş talepleriniz aranıyor...</p>";
-
+        // GERÇEK ZAMANLI DİNLEYİCİ (HEM BİLDİRİMLERİ YAKAR HEM DE KUTUYU DOLDURUR)
+        function baslatMesajDinleyici() {
             let msjYolu = aktifKurumId === "addh" ? "ortak_mesajlar" : `kurumlar/${aktifKurumId}/ortak_mesajlar`;
             let arananKisi = aktifPersonelAd.toUpperCase('tr');
 
             db.ref(msjYolu).on("value", snap => {
-                container.innerHTML = "";
+                const container = document.getElementById("staffInboxContainer");
+                let unreadCount = 0;
                 let mesajBulundu = false;
+                let htmlContent = "";
 
                 if(snap.val()) {
                     Object.entries(snap.val()).reverse().forEach(([id, m]) => {
-                        // KURAL: Sadece kendi adıyla eşleşen mesajları görsün
                         if(m.kisi === arananKisi) {
                             mesajBulundu = true;
+                            
+                            // OKUNMAMIŞ MESAJLARI SAY (KIRMIZI BİLDİRİM İÇİN)
+                            if(m.yanit && m.okundu === false) unreadCount++;
+
                             let durumRenk = m.durum === 'cozuldu' ? '#10b981' : '#f59e0b';
                             let durumMetin = m.durum === 'cozuldu' ? '✅ Çözüldü' : '⏳ Bekliyor';
-                            let opacity = m.durum === 'cozuldu' ? '0.6' : '1';
+                            let opacity = m.durum === 'cozuldu' ? '0.7' : '1';
 
-                            container.innerHTML += `
-                                <div style="background:#0f172a; padding:15px; border-radius:10px; border-left:4px solid ${durumRenk}; opacity:${opacity}; box-shadow:0 4px 10px rgba(0,0,0,0.5);">
-                                    <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; margin-bottom:8px;">
+                            htmlContent += `
+                                <div style="background:#0f172a; padding:20px; border-radius:12px; border-left:4px solid ${durumRenk}; opacity:${opacity}; box-shadow:0 4px 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; font-size:12px; color:#94a3b8; margin-bottom:12px; border-bottom:1px dashed #334155; padding-bottom:8px;">
                                         <span>${m.tarih}</span>
                                         <span style="color:${durumRenk}; font-weight:bold; background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:5px;">${durumMetin}</span>
                                     </div>
-                                    <div style="color:white; font-size:14px; margin-bottom:12px; line-height:1.4;"><b>Sizin Talebiniz:</b> ${m.mesaj}</div>
+                                    <div style="color:white; font-size:15px; margin-bottom:15px; line-height:1.4;"><b>Sizin Talebiniz:</b> ${m.mesaj}</div>
                                     
-                                    ${m.yanit ? `<div style="background:rgba(16,185,129,0.1); border-left:2px solid #10b981; padding:10px; border-radius:6px; color:#10b981; font-size:14px; line-height:1.4;"><b>Yönetici Yanıtı:</b> ${m.yanit}</div>` : 
-                                    `<div style="color:#64748b; font-size:12px; font-style:italic; background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">Yöneticiniz henüz bu talebi yanıtlamadı...</div>`}
+                                    ${m.yanit ? `
+                                    <div style="background:rgba(16,185,129,0.1); border-left:3px solid #10b981; padding:15px; border-radius:8px; margin-top:10px;">
+                                        <div style="display:flex; justify-content:space-between; font-size:12px; color:#10b981; margin-bottom:10px; border-bottom:1px dashed rgba(16,185,129,0.3); padding-bottom:8px;">
+                                            <b>👤 ${m.yanitYazan || 'Yönetici'}</b>
+                                            <span>${m.yanitTarih || ''}</span>
+                                        </div>
+                                        <div style="color:#10b981; font-size:15px; line-height:1.4;">${m.yanit}</div>
+                                        
+                                        <div style="display:flex; gap:8px; margin-top:15px; background:rgba(0,0,0,0.4); padding:6px 12px; border-radius:25px; width:max-content; border:1px solid #334155;">
+                                            <span class="emoji-btn ${m.reaksiyon==='👍'?'active':''}" onclick="sendReaction('${id}', '👍')">👍</span>
+                                            <span class="emoji-btn ${m.reaksiyon==='👎'?'active':''}" onclick="sendReaction('${id}', '👎')">👎</span>
+                                            <span class="emoji-btn ${m.reaksiyon==='❤️'?'active':''}" onclick="sendReaction('${id}', '❤️')">❤️</span>
+                                            <span class="emoji-btn ${m.reaksiyon==='😂'?'active':''}" onclick="sendReaction('${id}', '😂')">😂</span>
+                                            <span class="emoji-btn ${m.reaksiyon==='☕'?'active':''}" onclick="sendReaction('${id}', '☕')">☕</span>
+                                            <span class="emoji-btn ${m.reaksiyon==='🥤'?'active':''}" onclick="sendReaction('${id}', '🥤')">🥤</span>
+                                        </div>
+                                    </div>
+                                    ` : `<div style="color:#64748b; font-size:13px; font-style:italic; background:rgba(0,0,0,0.3); padding:10px; border-radius:6px; border:1px dashed #334155;">Yöneticiniz henüz bu talebi yanıtlamadı...</div>`}
                                 </div>
                             `;
                         }
                     });
                 }
-                
+
+                // KIRMIZI BİLDİRİM IŞIĞINI YAK VEYA SÖNDÜR
+                let btn = document.getElementById("btnInbox");
+                if(unreadCount > 0) {
+                    btn.innerHTML = `📬 TALEPLERİM VE YANITLAR <span style="background:#ef4444; color:white; border-radius:50%; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; box-shadow:0 0 10px red; margin-left:5px; animation:pulseAlert 1s infinite;">+${unreadCount}</span>`;
+                    btn.style.background = "linear-gradient(135deg, #ef4444, #b91c1c)"; // Kırmızıya çevir
+                    btn.style.boxShadow = "0 0 20px rgba(239,68,68,0.8)";
+                } else {
+                    btn.innerHTML = `📬 TALEPLERİM VE YANITLAR`;
+                    btn.style.background = "linear-gradient(135deg, #10b981, #059669)"; // Yeşile geri döndür
+                    btn.style.boxShadow = "0 4px 15px rgba(16,185,129,0.5)";
+                }
+
                 if(!mesajBulundu) {
                     container.innerHTML = "<div style='color:#64748b; text-align:center; padding:30px; border:1px dashed #475569; border-radius:10px;'>Daha önce oluşturulmuş bir talebiniz bulunmuyor.</div>";
+                } else {
+                    container.innerHTML = htmlContent;
                 }
             });
+        }
+
+        // GELEN KUTUSU AÇILDIĞINDA OKUNMAMIŞLARI "OKUNDU" OLARAK İŞARETLE
+        function openStaffInbox() {
+            document.getElementById("staffInboxModal").style.display = "flex";
+            
+            let msjYolu = aktifKurumId === "addh" ? "ortak_mesajlar" : `kurumlar/${aktifKurumId}/ortak_mesajlar`;
+            let arananKisi = aktifPersonelAd.toUpperCase('tr');
+            
+            db.ref(msjYolu).once("value", snap => {
+                if(snap.val()) {
+                    let updates = {};
+                    Object.entries(snap.val()).forEach(([id, m]) => {
+                        if(m.kisi === arananKisi && m.yanit && m.okundu === false) {
+                            updates[id + "/okundu"] = true; // Kırmızı ışığı söndürür
+                        }
+                    });
+                    if(Object.keys(updates).length > 0) db.ref(msjYolu).update(updates);
+                }
+            });
+        }
+
+        // YÖNETİCİYE REAKSİYON (EMOJİ) GÖNDERME KODU
+        function sendReaction(msgId, emoji) {
+            let msjYolu = aktifKurumId === "addh" ? "ortak_mesajlar" : `kurumlar/${aktifKurumId}/ortak_mesajlar`;
+            db.ref(msjYolu + "/" + msgId).update({ reaksiyon: emoji });
         }
     </script>
 </body>
