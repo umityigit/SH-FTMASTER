@@ -55,6 +55,9 @@
                 <button onclick="openStaffMsgModal()" style="background:var(--purple); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(139,92,246,0.5); transition:0.3s; display:flex; align-items:center; gap:5px;">
                     ✉️ YÖNETİCİYE MESAJ GÖNDER
                 </button>
+                <button onclick="openStaffInbox()" style="background:linear-gradient(135deg, #10b981, #059669); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(16,185,129,0.5); transition:0.3s; display:flex; align-items:center; gap:5px;">
+                    📬 TALEPLERİM VE YANITLAR
+                </button>
                 <button onclick="window.location.href='index.html'" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">🏠 ANA SAYFA</button>
                 <button id="btnGuncelle" onclick="tablolariGuncelle()" style="background:#3b82f6; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(59,130,246,0.4); transition:0.3s;">🔄 GÜNCELLE</button>
                 <button onclick="cikisYap()" style="background:#ef4444; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(239,68,68,0.4); transition:0.3s;">🚪 ÇIKIŞ</button>
@@ -71,6 +74,17 @@
             </div>
             <textarea id="staffMsgBody" style="width:100%; box-sizing:border-box; height:120px; background:#0f172a; color:white; border:1px solid #475569; border-radius:10px; padding:10px; margin-bottom:15px; font-family:'Poppins'; resize:none;" placeholder="Yöneticinize iletmek istediğiniz talebi veya notu detaylıca yazın..."></textarea>
             <button onclick="sendStaffMessage()" style="width:100%; background:var(--purple); color:white; font-weight:900; padding:15px; border:none; border-radius:10px; cursor:pointer; font-family:'Poppins'; font-size:14px; box-shadow:0 4px 15px rgba(139,92,246,0.4);">🚀 TALEBİ YÖNETİCİYE İLET</button>
+        </div>
+    </div>
+
+    <div id="staffInboxModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
+        <div style="background:#1e293b; padding:20px; border-radius:15px; width:90%; max-width:550px; border:2px solid #10b981; box-shadow:0 0 30px rgba(16,185,129,0.3); display:flex; flex-direction:column; max-height:85vh;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:10px;">
+                <b style="color:white; font-size:16px;">📬 TALEPLERİM VE YÖNETİCİ YANITLARI</b>
+                <button onclick="document.getElementById('staffInboxModal').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
+            </div>
+            <div id="staffInboxContainer" style="overflow-y:auto; flex:1; padding-right:5px; display:flex; flex-direction:column; gap:12px;">
+                </div>
         </div>
     </div>
 
@@ -170,7 +184,6 @@
                                         let nameStyle = kendiSatiriMi ? `color: var(--accent); font-weight: 900; font-size: 14px;` : ``;
                                         let starIcon = kendiSatiriMi ? ` ⭐` : ``;
                                         
-                                        // Minik ikonu kaldırdık, sadece isim ve yıldız basıyoruz
                                         html += `<tr style="${rowStyle}"><td style="${nameStyle}">${row.name}${starIcon}</td>`;
                                         
                                         for(let i=0; i<cols; i++) {
@@ -210,10 +223,9 @@
         function cikisYap() { window.location.reload(); }
 
         // ==========================================
-        // YENİ: PERSONEL MESAJ GÖNDERME MOTORU
+        // 1. PERSONEL MESAJ GÖNDERME MOTORU
         // ==========================================
         function openStaffMsgModal() {
-            // Butona basıldığında kişinin kendi adını otomatik alıp tepeye yazar
             let isim = aktifPersonelAd.toUpperCase('tr');
             document.getElementById("msgTargetName").innerText = "SAYIN " + isim + ", TALEBİNİZ:";
             document.getElementById("staffMsgModal").style.display = "flex";
@@ -224,7 +236,6 @@
             let mesaj = document.getElementById("staffMsgBody").value.trim();
             if(!mesaj) return alert("Lütfen yöneticinize iletmek istediğiniz notu yazın.");
             
-            // 🔥 PERMISSION_DENIED ÇÖZÜMÜ: Mesajı ana root'a değil, kurumun kendi odasına yönlendiriyoruz
             let msjYolu = aktifKurumId === "addh" ? "ortak_mesajlar" : `kurumlar/${aktifKurumId}/ortak_mesajlar`;
             
             db.ref(msjYolu).push({
@@ -239,6 +250,52 @@
                 document.getElementById("staffMsgModal").style.display = "none";
             }).catch(err => {
                 alert("Güvenlik Duvarı Hatası: " + err.message);
+            });
+        }
+
+        // ==========================================
+        // 2. YENİ: PERSONEL KENDİ TALEPLERİNİ OKUMA MOTORU
+        // ==========================================
+        function openStaffInbox() {
+            document.getElementById("staffInboxModal").style.display = "flex";
+            const container = document.getElementById("staffInboxContainer");
+            container.innerHTML = "<p style='color:#94a3b8; text-align:center; padding:20px;'>Geçmiş talepleriniz aranıyor...</p>";
+
+            let msjYolu = aktifKurumId === "addh" ? "ortak_mesajlar" : `kurumlar/${aktifKurumId}/ortak_mesajlar`;
+            let arananKisi = aktifPersonelAd.toUpperCase('tr');
+
+            db.ref(msjYolu).on("value", snap => {
+                container.innerHTML = "";
+                let mesajBulundu = false;
+
+                if(snap.val()) {
+                    Object.entries(snap.val()).reverse().forEach(([id, m]) => {
+                        // KURAL: Sadece kendi adıyla eşleşen mesajları görsün
+                        if(m.kisi === arananKisi) {
+                            mesajBulundu = true;
+                            let durumRenk = m.durum === 'cozuldu' ? '#10b981' : '#f59e0b';
+                            let durumMetin = m.durum === 'cozuldu' ? '✅ Çözüldü' : '⏳ Bekliyor';
+                            let opacity = m.durum === 'cozuldu' ? '0.6' : '1';
+
+                            container.innerHTML += `
+                                <div style="background:#0f172a; padding:15px; border-radius:10px; border-left:4px solid ${durumRenk}; opacity:${opacity}; box-shadow:0 4px 10px rgba(0,0,0,0.5);">
+                                    <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; margin-bottom:8px;">
+                                        <span>${m.tarih}</span>
+                                        <span style="color:${durumRenk}; font-weight:bold; background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:5px;">${durumMetin}</span>
+                                    </div>
+                                    <div style="color:white; font-size:14px; margin-bottom:12px; line-height:1.4;"><b>Sizin Talebiniz:</b> ${m.mesaj}</div>
+                                    
+                                    ${m.yanit ? `<div style="background:rgba(16,185,129,0.1); border-left:2px solid #10b981; padding:10px; border-radius:6px; color:#10b981; font-size:14px; line-height:1.4;"><b>Yönetici Yanıtı:</b> ${m.yanit}</div>` : 
+                                    `<div style="color:#64748b; font-size:12px; font-style:italic; background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">Yöneticiniz henüz bu talebi yanıtlamadı...</div>`}
+                                </div>
+                            `;
+                        }
+                    });
+                }
+                
+                if(!mesajBulundu) {
+                    container.innerHTML = "<div style='color:#64748b; text-align:center; padding:30px; border:1px dashed #475569; border-radius:10px;'>Daha önce oluşturulmuş bir talebiniz bulunmuyor.</div>";
+                }
             });
         }
     </script>
