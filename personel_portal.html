@@ -35,7 +35,7 @@
     <div id="loginScreen">
         <div class="login-box">
             <h2 style="color:var(--accent); margin-top:0;">PERSONEL GİRİŞİ</h2>
-            <p style="font-size:12px; color:#94a3b8; margin-bottom:25px;">Sadece yayınlanan listeleri görebilirsiniz.</p>
+            <p style="font-size:12px; color:#94a3b8; margin-bottom:25px;">Sadece size ait yayınlanan vardiyaları görebilirsiniz.</p>
             
             <input type="text" id="inpKurum" class="glass-input" placeholder="Kurum Kodu (Örn: addh)" value="addh">
             <input type="text" id="inpAd" class="glass-input" placeholder="Ad Soyad">
@@ -48,7 +48,7 @@
     <div id="dashboard">
         <div class="header">
             <div>
-                <h2 style="margin:0; color:white;">YAYINLANAN VARDİYALAR</h2>
+                <h2 style="margin:0; color:white;">YAYINLANAN VARDİYALARIM</h2>
                 <span id="personelIsimSpan" style="color:var(--accent); font-size:14px; font-weight:800;"></span>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -61,17 +61,26 @@
     </div>
 
     <script>
-        // Firebase Bağlantısı
         const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
         
         let shiftRules = {};
         let aktifKurumId = "";
+        let aktifPersonelAd = ""; 
+
+        // 🔥 KUSURSUZ İSİM TEMİZLEYİCİ (Boşluk, büyük/küçük harf, İ/I sorunlarını çözer)
+        const temizle = (str) => {
+            if(!str) return "";
+            return str.replace(/İ/g,'I').replace(/ı/g,'I').replace(/Ş/g,'S').replace(/ş/g,'S')
+                      .replace(/Ğ/g,'G').replace(/ğ/g,'G').replace(/Ü/g,'U').replace(/ü/g,'U')
+                      .replace(/Ö/g,'O').replace(/ö/g,'O').replace(/Ç/g,'C').replace(/ç/g,'C')
+                      .replace(/i/g,'I').toUpperCase().replace(/\s+/g, '');
+        };
 
         function girisYap() {
             let kurum = document.getElementById("inpKurum").value.trim().toLowerCase();
-            let ad = document.getElementById("inpAd").value.trim().toUpperCase('tr');
+            let ad = document.getElementById("inpAd").value.trim();
             let tc = document.getElementById("inpTc").value.trim();
 
             if(!kurum || !ad || tc.length < 6) return alert("Lütfen bilgileri eksiksiz girin.");
@@ -80,18 +89,22 @@
             
             db.ref(havuzYolu).once("value").then(snap => {
                 let havuz = snap.val() ? Object.values(snap.val()) : [];
-                let eslesme = havuz.find(kisi => kisi.includes(tc) && kisi.includes(ad));
+                let temizArananAd = temizle(ad);
+                
+                // TC'yi olduğu gibi ara, İsmi temizleyip ara!
+                let eslesme = havuz.find(kisi => kisi.includes(tc) && temizle(kisi).includes(temizArananAd));
                 
                 if(eslesme) {
                     aktifKurumId = kurum;
+                    aktifPersonelAd = ad; 
                     document.getElementById("loginScreen").style.display = "none";
                     document.getElementById("dashboard").style.display = "block";
-                    document.getElementById("personelIsimSpan").innerText = "Hoş Geldin, " + ad;
+                    document.getElementById("personelIsimSpan").innerText = "Hoş Geldin, " + ad.toUpperCase('tr');
                     kurallariYukleVeTablolariCiz();
                 } else {
-                    alert("Kimlik Doğrulama Başarısız!\\n\\nPersonel havuzunda kaydınız bulunamadı veya TC/İsim hatalı.");
+                    alert("Kimlik Doğrulama Başarısız!\n\nSistemde kaydınız bulunamadı. Lütfen TC'nizin ilk 6 hanesini ve isminizi doğru yazdığınızdan emin olun.");
                 }
-            });
+            }).catch(err => alert("Bağlantı Hatası: " + err.message));
         }
 
         function kurallariYukleVeTablolariCiz() {
@@ -104,15 +117,6 @@
 
         function tablolariGetir() {
             let arsivYolu = aktifKurumId === "addh" ? "arsivlenmis_shiftler" : `kurumlar/${aktifKurumId}/arsivlenmis_shiftler`;
-            
-            // 🔥 KUSURSUZ İSİM EŞLEŞTİRİCİ MOTOR (Boşlukları ve İ/I karmaşasını yok eder)
-            const temizle = (str) => {
-                if(!str) return "";
-                return str.replace(/İ/g,'I').replace(/ı/g,'I').replace(/Ş/g,'S').replace(/ş/g,'S')
-                          .replace(/Ğ/g,'G').replace(/ğ/g,'G').replace(/Ü/g,'U').replace(/ü/g,'U')
-                          .replace(/Ö/g,'O').replace(/ö/g,'O').replace(/Ç/g,'C').replace(/ç/g,'C')
-                          .replace(/i/g,'I').toUpperCase().replace(/\s+/g, '');
-            };
             
             db.ref(arsivYolu).once("value").then(snap => {
                 const container = document.getElementById("tablesContainer");
@@ -130,10 +134,9 @@
                                 let tData = table.data || table.rows || [];
                                 let arananAd = temizle(aktifPersonelAd);
                                 
-                                // 🔥 2. KURAL: Bu personelin adı (temizlenmiş haliyle) bu tabloda var mı?
+                                // 2. KURAL: Adam bu tabloda var mı?
                                 let adaminSatiriVarMi = tData.some(r => temizle(r.name).includes(arananAd));
                                 
-                                // Eğer adam bu tabloda varsa, tablonun TAMAMINI çiz
                                 if(adaminSatiriVarMi) {
                                     yayinlananVarmi = true;
                                     
@@ -151,7 +154,6 @@
                                     }
                                     html += `</tr></thead><tbody>`;
 
-                                    // 🔥 HERKESİ ÇİZ VE KENDİNİ PARLAT
                                     tData.forEach(row => {
                                         let kendiSatiriMi = temizle(row.name).includes(arananAd);
                                         
@@ -185,14 +187,7 @@
                     container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; border:1px dashed #475569; border-radius:15px; font-weight:bold;">Şu anda adınıza tanımlanmış aktif bir vardiya bulunmamaktadır.</div>`;
                 }
             }).catch(err => {
-                // Eğer kodda bir çökme olursa ekrana kırmızı yazıyla sebebini basar
                 document.getElementById("tablesContainer").innerHTML = `<div style="color:red; text-align:center; padding:20px;">Bir hata oluştu: ${err.message}</div>`;
-            });
-        }
-                
-                if(!yayinlananVarmi) {
-                    container.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; border:1px dashed #475569; border-radius:15px; font-weight:bold;">Şu anda adınıza tanımlanmış aktif bir vardiya bulunmamaktadır.</div>`;
-                }
             });
         }
 
