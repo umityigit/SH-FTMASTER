@@ -20,7 +20,7 @@
         .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(2,132,199,0.5); }
 
         #dashboard { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
-        .header { display: flex; flex-wrap:wrap; gap:15px; align-items:center; justify-content:space-between; border-bottom: 1px dashed var(--accent); padding-bottom: 20px; margin-bottom: 30px; }
+        .header { display: flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; border-bottom: 1px dashed var(--accent); padding-bottom: 20px; margin-bottom: 30px; }
         
         .table-wrapper { background: var(--card); border: 1px solid #475569; border-radius: 15px; padding: 20px; margin-bottom: 30px; overflow-x: auto; }
         .table-title { font-size: 20px; font-weight: 900; color: var(--accent); margin-bottom: 15px; display: inline-block; }
@@ -52,6 +52,9 @@
                 <span id="personelIsimSpan" style="color:var(--accent); font-size:14px; font-weight:800;"></span>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button onclick="openStaffMsgModal()" style="background:var(--purple); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(139,92,246,0.5); transition:0.3s; display:flex; align-items:center; gap:5px;">
+                    ✉️ YÖNETİCİYE MESAJ GÖNDER
+                </button>
                 <button onclick="window.location.href='index.html'" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.3s;">🏠 ANA SAYFA</button>
                 <button id="btnGuncelle" onclick="tablolariGuncelle()" style="background:#3b82f6; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(59,130,246,0.4); transition:0.3s;">🔄 GÜNCELLE</button>
                 <button onclick="cikisYap()" style="background:#ef4444; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(239,68,68,0.4); transition:0.3s;">🚪 ÇIKIŞ</button>
@@ -61,13 +64,13 @@
     </div>
 
     <div id="staffMsgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;">
-        <div style="background:#1e293b; padding:20px; border-radius:15px; width:90%; max-width:400px; border:2px solid #38bdf8;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <b id="msgTargetName" style="color:white;">TALEBİNİZİ YAZIN</b>
+        <div style="background:#1e293b; padding:20px; border-radius:15px; width:90%; max-width:400px; border:2px solid var(--purple); box-shadow:0 0 30px rgba(139,92,246,0.3);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:10px;">
+                <b id="msgTargetName" style="color:white; font-size:15px;">TALEBİNİZİ YAZIN</b>
                 <button onclick="document.getElementById('staffMsgModal').style.display='none'" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
             </div>
-            <textarea id="staffMsgBody" style="width:100%; box-sizing:border-box; height:120px; background:#0f172a; color:white; border:1px solid #475569; border-radius:10px; padding:10px; margin-bottom:15px; font-family:'Poppins';" placeholder="Yöneticinize iletmek istediğiniz notu yazın..."></textarea>
-            <button onclick="sendStaffMessage()" style="width:100%; background:#38bdf8; color:black; font-weight:900; padding:12px; border:none; border-radius:10px; cursor:pointer; font-family:'Poppins';">🚀 YÖNETİCİYE İLET</button>
+            <textarea id="staffMsgBody" style="width:100%; box-sizing:border-box; height:120px; background:#0f172a; color:white; border:1px solid #475569; border-radius:10px; padding:10px; margin-bottom:15px; font-family:'Poppins'; resize:none;" placeholder="Yöneticinize iletmek istediğiniz talebi veya notu detaylıca yazın..."></textarea>
+            <button onclick="sendStaffMessage()" style="width:100%; background:var(--purple); color:white; font-weight:900; padding:15px; border:none; border-radius:10px; cursor:pointer; font-family:'Poppins'; font-size:14px; box-shadow:0 4px 15px rgba(139,92,246,0.4);">🚀 TALEBİ YÖNETİCİYE İLET</button>
         </div>
     </div>
 
@@ -80,7 +83,6 @@
         let aktifKurumId = "";
         let aktifPersonelAd = ""; 
 
-        // KUSURSUZ İSİM TEMİZLEYİCİ
         const temizle = (str) => {
             if(!str) return "";
             return str.replace(/İ/g,'I').replace(/ı/g,'I').replace(/Ş/g,'S').replace(/ş/g,'S')
@@ -168,10 +170,8 @@
                                         let nameStyle = kendiSatiriMi ? `color: var(--accent); font-weight: 900; font-size: 14px;` : ``;
                                         let starIcon = kendiSatiriMi ? ` ⭐` : ``;
                                         
-                                        // 🔥 İŞTE MESAJ BUTONU BURADA SADECE KİŞİNİN KENDİ İSMİNDE ÇIKAR 🔥
-                                        let msgBtn = kendiSatiriMi ? `<span style="cursor:pointer; font-size:16px; margin-left:8px;" onclick="openStaffMsgModal('${row.name}')" title="Yöneticiye Talebini İlet">✉️</span>` : ``;
-
-                                        html += `<tr style="${rowStyle}"><td style="${nameStyle}">${row.name}${starIcon}${msgBtn}</td>`;
+                                        // Minik ikonu kaldırdık, sadece isim ve yıldız basıyoruz
+                                        html += `<tr style="${rowStyle}"><td style="${nameStyle}">${row.name}${starIcon}</td>`;
                                         
                                         for(let i=0; i<cols; i++) {
                                             let s = row.shifts ? row.shifts[i] : null;
@@ -210,30 +210,35 @@
         function cikisYap() { window.location.reload(); }
 
         // ==========================================
-        // PERSONEL MESAJ GÖNDERME MOTORU
+        // YENİ: PERSONEL MESAJ GÖNDERME MOTORU
         // ==========================================
-        function openStaffMsgModal(name) {
-            document.getElementById("msgTargetName").innerText = "SAYIN " + name.toUpperCase('tr') + ", TALEBİNİZ:";
-            window.currentSendingStaff = name.toUpperCase('tr');
+        function openStaffMsgModal() {
+            // Butona basıldığında kişinin kendi adını otomatik alıp tepeye yazar
+            let isim = aktifPersonelAd.toUpperCase('tr');
+            document.getElementById("msgTargetName").innerText = "SAYIN " + isim + ", TALEBİNİZ:";
             document.getElementById("staffMsgModal").style.display = "flex";
+            document.getElementById("staffMsgBody").focus();
         }
 
         function sendStaffMessage() {
             let mesaj = document.getElementById("staffMsgBody").value.trim();
-            if(!mesaj) return alert("Mesaj boş olamaz!");
+            if(!mesaj) return alert("Lütfen yöneticinize iletmek istediğiniz notu yazın.");
             
-            db.ref("ortak_mesajlar").push({
-                kisi: window.currentSendingStaff,
+            // 🔥 PERMISSION_DENIED ÇÖZÜMÜ: Mesajı ana root'a değil, kurumun kendi odasına yönlendiriyoruz
+            let msjYolu = aktifKurumId === "addh" ? "ortak_mesajlar" : `kurumlar/${aktifKurumId}/ortak_mesajlar`;
+            
+            db.ref(msjYolu).push({
+                kisi: aktifPersonelAd.toUpperCase('tr'),
                 mesaj: mesaj,
                 tarih: new Date().toLocaleString('tr-TR'),
                 durum: 'bekliyor',
                 tenant: aktifKurumId 
             }).then(() => {
-                alert("Talebiniz başarıyla yöneticinize iletildi! ✅\nSistemi kontrol edebilirsiniz.");
+                alert("Talebiniz başarıyla yöneticinize iletildi! ✅");
                 document.getElementById("staffMsgBody").value = "";
                 document.getElementById("staffMsgModal").style.display = "none";
             }).catch(err => {
-                alert("Hata oluştu: " + err.message);
+                alert("Güvenlik Duvarı Hatası: " + err.message);
             });
         }
     </script>
