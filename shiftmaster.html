@@ -2145,13 +2145,29 @@ function toggleTablePublish(btn) {
             }
         };
     // 1. DÜZELTİLMİŞ: Puantaj Çekme Motoru (Çoklu Kurum Uyumlu)
+   // 🔥 %100 İZOLE KURUM (TENANT) YÖNLENDİRİCİSİ
+    function getTenantId() { return localStorage.getItem("tenantId") || "addh"; }
+    
+    function getHavuzYolu() {
+        let t = getTenantId();
+        return t === "addh" ? "personel_havuzu" : "kurumlar/" + t + "/personel_havuzu";
+    }
+    
+    function getPuantajYolu() {
+        let t = getTenantId();
+        return t === "addh" ? "puantaj_motoru_ayarlar" : "kurumlar/" + t + "/puantaj_motoru_ayarlar";
+    }
+
+    // 1. ZIRHLI: Puantaj Çekme Motoru (Asla başka kuruma sızmaz)
     window.pullFromPuantaj = function() {
-        if(!confirm("Puantaj Motorundaki tüm personeller (TC kimlikleri ile birlikte arka plana) Ana Havuza çekilecek. Onaylıyor musunuz?")) return;
+        if(!confirm("Puantaj Motorundaki tüm personeller (TC kimlikleri ile birlikte) Ana Havuza çekilecek. Onaylıyor musunuz?")) return;
         
-        // db.ref yerine originalRef kullanıldı
-        originalRef("puantaj_motoru_ayarlar").once("value").then(snap => {
+        let py = getPuantajYolu();
+        let hy = getHavuzYolu();
+
+        db.ref(py).once("value").then(snap => {
             let data = snap.val();
-            if(!data || !data.gruplar) return alert("Puantaj motorunda kayıtlı personel bulunamadı!");
+            if(!data || !data.gruplar) return alert("Puantaj motorunda kayıtlı personel bulunamadı! (Önce puantaj motoruna kendi personellerinizi ekleyin)");
             
             let eklenecekler = [];
             data.gruplar.forEach(grup => {
@@ -2164,13 +2180,13 @@ function toggleTablePublish(btn) {
             
             if(eklenecekler.length === 0) return alert("Eklenecek personel bulunamadı.");
             
-            originalRef("personel_havuzu").once("value").then(havuzSnap => {
+            db.ref(hy).once("value").then(havuzSnap => {
                 let mevcutHavuz = havuzSnap.val() ? Object.values(havuzSnap.val()) : [];
                 let eklenenSayi = 0;
                 
                 eklenecekler.forEach(yeniKisi => {
                     if(!mevcutHavuz.includes(yeniKisi)) {
-                        originalRef("personel_havuzu").push(yeniKisi);
+                        db.ref(hy).push(yeniKisi);
                         eklenenSayi++;
                     }
                 });
@@ -2185,9 +2201,10 @@ function toggleTablePublish(btn) {
         });
     };
 
-    // 2. DÜZELTİLMİŞ: Havuz Yükleme (Çoklu Kurum Uyumlu)
+    // 2. ZIRHLI: Havuz Yükleme (Sadece kendi kurumunu görür)
     window.loadStaffPool = function() { 
-        originalRef("personel_havuzu").on("value", snap => { 
+        let hy = getHavuzYolu();
+        db.ref(hy).on("value", snap => { 
             const p = document.getElementById("staffPool"); 
             if(p) p.innerHTML = ""; 
             const sSelect = document.getElementById("sorumluIsim"); 
@@ -2216,13 +2233,14 @@ function toggleTablePublish(btn) {
         }); 
     };
 
-    // 3. DÜZELTİLMİŞ: Elle Personel Ekleme (Çoklu Kurum Uyumlu)
+    // 3. ZIRHLI: Elle Personel Ekleme (Sadece kendi havuzuna atar)
     window.addStaff = function() { 
         const inp = document.getElementById("staffInput"); 
         if(!inp) return;
         const raw = inp.value.trim(); 
         if(!raw) return; 
 
+        let hy = getHavuzYolu();
         const lines = raw.split('\n').filter(line => line.trim() !== "");
         const mevcutSayi = window.staffList ? window.staffList.length : 0;
         const eklenecekSayi = lines.length;
@@ -2241,22 +2259,32 @@ function toggleTablePublish(btn) {
                 if (sutun1.match(/^\d+$/) && sutun2) { kayit = sutun1 + " - " + sutun2; } 
                 else { kayit = sutun2 || sutun1; }
             } 
-            if(kayit) { originalRef("personel_havuzu").push(kayit.toUpperCase('tr')); } 
+            if(kayit) { db.ref(hy).push(kayit.toUpperCase('tr')); } 
         }); 
         
         if(typeof logAction === "function") logAction(`${lines.length} personel ekledi.`); 
         inp.value = ""; 
     };
 
-    // 4. EMNİYET SÜBABI: Havuz Silme ve Boşaltma İşlemleri de Kuruma Özel Olsun
+    // 4. ZIRHLI: Havuz Silme ve Boşaltma (Sadece kendi havuzunu siler)
     window.clearStaffPool = function() {
         if(confirm("Havuzdaki TÜM PERSONEL kalıcı olarak silinecek. Emin misiniz?")) {
-            originalRef("personel_havuzu").remove().then(() => {
+            let hy = getHavuzYolu();
+            db.ref(hy).remove().then(() => {
                 if(typeof showToast === "function") showToast("Havuz temizlendi! 💣");
             });
         }
     };
 
+    window.removeStaff = function(e, id) {
+        e.stopPropagation();
+        if(confirm("Bu personeli havuzdan silmek istediğinize emin misiniz?")) {
+            let hy = getHavuzYolu();
+            db.ref(hy).child(id).remove().then(() => {
+                if(typeof showToast === "function") showToast("Personel silindi! 🗑️");
+            });
+        }
+    };
     window.removeStaff = function(e, id) {
         e.stopPropagation();
         if(confirm("Bu personeli havuzdan silmek istediğinize emin misiniz?")) {
