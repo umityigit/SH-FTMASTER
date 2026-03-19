@@ -2166,8 +2166,29 @@ function toggleTablePublish(btn) {
         let hy = getHavuzYolu();
 
         db.ref(py).once("value").then(snap => {
+            let data = snap.// 🔥 %100 İZOLE KURUM (TENANT) YÖNLENDİRİCİSİ (HAFIZA ADI DÜZELTİLDİ)
+    function getTenantId() { return localStorage.getItem("sm_current_tenant") || "addh"; }
+    
+    function getHavuzYolu() {
+        let t = getTenantId();
+        return t === "addh" ? "personel_havuzu" : "kurumlar/" + t + "/personel_havuzu";
+    }
+    
+    function getPuantajYolu() {
+        let t = getTenantId();
+        return t === "addh" ? "puantaj_motoru_ayarlar" : "kurumlar/" + t + "/puantaj_motoru_ayarlar";
+    }
+
+    // 1. ZIRHLI: Puantaj Çekme Motoru
+    window.pullFromPuantaj = function() {
+        if(!confirm("Puantaj Motorundaki tüm personeller (TC kimlikleri ile birlikte) Ana Havuza çekilecek. Onaylıyor musunuz?")) return;
+        
+        let py = getPuantajYolu();
+        let hy = getHavuzYolu();
+
+        db.ref(py).once("value").then(snap => {
             let data = snap.val();
-            if(!data || !data.gruplar) return alert("Puantaj motorunda kayıtlı personel bulunamadı! (Önce puantaj motoruna kendi personellerinizi ekleyin)");
+            if(!data || !data.gruplar) return alert("Puantaj motorunda kayıtlı personel bulunamadı! Lütfen önce Puantaj Motoruna kişi ekleyin.");
             
             let eklenecekler = [];
             data.gruplar.forEach(grup => {
@@ -2193,7 +2214,6 @@ function toggleTablePublish(btn) {
                 
                 if(eklenenSayi > 0) {
                     if(typeof showToast === "function") showToast(eklenenSayi + " personel Puantajdan başarıyla çekildi! ✅");
-                    if(typeof logAction === "function") logAction(`${eklenenSayi} personeli Puantaj motorundan havuza çekti.`);
                 } else {
                     alert("Puantajdaki tüm personeller zaten havuzda mevcut.");
                 }
@@ -2201,7 +2221,7 @@ function toggleTablePublish(btn) {
         });
     };
 
-    // 2. ZIRHLI: Havuz Yükleme (Sadece kendi kurumunu görür)
+    // 2. ZIRHLI: Havuz Yükleme
     window.loadStaffPool = function() { 
         let hy = getHavuzYolu();
         db.ref(hy).on("value", snap => { 
@@ -2233,7 +2253,7 @@ function toggleTablePublish(btn) {
         }); 
     };
 
-    // 3. ZIRHLI: Elle Personel Ekleme (Sadece kendi havuzuna atar)
+    // 3. ZIRHLI: Elle Personel Ekleme
     window.addStaff = function() { 
         const inp = document.getElementById("staffInput"); 
         if(!inp) return;
@@ -2246,7 +2266,7 @@ function toggleTablePublish(btn) {
         const eklenecekSayi = lines.length;
 
         if (mevcutSayi + eklenecekSayi > 50) {
-            alert("🛑 ÜCRETSİZ LİMİT DOLDU!\n\nÜcretsiz sürümde en fazla 50 personel ekleyebilirsiniz.");
+            alert("🛑 ÜCRETSİZ LİMİT DOLDU!");
             return; 
         }
 
@@ -2262,11 +2282,10 @@ function toggleTablePublish(btn) {
             if(kayit) { db.ref(hy).push(kayit.toUpperCase('tr')); } 
         }); 
         
-        if(typeof logAction === "function") logAction(`${lines.length} personel ekledi.`); 
         inp.value = ""; 
     };
 
-    // 4. ZIRHLI: Havuz Silme ve Boşaltma (Sadece kendi havuzunu siler)
+    // 4. ZIRHLI: Havuz Silme ve Boşaltma
     window.clearStaffPool = function() {
         if(confirm("Havuzdaki TÜM PERSONEL kalıcı olarak silinecek. Emin misiniz?")) {
             let hy = getHavuzYolu();
@@ -2281,14 +2300,6 @@ function toggleTablePublish(btn) {
         if(confirm("Bu personeli havuzdan silmek istediğinize emin misiniz?")) {
             let hy = getHavuzYolu();
             db.ref(hy).child(id).remove().then(() => {
-                if(typeof showToast === "function") showToast("Personel silindi! 🗑️");
-            });
-        }
-    };
-    window.removeStaff = function(e, id) {
-        e.stopPropagation();
-        if(confirm("Bu personeli havuzdan silmek istediğinize emin misiniz?")) {
-            originalRef("personel_havuzu").child(id).remove().then(() => {
                 if(typeof showToast === "function") showToast("Personel silindi! 🗑️");
             });
         }
