@@ -414,7 +414,9 @@
                     
                     <div style="display:flex; gap:10px; flex-wrap:wrap;" onclick="event.preventDefault();">
                         <button class="btn btn-green" style="padding:8px 15px; font-size:12px; box-shadow: 0 0 10px rgba(16,185,129,0.5);" onclick="generateTableFromSelected()">➕ SEÇİLİLERLE YENİ TABLO KUR</button>
-                        <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); color:white; padding:8px 15px; font-size:12px; box-shadow: 0 0 10px rgba(168,85,247,0.5);" onclick="openAiWizardForFolder()">🪄 A.I. İLE TABLO ÜRET</button>
+                        <button class="btn" style="background:linear-gradient(135deg, #a855f7, #6d28d9); color:white; padding:8px 15px; font-size:12px; box-shadow: 0 0 10px rgba(168,85,247,0.5);" onclick="openAiWizardForSelected()">🪄 A.I. İLE TABLO ÜRET</button>
+                  <button class="btn btn-orange" style="padding:8px 15px; font-size:12px; box-shadow: 0 0 10px rgba(245,158,11,0.5);" onclick="refreshStaffBadges(); showToast('Radar taraması tamamlandı! 📡');">🔄 RADARI ÇALIŞTIR</button>
+                    
                     </div>
                 </summary>
                 
@@ -1767,6 +1769,7 @@ function toggleTablePublish(btn) {
                     });
                 });
             });
+      if(typeof refreshStaffBadges === 'function') setTimeout(refreshStaffBadges, 300);
         }
         function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
         // --- KUSURSUZ (AKILLI) SAĞ TIK MENÜSÜ ---
@@ -2269,44 +2272,73 @@ function toggleTablePublish(btn) {
         }); 
     };
 
-    // 🌟 SÜREKLİ AKTİF RADAR MOTORU
+    // 1. KUSURSUZ "BUGÜN KİMLER VAR" MANTIKLI RADAR (Veritabanını Bekler)
     window.refreshStaffBadges = function() {
         let calisilanYerler = {};
         
-        // Tabloları tara ve isimleri tespit et
+        // A) Önce Ekranda Açık Olan (Henüz Kaydedilmemiş) Tabloları Tara
         document.querySelectorAll(".table-wrapper").forEach(wrapper => {
-            let tabloAdi = wrapper.getAttribute("data-tablename") || "Bilinmeyen Tablo";
+            let tabloAdi = wrapper.getAttribute("data-tablename") || "Açık Tablo";
             wrapper.querySelectorAll("tbody tr:not(.summary-row) .editable-name").forEach(isimDiv => {
-                let isim = isimDiv.innerText.trim().toUpperCase('tr');
+                let isim = isimDiv.textContent.trim().toUpperCase();
                 if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
                 if (!calisilanYerler[isim].includes(tabloAdi)) calisilanYerler[isim].push(tabloAdi);
             });
         });
 
-        // Tüm çiplerdeki alt etiketleri (rozetleri) güncelle
-        document.querySelectorAll("#staffPool .staff-chip").forEach(chip => {
-            let nameSpan = chip.querySelector(".isim-metni");
-            let badgeContainer = chip.querySelector(".badge-container");
-            if(!nameSpan || !badgeContainer) return;
-            
-            let isim = nameSpan.innerText.trim().toUpperCase('tr');
-
-            if(calisilanYerler[isim]) {
-                let yerler = calisilanYerler[isim].join(", ");
-                badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(245, 158, 11, 0.2); color:#fcd34d; padding:4px 6px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${yerler}">📍 ${yerler}</span>`;
-                
-                chip.style.opacity = "0.5"; 
-                chip.style.borderStyle = "dashed";
-                chip.style.borderColor = "rgba(255,255,255,0.1)";
-            } else {
-                // EĞER BOŞTAYSA YEMYEŞİL GÖRÜNSÜN
-                badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(16, 185, 129, 0.2); color:#34d399; padding:4px 6px; border-radius:6px; border:1px solid rgba(16, 185, 129, 0.4); text-align:center;">🟢 BOŞTA (Müsait)</span>`;
-                
-                chip.style.opacity = "1";
-                chip.style.borderStyle = "solid";
-                chip.style.borderColor = "var(--glass-border)";
+        // B) FİREBASE "BUGÜN KİMLER VAR" MANTIĞIYLA KUSURSUZ TARAMA
+        db.ref("arsivlenmis_shiftler").once('value').then(snap => {
+            if(snap.val()) {
+                Object.values(snap.val()).forEach(archive => {
+                    if(archive.tables) {
+                        archive.tables.forEach(table => {
+                            let tabloAdi = table.tableName || table.name || archive.name || "Kayıtlı Tablo";
+                            if(table.data) {
+                                table.data.forEach(row => {
+                                    if(row.name) {
+                                        let isim = row.name.trim().toUpperCase();
+                                        if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
+                                        if (!calisilanYerler[isim].includes(tabloAdi)) calisilanYerler[isim].push(tabloAdi);
+                                    }
+                                });
+                            }
+                        });
+                    } else if (archive.data) {
+                        // Eski nesil (tekli) tablolar için
+                        let tabloAdi = archive.name || "Kayıtlı Tablo";
+                        archive.data.forEach(row => {
+                            if(row.name) {
+                                let isim = row.name.trim().toUpperCase();
+                                if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
+                                if (!calisilanYerler[isim].includes(tabloAdi)) calisilanYerler[isim].push(tabloAdi);
+                            }
+                        });
+                    }
+                });
             }
-        });
+            
+            // C) VERİTABANI TARAMASI BİTTİKTEN SONRA EKRANI BOYAMA (İşte Sihir Burada)
+            document.querySelectorAll("#staffPool .staff-chip").forEach(chip => {
+                let nameSpan = chip.querySelector(".isim-metni");
+                let badgeContainer = chip.querySelector(".badge-container");
+                if(!nameSpan || !badgeContainer) return;
+                
+                let isim = nameSpan.textContent.trim().toUpperCase();
+
+                if(calisilanYerler[isim]) {
+                    let yerler = calisilanYerler[isim].join(", ");
+                    badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(245, 158, 11, 0.2); color:#fcd34d; padding:4px 6px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${yerler}">📍 ${yerler}</span>`;
+                    chip.style.opacity = "0.5"; 
+                    chip.style.borderStyle = "dashed";
+                    chip.style.borderColor = "rgba(255,255,255,0.1)";
+                } else {
+                    badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(16, 185, 129, 0.2); color:#34d399; padding:4px 6px; border-radius:6px; border:1px solid rgba(16, 185, 129, 0.4); text-align:center;">🟢 BOŞTA (Müsait)</span>`;
+                    chip.style.opacity = "1";
+                    chip.style.borderStyle = "solid";
+                    chip.style.borderColor = "var(--glass-border)";
+                }
+            });
+        }).catch(err => console.log("Radar Hatası:", err));
     };
     // 3. ZIRHLI: Elle Personel Ekleme
     window.addStaff = function() { 
@@ -2371,6 +2403,8 @@ function toggleTablePublish(btn) {
     </div>
 </div>
 
+
+    
 <script>
 // ==========================================
         // YÖNETİCİ: PERSONEL TALEPLERİNİ OKUMA VE CEVAPLAMA MOTORU (MESSENGER MODE)
@@ -2440,6 +2474,147 @@ function toggleTablePublish(btn) {
 
         setTimeout(loadMessagesForAdmin, 2000);
 
+// ============================================================
+    // 🚀 GEMİNİ TEMİZLİK OPERASYONU: KUSURSUZ RADAR VE TABLO MOTORU
+    // ============================================================
+
+    // ============================================================
+    // 🚀 SİSTEM GÜNCELLEMESİ: KUSURSUZ RADAR (ANA KLASÖR ADINI GÖSTERİR)
+    // ============================================================
+
+    window.refreshStaffBadges = function() {
+        let calisilanYerler = {};
+        
+        // A) ÖNCE EKRANDA AÇIK OLAN TABLOLARI TARA (Ekranda hangi klasör açıksa onun adını al)
+        let aktifKlasor = (typeof currentMasterArchiveName !== 'undefined' && currentMasterArchiveName !== "Yeni Dosya") ? currentMasterArchiveName : "Yeni Kayıtsız Tablo";
+        
+        document.querySelectorAll(".table-wrapper").forEach(wrapper => {
+            wrapper.querySelectorAll("tbody tr:not(.summary-row) .editable-name").forEach(isimDiv => {
+                let isim = isimDiv.textContent.trim().toLocaleUpperCase('tr-TR');
+                if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
+                if (!calisilanYerler[isim].includes(aktifKlasor)) calisilanYerler[isim].push(aktifKlasor);
+            });
+        });
+
+        // B) FİREBASE "KAYITLI KLASÖRLERİ" TARA (Alt tabloyu değil, Ana Klasör Adını Al!)
+        db.ref("arsivlenmis_shiftler").once('value').then(snap => {
+            if(snap.val()) {
+                Object.values(snap.val()).forEach(archive => {
+                    // SİHİR BURADA: Tablo adını değil, Ana Klasörün (Dosyanın) Adını alıyoruz
+                    let anaKlasorAdi = archive.name || "Kayıtlı Klasör"; 
+                    
+                    if(archive.tables) {
+                        archive.tables.forEach(table => {
+                            if(table.data) {
+                                table.data.forEach(row => {
+                                    if(row.name) {
+                                        let isim = row.name.trim().toLocaleUpperCase('tr-TR');
+                                        if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
+                                        if (!calisilanYerler[isim].includes(anaKlasorAdi)) calisilanYerler[isim].push(anaKlasorAdi);
+                                    }
+                                });
+                            }
+                        });
+                    } else if (archive.data) {
+                        archive.data.forEach(row => {
+                            if(row.name) {
+                                let isim = row.name.trim().toLocaleUpperCase('tr-TR');
+                                if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
+                                if (!calisilanYerler[isim].includes(anaKlasorAdi)) calisilanYerler[isim].push(anaKlasorAdi);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // C) VERİTABANI TARAMASI BİTTİKTEN SONRA EKRANI BOYAMA (ÇÖZÜM)
+            document.querySelectorAll("#staffPool .staff-chip").forEach(chip => {
+                let nameSpan = chip.querySelector(".isim-metni");
+                let badgeContainer = chip.querySelector(".badge-container");
+                if(!nameSpan || !badgeContainer) return;
+                
+                let isim = nameSpan.textContent.trim().toLocaleUpperCase('tr-TR');
+
+                if(calisilanYerler[isim] && calisilanYerler[isim].length > 0) {
+                    let yerler = calisilanYerler[isim].join(", ");
+                    // Rozet simgesini de Klasör (📁) yaptık
+                    badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(245, 158, 11, 0.2); color:#fcd34d; padding:4px 6px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${yerler}">📁 ${yerler}</span>`;
+                    chip.style.opacity = "0.5"; 
+                    chip.style.borderStyle = "dashed";
+                    chip.style.borderColor = "rgba(255,255,255,0.1)";
+                } else {
+                    badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(16, 185, 129, 0.2); color:#34d399; padding:4px 6px; border-radius:6px; border:1px solid rgba(16, 185, 129, 0.4); text-align:center;">🟢 BOŞTA (Müsait)</span>`;
+                    chip.style.opacity = "1";
+                    chip.style.borderStyle = "solid";
+                    chip.style.borderColor = "var(--glass-border)";
+                }
+            });
+        }).catch(err => console.log("Radar Hatası:", err));
+    };
+
+    // 2. SEÇİLİLERLE NORMAL TABLO KURMA (Gün/Tarih Sormama Hatası Çözüldü)
+    window.generateTableFromSelected = function() {
+        const selectedChips = document.querySelectorAll(".staff-chip.selected .isim-metni");
+        if(selectedChips.length === 0) return alert("Lütfen havuzdan en az bir personel seçin!");
+        
+        const sel = Array.from(selectedChips).map(el => el.textContent.trim());
+        
+        let defaultDate = new Date();
+        let dateStr = `${defaultDate.getFullYear()}-${String(defaultDate.getMonth() + 1).padStart(2, '0')}-${String(defaultDate.getDate()).padStart(2, '0')}`;
+        let userDate = prompt("Tablo Başlangıç Tarihi (Yıl-Ay-Gün):", dateStr);
+        if (!userDate) return;
+        
+        let pDate = new Date(userDate);
+        if (isNaN(pDate.getTime())) return alert("Geçersiz tarih formatı!");
+
+        let userDays = prompt("Tablo Kaç Günlük Olacak?", "30");
+        if (!userDays || isNaN(parseInt(userDays))) return;
+
+        generateTable(false, sel, "Yeni Tablo", pDate, parseInt(userDays));
+        setTimeout(refreshStaffBadges, 300);
+    };
+
+    // 3. YANLIŞLIKLA SİLİNEN YAPAY ZEKA BUTONU FONKSİYONU GERİ GELDİ
+    window.openAiWizardForSelected = function() {
+        const selectedChips = document.querySelectorAll(".staff-chip.selected .isim-metni");
+        if(selectedChips.length === 0) return alert("Lütfen havuzdan en az bir personel seçin!");
+        
+        const sel = Array.from(selectedChips).map(el => el.textContent.trim());
+        const namesParam = encodeURIComponent(sel.join(','));
+
+        window.targetTableWrapperForAI = null;
+        window.aiLastShifts = {};
+
+        const wizardUrl = `isci_sihirbaz.html?mode=new_table&names=${namesParam}`;
+        document.getElementById('aiWizardFrame').src = wizardUrl;
+        document.getElementById('targetFolderNameDisplay').innerText = `> Seçilen ${sel.length} Kişi İçin Tablo Üretiliyor...`;
+        
+        document.getElementById('aiWizardPopup').style.display = 'flex';
+        setTimeout(() => document.getElementById('aiWizardPopup').classList.add('show'), 10);
+    };
+
+    // 4. YAPAY ZEKADAN GELEN VERİYİ EKRANA DÖKEN FİLTRE (Klasör zorunluluğu kalktı)
+    window.receiveDataFromAiWizard = function(aiRows, startDateStr, colCount) {
+        let sDate = new Date(startDateStr);
+        
+        if (window.targetTableWrapperForAI) {
+            const oldWrapper = window.targetTableWrapperForAI;
+            const tName = oldWrapper.getAttribute("data-tablename") || "AI Tablosu";
+            const notes = oldWrapper.querySelector(".table-notes") ? oldWrapper.querySelector(".table-notes").value : "";
+
+            generateTable(true, aiRows, tName, sDate, parseInt(colCount), oldWrapper, notes);
+            oldWrapper.remove();
+        } else {
+            // YENİ TABLO İSE DİREKT EKRANA DÖK
+            generateTable(true, aiRows, "🤖 A.I. Yeni Tablo", sDate, parseInt(colCount));
+        }
+        
+        closeAiWizardPopup();
+        if(typeof showToast === "function") showToast("Sihirbaz verisi başarıyla işlendi! 🪄");
+        
+        setTimeout(refreshStaffBadges, 300);
+    };
+    
 </script>
 
 </body>
