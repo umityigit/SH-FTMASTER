@@ -158,10 +158,6 @@
                         </script>
 
                     <script>
-                        const weekend = ["CUMARTESİ", "PAZAR"];
-                        weekend.forEach((day, index) => {
-                            let i = index + 6;
-                            document.write(`
                             <div style="background: linear-gradient(180deg, rgba(244,63,94,0.1), rgba(2,6,23,0.95)); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--danger)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(244, 63, 94, 0.4)';">
                                 <div style="background: rgba(244, 63, 94, 0.2); color: var(--danger); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(244, 63, 94, 0.3); text-shadow: 0 0 8px var(--danger);">${day}</div>
                                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
