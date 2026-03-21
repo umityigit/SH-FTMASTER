@@ -618,6 +618,45 @@
         </div>
     </div>
 
+   <div id="premiumModal" class="modal-overlay" onclick="if(event.target.id==='premiumModal') closeModal('premiumModal')">
+        <div class="modal-box" style="max-width: 650px; text-align: center; border: 2px solid var(--purple); background: radial-gradient(circle at center, #0f172a, #020617); box-shadow:0 0 60px rgba(168,85,247,0.4);">
+            <div style="font-size: 50px; margin-bottom: 10px; text-shadow: 0 0 20px var(--purple);">🚀</div>
+            <h3 style="margin-top:0; color:#a855f7; font-size:28px; text-shadow:0 0 15px rgba(168,85,247,0.5);">SHIFTMASTER PRO'YA GEÇİŞ</h3>
+            <p style="font-size:14px; color:#cbd5e1; margin-bottom:25px; line-height: 1.6;">
+                Ücretsiz sürümdeki <b>50 Personel</b> limitine ulaştınız!<br>
+                Kurumunuzun tüm operasyonunu sınırsız yönetmek ve ekstra özelliklerin kilidini açmak için şimdi PRO sürüme yükseltin.
+            </p>
+            
+            <div style="display:flex; gap:15px; justify-content:center; margin-bottom:25px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:15px; padding:20px; transition:0.3s; cursor:pointer;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+                    <h4 style="color:#fff; margin:0 0 10px 0; font-size:18px;">AYLIK PAKET</h4>
+                    <div style="font-size:32px; font-weight:900; color:var(--accent); margin-bottom:10px;">₺199<span style="font-size:14px; color:#94a3b8;">/ay</span></div>
+                    <div style="font-size:12px; color:#94a3b8;">Esnek ödeme, istediğin zaman iptal et.</div>
+                </div>
+                
+                <div style="flex:1; min-width:200px; background:linear-gradient(135deg, rgba(168,85,247,0.2), rgba(2,6,23,0.9)); border:2px solid var(--purple); border-radius:15px; padding:20px; position:relative; box-shadow:0 0 20px rgba(168,85,247,0.3); transform:scale(1.05);">
+                    <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--success); color:#fff; font-size:10px; font-weight:900; padding:4px 10px; border-radius:10px; letter-spacing:1px; white-space:nowrap;">🔥 2 AY HEDİYE!</div>
+                    <h4 style="color:#fff; margin:0 0 10px 0; font-size:18px;">YILLIK PAKET</h4>
+                    <div style="font-size:32px; font-weight:900; color:#a855f7; margin-bottom:10px;">₺1990<span style="font-size:14px; color:#94a3b8;">/yıl</span></div>
+                    <div style="font-size:12px; color:#e2e8f0;">En avantajlı seçenek. Kesintisiz hizmet.</div>
+                </div>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.5); border:1px dashed var(--warning); padding:15px; border-radius:12px; text-align:left; margin-bottom:25px;">
+                <h4 style="color:var(--warning); margin:0 0 10px 0; font-size:14px; text-align:center;">💳 HAVALE / EFT BİLGİLERİ</h4>
+                <div style="font-family:monospace; font-size:14px; color:#fff; text-align:center; letter-spacing:1px; margin-bottom:10px; background:#020617; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                    TR35 0001 0025 7593 5115 2950 01
+                </div>
+                <div style="font-size:12px; color:#cbd5e1; text-align:center;">
+                    <b>Alıcı:</b> Ümit Yiğit <br>
+                    <span style="color:#fca5a5;">Önemli:</span> Açıklama kısmına sadece <b>Kurum Adınızı ve Telefon Numaranızı</b> yazınız. Ödemeniz onaylandığında limitiniz anında sınırsız yapılacaktır.
+                </div>
+            </div>
+
+            <button class="btn" style="width:100%; justify-content:center; padding:15px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); font-size:14px;" onclick="closeModal('premiumModal')">KAPAT VE ÜCRETSİZ SÜRÜMDE KAL</button>
+        </div>
+    </div>
+    
     <script>
         
 // KUSURSUZ GERİ ALMA (CTRL+Z) MOTORU
@@ -2340,7 +2379,7 @@ function toggleTablePublish(btn) {
             });
         }).catch(err => console.log("Radar Hatası:", err));
     };
-    // 3. ZIRHLI: Elle Personel Ekleme
+    // 3. ZIRHLI: Akıllı Elle Ekleme Motoru ve Premium Kontrolü
     window.addStaff = function() { 
         const inp = document.getElementById("staffInput"); 
         if(!inp) return;
@@ -2351,8 +2390,9 @@ function toggleTablePublish(btn) {
         const mevcutSayi = window.staffList ? window.staffList.length : 0;
         const eklenecekSayi = lines.length;
 
+        // 🔥 İŞTE SİHİR BURADA: Eski çirkin uyarı yerine Jilet gibi Premium ekranı açılır!
         if (mevcutSayi + eklenecekSayi > 50) {
-            alert("🛑 ÜCRETSİZ LİMİT DOLDU!");
+            openModal('premiumModal');
             return; 
         }
 
@@ -2368,6 +2408,7 @@ function toggleTablePublish(btn) {
             if(kayit) { db.ref("personel_havuzu").push(kayit.toUpperCase('tr')); } 
         }); 
         
+        logAction(`${lines.length} personel ekledi.`); 
         inp.value = ""; 
     };
 
