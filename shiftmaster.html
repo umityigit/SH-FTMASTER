@@ -2120,60 +2120,78 @@ function toggleTablePublish(btn) {
 }
         
         // 👁️ KONTROL MERKEZİ (PATRON MODU) ARAMA VE SIZMA MOTORU - (ZIRHLI VERSİYON)
-        window.openBossConsole = function() {
-            const modal = document.getElementById('bossConsoleModal');
-            if(!modal) {
-                alert("Hata: bossConsoleModal HTML'de bulunamadı!");
-                return;
-            }
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('show'), 10);
-            
-            // Tüm kurumları Firebase'den çek ve listele (originalRef ile direkt kök dizine iniyoruz)
-            originalRef("kurum_kayitlari").once("value").then(snap => {
-                const list = document.getElementById('bossKurumListesi');
-                if(!list) return;
-                list.innerHTML = "";
-                if(snap.val()) {
-                    Object.entries(snap.val()).forEach(([kod, data]) => {
-                        list.innerHTML += `
-                            <div class="archive-card boss-card" data-isim="${(data.kurumAdi || "").toLowerCase()}" style="border-color:#ef4444; background:rgba(127,29,29,0.2);">
-                                <div style="flex:1;">
-                                    <b style="color:#fca5a5; font-size:16px;">🏢 ${data.kurumAdi}</b><br>
-                                    <small style="color:#cbd5e1; font-size:11px;">Kod: <b>${kod}</b> | Patron: ${data.patronIsim}</small>
-                                </div>
-                                <button class="btn btn-red" style="padding:8px 15px; font-size:11px; box-shadow:0 0 10px #ef4444;" onclick="patronaBaglan(event, '${kod}', '${data.kurumAdi}')">SİSTEMİNE GİR</button>
+        // ==========================================
+    // 👁️ KONTROL MERKEZİ (PATRON MODU) VE LİMİT MOTORU
+    // ==========================================
+    window.openBossConsole = function() {
+        const modal = document.getElementById('bossConsoleModal');
+        if(!modal) { alert("Hata: bossConsoleModal HTML'de bulunamadı!"); return; }
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+        
+        // Kurumları Firebase'den çek
+        originalRef("kurum_kayitlari").once("value").then(snap => {
+            const list = document.getElementById('bossKurumListesi');
+            if(!list) return;
+            list.innerHTML = "";
+            if(snap.val()) {
+                Object.entries(snap.val()).forEach(([kod, data]) => {
+                    let guncelLimit = data.limit || 50; // Sistemin varsayılan limiti 50'dir
+                    list.innerHTML += `
+                        <div class="archive-card boss-card" data-isim="${(data.kurumAdi || "").toLowerCase()}" style="border-color:#ef4444; background:rgba(127,29,29,0.2);">
+                            <div style="flex:1;">
+                                <b style="color:#fca5a5; font-size:16px;">🏢 ${data.kurumAdi}</b><br>
+                                <small style="color:#cbd5e1; font-size:11px;">Kod: <b>${kod}</b> | Limit: <b style="color:var(--accent); font-size:13px;">${guncelLimit} Kişi</b></small>
                             </div>
-                        `;
-                    });
-                } else {
-                    list.innerHTML = "<div style='color:#fca5a5; grid-column:span 2; text-align:center;'>Sistemde henüz kayıtlı kurum yok.</div>";
-                }
-            }).catch(err => {
-                alert("Kurumlar yüklenirken hata oluştu: " + err.message);
-            });
-        };
-
-        // Komuta Üssü Arama Filtresi
-        window.filterBossList = function() {
-            let val = document.getElementById('bossSearchInput').value.toLowerCase();
-            document.querySelectorAll('.boss-card').forEach(card => {
-                if(card.getAttribute('data-isim').includes(val)) card.style.display = "flex";
-                else card.style.display = "none";
-            });
-        };
-
-        // İstediğin Kurumun İçine Sızma Fonksiyonu
-        window.patronaBaglan = function(e, kod, isim) {
-            e.stopPropagation();
-            if(confirm(`DİKKAT: "${isim}" adlı kurumun yönetim paneline sızmak üzeresiniz. Onaylıyor musunuz?`)) {
-                localStorage.setItem('sm_current_tenant', kod);
-                localStorage.setItem('sm_current_kurum_adi', isim);
-                if (typeof showToast === "function") showToast("Sisteme Bağlanılıyor...");
-                setTimeout(() => window.location.reload(), 1000);
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <button class="btn btn-purple" style="padding:6px 12px; font-size:10px; box-shadow:0 0 10px var(--purple);" onclick="limitArttir(event, '${kod}', '${data.kurumAdi}', ${guncelLimit})">💎 LİMİT GÜNCELLE</button>
+                                <button class="btn btn-red" style="padding:6px 12px; font-size:10px; box-shadow:0 0 10px #ef4444;" onclick="patronaBaglan(event, '${kod}', '${data.kurumAdi}')">SİSTEMİNE GİR</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                list.innerHTML = "<div style='color:#fca5a5; grid-column:span 2; text-align:center;'>Sistemde henüz kayıtlı kurum yok.</div>";
             }
-        };
-                  
+        }).catch(err => alert("Kurumlar yüklenirken hata oluştu: " + err.message));
+    };
+
+    // 🚀 LİMİTİ FİREBASE'E KAYDEDEN YENİ SİLAHIMIZ
+    window.limitArttir = function(e, kod, isim, eskiLimit) {
+        e.stopPropagation();
+        let yeniLimit = prompt(`"${isim}" kurumu ödeme yaptıysa yeni personel limitini girin:\n(Sınırsız yapmak için 9999 yazabilirsiniz)`, eskiLimit);
+        
+        if (yeniLimit && !isNaN(yeniLimit)) {
+            let limitSayisi = parseInt(yeniLimit);
+            // 1. Patron ekranında görünmesi için ana kayda yaz:
+            originalRef("kurum_kayitlari/" + kod + "/limit").set(limitSayisi);
+            // 2. Kurumun kendi sistemine (ayarlarına) limiti gönder:
+            originalRef("kurumlar/" + kod + "/ayarlar/limit").set(limitSayisi).then(() => {
+                if (typeof showToast === "function") showToast(isim + " limiti " + limitSayisi + " olarak açıldı! 💸🚀");
+                openBossConsole(); // Ekranı yenileyip yeni limiti göstersin
+            });
+        }
+    };
+
+    // Komuta Üssü Arama Filtresi (Bunu silsen arama bozulurdu)
+    window.filterBossList = function() {
+        let val = document.getElementById('bossSearchInput').value.toLowerCase();
+        document.querySelectorAll('.boss-card').forEach(card => {
+            if(card.getAttribute('data-isim').includes(val)) card.style.display = "flex";
+            else card.style.display = "none";
+        });
+    };
+
+    // İstediğin Kurumun İçine Sızma Fonksiyonu (Bunu silsen sistemlerine giremezdik)
+    window.patronaBaglan = function(e, kod, isim) {
+        e.stopPropagation();
+        if(confirm(`DİKKAT: "${isim}" adlı kurumun yönetim paneline sızmak üzeresiniz. Onaylıyor musunuz?`)) {
+            localStorage.setItem('sm_current_tenant', kod);
+            localStorage.setItem('sm_current_kurum_adi', isim);
+            if (typeof showToast === "function") showToast("Sisteme Bağlanılıyor...");
+            setTimeout(() => window.location.reload(), 1000);
+        }
+    };    
         // ============================================================================
         // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ (FİNAL SÜRÜM)
         //========================================================================
