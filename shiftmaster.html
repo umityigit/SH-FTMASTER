@@ -2397,7 +2397,27 @@ function toggleTablePublish(btn) {
             });
         }).catch(err => console.log("Radar Hatası:", err));
     };
-    // 3. ZIRHLI: Akıllı Elle Ekleme Motoru ve Premium Kontrolü
+    // ==========================================
+    // 💎 DİNAMİK LİMİT OKUYUCU VE AKILLI EKLEME MOTORU
+    // ==========================================
+    
+    window.kurumLimiti = 50; // Başlangıçta varsayılan limit
+
+    // Sistemi kandırmaması için doğrudan orijinal adrese (Patronun yazdığı kasaya) bağlanıyoruz!
+    setTimeout(() => {
+        let tnt = localStorage.getItem("sm_current_tenant");
+        if(tnt) {
+            originalRef("kurumlar/" + tnt + "/ayarlar/limit").on("value", snap => {
+                if(snap.exists()) {
+                    window.kurumLimiti = parseInt(snap.val());
+                } else {
+                    window.kurumLimiti = 50;
+                }
+            });
+        }
+    }, 1500);
+
+    // 3. ZIRHLI: Akıllı Elle Ekleme Motoru
     window.addStaff = function() { 
         const inp = document.getElementById("staffInput"); 
         if(!inp) return;
@@ -2408,8 +2428,8 @@ function toggleTablePublish(btn) {
         const mevcutSayi = window.staffList ? window.staffList.length : 0;
         const eklenecekSayi = lines.length;
 
-        // 🔥 İŞTE SİHİR BURADA: Eski çirkin uyarı yerine Jilet gibi Premium ekranı açılır!
-        if (mevcutSayi + eklenecekSayi > 50) {
+        // 🔥 İŞTE SİHİR: Artık sabit 50'ye değil, Firebase'den okunan 'kurumLimiti'ne bakıyor!
+        if (mevcutSayi + eklenecekSayi > window.kurumLimiti) {
             openModal('premiumModal');
             return; 
         }
@@ -2426,7 +2446,7 @@ function toggleTablePublish(btn) {
             if(kayit) { db.ref("personel_havuzu").push(kayit.toUpperCase('tr')); } 
         }); 
         
-        logAction(`${lines.length} personel ekledi.`); 
+        if(typeof logAction === "function") logAction(`${lines.length} personel ekledi.`); 
         inp.value = ""; 
     };
 
