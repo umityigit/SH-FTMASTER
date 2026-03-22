@@ -1252,70 +1252,113 @@
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
         // ==========================================
-       function assignFourWeeks(staffList, reqG, reqN, dayCode, nightCode, offCode) {
-    let patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
-    let assignments = {};
+     function generateWeeklyPatterns(dayCode, nightCode, offCode) {
+    let patterns = [];
+    function isValidPattern(p) {
+        let workDays = p.filter(x => x !== offCode).length;
+        if(workDays !== 4) return false;
 
-    staffList.forEach(staff => {
-        staff.gCount = 0;
-        staff.nCount = 0;
-        assignments[staff.name] = [];
-    });
-
-    for(let week=0; week<4; week++) {
-        // Günlük sayaçlar
-        let dailyG = Array(7).fill(0);
-        let dailyN = Array(7).fill(0);
-
-        staffList.forEach(staff => {
-            let validPattern = patterns.find(p => {
-                let gCount = p.filter(x => x === dayCode).length;
-                let nCount = p.filter(x => x === nightCode).length;
-
-                // quota kontrolü
-                if(staff.gCount + gCount > 9) return false;
-                if(staff.nCount + nCount > 7) return false;
-
-                // hafta geçiş kontrolü
-                if(week > 0) {
-                    let prevWeek = assignments[staff.name][week-1];
-                    if(prevWeek[6] === nightCode && p[0] === dayCode) return false;
-                }
-
-                // günlük ihtiyaç kontrolü (önceden atanmış + bu pattern)
-                for(let d=0; d<7; d++) {
-                    let gTotal = dailyG[d] + (p[d] === dayCode ? 1 : 0);
-                    let nTotal = dailyN[d] + (p[d] === nightCode ? 1 : 0);
-                    if(gTotal > reqG[d] || nTotal > reqN[d]) return false;
-                }
-
-                return true;
-            });
-
-            if(validPattern) {
-                assignments[staff.name].push(validPattern);
-                staff.gCount += validPattern.filter(x => x === dayCode).length;
-                staff.nCount += validPattern.filter(x => x === nightCode).length;
-
-                // günlük sayaçları güncelle
-                for(let d=0; d<7; d++) {
-                    if(validPattern[d] === dayCode) dailyG[d]++;
-                    if(validPattern[d] === nightCode) dailyN[d]++;
-                }
-            } else {
-                console.error("⚠️ Uygun pattern bulunamadı:", staff.name, "hafta", week+1);
-            }
-        });
-
-        // hafta sonunda kontrol
-        for(let d=0; d<7; d++) {
-            if(dailyG[d] !== reqG[d] || dailyN[d] !== reqN[d]) {
-                console.error(`🚨 Hafta ${week+1}, Gün ${d+1}: İhtiyaç tutmuyor! G:${dailyG[d]}/${reqG[d]} N:${dailyN[d]}/${reqN[d]}`);
-            }
+        for(let i=0; i<p.length; i++) {
+            if(p[i] === nightCode && (i+1 < p.length) && p[i+1] !== offCode) return false; // Gece sonrası izin
+            if(p.slice(i,i+3).every(x => x === dayCode)) return false; // 3 gündüz yasak
+            if(p.slice(i,i+2).every(x => x === nightCode)) return false; // 2 gece yasak
+            if(p.slice(i,i+3).every(x => x === offCode)) return false; // 3 izin yasak
         }
+        return true;
     }
 
-    return assignments;
+    function backtrack(curr) {
+        if(curr.length === 7) {
+            if(isValidPattern(curr)) patterns.push([...curr]);
+            return;
+        }
+        [dayCode, nightCode, offCode].forEach(code => {
+            curr.push(code);
+            backtrack(curr);
+            curr.pop();
+        });
+    }
+    backtrack([]);
+    return patterns;
+}
+
+function startAiDistribution12h() {
+    let dayCode = document.getElementById('aiDayShiftSelect').value;
+    let nightCode = document.getElementById('aiNightShiftSelect').value;
+    let offCode = document.getElementById('aiOffShiftSelect').value;
+    if(!dayCode || !nightCode || !offCode) return alert("Lütfen gündüz, gece ve izin kodlarını seçiniz!");
+    if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
+
+    let reqG = [], reqN = [];
+    for(let i=1; i<=7; i++) {
+        reqG[i-1] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
+        reqN[i-1] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
+    }
+
+    let startDtStr = document.getElementById('simStartDate').value;
+    let colCount = parseInt(document.getElementById('simDays').value);
+    if(!startDtStr) return alert("Başlangıç tarihi seçin.");
+    let startDt = new Date(startDtStr);
+
+    document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: Kusursuz tablo aranıyor...";
+    document.getElementById('resultModal').style.display = 'flex';
+    document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Kurallar kilitlendi. Lütfen bekleyin...</div>";
+
+    setTimeout(() => {
+        let patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
+        let assignments = {};
+        let staffList = selectedStaff.map(name => ({ name, gCount:0, nCount:0 }));
+
+        for(let week=0; week<4; week++) {
+            let dailyG = Array(7).fill(0);
+            let dailyN = Array(7).fill(0);
+
+            staffList.forEach(staff => {
+                let validPattern = patterns.find(p => {
+                    let gCount = p.filter(x => x === dayCode).length;
+                    let nCount = p.filter(x => x === nightCode).length;
+
+                    if(staff.gCount + gCount > 9) return false;
+                    if(staff.nCount + nCount > 7) return false;
+
+                    if(week > 0) {
+                        let prevWeek = assignments[staff.name][week-1];
+                        if(prevWeek[6] === nightCode && p[0] === dayCode) return false;
+                    }
+
+                    for(let d=0; d<7; d++) {
+                        let gTotal = dailyG[d] + (p[d] === dayCode ? 1 : 0);
+                        let nTotal = dailyN[d] + (p[d] === nightCode ? 1 : 0);
+                        if(gTotal > reqG[d] || nTotal > reqN[d]) return false;
+                    }
+                    return true;
+                });
+
+                if(!assignments[staff.name]) assignments[staff.name] = [];
+                if(validPattern) {
+                    assignments[staff.name].push(validPattern);
+                    staff.gCount += validPattern.filter(x => x === dayCode).length;
+                    staff.nCount += validPattern.filter(x => x === nightCode).length;
+                    for(let d=0; d<7; d++) {
+                        if(validPattern[d] === dayCode) dailyG[d]++;
+                        if(validPattern[d] === nightCode) dailyN[d]++;
+                    }
+                } else {
+                    console.error("⚠️ Uygun pattern bulunamadı:", staff.name, "hafta", week+1);
+                }
+            });
+
+            for(let d=0; d<7; d++) {
+                if(dailyG[d] !== reqG[d] || dailyN[d] !== reqN[d]) {
+                    console.error(`🚨 Hafta ${week+1}, Gün ${d+1}: İhtiyaç tutmuyor! G:${dailyG[d]}/${reqG[d]} N:${dailyN[d]}/${reqN[d]}`);
+                }
+            }
+        }
+
+        document.getElementById("aiStatusTitle").innerHTML = "🏆 AI ÇIKTISI: Kusursuz tablo üretildi";
+        renderFinalTableWithSummary(assignments, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
+        autoSaveRules();
+    }, 500);
 }
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) 
