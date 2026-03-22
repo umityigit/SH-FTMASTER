@@ -1252,41 +1252,7 @@
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
         // ==========================================
-        function generateWeeklyPatterns(dayCode, nightCode, offCode) {
-    let patterns = [];
-    function isValidPattern(p) {
-        let workDays = p.filter(x => x !== offCode).length;
-        if(workDays !== 4) return false;
-
-        for(let i=0; i<p.length; i++) {
-            // Gece sonrası izin
-            if(p[i] === nightCode && (i+1 < p.length) && p[i+1] !== offCode) return false;
-            // 3 gündüz üst üste yasak
-            if(p.slice(i,i+3).every(x => x === dayCode)) return false;
-            // 2 gece üst üste yasak
-            if(p.slice(i,i+2).every(x => x === nightCode)) return false;
-            // 3 izin üst üste yasak
-            if(p.slice(i,i+3).every(x => x === offCode)) return false;
-        }
-        return true;
-    }
-
-    function backtrack(curr) {
-        if(curr.length === 7) {
-            if(isValidPattern(curr)) patterns.push([...curr]);
-            return;
-        }
-        [dayCode, nightCode, offCode].forEach(code => {
-            curr.push(code);
-            backtrack(curr);
-            curr.pop();
-        });
-    }
-    backtrack([]);
-    return patterns;
-}
-
-function assignFourWeeks(staffList, reqG, reqN, dayCode, nightCode, offCode) {
+       function assignFourWeeks(staffList, reqG, reqN, dayCode, nightCode, offCode) {
     let patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
     let assignments = {};
 
@@ -1297,31 +1263,54 @@ function assignFourWeeks(staffList, reqG, reqN, dayCode, nightCode, offCode) {
     });
 
     for(let week=0; week<4; week++) {
+        // Günlük sayaçlar
+        let dailyG = Array(7).fill(0);
+        let dailyN = Array(7).fill(0);
+
         staffList.forEach(staff => {
             let validPattern = patterns.find(p => {
                 let gCount = p.filter(x => x === dayCode).length;
                 let nCount = p.filter(x => x === nightCode).length;
-                return (staff.gCount + gCount <= 9) && (staff.nCount + nCount <= 7);
+
+                // quota kontrolü
+                if(staff.gCount + gCount > 9) return false;
+                if(staff.nCount + nCount > 7) return false;
+
+                // hafta geçiş kontrolü
+                if(week > 0) {
+                    let prevWeek = assignments[staff.name][week-1];
+                    if(prevWeek[6] === nightCode && p[0] === dayCode) return false;
+                }
+
+                // günlük ihtiyaç kontrolü (önceden atanmış + bu pattern)
+                for(let d=0; d<7; d++) {
+                    let gTotal = dailyG[d] + (p[d] === dayCode ? 1 : 0);
+                    let nTotal = dailyN[d] + (p[d] === nightCode ? 1 : 0);
+                    if(gTotal > reqG[d] || nTotal > reqN[d]) return false;
+                }
+
+                return true;
             });
+
             if(validPattern) {
                 assignments[staff.name].push(validPattern);
                 staff.gCount += validPattern.filter(x => x === dayCode).length;
                 staff.nCount += validPattern.filter(x => x === nightCode).length;
+
+                // günlük sayaçları güncelle
+                for(let d=0; d<7; d++) {
+                    if(validPattern[d] === dayCode) dailyG[d]++;
+                    if(validPattern[d] === nightCode) dailyN[d]++;
+                }
             } else {
                 console.error("⚠️ Uygun pattern bulunamadı:", staff.name, "hafta", week+1);
             }
         });
 
-        // Günlük ihtiyaç kontrolü
-        for(let day=0; day<7; day++) {
-            let gTotal = 0, nTotal = 0;
-            staffList.forEach(staff => {
-                let shift = assignments[staff.name][week][day];
-                if(shift === dayCode) gTotal++;
-                if(shift === nightCode) nTotal++;
-            });
-            if(gTotal !== reqG[day] || nTotal !== reqN[day]) {
-                console.error(`🚨 Hafta ${week+1}, Gün ${day+1}: İhtiyaç tutmuyor! G:${gTotal}/${reqG[day]} N:${nTotal}/${reqN[day]}`);
+        // hafta sonunda kontrol
+        for(let d=0; d<7; d++) {
+            if(dailyG[d] !== reqG[d] || dailyN[d] !== reqN[d]) {
+                console.error(`🚨 Hafta ${week+1}, Gün ${d+1}: İhtiyaç tutmuyor! G:${dailyG[d]}/${reqG[d]} N:${dailyN[d]}/${reqN[d]}`);
             }
         }
     }
