@@ -127,37 +127,36 @@
                 
                 <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 40px;">
                     <script>
-                            const days = ["PAZT", "SALI", "ÇARŞ", "PERŞ", "CUMA", "CMRT", "PAZR"];
-                            const borderColors = ["var(--cyan)", "var(--cyan)", "var(--cyan)", "var(--cyan)", "var(--cyan)", "var(--danger)", "var(--danger)"];
-                            const headColors = ["rgba(56, 189, 248, 0.15)", "rgba(56, 189, 248, 0.15)", "rgba(56, 189, 248, 0.15)", "rgba(56, 189, 248, 0.15)", "rgba(56, 189, 248, 0.15)", "rgba(244, 63, 94, 0.2)", "rgba(244, 63, 94, 0.2)"];
-                            const textColors = ["var(--cyan)", "var(--cyan)", "var(--cyan)", "var(--cyan)", "var(--cyan)", "var(--danger)", "var(--danger)"];
-                            const dayGradients = ["linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95))", "linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95))", "linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95))", "linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95))", "linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95))", "linear-gradient(180deg, rgba(244,63,94,0.1), rgba(2,6,23,0.95))", "linear-gradient(180deg, rgba(244,63,94,0.1), rgba(2,6,23,0.95))"];
-
-                            days.forEach((day, index) => {
-                                let i = index + 1;
-                                document.write(`
-                                <div style="background: ${dayGradients[index]}; border: 1px solid ${borderColors[index]}; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(56,189,248,0.3)';">
-                                    <div style="background: ${headColors[index]}; color: ${textColors[index]}; font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 14px; border-bottom: 1px solid ${borderColors[index]}; text-shadow: 0 0 8px ${textColors[index]};">${day}</div>
-                                    <div style="padding: 12px; display: flex; flex-direction: column; gap: 12px;">
-                                        <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 10px 12px; border-radius: 8px; border-left: 4px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
-                                            <span style="font-size:12px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
-                                            <input type="number" id="aiReq_G_${i}" value="0" min="0" style="width:70px; height:30px; background:transparent; border:none; color:white; font-weight:900; font-size:20px; text-align:center; padding-right:18px; box-sizing:border-box; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
-                                        </div>
-                                        <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 10px 12px; border-radius: 8px; border-left: 4px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
-                                            <span style="font-size:12px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
-                                            <input type="number" id="aiReq_O_${i}" value="0" min="0" style="width:70px; height:30px; background:transparent; border:none; color:white; font-weight:900; font-size:20px; text-align:center; padding-right:18px; box-sizing:border-box; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
-                                        </div>
-                                        <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 10px 12px; border-radius: 8px; border-left: 4px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
-                                            <span style="font-size:12px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
-                                            <input type="number" id="aiReq_N_${i}" value="0" min="0" style="width:70px; height:30px; background:transparent; border:none; color:white; font-weight:900; font-size:20px; text-align:center; padding-right:18px; box-sizing:border-box; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
-                                        </div>
+                        const days = ["PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA"];
+                        days.forEach((day, index) => {
+                            let i = index + 1;
+                            document.write(`
+                            <div style="background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(56,189,248,0.3)';">
+                                <div style="background: rgba(56, 189, 248, 0.15); color: var(--cyan); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(56, 189, 248, 0.2); text-shadow: 0 0 8px var(--cyan);">${day}</div>
+                                <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
+                                        <span style="font-size:11px; font-weight:800; color:var(--cyan); letter-spacing:1px;">☀️ S/G</span>
+                                        <input type="number" id="aiReq_G_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--warning); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
+                                        <span style="font-size:11px; font-weight:800; color:var(--warning); letter-spacing:1px;">🌤️ ÖĞL</span>
+                                        <input type="number" id="aiReq_O_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--purple); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); transition: 0.3s;">
+                                        <span style="font-size:11px; font-weight:800; color:var(--purple); letter-spacing:1px;">🌙 A/Gc</span>
+                                        <input type="number" id="aiReq_N_${i}" value="0" style="width:35px; background:transparent; border:none; color:white; font-weight:900; font-size:16px; text-align:center; outline:none; font-family:'Poppins', sans-serif; transition: 0.3s;">
                                     </div>
                                 </div>
-                                `);
-                            });
-                        </script>
+                            </div>
+                            `);
+                        });
+                    </script>
 
                     <script>
+                        const weekend = ["CUMARTESİ", "PAZAR"];
+                        weekend.forEach((day, index) => {
+                            let i = index + 6;
+                            document.write(`
                             <div style="background: linear-gradient(180deg, rgba(244,63,94,0.1), rgba(2,6,23,0.95)); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.3s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='var(--danger)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(244, 63, 94, 0.4)';">
                                 <div style="background: rgba(244, 63, 94, 0.2); color: var(--danger); font-weight: 900; padding: 12px; text-align: center; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid rgba(244, 63, 94, 0.3); text-shadow: 0 0 8px var(--danger);">${day}</div>
                                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
@@ -542,1111 +541,28 @@
         }
 
         // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - MUTEMET ZIRHLI
-        // ==========================================
-       // ==========================================
-        // 🧩 SUDOKU ÇÖZÜCÜ (ZENGİNDEN ALIP FAKİRE VEREN DENGE MOTORU)
-        // ==========================================
-        function applySudokuMagic12h(staffData, colCount, dayCode, nightCode, offCode, definedShifts) {
-            let pDefG = definedShifts.find(x => x.hours === dayCode); let gHours = pDefG ? (pDefG.wH + pDefG.nH) : 11;
-            let pDefN = definedShifts.find(x => x.hours === nightCode); let nHours = pDefN ? (pDefN.wH + pDefN.nH) : 11;
-
-            for(let pass=0; pass<50; pass++) { // 50 tur boyunca tabloyu tara ve eşitle
-                let swapped = false;
-                for(let w=0; w<colCount; w+=7) {
-                    let wEnd = Math.min(w+6, colCount-1);
-                    
-                    // Haftalık saatleri hesapla
-                    staffData.forEach(s => {
-                        s.tmpH = 0;
-                        for(let d=w; d<=wEnd; d++) {
-                            if(s.shiftLog[d] === dayCode) s.tmpH += gHours;
-                            if(s.shiftLog[d] === nightCode) s.tmpH += nHours;
-                        }
-                    });
-
-                    // Zenginler (Çok Çalışanlar) ve Fakirler (Az Çalışanlar)
-                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    
-                    for(let r=0; r<sortedStaff.length; r++) { // Zengin
-                        for(let p=sortedStaff.length-1; p>r; p--) { // Fakir
-                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
-                            
-                            // Aralarındaki saat farkı 1 nöbetten azsa eşittir, dokunma!
-                            if (rich.tmpH - poor.tmpH <= Math.max(gHours, nHours)) continue; 
-                            
-                            // Zenginden Fakire Nöbet Kaydırma (Sudoku Hamlesi)
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                
-                                if((rVal === dayCode || rVal === nightCode) && (pVal === offCode || pVal === "")) {
-                                    // Kural Kontrolü: Fakir bu nöbeti alırsa kurallar (NG, NN) bozulur mu?
-                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'O';
-                                    let pNext = d < colCount-1 ? poor.shiftLog[d+1] : 'O';
-                                    
-                                    let isSafe = true;
-                                    if(rVal === nightCode && (pPrev === nightCode || pNext === nightCode || pNext === dayCode)) isSafe = false;
-                                    if(rVal === dayCode && pPrev === nightCode) isSafe = false;
-                                    
-                                    // Peş peşe çalışma kontrolü (Maksimum 5 gün)
-                                    let consec = 0;
-                                    for(let checkD=d; checkD>=Math.max(0, d-5); checkD--) {
-                                        if(poor.shiftLog[checkD] === dayCode || poor.shiftLog[checkD] === nightCode) consec++; else break;
-                                    }
-                                    if(consec >= 5) isSafe = false;
-
-                                    if(isSafe) { // Şartlar uygunsa TAKAS YAP!
-                                        poor.shiftLog[d] = rVal;
-                                        rich.shiftLog[d] = offCode;
-                                        rich.tmpH -= (rVal === dayCode ? gHours : nHours);
-                                        poor.tmpH += (rVal === dayCode ? gHours : nHours);
-                                        swapped = true;
-                                        break; 
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if(!swapped) break; // Kusursuz dengeye ulaşıldıysa döngüyü bitir
-            }
-            return staffData;
-        }
-
-        function applySudokuMagic8h(staffData, colCount, sCode, oCode, aCode, offCode, definedShifts) {
-            for(let pass=0; pass<50; pass++) {
-                let swapped = false;
-                for(let w=0; w<colCount; w+=7) {
-                    let wEnd = Math.min(w+6, colCount-1);
-                    staffData.forEach(s => {
-                        s.tmpH = 0;
-                        for(let d=w; d<=wEnd; d++) {
-                            let val = s.shiftLog[d];
-                            if(val === sCode || val === oCode || val === aCode) s.tmpH += 7.5;
-                        }
-                    });
-
-                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    for(let r=0; r<sortedStaff.length; r++) {
-                        for(let p=sortedStaff.length-1; p>r; p--) {
-                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
-                            if (rich.tmpH - poor.tmpH <= 7.5) continue; 
-                            
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                if((rVal === sCode || rVal === oCode || rVal === aCode) && (pVal === offCode || pVal === "")) {
-                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'X';
-                                    let isSafe = true;
-                                    if (pPrev === aCode && (rVal === sCode || rVal === oCode)) isSafe = false;
-                                    
-                                    let consec = 0;
-                                    for(let checkD=d; checkD>=Math.max(0, d-6); checkD--) {
-                                        let v = poor.shiftLog[checkD];
-                                        if(v===sCode||v===oCode||v===aCode) consec++; else break;
-                                    }
-                                    if(consec >= 6) isSafe = false;
-
-                                    if(isSafe) {
-                                        poor.shiftLog[d] = rVal;
-                                        rich.shiftLog[d] = offCode;
-                                        rich.tmpH -= 7.5; poor.tmpH += 7.5;
-                                        swapped = true; break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if(!swapped) break;
-            }
-            return staffData;
-        }
-
-      // ==========================================
-        // 🧩 KUSURSUZ SUDOKU (SAAT VE GECE DENGELEYİCİ)
-        // ==========================================
-        function applyPerfectSudoku12h(staffData, colCount, dayCode, nightCode, offCode) {
-            let gHours = 11; let nHours = 11;
-
-            for(let pass=0; pass<100; pass++) { // 100 tur boyunca dengele
-                let swapped = false;
-                
-                // 1. Saatleri Hesapla
-                staffData.forEach(s => {
-                    s.tmpH = 0; s.tmpN = 0;
-                    for(let d=0; d<colCount; d++) {
-                        if(s.shiftLog[d] === dayCode) s.tmpH += gHours;
-                        if(s.shiftLog[d] === nightCode) { s.tmpH += nHours; s.tmpN++; }
-                    }
-                });
-
-                // Zenginler ve Fakirler
-                let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                
-                for(let r=0; r<sortedStaff.length; r++) { 
-                    for(let p=sortedStaff.length-1; p>r; p--) { 
-                        let rich = sortedStaff[r]; let poor = sortedStaff[p];
-                        
-                        if (rich.tmpH - poor.tmpH <= gHours) continue; // Denge sağlandıysa geç
-                        
-                        // Zenginden Fakire Nöbet Pasla!
-                        for(let d=0; d<colCount; d++) {
-                            let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                            
-                            if((rVal === dayCode || rVal === nightCode) && (pVal === offCode || pVal === "")) {
-                                // Kuralları bozuyor mu kontrol et
-                                let pPrev = d > 0 ? poor.shiftLog[d-1] : 'O';
-                                let pNext = d < colCount-1 ? poor.shiftLog[d+1] : 'O';
-                                
-                                let isSafe = true;
-                                if(rVal === nightCode && (pPrev === nightCode || pNext === nightCode || pNext === dayCode)) isSafe = false;
-                                if(rVal === dayCode && pPrev === nightCode) isSafe = false;
-                                
-                                let consec = 0;
-                                for(let checkD=d-1; checkD>=Math.max(0, d-3); checkD--) { if(poor.shiftLog[checkD] !== offCode) consec++; else break; }
-                                for(let checkD=d+1; checkD<=Math.min(colCount-1, d+3); checkD++) { if(poor.shiftLog[checkD] !== offCode) consec++; else break; }
-                                if(consec >= 3) isSafe = false; // Maksimum 3 gün peş peşe!
-
-                                if(isSafe) { // Takas yap ve günlük sayıyı koru!
-                                    poor.shiftLog[d] = rVal;
-                                    rich.shiftLog[d] = offCode;
-                                    rich.tmpH -= (rVal === dayCode ? gHours : nHours);
-                                    poor.tmpH += (rVal === dayCode ? gHours : nHours);
-                                    swapped = true; break; 
-                                }
-                            }
-                        }
-                    }
-                }
-                if(!swapped) break;
-            }
-            return staffData;
-        }
-
-        // ==========================================
-        // 🧩 KUSURSUZ SUDOKU (HAFTALIK SAAT VE GECE DENGELEYİCİ)
-        // ==========================================
-        function applyPerfectSudoku12h(staffData, colCount, dayCode, nightCode, offCode) {
-            let gHours = 11; let nHours = 11;
-
-            for(let pass=0; pass<100; pass++) { // 100 tur boyunca dengele
-                let swapped = false;
-                
-                // YENİ: Bütün aya değil, 7 günlük HAFTALARA bölerek dengele!
-                for(let w=0; w<colCount; w+=7) { 
-                    let wEnd = Math.min(w+6, colCount-1);
-                    
-                    // 1. Sadece o haftanın saatlerini hesapla
-                    staffData.forEach(s => {
-                        s.tmpH = 0; s.tmpN = 0;
-                        for(let d=w; d<=wEnd; d++) {
-                            if(s.shiftLog[d] === dayCode) s.tmpH += gHours;
-                            if(s.shiftLog[d] === nightCode) { s.tmpH += nHours; s.tmpN++; }
-                        }
-                    });
-
-                    // O haftanın Zenginleri ve Fakirleri
-                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    
-                    for(let r=0; r<sortedStaff.length; r++) { 
-                        for(let p=sortedStaff.length-1; p>r; p--) { 
-                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
-                            
-                            if (rich.tmpH - poor.tmpH <= gHours) continue; // O hafta denge sağlandıysa geç
-                            
-                            // Zenginden Fakire Nöbet Pasla (Sadece o hafta içinde)!
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                
-                                if((rVal === dayCode || rVal === nightCode) && (pVal === offCode || pVal === "")) {
-                                    // Kuralları bozuyor mu kontrol et
-                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'O';
-                                    let pNext = d < colCount-1 ? poor.shiftLog[d+1] : 'O';
-                                    
-                                    let isSafe = true;
-                                    if(rVal === nightCode && (pPrev === nightCode || pNext === nightCode || pNext === dayCode)) isSafe = false;
-                                    if(rVal === dayCode && pPrev === nightCode) isSafe = false;
-                                    
-                                    let consec = 0;
-                                    for(let checkD=d-1; checkD>=Math.max(0, d-3); checkD--) { if(poor.shiftLog[checkD] !== offCode) consec++; else break; }
-                                    for(let checkD=d+1; checkD<=Math.min(colCount-1, d+3); checkD++) { if(poor.shiftLog[checkD] !== offCode) consec++; else break; }
-                                    if(consec >= 3) isSafe = false; // Maksimum 3 gün peş peşe!
-
-                                    if(isSafe) { // Takas yap ve haftalık dengeyi koru!
-                                        poor.shiftLog[d] = rVal;
-                                        rich.shiftLog[d] = offCode;
-                                        rich.tmpH -= (rVal === dayCode ? gHours : nHours);
-                                        poor.tmpH += (rVal === dayCode ? gHours : nHours);
-                                        swapped = true; break; 
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if(!swapped) break;
-            }
-            return staffData;
-        }
-
-       // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - KATI KURAL DENETLEYİCİSİ
-        // ==========================================
-        
-        function canWork12h(s, day, shiftType, startDt, colCount, dayCode, nightCode, offCode) {
-            if (s.shiftLog[day] !== offCode && s.shiftLog[day] !== "") return false;
-            
-            let p1 = day >= 1 ? s.shiftLog[day-1] : s.initialLastShift;
-            let p2 = day >= 2 ? s.shiftLog[day-2] : 'O';
-            let p3 = day >= 3 ? s.shiftLog[day-3] : 'O';
-            
-            // 1. Gece çıkışı gündüz KESİNLİKLE YASAK
-            if (shiftType === dayCode && p1 === nightCode) return false;
-            
-            // 2. Maksimum 3 gün peş peşe çalışma KESİN KURAL
-            let cons = 0;
-            if (p1 !== offCode && p1 !== "") {
-                cons++;
-                if (p2 !== offCode && p2 !== "") {
-                    cons++;
-                    if (p3 !== offCode && p3 !== "") cons++;
-                }
-            }
-            if (cons >= 3) return false; // Zaten 3 gün peş peşe çalışmış, 4. gün YASAK!
-            
-            // 3. 3 Gündüz (G-G-G) veya 3 Gece (N-N-N) üst üste KESİNLİKLE YASAK
-            if (shiftType === dayCode && p1 === dayCode && p2 === dayCode) return false;
-            if (shiftType === nightCode && p1 === nightCode && p2 === nightCode) return false;
-            
-            // 4. HAFTALIK DENGESİZLİK YASAK (Bir haftada en fazla 4 nöbet)
-            let d = new Date(startDt); d.setDate(d.getDate() + day);
-            let dow = d.getDay() === 0 ? 7 : d.getDay(); // 1:Pzt, ..., 7:Paz
-            let weekStart = day - (dow - 1);
-            let weekShifts = 0;
-            for (let i = Math.max(0, weekStart); i < day; i++) {
-                if (s.shiftLog[i] === dayCode || s.shiftLog[i] === nightCode) weekShifts++;
-            }
-            if (weekShifts >= 4) return false; // O hafta 4 nöbeti dolduysa 5. YASAK!
-            
-            return true;
-        }
-
-        // ==========================================
-        // 🛡️ KATI KURAL KONTROLCÜLERİ (ASLA DELİNEMEZ)
-        // ==========================================
-        function isValidSequence12h(log, initialShift, dayCode, nightCode, offCode) {
-            let cons = (initialShift === dayCode || initialShift === nightCode) ? 1 : 0;
-            for (let i = 0; i < log.length; i++) {
-                let curr = log[i];
-                let prev = i > 0 ? log[i-1] : initialShift;
-                if (curr === dayCode || curr === nightCode) {
-                    cons++;
-                    if (cons > 3) return false; // MAX 3 GÜN PEŞ PEŞE!
-                    if (curr === dayCode && prev === nightCode) return false; // GECE ÇIKIŞI GÜNDÜZ YASAK!
-                } else {
-                    cons = 0; // İzin yapınca seri sıfırlanır
-                }
-            }
-            return true;
-        }
-
-        function isValidSequence8h(log, initialShift, sCode, oCode, aCode, offCode) {
-            let cons = (initialShift === sCode || initialShift === oCode || initialShift === aCode) ? 1 : 0;
-            for (let i = 0; i < log.length; i++) {
-                let curr = log[i];
-                let prev = i > 0 ? log[i-1] : initialShift;
-                if (curr === sCode || curr === oCode || curr === aCode) {
-                    cons++;
-                    if (cons > 6) return false; // MAX 6 GÜN PEŞ PEŞE! (7. GÜN İZİN ŞART)
-                    if (prev === aCode && (curr === sCode || curr === oCode)) return false; // AKŞAM ÇIKIŞI SABAH/ÖĞLE YASAK!
-                } else {
-                    cons = 0;
-                }
-            }
-            return true;
-        }
-
-        // ==========================================
-        // 🧩 KUSURSUZ SUDOKU (KURAL BOZMADAN TAKAS YAPAN MOTOR)
-        // ==========================================
-        function applyStrictSudoku12h(staffData, colCount, dayCode, nightCode, offCode) {
-            // 1. ADIM: TÜM AY BOYUNCA GECE NÖBETLERİNİ EŞİTLE
-            for(let pass=0; pass<50; pass++) {
-                let swapped = false;
-                staffData.forEach(s => s.tmpN = s.shiftLog.filter(x => x === nightCode).length);
-                let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpN - a.tmpN);
-                
-                for(let r=0; r<sorted.length; r++) { // Zengin (Çok gecesi olan)
-                    for(let p=sorted.length-1; p>r; p--) { // Fakir (Az gecesi olan)
-                        let rich = sorted[r]; let poor = sorted[p];
-                        if (rich.tmpN - poor.tmpN <= 1) continue; // Arada en fazla 1 nöbet fark varsa adildir
-                        
-                        for(let d=0; d<colCount; d++) {
-                            let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                            if (rVal === nightCode && (pVal === dayCode || pVal === offCode)) {
-                                // Geçici Takas
-                                rich.shiftLog[d] = pVal; poor.shiftLog[d] = rVal;
-                                // Kurallar bozulmadıysa takası onayla!
-                                if (isValidSequence12h(rich.shiftLog, rich.initialLastShift, dayCode, nightCode, offCode) &&
-                                    isValidSequence12h(poor.shiftLog, poor.initialLastShift, dayCode, nightCode, offCode)) {
-                                    swapped = true; break;
-                                } else {
-                                    // Kural bozulduysa takası geri al
-                                    rich.shiftLog[d] = rVal; poor.shiftLog[d] = pVal;
-                                }
-                            }
-                        }
-                        if(swapped) break;
-                    }
-                    if(swapped) break;
-                }
-                if(!swapped) break;
-            }
-
-            // 2. ADIM: HAFTA HAFTA TOPLAM MESAİYİ EŞİTLE (Haftalık 5 gün çalışanı bul, 3 gün çalışana ver)
-            for(let w=0; w<colCount; w+=7) {
-                let wEnd = Math.min(w+6, colCount-1);
-                for(let pass=0; pass<50; pass++) {
-                    let swapped = false;
-                    staffData.forEach(s => {
-                        s.tmpH = 0;
-                        for(let d=w; d<=wEnd; d++) { if(s.shiftLog[d]===dayCode || s.shiftLog[d]===nightCode) s.tmpH += 11; }
-                    });
-                    let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    
-                    for(let r=0; r<sorted.length; r++) {
-                        for(let p=sorted.length-1; p>r; p--) {
-                            let rich = sorted[r]; let poor = sorted[p];
-                            if (rich.tmpH - poor.tmpH <= 11) continue; // Max 1 nöbet fark kabul edilebilir
-                            
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                if ((rVal === dayCode || rVal === nightCode) && pVal === offCode) {
-                                    rich.shiftLog[d] = pVal; poor.shiftLog[d] = rVal;
-                                    if (isValidSequence12h(rich.shiftLog, rich.initialLastShift, dayCode, nightCode, offCode) &&
-                                        isValidSequence12h(poor.shiftLog, poor.initialLastShift, dayCode, nightCode, offCode)) {
-                                        swapped = true; break;
-                                    } else {
-                                        rich.shiftLog[d] = rVal; poor.shiftLog[d] = pVal;
-                                    }
-                                }
-                            }
-                            if(swapped) break;
-                        }
-                        if(swapped) break;
-                    }
-                    if(!swapped) break;
-                }
-            }
-            return staffData;
-        }
-
-        function applyStrictSudoku8h(staffData, colCount, sCode, oCode, aCode, offCode) {
-            // 1. ADIM: AKŞAM (GECE) NÖBETLERİNİ EŞİTLE
-            for(let pass=0; pass<50; pass++) {
-                let swapped = false;
-                staffData.forEach(s => s.tmpA = s.shiftLog.filter(x => x === aCode).length);
-                let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpA - a.tmpA);
-                for(let r=0; r<sorted.length; r++) {
-                    for(let p=sorted.length-1; p>r; p--) {
-                        let rich = sorted[r]; let poor = sorted[p];
-                        if (rich.tmpA - poor.tmpA <= 1) continue;
-                        for(let d=0; d<colCount; d++) {
-                            let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                            if (rVal === aCode && (pVal === sCode || pVal === oCode || pVal === offCode)) {
-                                rich.shiftLog[d] = pVal; poor.shiftLog[d] = rVal;
-                                if (isValidSequence8h(rich.shiftLog, rich.initialLastShift, sCode, oCode, aCode, offCode) &&
-                                    isValidSequence8h(poor.shiftLog, poor.initialLastShift, sCode, oCode, aCode, offCode)) {
-                                    swapped = true; break;
-                                } else { rich.shiftLog[d] = rVal; poor.shiftLog[d] = pVal; }
-                            }
-                        }
-                        if(swapped) break;
-                    }
-                    if(swapped) break;
-                }
-                if(!swapped) break;
-            }
-
-            // 2. ADIM: HAFTA HAFTA TOPLAM MESAİYİ EŞİTLE
-            for(let w=0; w<colCount; w+=7) {
-                let wEnd = Math.min(w+6, colCount-1);
-                for(let pass=0; pass<50; pass++) {
-                    let swapped = false;
-                    staffData.forEach(s => {
-                        s.tmpH = 0;
-                        for(let d=w; d<=wEnd; d++) { if(s.shiftLog[d]===sCode||s.shiftLog[d]===oCode||s.shiftLog[d]===aCode) s.tmpH += 7.5; }
-                    });
-                    let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    for(let r=0; r<sorted.length; r++) {
-                        for(let p=sorted.length-1; p>r; p--) {
-                            let rich = sorted[r]; let poor = sorted[p];
-                            if (rich.tmpH - poor.tmpH <= 7.5) continue;
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                if ((rVal === sCode || rVal === oCode || rVal === aCode) && pVal === offCode) {
-                                    rich.shiftLog[d] = pVal; poor.shiftLog[d] = rVal;
-                                    if (isValidSequence8h(rich.shiftLog, rich.initialLastShift, sCode, oCode, aCode, offCode) &&
-                                        isValidSequence8h(poor.shiftLog, poor.initialLastShift, sCode, oCode, aCode, offCode)) {
-                                        swapped = true; break;
-                                    } else { rich.shiftLog[d] = rVal; poor.shiftLog[d] = pVal; }
-                                }
-                            }
-                            if(swapped) break;
-                        }
-                        if(swapped) break;
-                    }
-                    if(!swapped) break;
-                }
-            }
-            return staffData;
-        }
-
-       // ==========================================
-        // 🛡️ BÜYÜK ZIRH: KATI KURAL KONTROLCÜLERİ (HAFTALIK LİMİTLER EKLENDİ)
-        // ==========================================
-        function isValid12h(log, initialLastShift, dayCode, nightCode, offCode, startDt) {
-            let cons = (initialLastShift === dayCode || initialLastShift === nightCode) ? 1 : 0;
-            for (let i = 0; i < log.length; i++) {
-                let curr = log[i];
-                let prev = i > 0 ? log[i-1] : initialLastShift;
-                if (curr === dayCode || curr === nightCode) {
-                    cons++;
-                    if (cons > 3) return false; // MAX 3 GÜN PEŞ PEŞE KESİN KURAL
-                    if (curr === dayCode && prev === nightCode) return false; // GECE ÇIKIŞI GÜNDÜZ YASAK
-                } else {
-                    cons = 0;
-                }
-            }
-            // YENİ: Haftalık (Pzt-Paz) tam kontrol. 5 GÜN ÇALIŞILAMAZ!
-            let weekCounts = {};
-            for(let i=0; i<log.length; i++) {
-                if (log[i] === dayCode || log[i] === nightCode) {
-                    let d = new Date(startDt); d.setDate(d.getDate() + i);
-                    let dow = d.getDay() === 0 ? 7 : d.getDay();
-                    let weekKey = i - (dow - 1); 
-                    weekCounts[weekKey] = (weekCounts[weekKey] || 0) + 1;
-                    if (weekCounts[weekKey] > 4) return false; // HAFTADA 5. GÜN KESİNLİKLE YASAK!
-                }
-            }
-            return true;
-        }
-
-        function isValid8h(log, initialLastShift, sCode, oCode, aCode, offCode, startDt) {
-            let cons = (initialLastShift === sCode || initialLastShift === oCode || initialLastShift === aCode) ? 1 : 0;
-            for (let i = 0; i < log.length; i++) {
-                let curr = log[i];
-                let prev = i > 0 ? log[i-1] : initialLastShift;
-                if (curr === sCode || curr === oCode || curr === aCode) {
-                    cons++;
-                    if (cons > 6) return false; // MAX 6 GÜN PEŞ PEŞE
-                    if (prev === aCode && (curr === sCode || curr === oCode)) return false; // AKŞAM ÇIKIŞI S/Ö YASAK
-                } else {
-                    cons = 0;
-                }
-            }
-            let weekCounts = {};
-            for(let i=0; i<log.length; i++) {
-                if (log[i] === sCode || log[i] === oCode || log[i] === aCode) {
-                    let d = new Date(startDt); d.setDate(d.getDate() + i);
-                    let dow = d.getDay() === 0 ? 7 : d.getDay();
-                    let weekKey = i - (dow - 1);
-                    weekCounts[weekKey] = (weekCounts[weekKey] || 0) + 1;
-                    if (weekCounts[weekKey] > 6) return false; // HAFTADA 7. GÜN YASAK!
-                }
-            }
-            return true;
-        }
-
-        function canWork12h(s, day, shiftType, startDt, colCount, dayCode, nightCode, offCode) {
-            if (s.shiftLog[day] !== offCode && s.shiftLog[day] !== "") return false;
-            let p1 = day >= 1 ? s.shiftLog[day-1] : s.initialLastShift;
-            let p2 = day >= 2 ? s.shiftLog[day-2] : 'O';
-            let p3 = day >= 3 ? s.shiftLog[day-3] : 'O';
-            
-            if (shiftType === dayCode && p1 === nightCode) return false;
-            
-            let cons = 0;
-            if (p1 !== offCode && p1 !== "") {
-                cons++;
-                if (p2 !== offCode && p2 !== "") {
-                    cons++;
-                    if (p3 !== offCode && p3 !== "") cons++;
-                }
-            }
-            if (cons >= 3) return false; 
-            
-            if (shiftType === dayCode && p1 === dayCode && p2 === dayCode) return false;
-            if (shiftType === nightCode && p1 === nightCode && p2 === nightCode) return false;
-            
-            // ÜRETİM ESNASINDA DA 5. GÜN YASAK KONTROLÜ!
-            let d = new Date(startDt); d.setDate(d.getDate() + day);
-            let dow = d.getDay() === 0 ? 7 : d.getDay(); 
-            let weekStart = day - (dow - 1);
-            let weekShifts = 0;
-            for (let i = Math.max(0, weekStart); i < day; i++) {
-                if (s.shiftLog[i] === dayCode || s.shiftLog[i] === nightCode) weekShifts++;
-            }
-            if (weekShifts >= 4) return false; 
-            
-            return true;
-        }
-
-        function canWork8h(s, day, shiftType, startDt, colCount, sCode, oCode, aCode, offCode) {
-            if (s.shiftLog[day] !== offCode && s.shiftLog[day] !== "") return false;
-            let p1 = day >= 1 ? s.shiftLog[day-1] : s.initialLastShift;
-            if (p1 === aCode && (shiftType === sCode || shiftType === oCode)) return false;
-            
-            let cons = 0;
-            for(let i=1; i<=6; i++) {
-                let px = day >= i ? s.shiftLog[day-i] : (i===1 ? s.initialLastShift : 'O');
-                if (px !== offCode && px !== "") cons++; else break;
-            }
-            if (cons >= 6) return false;
-            
-            let d = new Date(startDt); d.setDate(d.getDate() + day);
-            let dow = d.getDay() === 0 ? 7 : d.getDay(); 
-            let weekStart = day - (dow - 1);
-            let weekShifts = 0;
-            for (let i = Math.max(0, weekStart); i < day; i++) {
-                let val = s.shiftLog[i];
-                if (val === sCode || val === oCode || val === aCode) weekShifts++;
-            }
-            if (weekShifts >= 6) return false; 
-            
-            return true;
-        }
-
-        // ==========================================
-        // 🧩 KUSURSUZ SUDOKU (KURAL BOZMADAN TAKAS YAPAN MOTOR)
-        // ==========================================
-        function applyStrictSudoku12h(staffData, colCount, dayCode, nightCode, offCode, startDt) {
-            // 1. GECE NÖBETLERİNİ EŞİTLE (Gece ile Gündüz Takası)
-            for(let pass=0; pass<50; pass++) {
-                let swapped = false;
-                staffData.forEach(s => s.tmpN = s.shiftLog.filter(x => x === nightCode).length);
-                let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpN - a.tmpN);
-                
-                for(let r=0; r<sorted.length; r++) { 
-                    for(let p=sorted.length-1; p>r; p--) { 
-                        let rich = sorted[r]; let poor = sorted[p];
-                        if (rich.tmpN - poor.tmpN <= 1) continue; 
-                        
-                        for(let d=0; d<colCount; d++) {
-                            if (rich.shiftLog[d] === nightCode && poor.shiftLog[d] === dayCode) {
-                                rich.shiftLog[d] = dayCode; poor.shiftLog[d] = nightCode;
-                                // EĞER BU TAKAS HAFTALIK VEYA GÜNLÜK KURALLARI BOZMUYORSA ONAYLA!
-                                if (isValid12h(rich.shiftLog, rich.initialLastShift, dayCode, nightCode, offCode, startDt) &&
-                                    isValid12h(poor.shiftLog, poor.initialLastShift, dayCode, nightCode, offCode, startDt)) {
-                                    swapped = true; break;
-                                } else {
-                                    rich.shiftLog[d] = nightCode; poor.shiftLog[d] = dayCode;
-                                }
-                            }
-                        }
-                        if(swapped) break;
-                    }
-                    if(swapped) break;
-                }
-                if(!swapped) break;
-            }
-
-            // 2. HAFTALIK MESAİLERİ EŞİTLE (Mesai ile İzin Takası)
-            for(let w=0; w<colCount; w+=7) {
-                let wEnd = Math.min(w+6, colCount-1);
-                for(let pass=0; pass<50; pass++) {
-                    let swapped = false;
-                    staffData.forEach(s => {
-                        s.tmpH = 0;
-                        for(let d=w; d<=wEnd; d++) { if(s.shiftLog[d]===dayCode || s.shiftLog[d]===nightCode) s.tmpH++; }
-                    });
-                    let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    
-                    for(let r=0; r<sorted.length; r++) {
-                        for(let p=sorted.length-1; p>r; p--) {
-                            let rich = sorted[r]; let poor = sorted[p];
-                            if (rich.tmpH - poor.tmpH <= 1) continue; 
-                            
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                if ((rVal === dayCode || rVal === nightCode) && pVal === offCode) {
-                                    rich.shiftLog[d] = pVal; poor.shiftLog[d] = rVal;
-                                    // TAKAS YAPILDI, PEKİ HAFTALIK 4 GÜN KURALI BOZULDU MU? KONTROL ET!
-                                    if (isValid12h(rich.shiftLog, rich.initialLastShift, dayCode, nightCode, offCode, startDt) &&
-                                        isValid12h(poor.shiftLog, poor.initialLastShift, dayCode, nightCode, offCode, startDt)) {
-                                        swapped = true; break;
-                                    } else {
-                                        rich.shiftLog[d] = rVal; poor.shiftLog[d] = pVal; 
-                                    }
-                                }
-                            }
-                            if(swapped) break;
-                        }
-                        if(swapped) break;
-                    }
-                    if(!swapped) break;
-                }
-            }
-            return staffData;
-        }
-
-        function applyStrictSudoku8h(staffData, colCount, sCode, oCode, aCode, offCode, startDt) {
-            for(let pass=0; pass<50; pass++) {
-                let swapped = false;
-                staffData.forEach(s => s.tmpA = s.shiftLog.filter(x => x === aCode).length);
-                let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpA - a.tmpA);
-                for(let r=0; r<sorted.length; r++) {
-                    for(let p=sorted.length-1; p>r; p--) {
-                        let rich = sorted[r]; let poor = sorted[p];
-                        if (rich.tmpA - poor.tmpA <= 1) continue;
-                        for(let d=0; d<colCount; d++) {
-                            let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                            if (rVal === aCode && (pVal === sCode || pVal === oCode)) {
-                                rich.shiftLog[d] = pVal; poor.shiftLog[d] = rVal;
-                                if (isValid8h(rich.shiftLog, rich.initialLastShift, sCode, oCode, aCode, offCode, startDt) &&
-                                    isValid8h(poor.shiftLog, poor.initialLastShift, sCode, oCode, aCode, offCode, startDt)) {
-                                    swapped = true; break;
-                                } else { rich.shiftLog[d] = rVal; poor.shiftLog[d] = pVal; }
-                            }
-                        }
-                        if(swapped) break;
-                    }
-                    if(swapped) break;
-                }
-                if(!swapped) break;
-            }
-
-            for(let w=0; w<colCount; w+=7) {
-                let wEnd = Math.min(w+6, colCount-1);
-                for(let pass=0; pass<50; pass++) {
-                    let swapped = false;
-                    staffData.forEach(s => {
-                        s.tmpH = 0;
-                        for(let d=w; d<=wEnd; d++) { if(s.shiftLog[d]===sCode||s.shiftLog[d]===oCode||s.shiftLog[d]===aCode) s.tmpH++; }
-                    });
-                    let sorted = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    for(let r=0; r<sorted.length; r++) {
-                        for(let p=sorted.length-1; p>r; p--) {
-                            let rich = sorted[r]; let poor = sorted[p];
-                            if (rich.tmpH - poor.tmpH <= 1) continue;
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                if ((rVal === sCode || rVal === oCode || rVal === aCode) && pVal === offCode) {
-                                    rich.shiftLog[d] = pVal; poor.shiftLog[d] = rVal;
-                                    if (isValid8h(rich.shiftLog, rich.initialLastShift, sCode, oCode, aCode, offCode, startDt) &&
-                                        isValid8h(poor.shiftLog, poor.initialLastShift, sCode, oCode, aCode, offCode, startDt)) {
-                                        swapped = true; break;
-                                    } else { rich.shiftLog[d] = rVal; poor.shiftLog[d] = pVal; }
-                                }
-                            }
-                            if(swapped) break;
-                        }
-                        if(swapped) break;
-                    }
-                    if(!swapped) break;
-                }
-            }
-            return staffData;
-        }
-
-        // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
         // ==========================================
- // Tam Blok Dağıtım Motoru - Tek Parça
-// Kullanım: startAiDistribution12h_Full() çağır.
-// Gereken global/DOM değişkenleri: selectedStaff (isim dizisi), aiReq_G_1..7, aiReq_N_1..7, aiDayShiftSelect, aiNightShiftSelect, aiOffShiftSelect, simStartDate, simDays
-// renderFinalTableWithSummary(assignments, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode) fonksiyonunu kendi GUI'ne göre uyarlamalısın.
-// autoSaveRules() varsa çağırılır.
-
-const DEBUG = false;
-
-function log(...args) { if (DEBUG) console.log(...args); }
-function warn(...args) { console.warn(...args); }
-function error(...args) { console.error(...args); }
-
-/* ---------------------------
-   1) Haftalık pattern üretimi
-   --------------------------- */
-function generateWeeklyPatterns(dayCode, nightCode, offCode) {
-    const patterns = [];
-    function isValidPattern(p) {
-        const workDays = p.filter(x => x !== offCode).length;
-        if (workDays !== 4) return false;
-        for (let i = 0; i < 7; i++) {
-            // gece sonrası izin
-            if (p[i] === nightCode && (i + 1 < 7) && p[i + 1] !== offCode) return false;
-            // 3 gündüz üst üste yasak
-            if (i + 2 < 7 && p[i] === dayCode && p[i+1] === dayCode && p[i+2] === dayCode) return false;
-            // 2 gece üst üste yasak
-            if (i + 1 < 7 && p[i] === nightCode && p[i+1] === nightCode) return false;
-            // 3 izin üst üste yasak
-            if (i + 2 < 7 && p[i] === offCode && p[i+1] === offCode && p[i+2] === offCode) return false;
-        }
-        return true;
-    }
-    function backtrack(curr) {
-        if (curr.length === 7) {
-            if (isValidPattern(curr)) patterns.push(curr.slice());
-            return;
-        }
-        [dayCode, nightCode, offCode].forEach(code => {
-            curr.push(code);
-            backtrack(curr);
-            curr.pop();
-        });
-    }
-    backtrack([]);
-    return patterns.map(p => ({ pattern: p, gCount: p.filter(x => x === dayCode).length, nCount: p.filter(x => x === nightCode).length }));
-}
-
-/* ---------------------------
-   2) Swap yardımcı fonksiyonu
-   --------------------------- */
-function trySwap(assignments, staffState, aName, bName, weekIndex, reqG, reqN, dayCode, nightCode) {
-    const A = assignments[aName][weekIndex];
-    const B = assignments[bName][weekIndex];
-    if (!A || !B) return false;
-
-    // mevcut günlükleri hesapla
-    const dailyG = Array(7).fill(0), dailyN = Array(7).fill(0);
-    for (let s of Object.keys(assignments)) {
-        const p = assignments[s][weekIndex];
-        if (!p) continue;
-        for (let d = 0; d < 7; d++) {
-            if (p[d] === dayCode) dailyG[d]++;
-            if (p[d] === nightCode) dailyN[d]++;
-        }
-    }
-
-    // swap etkisini uygula (geçici)
-    for (let d = 0; d < 7; d++) {
-        if (A[d] === dayCode) dailyG[d]--;
-        if (A[d] === nightCode) dailyN[d]--;
-        if (B[d] === dayCode) dailyG[d]--;
-        if (B[d] === nightCode) dailyN[d]--;
-        if (B[d] === dayCode) dailyG[d]++;
-        if (B[d] === nightCode) dailyN[d]++;
-        if (A[d] === dayCode) dailyG[d]++;
-        if (A[d] === nightCode) dailyN[d]++;
-    }
-
-    for (let d = 0; d < 7; d++) {
-        if (dailyG[d] > reqG[d] || dailyN[d] > reqN[d]) return false;
-    }
-
-    const sa = staffState.find(s => s.name === aName);
-    const sb = staffState.find(s => s.name === bName);
-    const a_g = A.filter(x => x === dayCode).length, a_n = A.filter(x => x === nightCode).length;
-    const b_g = B.filter(x => x === dayCode).length, b_n = B.filter(x => x === nightCode).length;
-
-    if (sa.gTotal - a_g + b_g > 9) return false;
-    if (sa.nTotal - a_n + b_n > 7) return false;
-    if (sb.gTotal - b_g + a_g > 9) return false;
-    if (sb.nTotal - b_n + a_n > 7) return false;
-
-    // swap uygula
-    assignments[aName][weekIndex] = B;
-    assignments[bName][weekIndex] = A;
-    sa.gTotal = sa.gTotal - a_g + b_g;
-    sa.nTotal = sa.nTotal - a_n + b_n;
-    sb.gTotal = sb.gTotal - b_g + a_g;
-    sb.nTotal = sb.nTotal - b_n + a_n;
-    return true;
-}
-
-/* ---------------------------
-   3) Diagnostic: İlk hafta detaylı
-   --------------------------- */
-function diagnoseFirstWeek(selectedStaff, reqG, reqN, dayCode, nightCode, offCode) {
-    const patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
-    const staffState = selectedStaff.map(n => ({ name: n, gTotal: 0, nTotal: 0, weeks: [] }));
-    const dailyG = Array(7).fill(0), dailyN = Array(7).fill(0);
-    const assignments = {};
-    selectedStaff.forEach(n => assignments[n] = []);
-
-    function tryAssignPerson(idx) {
-        if (idx === staffState.length) {
-            console.log("=== İlk hafta tam atandı. Günlük sonuç ===");
-            console.log("dailyG:", dailyG, "dailyN:", dailyN);
-            return true;
-        }
-        const staff = staffState[idx];
-
-        for (let i = 0; i < patterns.length; i++) {
-            const p = patterns[i].pattern;
-            const gCount = patterns[i].gCount, nCount = patterns[i].nCount;
-            console.log(`Deneme: Personel=${staff.name} pattern#${i} g:${gCount} n:${nCount}`, p);
-
-            if (staff.gTotal + gCount > 9) { console.log(" -> Reddedildi: quota_g"); continue; }
-            if (staff.nTotal + nCount > 7) { console.log(" -> Reddedildi: quota_n"); continue; }
-
-            let ok = true;
-            for (let d = 0; d < 7; d++) {
-                const gTot = dailyG[d] + (p[d] === dayCode ? 1 : 0);
-                const nTot = dailyN[d] + (p[d] === nightCode ? 1 : 0);
-                if (gTot > reqG[d] || nTot > reqN[d]) { ok = false; console.log(` -> Reddedildi: günlük aşım gün ${d+1}`); break; }
-            }
-            if (!ok) continue;
-
-            assignments[staff.name][0] = p;
-            staff.weeks[0] = p;
-            staff.gTotal += gCount; staff.nTotal += nCount;
-            for (let d = 0; d < 7; d++) {
-                if (p[d] === dayCode) dailyG[d]++;
-                if (p[d] === nightCode) dailyN[d]++;
-            }
-
-            if (tryAssignPerson(idx + 1)) return true;
-
-            // backtrack
-            for (let d = 0; d < 7; d++) {
-                if (p[d] === dayCode) dailyG[d]--;
-                if (p[d] === nightCode) dailyN[d]--;
-            }
-            staff.gTotal -= gCount; staff.nTotal -= nCount;
-            assignments[staff.name][0] = undefined;
-            staff.weeks[0] = undefined;
-            console.log(` Geri alındı: ${staff.name} pattern#${i}`);
-        }
-        console.log(`Hiçbir pattern uymadı: ${staff.name} (ilk hafta)`);
-        return false;
-    }
-
-    const ok = tryAssignPerson(0);
-    if (!ok) console.error("Diagnose sonucu: İlk hafta için tam atama bulunamadı. Konsol loglarını incele.");
-    return { ok, assignments, dailyG, dailyN };
-}
-
-/* ---------------------------
-   4) Ana fonksiyon: Tam çözüm (4 hafta)
-   --------------------------- */
-function startAiDistribution12h_Full() {
-    const dayCode = document.getElementById('aiDayShiftSelect').value;
-    const nightCode = document.getElementById('aiNightShiftSelect').value;
-    const offCode = document.getElementById('aiOffShiftSelect').value;
-    if (!dayCode || !nightCode || !offCode) return alert("Lütfen gündüz, gece ve izin kodlarını seçiniz!");
-    if (!selectedStaff || selectedStaff.length === 0) return alert("Personel seçmediniz!");
-
-    const reqG = [], reqN = [];
-    for (let i = 1; i <= 7; i++) {
-        reqG[i - 1] = parseInt(document.getElementById('aiReq_G_' + i).value) || 0;
-        reqN[i - 1] = parseInt(document.getElementById('aiReq_N_' + i).value) || 0;
-    }
-
-    const startDtStr = document.getElementById('simStartDate').value;
-    const colCount = parseInt(document.getElementById('simDays').value) || 28;
-    if (!startDtStr) return alert("Başlangıç tarihi seçin.");
-
-    document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: Tam çözüm aranıyor...";
-    document.getElementById('resultModal').style.display = 'flex';
-    document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:40px; text-align:center; color:white;'>Çalışıyor... Lütfen bekleyin.</div>";
-
-    setTimeout(() => {
-        const patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
-        if (patterns.length === 0) {
-            document.getElementById("aiStatusTitle").innerHTML = "❌ Geçerli haftalık pattern bulunamadı.";
-            return;
-        }
-
-        const staffNames = selectedStaff.slice();
-        const staffCount = staffNames.length;
-        const staffState = staffNames.map(n => ({ name: n, gTotal: 0, nTotal: 0, weeks: [] }));
-        const assignments = {}; staffNames.forEach(n => assignments[n] = []);
-
-        // haftalar arası döngü
-        for (let w = 0; w < 4; w++) {
-            const dailyG = Array(7).fill(0), dailyN = Array(7).fill(0);
-
-            // başlangıç order: en kısıtlıdan başla (basit heuristic)
-            let order = staffState.map((s, idx) => idx);
-            order.sort((a, b) => (staffState[a].gTotal + staffState[a].nTotal) - (staffState[b].gTotal + staffState[b].nTotal));
-
-            // recursive assign with deficit-first scoring and dynamic ordering
-            function feasiblePatternCountForStaff(staffIdx, weekIndex, dailyG_local, dailyN_local) {
-                const staff = staffState[staffIdx];
-                let cnt = 0;
-                for (let i = 0; i < patterns.length; i++) {
-                    const { pattern, gCount, nCount } = patterns[i];
-                    if (staff.gTotal + gCount > 9) continue;
-                    if (staff.nTotal + nCount > 7) continue;
-                    if (weekIndex > 0) {
-                        const prev = staff.weeks[weekIndex - 1];
-                        if (prev && prev[6] === nightCode && pattern[0] === dayCode) continue;
-                    }
-                    let ok = true;
-                    for (let d = 0; d < 7; d++) {
-                        const gTot = dailyG_local[d] + (pattern[d] === dayCode ? 1 : 0);
-                        const nTot = dailyN_local[d] + (pattern[d] === nightCode ? 1 : 0);
-                        if (gTot > reqG[d] || nTot > reqN[d]) { ok = false; break; }
-                    }
-                    if (ok) cnt++;
-                }
-                return cnt;
-            }
-
-            function assignRec(personOrder, idxInOrder) {
-                if (idxInOrder === personOrder.length) {
-                    for (let d = 0; d < 7; d++) {
-                        if (dailyG[d] !== reqG[d] || dailyN[d] !== reqN[d]) return false;
-                    }
-                    return true;
-                }
-
-                const staffIdx = personOrder[idxInOrder];
-                const staff = staffState[staffIdx];
-
-                // deficit-first scoring: pazartesi gibi açık günleri doldurma potansiyeli yüksek patternleri önce dene
-                const deficits = [];
-                for (let d = 0; d < 7; d++) deficits[d] = (reqG[d] - dailyG[d]) + (reqN[d] - dailyN[d]);
-
-                const scored = patterns.map(pObj => {
-                    const p = pObj.pattern;
-                    let score = 0;
-                    for (let d = 0; d < 7; d++) {
-                        if (p[d] === dayCode && deficits[d] > 0) score++;
-                        if (p[d] === nightCode && deficits[d] > 0) score++;
-                    }
-                    // ekstra: pazartesi (d=0) dolduruyorsa öncelik
-                    if (p[0] === dayCode) score += 2;
-                    return { p: p, gCount: pObj.gCount, nCount: pObj.nCount, score };
-                }).sort((a, b) => b.score - a.score);
-
-                for (let item of scored) {
-                    const pattern = item.p;
-                    const gCount = item.gCount, nCount = item.nCount;
-
-                    if (staff.gTotal + gCount > 9) continue;
-                    if (staff.nTotal + nCount > 7) continue;
-                    if (w > 0) {
-                        const prev = staff.weeks[w - 1];
-                        if (prev && prev[6] === nightCode && pattern[0] === dayCode) continue;
-                    }
-
-                    let ok = true;
-                    for (let d = 0; d < 7; d++) {
-                        const gTot = dailyG[d] + (pattern[d] === dayCode ? 1 : 0);
-                        const nTot = dailyN[d] + (pattern[d] === nightCode ? 1 : 0);
-                        if (gTot > reqG[d] || nTot > reqN[d]) { ok = false; break; }
-                    }
-                    if (!ok) continue;
-
-                    // ata
-                    assignments[staff.name][w] = pattern;
-                    staff.weeks[w] = pattern;
-                    staff.gTotal += gCount;
-                    staff.nTotal += nCount;
-                    for (let d = 0; d < 7; d++) {
-                        if (pattern[d] === dayCode) dailyG[d]++;
-                        if (pattern[d] === nightCode) dailyN[d]++;
-                    }
-
-                    // dinamik yeniden sıralama: kalan personellerin kısıtlılıklarına göre
-                    const remaining = personOrder.slice(idxInOrder + 1);
-                    remaining.sort((a, b) => feasiblePatternCountForStaff(a, w, dailyG, dailyN) - feasiblePatternCountForStaff(b, w, dailyG, dailyN));
-                    const newOrder = personOrder.slice(0, idxInOrder + 1).concat(remaining);
-
-                    if (assignRec(newOrder, idxInOrder + 1)) return true;
-
-                    // backtrack
-                    for (let d = 0; d < 7; d++) {
-                        if (pattern[d] === dayCode) dailyG[d]--;
-                        if (pattern[d] === nightCode) dailyN[d]--;
-                    }
-                    staff.gTotal -= gCount;
-                    staff.nTotal -= nCount;
-                    assignments[staff.name][w] = undefined;
-                    staff.weeks[w] = undefined;
-                }
-                return false;
-            }
-
-            const ok = assignRec(order, 0);
-            if (!ok) {
-                // post-swap agresif denemesi: çift swap, üçlü swap denemeleri
-                const names = Object.keys(assignments);
-                let swapped = false;
-                for (let i = 0; i < names.length && !swapped; i++) {
-                    for (let j = i + 1; j < names.length && !swapped; j++) {
-                        if (trySwap(assignments, staffState, names[i], names[j], w, reqG, reqN, dayCode, nightCode)) {
-                            // yeniden hesapla günlükler
-                            const newDailyG = Array(7).fill(0), newDailyN = Array(7).fill(0);
-                            for (let s of names) {
-                                const p = assignments[s][w];
-                                if (!p) continue;
-                                for (let d = 0; d < 7; d++) {
-                                    if (p[d] === dayCode) newDailyG[d]++;
-                                    if (p[d] === nightCode) newDailyN[d]++;
-                                }
-                            }
-                            let allOk = true;
-                            for (let d = 0; d < 7; d++) if (newDailyG[d] !== reqG[d] || newDailyN[d] !== reqN[d]) { allOk = false; break; }
-                            if (allOk) swapped = true;
-                        }
-                    }
-                }
-                if (!swapped) {
-                    document.getElementById("aiStatusTitle").innerHTML = `❌ Hafta ${w+1} için uygun dağıtım bulunamadı.`;
-                    let detail = [];
-                    for (let d = 0; d < 7; d++) detail.push({ day: d + 1, needG: reqG[d], needN: reqN[d], gotG: dailyG[d], gotN: dailyN[d] });
-                    renderErrorDetail(detail, w + 1);
-                    return;
-                }
-            }
-        }
-
-        // 4 hafta sonunda kota kontrolü
-        for (let s of staffState) {
-            if (s.gTotal !== 9 || s.nTotal !== 7) {
-                document.getElementById("aiStatusTitle").innerHTML = "❌ Kota sapması tespit edildi.";
-                renderKotaError(s);
-                return;
-            }
-        }
-
-        document.getElementById("aiStatusTitle").innerHTML = "🏆 AI ÇIKTISI: Kusursuz tablo üretildi";
-        renderFinalTableWithSummary(assignments, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
-        if (typeof autoSaveRules === "function") autoSaveRules();
-    }, 50);
-}
-
-/* ---------------------------
-   5) GUI yardımcıları (basit)
-   --------------------------- */
-function renderErrorDetail(detail, weekNumber) {
-    let html = `<div style="color:#ffdddd;padding:10px;">Hafta ${weekNumber} dağıtımı başarısız. Gün bazlı durum:<br><ul>`;
-    detail.forEach(d => {
-        html += `<li>Gün ${d.day}: Gündüz ${d.gotG}/${d.needG}, Gece ${d.gotN}/${d.needN}</li>`;
-    });
-    html += `</ul></div>`;
-    document.getElementById('generatedTableContainer').innerHTML = html;
-}
-function renderKotaError(staff) {
-    document.getElementById('generatedTableContainer').innerHTML = `<div style="color:#ffdddd;padding:20px;">Kota sapması: ${staff.name} için G:${staff.gTotal} N:${staff.nTotal}</div>`;
-}
-
-        // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) 
-        // ==========================================
-        function startAiDistribution8h() {
-            let sCode = document.getElementById('ai8_Sabah').value; let oCode = document.getElementById('ai8_Ogle').value; let aCode = document.getElementById('ai8_Aksam').value; let offCode = document.getElementById('ai8_Off').value;
-            lastAiMode = '8h';
-            
-            if(!sCode || !oCode || !aCode || !offCode) return alert("Lütfen 8 Saatlik AI için tüm vardiya/izin kodlarını seçin!");
+        function startAiDistribution12h() {
+            let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
+            if(!dayCode || !nightCode || !offCode) return alert("Lütfen AI Motoru için Gündüz, Gece ve İzin kodlarını seçiniz!");
             if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
-
-            let reqS = [], reqO = [], reqA = [];
-            for(let i=1; i<=7; i++) { reqS[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0; reqO[i] = parseInt(document.getElementById('aiReq_O_'+i).value) || 0; reqA[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0; }
+            lastAiMode = '12h';
+            
+            let reqG = [], reqN = [];
+            for(let i=1; i<=7; i++) { reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0; reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0; }
 
             let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
             if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
 
-            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 10.000 Hamle İlerisi Hesaplanıyor...";
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
             document.getElementById('resultModal').style.display = 'flex';
-            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>KATI KURALLAR KİLİTLENDİ. Lütfen Bekleyin...</div>";
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Nükleer Çekirdek Döngüde... Lütfen Bekleyin...</div>";
 
             setTimeout(() => {
-                let simulations = []; let totalSimulations = 10000;
+                let simulations = []; let totalSimulations = 5000; 
                 let definedShifts = getDefinedShifts();
+
                 let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
                 let normalizedLastShifts = {};
                 Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
@@ -1655,67 +571,229 @@ function renderKotaError(staff) {
                     let simStaff = selectedStaff.map(name => {
                         let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
                         let initialLastShift = normalizedLastShifts[cleanName] || 'O';
-                        return { name: name, shiftLog: new Array(colCount).fill(""), initialLastShift: initialLastShift, pref: staffPreferences[name] };
+                        
+                        return { 
+                            name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, totalHours: 0, nightCount: 0, 
+                            dayConsecutive: initialLastShift === 'G' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name] 
+                        };
                     });
-
-                    let unfilledSlots = 0;
-                    for(let day = 0; day < colCount; day++) {
-                        let d = new Date(startDt); d.setDate(d.getDate() + day);
+                    
+                    let unfilledSlots = 0; 
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
-                        let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; s.weeklyHours = 0; });
+                        
+                        let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
+                        simStaff.forEach(s => { s.assignedToday = null; });
 
+                        // 1. KUSURSUZ SABİT PERSONEL ATAMASI
                         simStaff.forEach(s => {
                             if (s.pref !== "AI") {
-                                s.shiftLog[day] = s.pref;
-                                if (s.pref === aCode) cReqA--; else if(s.pref === oCode) cReqO--; else if(s.pref === sCode) cReqS--;
+                                let pDef = definedShifts.find(x => x.hours === s.pref);
+                                let sH = pDef ? (pDef.wH + pDef.nH) : 11; if(sH === 0) sH = 11;
+
+                                if (s.weeklyHours + sH > 45 || s.dayConsecutive >= 6) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
+                                } else {
+                                    s.assignedToday = s.pref; s.weeklyHours += sH; s.weeklyWorkDays++; s.dayConsecutive++;
+                                    if (s.pref === nightCode) { cReqN--; s.lastShiftType = 'N'; s.nightCount++; }
+                                    else { cReqG--; s.lastShiftType = 'G'; s.totalHours++; }
+                                }
                             }
                         });
 
-                        let poolA = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork8h(s, day, aCode, startDt, colCount, sCode, oCode, aCode, offCode)); 
-                        poolA.sort(() => 0.5 - Math.random());
-                        let aAssigned = 0; 
+                        // 2. Aİ KURALLARI 
+                        simStaff.forEach(s => { 
+                            if (s.pref === "AI" && !s.assignedToday) {
+                                if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
+                                    s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
+                                } 
+                            } 
+                        });
+
+                        // 3. Aİ GECE ATAMASI
+                        let poolN = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random()));
+                        let nAssigned = 0; 
+                        for(let i=0; i<poolN.length && nAssigned<cReqN; i++) { 
+                            poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; 
+                            poolN[i].nightCount++; poolN[i].weeklyWorkDays++; poolN[i].weeklyHours += 11; poolN[i].dayConsecutive = 0; 
+                            nAssigned++; 
+                        }
+                        if(cReqN > 0 && nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
+
+                        // 4. Aİ GÜNDÜZ ATAMASI
+                        let poolG = simStaff.filter(s => s.pref === "AI" && !s.assignedToday && s.dayConsecutive < 2); 
+                        poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let dAssigned = 0; 
+                        for(let i=0; i<poolG.length && dAssigned<cReqG; i++) { 
+                            poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; 
+                            poolG[i].totalHours++; poolG[i].weeklyWorkDays++; poolG[i].weeklyHours += 11; poolG[i].dayConsecutive++; 
+                            dAssigned++; 
+                        }
+                        if(cReqG > 0 && dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
+
+                        // 5. KALANLARA İZİN
+                        simStaff.forEach(s => { 
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; } 
+                            s.shiftLog.push(s.assignedToday); 
+                        });
+                    }
+                    let penalty = 0; penalty += (unfilledSlots * 50000000); 
+                    let maxN = -1, minN = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.map(x => x === nightCode ? 'N' : (x === offCode ? 'O' : 'G')).join(''); 
+                        penalty += ((seq.match(/NG/g) || []).length * 1000000); penalty += ((seq.match(/NN/g) || []).length * 1000000); penalty += ((seq.match(/GGG/g) || []).length * 500000); 
+                        maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
+                    });
+                    penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
+                }
+                
+                let bestSim = selectBestSimulation(simulations);
+                let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
+                document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
+                renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
+                autoSaveRules();
+            }, 500);
+        }
+
+        // ==========================================
+        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) 
+        // ==========================================
+        function startAiDistribution8h() {
+            let sCode = document.getElementById('ai8_Sabah').value;
+            let oCode = document.getElementById('ai8_Ogle').value;
+            let aCode = document.getElementById('ai8_Aksam').value;
+            let offCode = document.getElementById('ai8_Off').value;
+            lastAiMode = '8h';
+            
+            if(!sCode || !oCode || !aCode || !offCode) return alert("Lütfen 8 Saatlik AI için tüm vardiya/izin kodlarını seçin!");
+            if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
+
+            let reqS = [], reqO = [], reqA = [];
+            for(let i=1; i<=7; i++) {
+                reqS[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
+                reqO[i] = parseInt(document.getElementById('aiReq_O_'+i).value) || 0;
+                reqA[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
+            }
+
+            let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
+            if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
+
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 8 Saatlik Varyasyonlar Hesaplanıyor...";
+            document.getElementById('resultModal').style.display = 'flex';
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Yapay Zeka 3'lü Vardiya Kombinasyonlarını Çözüyor...</div>";
+
+            setTimeout(() => {
+                let simulations = []; let totalSimulations = 5000;
+                let definedShifts = getDefinedShifts();
+                let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
+                let normalizedLastShifts = {};
+                Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
+
+                for(let sim = 0; sim < totalSimulations; sim++) {
+                    let simStaff = selectedStaff.map(name => {
+                        let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
+                        let initialLastShift = normalizedLastShifts[cleanName] || 'X';
+                        return {
+                            name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, aCount: 0,
+                            dayConsecutive: initialLastShift !== 'X' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name], assignedToday: null
+                        };
+                    });
+
+                    let unfilledSlots = 0;
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; s.weeklyHours = 0; });
+
+                        let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
+                        simStaff.forEach(s => { s.assignedToday = null; });
+
+                        simStaff.forEach(s => {
+                            if (s.pref !== "AI") {
+                                let pDef = definedShifts.find(x => x.hours === s.pref);
+                                let sH = pDef ? (pDef.wH + pDef.nH) : 7.5; if(sH === 0) sH = 7.5;
+
+                                if (s.weeklyHours + sH > 45 || s.dayConsecutive >= 6) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
+                                } else {
+                                    s.assignedToday = s.pref; s.weeklyHours += sH; s.weeklyWorkDays++; s.dayConsecutive++;
+                                    if (s.pref === aCode) { cReqA--; s.lastShiftType = 'A'; s.aCount++; }
+                                    else if (s.pref === oCode) { cReqO--; s.lastShiftType = 'O'; }
+                                    else { cReqS--; s.lastShiftType = 'S'; }
+                                }
+                            }
+                        });
+
+                        simStaff.forEach(s => {
+                            if (s.pref === "AI" && !s.assignedToday) {
+                                if (s.lastShiftType === 'A' || s.lastShiftType === 'N' || s.weeklyWorkDays >= 5) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
+                                }
+                            }
+                        });
+
+                        let poolA = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolA.sort((a,b) => (a.aCount - b.aCount) || (0.5 - Math.random()));
+                        let aAssigned = 0;
                         for(let i=0; i<poolA.length && aAssigned < cReqA; i++) { 
-                            poolA[i].shiftLog[day] = aCode; aAssigned++; 
+                            poolA[i].assignedToday = aCode; poolA[i].lastShiftType = 'A'; 
+                            poolA[i].aCount++; poolA[i].weeklyWorkDays++; poolA[i].weeklyHours += 7.5; poolA[i].dayConsecutive++; 
+                            aAssigned++; 
                         }
-                        if(aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
+                        if(cReqA > 0 && aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
 
-                        let poolO = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork8h(s, day, oCode, startDt, colCount, sCode, oCode, aCode, offCode)); 
+                        let poolO = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
                         poolO.sort(() => 0.5 - Math.random());
-                        let oAssigned = 0; 
+                        let oAssigned = 0;
                         for(let i=0; i<poolO.length && oAssigned < cReqO; i++) { 
-                            poolO[i].shiftLog[day] = oCode; oAssigned++; 
+                            poolO[i].assignedToday = oCode; poolO[i].lastShiftType = 'O'; 
+                            poolO[i].weeklyWorkDays++; poolO[i].weeklyHours += 7.5; poolO[i].dayConsecutive++; 
+                            oAssigned++; 
                         }
-                        if(oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
+                        if(cReqO > 0 && oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
 
-                        let poolS = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork8h(s, day, sCode, startDt, colCount, sCode, oCode, aCode, offCode)); 
-                        poolS.sort(() => 0.5 - Math.random());
-                        let sAssigned = 0; 
+                        let poolS = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolS.sort((a,b) => (b.dayConsecutive - a.dayConsecutive) || (0.5 - Math.random()));
+                        let sAssigned = 0;
                         for(let i=0; i<poolS.length && sAssigned < cReqS; i++) { 
-                            poolS[i].shiftLog[day] = sCode; sAssigned++; 
+                            poolS[i].assignedToday = sCode; poolS[i].lastShiftType = 'S'; 
+                            poolS[i].weeklyWorkDays++; poolS[i].weeklyHours += 7.5; poolS[i].dayConsecutive++; 
+                            sAssigned++; 
                         }
-                        if(sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
+                        if(cReqS > 0 && sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
 
-                        simStaff.forEach(s => { if (s.pref === "AI" && s.shiftLog[day] === "") s.shiftLog[day] = offCode; });
+                        simStaff.forEach(s => { 
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0; } 
+                            s.shiftLog.push(s.assignedToday); 
+                        });
                     }
 
-                    simulations.push({ penalty: unfilledSlots * 1000000, staffData: simStaff });
-                    if(unfilledSlots === 0) break;
+                    let penalty = unfilledSlots * 5000000;
+                    let maxA = -1, minA = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.map(x => x === aCode ? 'A' : (x === oCode ? 'O' : (x === sCode ? 'S' : 'X'))).join('');
+                        penalty += ((seq.match(/AS/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/AO/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/AA/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/OS/g) || []).length * 500000); 
+                        maxA = Math.max(maxA, s.aCount); minA = Math.min(minA, s.aCount);
+                    });
+                    penalty += ((maxA - minA) * 100);
+                    simulations.push({ penalty: penalty, staffData: simStaff });
                 }
 
-                simulations.sort((a,b) => a.penalty - b.penalty);
-                let bestSim = simulations[0];
-
-                bestSim.staffData = applyStrictSudoku8h(bestSim.staffData, colCount, sCode, oCode, aCode, offCode, startDt);
-
-                let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ DENGE (Sıfır Hata)" : `⚠️ Kırmızı Uyarı Skoru: ${bestSim.penalty}`;
+                let bestSim = selectBestSimulation(simulations);
+                let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ RİTİM (0 Hata)" : `⚠️ Hata Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 8 SAATLİK Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
                 autoSaveRules();
             }, 500);
         }
 
-       
-         // ==========================================
+        // ==========================================
         // 🌪️ HAZIR ROTASYON MOTORLARI
         // ==========================================
         function fireMagicRotation(type, hourMode) {
