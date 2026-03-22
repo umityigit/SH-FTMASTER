@@ -270,7 +270,830 @@
     <div id="toast"></div>
 
     <script>
-       const _0x1fe305=_0x96b2;(function(_0x165508,_0x6d28bf){const _0x2a7fce=_0x96b2,_0x1aee1c=_0x165508();while(!![]){try{const _0x5ac464=-parseInt(_0x2a7fce(0x111))/0x1+parseInt(_0x2a7fce(0xa5))/0x2*(parseInt(_0x2a7fce(0x145))/0x3)+-parseInt(_0x2a7fce(0x1a3))/0x4*(-parseInt(_0x2a7fce(0xaf))/0x5)+-parseInt(_0x2a7fce(0x1ab))/0x6*(parseInt(_0x2a7fce(0xd5))/0x7)+parseInt(_0x2a7fce(0xc8))/0x8+-parseInt(_0x2a7fce(0x1c0))/0x9+-parseInt(_0x2a7fce(0xa8))/0xa*(-parseInt(_0x2a7fce(0x14a))/0xb);if(_0x5ac464===_0x6d28bf)break;else _0x1aee1c['push'](_0x1aee1c['shift']());}catch(_0x5ca8cb){_0x1aee1c['push'](_0x1aee1c['shift']());}}}(_0x7e9b,0xee843));const firebaseConfig={'apiKey':'AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ','databaseURL':_0x1fe305(0x191),'projectId':_0x1fe305(0x17f)};if(!firebase[_0x1fe305(0x129)][_0x1fe305(0xf0)])firebase['initializeApp'](firebaseConfig);const db=firebase[_0x1fe305(0x1ba)](),tenantId=localStorage[_0x1fe305(0xd3)](_0x1fe305(0xc3));!tenantId&&(alert(_0x1fe305(0xa0)),window[_0x1fe305(0xfd)][_0x1fe305(0xf8)]=_0x1fe305(0xe2));const originalRef=db[_0x1fe305(0x1ad)]['bind'](db);db['ref']=function(_0x4698d8){const _0x160c03=_0x1fe305;if(tenantId===_0x160c03(0x149))return originalRef(_0x4698d8);if(_0x4698d8)return originalRef(_0x160c03(0x176)+tenantId+'/'+_0x4698d8);return originalRef(_0x160c03(0x176)+tenantId);};let selectedStaff=[],staffPreferences={},historyStack=[],staffList=[],autoSelectDone=![],shiftRules={};window['onload']=()=>{const _0x373102=_0x1fe305;loadStaffPool(),addInitialShifts();const _0x2e0964=new URLSearchParams(window['location'][_0x373102(0x187)]),_0x50a776=_0x2e0964[_0x373102(0x190)]('start'),_0x1cd8e0=_0x2e0964[_0x373102(0x190)](_0x373102(0xd2));if(_0x50a776)document[_0x373102(0x1a5)]('simStartDate')[_0x373102(0xb3)]=_0x50a776;else document['getElementById'](_0x373102(0xd0))[_0x373102(0xd7)]=new Date();if(_0x1cd8e0)document[_0x373102(0x1a5)]('simDays')[_0x373102(0xb3)]=_0x1cd8e0;if(_0x2e0964['get']('mode')==='inject'){const _0x310822=document['getElementById'](_0x373102(0xe8));if(_0x310822)_0x310822[_0x373102(0xe5)]=_0x373102(0x1c2);}};function loadStaffPool(){db['ref']('personel_havuzu')['on']('value',_0xb39892=>{const _0x591382=_0x96b2,_0x16f002=document[_0x591382(0x1a5)](_0x591382(0x1ce));_0x16f002[_0x591382(0xe5)]='';let _0x2c36a5=0x0;staffList=[];if(_0xb39892[_0x591382(0x12e)]()){Object[_0x591382(0xae)](_0xb39892[_0x591382(0x12e)]())[_0x591382(0x13b)](([_0x2a7467,_0x28cfbc])=>{const _0x376ebc=_0x591382;staffList[_0x376ebc(0xb2)]({'id':_0x2a7467,'name':_0x28cfbc});}),staffList[_0x591382(0x1cf)]((_0x127817,_0x1b9303)=>_0x127817[_0x591382(0xb5)][_0x591382(0x150)](_0x1b9303[_0x591382(0xb5)])),staffList[_0x591382(0x13b)]((_0x532a3f,_0x5a697b)=>{const _0x40ae63=_0x591382;_0x2c36a5++,_0x16f002['innerHTML']+=_0x40ae63(0xb0)+_0x5a697b+_0x40ae63(0x16c)+_0x532a3f[_0x40ae63(0xb5)]+_0x40ae63(0x19e)+_0x5a697b+_0x40ae63(0x127)+_0x532a3f['name']+_0x40ae63(0x15a);});if(!autoSelectDone){const _0x450fa0=new URLSearchParams(window[_0x591382(0xfd)][_0x591382(0x187)]),_0x1843bc=_0x450fa0['get'](_0x591382(0xb1));if(_0x1843bc){const _0x3658f9=_0x1843bc['split'](',')[_0x591382(0x99)](_0x48de7b=>_0x48de7b[_0x591382(0x9c)]()!==''&&_0x48de7b!==_0x591382(0x156));_0x3658f9['forEach'](_0x4dc532=>{const _0x1388d2=_0x591382,_0x163810=staffList[_0x1388d2(0x1bd)](_0x58d824=>_0x58d824[_0x1388d2(0xb5)]===_0x4dc532);if(_0x163810>-0x1)toggleStaff(_0x4dc532,_0x163810);else selectedStaff[_0x1388d2(0xb2)](_0x4dc532),staffPreferences[_0x4dc532]='AI';}),renderSelectedStaff();}autoSelectDone=!![];}}else _0x16f002['innerHTML']=_0x591382(0x136);});}function toggleStaff(_0x13078d,_0x52ae23){const _0x50d345=_0x1fe305,_0x3f5754=document[_0x50d345(0x1a5)](_0x50d345(0x121)+_0x52ae23),_0x50ac08=selectedStaff[_0x50d345(0xf9)](_0x13078d);if(_0x50ac08>-0x1){selectedStaff[_0x50d345(0xe1)](_0x50ac08,0x1),delete staffPreferences[_0x13078d];if(_0x3f5754)_0x3f5754[_0x50d345(0x179)]['remove'](_0x50d345(0x1b9));}else{selectedStaff[_0x50d345(0xb2)](_0x13078d),staffPreferences[_0x13078d]='AI';if(_0x3f5754)_0x3f5754[_0x50d345(0x179)][_0x50d345(0xdf)](_0x50d345(0x1b9));}renderSelectedStaff();}function renderSelectedStaff(){const _0x3d3525=_0x1fe305,_0x9d44b7=document[_0x3d3525(0x1a5)](_0x3d3525(0x17e));document[_0x3d3525(0x1a5)](_0x3d3525(0x18b))[_0x3d3525(0xf7)]=selectedStaff['length']+_0x3d3525(0x172);if(selectedStaff['length']===0x0){_0x9d44b7[_0x3d3525(0xe5)]='<div\x20style=\x22color:#64748b;\x20font-size:12px;\x20font-style:italic;\x20padding:\x2010px;\x20text-align:center;\x22>Aşağıdan\x20personel\x20seçin...</div>';return;}let _0x3b2b08=getDefinedShifts(),_0x52e8b4=_0x3d3525(0xfe);_0x3b2b08[_0x3d3525(0x13b)](_0x18b444=>{const _0x5553b9=_0x3d3525;_0x52e8b4+=_0x5553b9(0x134)+_0x18b444[_0x5553b9(0x9f)]+'\x22>📌\x20Sabit:\x20'+_0x18b444['hours']+_0x5553b9(0xec);}),_0x9d44b7[_0x3d3525(0xe5)]='',selectedStaff[_0x3d3525(0x13b)](_0x2bcef3=>{const _0x5d8880=_0x3d3525;let _0x4d3c97=staffPreferences[_0x2bcef3]||'AI';_0x4d3c97!=='AI'&&!_0x3b2b08[_0x5d8880(0x122)](_0x2d3918=>_0x2d3918[_0x5d8880(0x9f)]===_0x4d3c97)&&(_0x4d3c97='AI',staffPreferences[_0x2bcef3]='AI');let _0x26dbaf=_0x52e8b4['replace'](_0x5d8880(0x18e)+_0x4d3c97+'\x22','value=\x22'+_0x4d3c97+'\x22\x20selected');_0x9d44b7['innerHTML']+=_0x5d8880(0xc1)+_0x2bcef3+_0x5d8880(0xca)+_0x2bcef3+_0x5d8880(0x192)+_0x26dbaf+_0x5d8880(0x1c1)+_0x2bcef3+_0x5d8880(0x137);});}function _0x96b2(_0x2c0d22,_0x37c83b){_0x2c0d22=_0x2c0d22-0x94;const _0x7e9bbe=_0x7e9b();let _0x96b20e=_0x7e9bbe[_0x2c0d22];return _0x96b20e;}function removeSelected(_0x3fe96c){const _0x2fc70d=_0x1fe305,_0x408fd8=staffList[_0x2fc70d(0x154)](_0x52923b=>_0x52923b[_0x2fc70d(0xb5)]===_0x3fe96c);if(_0x408fd8)toggleStaff(_0x3fe96c,staffList[_0x2fc70d(0xf9)](_0x408fd8));}const shiftGrid=document[_0x1fe305(0x1a5)]('shiftDefinitionsGrid');function addInitialShifts(){const _0xab7ebd=_0x1fe305;db[_0xab7ebd(0x1ad)](_0xab7ebd(0x95))['on']('value',_0x295cfc=>{const _0x1f32ae=_0xab7ebd;_0x295cfc[_0x1f32ae(0xf2)]()?(shiftRules=_0x295cfc[_0x1f32ae(0x12e)](),shiftGrid[_0x1f32ae(0xe5)]='',Object[_0x1f32ae(0xae)](shiftRules)[_0x1f32ae(0x13b)](([_0x4e420e,_0x584253])=>{const _0x264321=_0x1f32ae;createShiftCard(_0x4e420e[_0x264321(0x105)](/:/g,'.'),_0x584253[_0x264321(0xb5)]||_0x4e420e,_0x584253[_0x264321(0x112)],!![],_0x584253['w'],_0x584253['n']);})):(createShiftCard('08:00\x20-\x2016:00',_0x1f32ae(0x16d),'linear-gradient(135deg,\x20#0ea5e9,\x20#0369a1)',!![],7.5,0x0),createShiftCard(_0x1f32ae(0x14b),_0x1f32ae(0x158),'linear-gradient(135deg,\x20#f59e0b,\x20#b45309)',!![],7.5,0x0),createShiftCard(_0x1f32ae(0x16b),_0x1f32ae(0xfc),_0x1f32ae(0x11d),!![],0x0,7.5),createShiftCard(_0x1f32ae(0x157),_0x1f32ae(0x1ac),_0x1f32ae(0x19c),!![],0xb,0x0),createShiftCard(_0x1f32ae(0x13d),_0x1f32ae(0x16f),'linear-gradient(135deg,\x20#ef4444,\x20#9f1239)',!![],0x0,0xb),createShiftCard('HT','HAFTA\x20TATİLİ',_0x1f32ae(0xdd),!![],0x0,0x0),createShiftCard('İ',_0x1f32ae(0x1a0),_0x1f32ae(0x130),!![],0x0,0x0)),updateAiSelects();});}function autoSaveRules(){const _0x13e256=_0x1fe305,_0x7bf68=getDefinedShifts(),_0x3cd425={};_0x7bf68[_0x13e256(0x13b)](_0x2d6ac3=>{const _0x1a9728=_0x13e256,_0x5d1052=_0x2d6ac3[_0x1a9728(0x9f)]['replace'](/\./g,':');_0x3cd425[_0x5d1052]={'w':_0x2d6ac3['wH'],'n':_0x2d6ac3['nH'],'color':_0x2d6ac3['color'],'name':_0x2d6ac3[_0x1a9728(0xb5)]};}),db[_0x13e256(0x1ad)](_0x13e256(0x95))[_0x13e256(0x161)](_0x3cd425),buildContextMenu();}function saveAllShiftRulesToFirebase(){const _0x3bdec3=_0x1fe305;autoSaveRules(),showToast(_0x3bdec3(0xff));}function getShiftColor(_0x7acd64){const _0xfe0767=_0x1fe305;if(!_0x7acd64)return _0xfe0767(0x18a);_0x7acd64=_0x7acd64[_0xfe0767(0x9c)]();let _0x151326=getDefinedShifts(),_0x2d7d17=_0x151326['find'](_0x332758=>_0x332758[_0xfe0767(0x9f)][_0xfe0767(0x9c)]()===_0x7acd64||_0x332758[_0xfe0767(0xb5)][_0xfe0767(0x9c)]()===_0x7acd64);if(_0x2d7d17)return _0x2d7d17[_0xfe0767(0x112)];let _0x4e293b=_0x7acd64[_0xfe0767(0x105)](/\./g,':'),_0x5cbb3c=_0x7acd64[_0xfe0767(0x105)](/\s+/g,'');if(shiftRules[_0x4e293b])return shiftRules[_0x4e293b][_0xfe0767(0x112)];if(shiftRules[_0x5cbb3c])return shiftRules[_0x5cbb3c][_0xfe0767(0x112)];if(shiftRules[_0x7acd64])return shiftRules[_0x7acd64]['color'];return'transparent';}function createShiftCard(_0x2bd965,_0x265301,_0x2b7f63,_0x5e5d63,_0xed0168=0x0,_0x19f3b4=0x0){const _0xf4faac=_0x1fe305,_0x376191=document[_0xf4faac(0x15e)]('div');_0x376191['className']=_0xf4faac(0x13f)+(_0x5e5d63?'':'\x20inactive'),_0x376191['innerHTML']=_0xf4faac(0x1aa)+(_0x5e5d63?_0xf4faac(0x1a1):'')+_0xf4faac(0xb7)+_0x265301+'\x22\x20class=\x22shift-name-inp\x20glass-input\x22\x20style=\x22width:\x2080px;\x20padding:5px;\x20font-size:10px;\x20font-weight:900;\x20color:#fff;\x20background:'+_0x2b7f63+_0xf4faac(0xc7)+_0x2bd965+_0xf4faac(0x104)+_0xed0168+_0xf4faac(0x189)+_0x19f3b4+_0xf4faac(0x142)+_0x2b7f63+_0xf4faac(0x1b3),shiftGrid[_0xf4faac(0x107)](_0x376191),renderSelectedStaff(),updateAiSelects();}function addCustomShiftUI(){const _0x39ccab=_0x1fe305,_0x568700=[_0x39ccab(0x130),'linear-gradient(135deg,\x20#d946ef,\x20#86198f)',_0x39ccab(0x10e),'linear-gradient(135deg,\x20#10b981,\x20#047857)',_0x39ccab(0x184)];createShiftCard(_0x39ccab(0xc6),'YENİ',_0x568700[Math[_0x39ccab(0xde)](Math[_0x39ccab(0xe0)]()*_0x568700[_0x39ccab(0xf0)])],!![],0x0,0x0),autoSaveRules();}function toggleCardState(_0x455d62){const _0x34caf8=_0x1fe305,_0x5d5082=_0x455d62['closest']('.shift-card');if(_0x455d62[_0x34caf8(0x1a1)])_0x5d5082[_0x34caf8(0x179)][_0x34caf8(0x14e)](_0x34caf8(0x119));else _0x5d5082[_0x34caf8(0x179)][_0x34caf8(0xdf)](_0x34caf8(0x119));renderSelectedStaff(),autoSaveRules();}function getDefinedShifts(){const _0x364c09=_0x1fe305;let _0x457214=[];return document['querySelectorAll'](_0x364c09(0xfb))[_0x364c09(0x13b)](_0x5b1760=>{const _0xb00a25=_0x364c09;_0x5b1760['querySelector'](_0xb00a25(0x18f))[_0xb00a25(0x1a1)]&&_0x457214[_0xb00a25(0xb2)]({'name':_0x5b1760[_0xb00a25(0xba)](_0xb00a25(0x188))[_0xb00a25(0xb3)],'hours':_0x5b1760[_0xb00a25(0xba)](_0xb00a25(0x193))[_0xb00a25(0xb3)],'color':_0x5b1760[_0xb00a25(0xba)](_0xb00a25(0x120))['value'],'wH':parseFloat(_0x5b1760[_0xb00a25(0xba)]('.shift-w-inp')[_0xb00a25(0xb3)])||0x0,'nH':parseFloat(_0x5b1760[_0xb00a25(0xba)](_0xb00a25(0xa3))[_0xb00a25(0xb3)])||0x0});}),_0x457214;}function updateAiSelects(){const _0x91f92d=_0x1fe305;let _0x4d0231=getDefinedShifts(),_0x4134d2=_0x91f92d(0xb4);_0x4d0231[_0x91f92d(0x13b)](_0x342799=>{const _0x2e8771=_0x91f92d;_0x4134d2+=_0x2e8771(0x134)+_0x342799[_0x2e8771(0x9f)]+_0x2e8771(0x12d)+_0x342799[_0x2e8771(0xb5)]+'\x20('+_0x342799[_0x2e8771(0x9f)]+_0x2e8771(0x12b);});const _0x21a63f=[_0x91f92d(0x178),_0x91f92d(0x1bb),'aiOffShiftSelect',_0x91f92d(0x1c7),'ai8_Ogle',_0x91f92d(0x12c),'ai8_Off'];_0x21a63f[_0x91f92d(0x13b)](_0x59971e=>{const _0x414daa=_0x91f92d,_0x38be06=document[_0x414daa(0x1a5)](_0x59971e);if(_0x38be06){let _0x5aac0e=_0x38be06[_0x414daa(0xb3)];_0x38be06[_0x414daa(0xe5)]=_0x4134d2;if(_0x4d0231[_0x414daa(0x122)](_0x36c4d0=>_0x36c4d0[_0x414daa(0x9f)]===_0x5aac0e))_0x38be06['value']=_0x5aac0e;}});}function fillMatrixWithTemplate(_0xaed7a2){const _0x2314fc=_0x1fe305;let _0x407c1f=[];if(_0xaed7a2===_0x2314fc(0x1b2))_0x407c1f=[[0x4,0x2],[0x2,0x2],[0x2,0x2],[0x2,0x2],[0x4,0x2],[0x2,0x2],[0x2,0x2]];else{if(_0xaed7a2===_0x2314fc(0x11a))_0x407c1f=[[0x3,0x2],[0x3,0x2],[0x2,0x2],[0x3,0x2],[0x3,0x2],[0x2,0x2],[0x2,0x2]];else _0xaed7a2===_0x2314fc(0x1cb)&&(_0x407c1f=[[0x2,0x1],[0x1,0x1],[0x1,0x1],[0x1,0x1],[0x2,0x1],[0x1,0x1],[0x1,0x1]]);}for(let _0x58cf49=0x0;_0x58cf49<0x7;_0x58cf49++){let _0x12b679=_0x58cf49+0x1,_0x2a8544=document[_0x2314fc(0x1a5)]('aiReq_G_'+_0x12b679),_0x5eddfd=document[_0x2314fc(0x1a5)](_0x2314fc(0xf4)+_0x12b679),_0x1b0d91=document['getElementById'](_0x2314fc(0x153)+_0x12b679);_0x2a8544&&(_0x2a8544['value']=_0x407c1f[_0x58cf49][0x0],_0x2a8544[_0x2314fc(0x123)][_0x2314fc(0xbd)]['backgroundColor']=_0x2314fc(0x18c)),_0x5eddfd&&(_0x5eddfd[_0x2314fc(0xb3)]=0x0,_0x5eddfd[_0x2314fc(0x123)][_0x2314fc(0xbd)][_0x2314fc(0x10b)]=_0x2314fc(0x12a)),_0x1b0d91&&(_0x1b0d91[_0x2314fc(0xb3)]=_0x407c1f[_0x58cf49][0x1],_0x1b0d91[_0x2314fc(0x123)][_0x2314fc(0xbd)][_0x2314fc(0x10b)]='rgba(168,\x2085,\x20247,\x200.4)'),setTimeout(()=>{const _0x53c06c=_0x2314fc;if(_0x2a8544)_0x2a8544['parentElement']['style'][_0x53c06c(0x10b)]='rgba(0,0,0,0.6)';if(_0x5eddfd)_0x5eddfd[_0x53c06c(0x123)][_0x53c06c(0xbd)][_0x53c06c(0x10b)]='rgba(0,0,0,0.6)';if(_0x1b0d91)_0x1b0d91[_0x53c06c(0x123)][_0x53c06c(0xbd)][_0x53c06c(0x10b)]=_0x53c06c(0x1a7);},0x320);}showToast(_0x2314fc(0x166));}let lastAiMode=null;function regenerateAiTable(){const _0x476a12=_0x1fe305;if(lastAiMode===_0x476a12(0x128))startAiDistribution12h();else{if(lastAiMode==='8h')startAiDistribution8h();}}function selectBestSimulation(_0x2969fa){const _0x410156=_0x1fe305;_0x2969fa['sort']((_0x3b78c0,_0x4dab76)=>_0x3b78c0[_0x410156(0xe7)]-_0x4dab76[_0x410156(0xe7)]);let _0xad047b=_0x2969fa[0x0][_0x410156(0xe7)],_0x58388e=_0x2969fa[_0x410156(0x99)](_0x425cd4=>_0x425cd4[_0x410156(0xe7)]===_0xad047b);return _0x58388e[Math[_0x410156(0xde)](Math[_0x410156(0xe0)]()*_0x58388e[_0x410156(0xf0)])];}function startAiDistribution12h(){const _0x38fbb2=_0x1fe305;let _0x27fa08=document[_0x38fbb2(0x1a5)](_0x38fbb2(0x178))[_0x38fbb2(0xb3)],_0x32a44e=document[_0x38fbb2(0x1a5)](_0x38fbb2(0x1bb))['value'],_0x3d0afc=document[_0x38fbb2(0x1a5)](_0x38fbb2(0xd1))[_0x38fbb2(0xb3)];if(!_0x27fa08||!_0x32a44e||!_0x3d0afc)return alert('Lütfen\x20AI\x20Motoru\x20için\x20Gündüz,\x20Gece\x20ve\x20İzin\x20kodlarını\x20seçiniz!');if(selectedStaff['length']===0x0)return alert(_0x38fbb2(0x101));lastAiMode=_0x38fbb2(0x128);let _0x1e33a0=[],_0x22f16e=[];for(let _0xb45199=0x1;_0xb45199<=0x7;_0xb45199++){_0x1e33a0[_0xb45199]=parseInt(document[_0x38fbb2(0x1a5)]('aiReq_G_'+_0xb45199)[_0x38fbb2(0xb3)])||0x0,_0x22f16e[_0xb45199]=parseInt(document[_0x38fbb2(0x1a5)]('aiReq_N_'+_0xb45199)[_0x38fbb2(0xb3)])||0x0;}let _0x5e522b=document['getElementById'](_0x38fbb2(0xd0))[_0x38fbb2(0xb3)],_0x2bba58=parseInt(document[_0x38fbb2(0x1a5)](_0x38fbb2(0xb8))[_0x38fbb2(0xb3)]);if(!_0x5e522b)return alert(_0x38fbb2(0xa2));let _0x1afc01=new Date(_0x5e522b);document[_0x38fbb2(0x1a5)](_0x38fbb2(0x15d))[_0x38fbb2(0xe5)]=_0x38fbb2(0x170),document[_0x38fbb2(0x1a5)]('resultModal')[_0x38fbb2(0xbd)][_0x38fbb2(0xd9)]=_0x38fbb2(0xcf),document[_0x38fbb2(0x1a5)]('generatedTableContainer')['innerHTML']=_0x38fbb2(0xab),setTimeout(()=>{const _0x283e10=_0x38fbb2;let _0xc481e6=[],_0x311a13=0x1388,_0x3f1b9c=getDefinedShifts(),_0x2fc4be=window[_0x283e10(0xc9)]&&window[_0x283e10(0xc9)][_0x283e10(0x116)]?window[_0x283e10(0xc9)][_0x283e10(0x116)]:{},_0x40065e={};Object[_0x283e10(0x118)](_0x2fc4be)[_0x283e10(0x13b)](_0x46890=>{const _0x39466b=_0x283e10;_0x40065e[_0x46890[_0x39466b(0x105)](/\s+/g,'\x20')[_0x39466b(0x9c)]()[_0x39466b(0xe9)]()]=_0x2fc4be[_0x46890];});for(let _0x40ebdc=0x0;_0x40ebdc<_0x311a13;_0x40ebdc++){let _0x1205fb=selectedStaff[_0x283e10(0xf3)](_0x3f5a1b=>{const _0x3334b5=_0x283e10;let _0x217296=_0x3f5a1b[_0x3334b5(0x105)](/\s+/g,'\x20')['trim']()[_0x3334b5(0xe9)](),_0x35863d=_0x40065e[_0x217296]||'O';return{'name':_0x3f5a1b,'shiftLog':[],'weeklyWorkDays':0x0,'weeklyHours':0x0,'totalHours':0x0,'nightCount':0x0,'dayConsecutive':_0x35863d==='G'?0x1:0x0,'lastShiftType':_0x35863d,'pref':staffPreferences[_0x3f5a1b]};}),_0x1daf0c=0x0;for(let _0x15bbc0=0x0;_0x15bbc0<_0x2bba58;_0x15bbc0++){let _0x26c7de=new Date(_0x1afc01);_0x26c7de[_0x283e10(0x1a2)](_0x26c7de['getDate']()+_0x15bbc0);let _0x411100=_0x26c7de[_0x283e10(0x15b)](),_0x2bda99=_0x411100===0x0?0x7:_0x411100;if(_0x411100===0x1)_0x1205fb['forEach'](_0xac91b9=>{const _0x4ad272=_0x283e10;_0xac91b9[_0x4ad272(0x17b)]=0x0,_0xac91b9[_0x4ad272(0x11b)]=0x0;});let _0x174f23=_0x1e33a0[_0x2bda99],_0x5dc6b4=_0x22f16e[_0x2bda99];_0x1205fb['forEach'](_0x47e5ae=>{const _0x548ff2=_0x283e10;_0x47e5ae[_0x548ff2(0x17a)]=null;}),_0x1205fb[_0x283e10(0x13b)](_0x2c03b0=>{const _0x40e2ce=_0x283e10;if(_0x2c03b0[_0x40e2ce(0xd4)]!=='AI'){let _0x412e62=_0x3f1b9c['find'](_0x330c1f=>_0x330c1f[_0x40e2ce(0x9f)]===_0x2c03b0[_0x40e2ce(0xd4)]),_0x45bbdf=_0x412e62?_0x412e62['wH']+_0x412e62['nH']:0xb;if(_0x45bbdf===0x0)_0x45bbdf=0xb;_0x2c03b0[_0x40e2ce(0x11b)]+_0x45bbdf>0x2d||_0x2c03b0[_0x40e2ce(0x9d)]>=0x6?(_0x2c03b0['assignedToday']=_0x3d0afc,_0x2c03b0[_0x40e2ce(0x195)]='O',_0x2c03b0[_0x40e2ce(0x9d)]=0x0):(_0x2c03b0[_0x40e2ce(0x17a)]=_0x2c03b0[_0x40e2ce(0xd4)],_0x2c03b0['weeklyHours']+=_0x45bbdf,_0x2c03b0[_0x40e2ce(0x17b)]++,_0x2c03b0[_0x40e2ce(0x9d)]++,_0x2c03b0[_0x40e2ce(0xd4)]===_0x32a44e?(_0x5dc6b4--,_0x2c03b0[_0x40e2ce(0x195)]='N',_0x2c03b0[_0x40e2ce(0xe6)]++):(_0x174f23--,_0x2c03b0[_0x40e2ce(0x195)]='G',_0x2c03b0[_0x40e2ce(0xd6)]++));}}),_0x1205fb[_0x283e10(0x13b)](_0x38dc9f=>{const _0xffe657=_0x283e10;_0x38dc9f[_0xffe657(0xd4)]==='AI'&&!_0x38dc9f[_0xffe657(0x17a)]&&((_0x38dc9f[_0xffe657(0x195)]==='N'||_0x38dc9f[_0xffe657(0x17b)]>=0x4)&&(_0x38dc9f[_0xffe657(0x17a)]=_0x3d0afc,_0x38dc9f['lastShiftType']='O',_0x38dc9f[_0xffe657(0x9d)]=0x0));});let _0x4d6c10=_0x1205fb[_0x283e10(0x99)](_0x255a7d=>_0x255a7d['pref']==='AI'&&!_0x255a7d[_0x283e10(0x17a)]);_0x4d6c10[_0x283e10(0x1cf)]((_0x2d6caf,_0x18b054)=>_0x2d6caf[_0x283e10(0xe6)]-_0x18b054['nightCount']||0.5-Math[_0x283e10(0xe0)]());let _0x4085c4=0x0;for(let _0x248adf=0x0;_0x248adf<_0x4d6c10[_0x283e10(0xf0)]&&_0x4085c4<_0x5dc6b4;_0x248adf++){_0x4d6c10[_0x248adf]['assignedToday']=_0x32a44e,_0x4d6c10[_0x248adf][_0x283e10(0x195)]='N',_0x4d6c10[_0x248adf][_0x283e10(0xe6)]++,_0x4d6c10[_0x248adf][_0x283e10(0x17b)]++,_0x4d6c10[_0x248adf][_0x283e10(0x11b)]+=0xb,_0x4d6c10[_0x248adf][_0x283e10(0x9d)]=0x0,_0x4085c4++;}if(_0x5dc6b4>0x0&&_0x4085c4<_0x5dc6b4)_0x1daf0c+=_0x5dc6b4-_0x4085c4;let _0x5f192c=_0x1205fb['filter'](_0x2408d2=>_0x2408d2[_0x283e10(0xd4)]==='AI'&&!_0x2408d2[_0x283e10(0x17a)]&&_0x2408d2['dayConsecutive']<0x2);_0x5f192c['sort']((_0x74d16c,_0x55abd3)=>_0x74d16c[_0x283e10(0xd6)]-_0x55abd3['totalHours']||0.5-Math[_0x283e10(0xe0)]());let _0x465e91=0x0;for(let _0x13a672=0x0;_0x13a672<_0x5f192c[_0x283e10(0xf0)]&&_0x465e91<_0x174f23;_0x13a672++){_0x5f192c[_0x13a672][_0x283e10(0x17a)]=_0x27fa08,_0x5f192c[_0x13a672][_0x283e10(0x195)]='G',_0x5f192c[_0x13a672][_0x283e10(0xd6)]++,_0x5f192c[_0x13a672][_0x283e10(0x17b)]++,_0x5f192c[_0x13a672][_0x283e10(0x11b)]+=0xb,_0x5f192c[_0x13a672][_0x283e10(0x9d)]++,_0x465e91++;}if(_0x174f23>0x0&&_0x465e91<_0x174f23)_0x1daf0c+=_0x174f23-_0x465e91;_0x1205fb['forEach'](_0x5be9e9=>{const _0x3e9873=_0x283e10;!_0x5be9e9[_0x3e9873(0x17a)]&&(_0x5be9e9[_0x3e9873(0x17a)]=_0x3d0afc,_0x5be9e9[_0x3e9873(0x195)]='O',_0x5be9e9[_0x3e9873(0x9d)]=0x0),_0x5be9e9['shiftLog'][_0x3e9873(0xb2)](_0x5be9e9[_0x3e9873(0x17a)]);});}let _0x20b924=0x0;_0x20b924+=_0x1daf0c*0x2faf080;let _0x40a714=-0x1,_0x37e7b0=0x270f;_0x1205fb[_0x283e10(0x13b)](_0x342514=>{const _0x1aac8d=_0x283e10;let _0x45e22e=_0x342514[_0x1aac8d(0xfa)][_0x1aac8d(0xf3)](_0xd6e8f3=>_0xd6e8f3===_0x32a44e?'N':_0xd6e8f3===_0x3d0afc?'O':'G')[_0x1aac8d(0xcb)]('');_0x20b924+=(_0x45e22e[_0x1aac8d(0x160)](/NG/g)||[])['length']*0xf4240,_0x20b924+=(_0x45e22e['match'](/NN/g)||[])[_0x1aac8d(0xf0)]*0xf4240,_0x20b924+=(_0x45e22e['match'](/GGG/g)||[])['length']*0x7a120,_0x40a714=Math['max'](_0x40a714,_0x342514[_0x1aac8d(0xe6)]),_0x37e7b0=Math['min'](_0x37e7b0,_0x342514[_0x1aac8d(0xe6)]);}),_0x20b924+=(_0x40a714-_0x37e7b0)*0x64,_0xc481e6[_0x283e10(0xb2)]({'penalty':_0x20b924,'staffData':_0x1205fb});}let _0x36382b=selectBestSimulation(_0xc481e6),_0x2de26b=_0x36382b[_0x283e10(0xe7)]===0x0?_0x283e10(0x167):_0x283e10(0x100)+_0x36382b[_0x283e10(0xe7)];document[_0x283e10(0x1a5)](_0x283e10(0x15d))[_0x283e10(0xe5)]=_0x283e10(0x18d)+_0x2de26b+_0x283e10(0x1a6),renderFinalTableWithSummary(_0x36382b['staffData'],_0x5e522b,_0x2bba58,_0x1e33a0,_0x22f16e,_0x27fa08,_0x32a44e,_0x3d0afc),autoSaveRules();},0x1f4);}function startAiDistribution8h(){const _0x375047=_0x1fe305;let _0x457afd=document[_0x375047(0x1a5)]('ai8_Sabah')[_0x375047(0xb3)],_0x5d5b46=document['getElementById']('ai8_Ogle')[_0x375047(0xb3)],_0x4b3607=document['getElementById'](_0x375047(0x12c))[_0x375047(0xb3)],_0x132e17=document['getElementById'](_0x375047(0x1ae))[_0x375047(0xb3)];lastAiMode='8h';if(!_0x457afd||!_0x5d5b46||!_0x4b3607||!_0x132e17)return alert(_0x375047(0x15f));if(selectedStaff[_0x375047(0xf0)]===0x0)return alert(_0x375047(0x101));let _0x5f4591=[],_0x480195=[],_0xc18aed=[];for(let _0x24d884=0x1;_0x24d884<=0x7;_0x24d884++){_0x5f4591[_0x24d884]=parseInt(document[_0x375047(0x1a5)](_0x375047(0xa1)+_0x24d884)['value'])||0x0,_0x480195[_0x24d884]=parseInt(document[_0x375047(0x1a5)]('aiReq_O_'+_0x24d884)[_0x375047(0xb3)])||0x0,_0xc18aed[_0x24d884]=parseInt(document[_0x375047(0x1a5)]('aiReq_N_'+_0x24d884)[_0x375047(0xb3)])||0x0;}let _0x33eb73=document[_0x375047(0x1a5)](_0x375047(0xd0))[_0x375047(0xb3)],_0x3e4d8a=parseInt(document[_0x375047(0x1a5)](_0x375047(0xb8))[_0x375047(0xb3)]);if(!_0x33eb73)return alert(_0x375047(0xa2));let _0x123fec=new Date(_0x33eb73);document[_0x375047(0x1a5)](_0x375047(0x15d))['innerHTML']='⏳\x20AI:\x208\x20Saatlik\x20Varyasyonlar\x20Hesaplanıyor...',document[_0x375047(0x1a5)](_0x375047(0x9b))['style'][_0x375047(0xd9)]=_0x375047(0xcf),document[_0x375047(0x1a5)]('generatedTableContainer')['innerHTML']=_0x375047(0x162),setTimeout(()=>{const _0x4d4f2f=_0x375047;let _0x27f4b8=[],_0x1fc990=0x1388,_0x58fb93=getDefinedShifts(),_0x5a6389=window[_0x4d4f2f(0xc9)]&&window[_0x4d4f2f(0xc9)][_0x4d4f2f(0x116)]?window['parent'][_0x4d4f2f(0x116)]:{},_0x3b9cb9={};Object['keys'](_0x5a6389)['forEach'](_0x4f21c1=>{const _0x3bd2ed=_0x4d4f2f;_0x3b9cb9[_0x4f21c1[_0x3bd2ed(0x105)](/\s+/g,'\x20')[_0x3bd2ed(0x9c)]()[_0x3bd2ed(0xe9)]()]=_0x5a6389[_0x4f21c1];});for(let _0x4fbb53=0x0;_0x4fbb53<_0x1fc990;_0x4fbb53++){let _0x313a9b=selectedStaff['map'](_0x55b981=>{const _0x3d7124=_0x4d4f2f;let _0x19cade=_0x55b981[_0x3d7124(0x105)](/\s+/g,'\x20')[_0x3d7124(0x9c)]()['toUpperCase'](),_0x5822d5=_0x3b9cb9[_0x19cade]||'X';return{'name':_0x55b981,'shiftLog':[],'weeklyWorkDays':0x0,'weeklyHours':0x0,'aCount':0x0,'dayConsecutive':_0x5822d5!=='X'?0x1:0x0,'lastShiftType':_0x5822d5,'pref':staffPreferences[_0x55b981],'assignedToday':null};}),_0x107c92=0x0;for(let _0x209cfe=0x0;_0x209cfe<_0x3e4d8a;_0x209cfe++){let _0x37ee48=new Date(_0x123fec);_0x37ee48[_0x4d4f2f(0x1a2)](_0x37ee48[_0x4d4f2f(0xcd)]()+_0x209cfe);let _0x32664d=_0x37ee48['getDay'](),_0x13873a=_0x32664d===0x0?0x7:_0x32664d;if(_0x32664d===0x1)_0x313a9b[_0x4d4f2f(0x13b)](_0x111f19=>{const _0x410668=_0x4d4f2f;_0x111f19[_0x410668(0x17b)]=0x0,_0x111f19[_0x410668(0x11b)]=0x0;});let _0x5f2119=_0x5f4591[_0x13873a],_0x12f614=_0x480195[_0x13873a],_0x5eb0e3=_0xc18aed[_0x13873a];_0x313a9b[_0x4d4f2f(0x13b)](_0x349074=>{_0x349074['assignedToday']=null;}),_0x313a9b[_0x4d4f2f(0x13b)](_0xc0708f=>{const _0x310683=_0x4d4f2f;if(_0xc0708f[_0x310683(0xd4)]!=='AI'){let _0xb1602e=_0x58fb93[_0x310683(0x154)](_0x495195=>_0x495195[_0x310683(0x9f)]===_0xc0708f[_0x310683(0xd4)]),_0x1b80b2=_0xb1602e?_0xb1602e['wH']+_0xb1602e['nH']:7.5;if(_0x1b80b2===0x0)_0x1b80b2=7.5;if(_0xc0708f[_0x310683(0x11b)]+_0x1b80b2>0x2d||_0xc0708f[_0x310683(0x9d)]>=0x6)_0xc0708f[_0x310683(0x17a)]=_0x132e17,_0xc0708f[_0x310683(0x195)]='X',_0xc0708f[_0x310683(0x9d)]=0x0;else{_0xc0708f[_0x310683(0x17a)]=_0xc0708f[_0x310683(0xd4)],_0xc0708f[_0x310683(0x11b)]+=_0x1b80b2,_0xc0708f[_0x310683(0x17b)]++,_0xc0708f[_0x310683(0x9d)]++;if(_0xc0708f[_0x310683(0xd4)]===_0x4b3607)_0x5eb0e3--,_0xc0708f[_0x310683(0x195)]='A',_0xc0708f[_0x310683(0xed)]++;else _0xc0708f[_0x310683(0xd4)]===_0x5d5b46?(_0x12f614--,_0xc0708f['lastShiftType']='O'):(_0x5f2119--,_0xc0708f[_0x310683(0x195)]='S');}}}),_0x313a9b['forEach'](_0x523b41=>{const _0x465bd7=_0x4d4f2f;_0x523b41[_0x465bd7(0xd4)]==='AI'&&!_0x523b41['assignedToday']&&((_0x523b41[_0x465bd7(0x195)]==='A'||_0x523b41['lastShiftType']==='N'||_0x523b41[_0x465bd7(0x17b)]>=0x5)&&(_0x523b41[_0x465bd7(0x17a)]=_0x132e17,_0x523b41[_0x465bd7(0x195)]='X',_0x523b41[_0x465bd7(0x9d)]=0x0));});let _0x108e74=_0x313a9b[_0x4d4f2f(0x99)](_0x3ec361=>_0x3ec361[_0x4d4f2f(0xd4)]==='AI'&&!_0x3ec361[_0x4d4f2f(0x17a)]);_0x108e74['sort']((_0x45b85c,_0x50b323)=>_0x45b85c[_0x4d4f2f(0xed)]-_0x50b323[_0x4d4f2f(0xed)]||0.5-Math[_0x4d4f2f(0xe0)]());let _0xcaaa96=0x0;for(let _0x42617b=0x0;_0x42617b<_0x108e74[_0x4d4f2f(0xf0)]&&_0xcaaa96<_0x5eb0e3;_0x42617b++){_0x108e74[_0x42617b]['assignedToday']=_0x4b3607,_0x108e74[_0x42617b]['lastShiftType']='A',_0x108e74[_0x42617b][_0x4d4f2f(0xed)]++,_0x108e74[_0x42617b][_0x4d4f2f(0x17b)]++,_0x108e74[_0x42617b][_0x4d4f2f(0x11b)]+=7.5,_0x108e74[_0x42617b][_0x4d4f2f(0x9d)]++,_0xcaaa96++;}if(_0x5eb0e3>0x0&&_0xcaaa96<_0x5eb0e3)_0x107c92+=_0x5eb0e3-_0xcaaa96;let _0x99139a=_0x313a9b[_0x4d4f2f(0x99)](_0x4742e4=>_0x4742e4[_0x4d4f2f(0xd4)]==='AI'&&!_0x4742e4[_0x4d4f2f(0x17a)]);_0x99139a['sort'](()=>0.5-Math[_0x4d4f2f(0xe0)]());let _0x42ccac=0x0;for(let _0x2c52dd=0x0;_0x2c52dd<_0x99139a[_0x4d4f2f(0xf0)]&&_0x42ccac<_0x12f614;_0x2c52dd++){_0x99139a[_0x2c52dd][_0x4d4f2f(0x17a)]=_0x5d5b46,_0x99139a[_0x2c52dd]['lastShiftType']='O',_0x99139a[_0x2c52dd]['weeklyWorkDays']++,_0x99139a[_0x2c52dd]['weeklyHours']+=7.5,_0x99139a[_0x2c52dd][_0x4d4f2f(0x9d)]++,_0x42ccac++;}if(_0x12f614>0x0&&_0x42ccac<_0x12f614)_0x107c92+=_0x12f614-_0x42ccac;let _0x2864ac=_0x313a9b[_0x4d4f2f(0x99)](_0x45b7b8=>_0x45b7b8[_0x4d4f2f(0xd4)]==='AI'&&!_0x45b7b8[_0x4d4f2f(0x17a)]);_0x2864ac['sort']((_0x150cff,_0x4785a5)=>_0x4785a5[_0x4d4f2f(0x9d)]-_0x150cff[_0x4d4f2f(0x9d)]||0.5-Math[_0x4d4f2f(0xe0)]());let _0x559bbb=0x0;for(let _0x517d16=0x0;_0x517d16<_0x2864ac[_0x4d4f2f(0xf0)]&&_0x559bbb<_0x5f2119;_0x517d16++){_0x2864ac[_0x517d16][_0x4d4f2f(0x17a)]=_0x457afd,_0x2864ac[_0x517d16]['lastShiftType']='S',_0x2864ac[_0x517d16][_0x4d4f2f(0x17b)]++,_0x2864ac[_0x517d16][_0x4d4f2f(0x11b)]+=7.5,_0x2864ac[_0x517d16][_0x4d4f2f(0x9d)]++,_0x559bbb++;}if(_0x5f2119>0x0&&_0x559bbb<_0x5f2119)_0x107c92+=_0x5f2119-_0x559bbb;_0x313a9b[_0x4d4f2f(0x13b)](_0x25ae5c=>{const _0x3107c6=_0x4d4f2f;!_0x25ae5c[_0x3107c6(0x17a)]&&(_0x25ae5c['assignedToday']=_0x132e17,_0x25ae5c[_0x3107c6(0x195)]='X',_0x25ae5c[_0x3107c6(0x9d)]=0x0),_0x25ae5c[_0x3107c6(0xfa)][_0x3107c6(0xb2)](_0x25ae5c[_0x3107c6(0x17a)]);});}let _0x280941=_0x107c92*0x4c4b40,_0x11339c=-0x1,_0xfbcd46=0x270f;_0x313a9b['forEach'](_0x1b6136=>{const _0x509200=_0x4d4f2f;let _0x4cab78=_0x1b6136[_0x509200(0xfa)][_0x509200(0xf3)](_0xe6e90a=>_0xe6e90a===_0x4b3607?'A':_0xe6e90a===_0x5d5b46?'O':_0xe6e90a===_0x457afd?'S':'X')['join']('');_0x280941+=(_0x4cab78[_0x509200(0x160)](/AS/g)||[])['length']*0xf4240,_0x280941+=(_0x4cab78['match'](/AO/g)||[])[_0x509200(0xf0)]*0xf4240,_0x280941+=(_0x4cab78['match'](/AA/g)||[])[_0x509200(0xf0)]*0xf4240,_0x280941+=(_0x4cab78[_0x509200(0x160)](/OS/g)||[])['length']*0x7a120,_0x11339c=Math[_0x509200(0x181)](_0x11339c,_0x1b6136['aCount']),_0xfbcd46=Math[_0x509200(0x1cc)](_0xfbcd46,_0x1b6136['aCount']);}),_0x280941+=(_0x11339c-_0xfbcd46)*0x64,_0x27f4b8[_0x4d4f2f(0xb2)]({'penalty':_0x280941,'staffData':_0x313a9b});}let _0x3ea3a8=selectBestSimulation(_0x27f4b8),_0x13d37a=_0x3ea3a8[_0x4d4f2f(0xe7)]===0x0?_0x4d4f2f(0x167):_0x4d4f2f(0x100)+_0x3ea3a8[_0x4d4f2f(0xe7)];document[_0x4d4f2f(0x1a5)](_0x4d4f2f(0x15d))[_0x4d4f2f(0xe5)]=_0x4d4f2f(0x10d)+_0x13d37a+_0x4d4f2f(0x1a6),renderFinalTableWithSummary(_0x3ea3a8[_0x4d4f2f(0xeb)],_0x33eb73,_0x3e4d8a,_0x5f4591,_0xc18aed,_0x457afd,_0x4b3607,_0x132e17),autoSaveRules();},0x1f4);}function fireMagicRotation(_0x391357,_0x3126d2){const _0x54d804=_0x1fe305;if(selectedStaff[_0x54d804(0xf0)]===0x0||selectedStaff['length']%0x4!==0x0)return alert(_0x54d804(0xad));const _0xfb6737=document['getElementById'](_0x54d804(0xd0))[_0x54d804(0xb3)],_0x50e2a2=parseInt(document['getElementById'](_0x54d804(0xb8))[_0x54d804(0xb3)]);if(!_0xfb6737)return alert(_0x54d804(0xa2));let _0xb2e0d7=getDefinedShifts()[_0x54d804(0x99)](_0x26bf25=>_0x26bf25['hours']!=='HT'&&_0x26bf25[_0x54d804(0x9f)]!=='İ'&&_0x26bf25[_0x54d804(0x9f)]!=='R'),_0x257391=getDefinedShifts()[_0x54d804(0x154)](_0x1b64c6=>_0x1b64c6[_0x54d804(0x9f)]==='HT'),_0x608553=_0x257391?_0x257391[_0x54d804(0x9f)]:'HT',_0x5cc232=[],_0x3a9b34=[];if(_0x3126d2===0x8){if(_0xb2e0d7[_0x54d804(0xf0)]<0x3)return alert(_0x54d804(0x196));let _0x5ce4fb=_0xb2e0d7[0x0][_0x54d804(0x9f)],_0x14a6c2=_0xb2e0d7[0x1][_0x54d804(0x9f)],_0x1e52d1=_0xb2e0d7[0x2][_0x54d804(0x9f)];if(_0x391357===0x1)_0x5cc232=[_0x5ce4fb,_0x5ce4fb,_0x14a6c2,_0x14a6c2,_0x1e52d1,_0x1e52d1,_0x608553,_0x608553],_0x3a9b34=[0x0,0x6,0x4,0x2];else{if(_0x391357===0x2)_0x5cc232=[_0x5ce4fb,_0x5ce4fb,_0x5ce4fb,_0x14a6c2,_0x14a6c2,_0x1e52d1,_0x1e52d1,_0x608553],_0x3a9b34=[0x0,0x6,0x4,0x2];else _0x391357===0x3&&(_0x5cc232=[_0x5ce4fb,_0x14a6c2,_0x1e52d1,_0x608553],_0x3a9b34=[0x0,0x3,0x2,0x1]);}}let _0xa78b6d=[];for(let _0x41a2a0=0x0;_0x41a2a0<selectedStaff[_0x54d804(0xf0)];_0x41a2a0+=0x4){let _0x2ef0ee=selectedStaff[_0x54d804(0x125)](_0x41a2a0,_0x41a2a0+0x4);_0x2ef0ee[_0x54d804(0x13b)]((_0x53217b,_0x57657d)=>{const _0x8a7559=_0x54d804;let _0x4a03b8=_0x3a9b34[_0x57657d%_0x3a9b34[_0x8a7559(0xf0)]]||0x0,_0x594e7e=_0x5cc232['length'],_0x574148=[];for(let _0x56792e=0x0;_0x56792e<_0x50e2a2;_0x56792e++){_0x574148['push'](_0x5cc232[(_0x56792e+_0x4a03b8)%_0x594e7e]);}_0xa78b6d[_0x8a7559(0xb2)]({'name':_0x53217b,'shiftLog':_0x574148});});}document[_0x54d804(0x1a5)](_0x54d804(0x15d))[_0x54d804(0xe5)]=_0x54d804(0x197),renderFinalTableWithSummary(_0xa78b6d,_0xfb6737,_0x50e2a2,[],[],null,null,null),document[_0x54d804(0x1a5)](_0x54d804(0x9b))[_0x54d804(0xbd)]['display']='flex',autoSaveRules();}function createBlankTable(){const _0x14ffb9=_0x1fe305;if(selectedStaff[_0x14ffb9(0xf0)]===0x0)return alert(_0x14ffb9(0x174));const _0x3e3999=parseInt(document[_0x14ffb9(0x1a5)](_0x14ffb9(0xb8))['value']),_0x46f02d=document[_0x14ffb9(0x1a5)](_0x14ffb9(0xd0))[_0x14ffb9(0xb3)];let _0x9e0c6=selectedStaff[_0x14ffb9(0xf3)](_0x2c0ea9=>{const _0x15e3ef=_0x14ffb9;return{'name':_0x2c0ea9,'shiftLog':new Array(_0x3e3999)[_0x15e3ef(0x10c)]('')};});document[_0x14ffb9(0x1a5)](_0x14ffb9(0x15d))[_0x14ffb9(0xe5)]='🏆\x20TERTEMİZ\x20ÇİZELGE\x20<span\x20style=\x22color:var(--success);\x20font-size:16px;\x22>(Boş\x20Şablon)</span>',renderFinalTableWithSummary(_0x9e0c6,_0x46f02d,_0x3e3999,[],[],null,null,null),document[_0x14ffb9(0x1a5)](_0x14ffb9(0x9b))[_0x14ffb9(0xbd)][_0x14ffb9(0xd9)]=_0x14ffb9(0xcf),autoSaveRules();}function renderFinalTableWithSummary(_0x1b1b69,_0x29fd35,_0x5a8522,_0x18389a,_0x27b486,_0x128992,_0x5b9f09,_0x1aad2e){const _0xb269b=_0x1fe305;let _0x133400=document[_0xb269b(0x1a5)](_0xb269b(0x177)),_0xb10b33=_0xb269b(0x169),_0x2adc4d=new Date(_0x29fd35);for(let _0x5e17f5=0x0;_0x5e17f5<_0x5a8522;_0x5e17f5++){let _0x1eaa5f=new Date(_0x2adc4d);_0x1eaa5f[_0xb269b(0x1a2)](_0x2adc4d['getDate']()+_0x5e17f5);let _0x53aeff=_0x1eaa5f[_0xb269b(0x15b)]()===0x0||_0x1eaa5f[_0xb269b(0x15b)]()===0x6;_0xb10b33+=_0xb269b(0x143)+(_0x53aeff?_0xb269b(0x106):'')+_0xb269b(0x133)+_0x1eaa5f['getDate']()+'.'+(_0x1eaa5f[_0xb269b(0x173)]()+0x1)+_0xb269b(0x148)+_0x1eaa5f[_0xb269b(0x175)](_0xb269b(0x10a),{'weekday':_0xb269b(0x186)})+'</small></th>',_0x1eaa5f[_0xb269b(0x15b)]()===0x0&&(_0xb10b33+=_0xb269b(0x96));}_0xb10b33+=_0xb269b(0x16e),_0x1b1b69[_0xb269b(0x13b)](_0x12a1a1=>{const _0x24fa41=_0xb269b;_0xb10b33+=_0x24fa41(0xa9)+_0x12a1a1[_0x24fa41(0xb5)]+_0x24fa41(0xbf);for(let _0x2afc5c=0x0;_0x2afc5c<_0x5a8522;_0x2afc5c++){let _0x16e9f2=_0x12a1a1[_0x24fa41(0xfa)][_0x2afc5c],_0x1c960d=getShiftColor(_0x16e9f2);_0xb10b33+=_0x24fa41(0xa6)+_0x1c960d+_0x24fa41(0x1b4)+_0x16e9f2+_0x24fa41(0x1b0);let _0x344b63=new Date(_0x2adc4d);_0x344b63[_0x24fa41(0x1a2)](_0x2adc4d['getDate']()+_0x2afc5c),_0x344b63[_0x24fa41(0x15b)]()===0x0&&(_0xb10b33+=_0x24fa41(0x1ca));}_0xb10b33+=_0x24fa41(0x14d);});if(_0x128992&&_0x5b9f09){_0xb10b33+=_0xb269b(0xd8);for(let _0x5f597d=0x0;_0x5f597d<_0x5a8522;_0x5f597d++){let _0x14be07=new Date(_0x2adc4d);_0x14be07['setDate'](_0x2adc4d['getDate']()+_0x5f597d),_0xb10b33+='<td\x20class=\x22sum-col\x22\x20style=\x22font-size:\x2011px;\x20font-weight:\x20800;\x20color:\x20#fff;\x20text-align:center;\x22></td>';if(_0x14be07[_0xb269b(0x15b)]()===0x0)_0xb10b33+=_0xb269b(0x146);}_0xb10b33+=_0xb269b(0x13a);}_0xb10b33+=_0xb269b(0xb6),_0x133400[_0xb269b(0xe5)]=_0xb10b33,initTableEvents(),updateTableStats(),saveHistory(),buildContextMenu();}function updateTableStats(){const _0x57e9c7=_0x1fe305;let _0x143aab=getDefinedShifts();document['querySelectorAll'](_0x57e9c7(0x1c8))[_0x57e9c7(0x13b)](_0x2e90ae=>{const _0x5db9f2=_0x57e9c7;let _0x48bf58=0x0,_0x113e59=0x0,_0x5cd41a=0x0,_0x143e59=0x0,_0xe1ca7f=_0x2e90ae[_0x5db9f2(0xce)];for(let _0x284510=0x1;_0x284510<_0xe1ca7f[_0x5db9f2(0xf0)];_0x284510++){let _0x187d74=_0xe1ca7f[_0x284510];if(_0x187d74[_0x5db9f2(0x179)][_0x5db9f2(0xea)](_0x5db9f2(0x182))){let _0x3205df=_0x187d74['innerText'][_0x5db9f2(0x9c)]();_0x187d74[_0x5db9f2(0xbd)]['background']=getShiftColor(_0x3205df);let _0x549890=_0x143aab[_0x5db9f2(0x154)](_0x50ed7c=>_0x50ed7c[_0x5db9f2(0x9f)]===_0x3205df||_0x50ed7c['name']===_0x3205df);_0x549890&&(_0x48bf58+=_0x549890['wH'],_0x113e59+=_0x549890['nH']);if(_0x3205df==='HT'||_0x3205df==='İ'||_0x3205df==='R'||_0x3205df===''){}else _0x3205df[_0x5db9f2(0x1b1)](_0x5db9f2(0x144))||_0x3205df['startsWith'](_0x5db9f2(0x110))||_0x3205df[_0x5db9f2(0x1b1)](_0x5db9f2(0x16a))||_0x3205df[_0x5db9f2(0x97)](_0x5db9f2(0xfc))||_0x3205df[_0x5db9f2(0x97)](_0x5db9f2(0x158))||_0x3205df===document['getElementById']('ai8_Aksam')?.['value']?_0x143e59++:_0x5cd41a++;}else _0x187d74[_0x5db9f2(0x179)][_0x5db9f2(0xea)](_0x5db9f2(0x1b6))&&(_0x187d74[_0x5db9f2(0xe5)]='<span\x20style=\x22color:var(--cyan);\x22>'+_0x5cd41a+_0x5db9f2(0x139)+_0x143e59+_0x5db9f2(0xac),_0x5cd41a=0x0,_0x143e59=0x0);}let _0x29e483=_0x2e90ae['querySelector'](_0x5db9f2(0x94)),_0x2d7bd8=_0x2e90ae['querySelector'](_0x5db9f2(0x13e)),_0x3cdc63=_0x2e90ae[_0x5db9f2(0xba)](_0x5db9f2(0x194));if(_0x29e483)_0x29e483['innerText']=_0x48bf58;if(_0x2d7bd8)_0x2d7bd8[_0x5db9f2(0xf7)]=_0x113e59;if(_0x3cdc63)_0x3cdc63[_0x5db9f2(0xf7)]=_0x48bf58+_0x113e59;});let _0x4d69b7=document['querySelector']('#aiGeneratedBody\x20.summary-row');if(_0x4d69b7){let _0x35319b=document[_0x57e9c7(0x1a5)]('simStartDate')[_0x57e9c7(0xb3)];if(!_0x35319b)return;let _0x31a487=new Date(_0x35319b),_0x3ee108=parseInt(document[_0x57e9c7(0x1a5)](_0x57e9c7(0xb8))['value'])||0x1c,_0x47c6f1=document['querySelectorAll']('#aiGeneratedBody\x20tr:not(.summary-row)'),_0x4457e3=_0x4d69b7[_0x57e9c7(0x14c)](_0x57e9c7(0x171));for(let _0x18cf75=0x0;_0x18cf75<_0x3ee108;_0x18cf75++){let _0x1d49c3=new Date(_0x31a487);_0x1d49c3['setDate'](_0x31a487[_0x57e9c7(0xcd)]()+_0x18cf75);let _0x515286=_0x1d49c3['getDay'](),_0x228d15=_0x515286===0x0?0x7:_0x515286,_0x4b9c76=parseInt(document['getElementById'](_0x57e9c7(0xa1)+_0x228d15)[_0x57e9c7(0xb3)])||0x0,_0x28ed15=parseInt(document['getElementById'](_0x57e9c7(0x153)+_0x228d15)['value'])||0x0,_0x31f01b=document['getElementById'](_0x57e9c7(0xf4)+_0x228d15)?parseInt(document[_0x57e9c7(0x1a5)](_0x57e9c7(0xf4)+_0x228d15)[_0x57e9c7(0xb3)])||0x0:0x0,_0x1ea9e2=0x0,_0x1cd845=0x0,_0x2b0cf1=0x0,_0x406708=document[_0x57e9c7(0x1a5)](_0x57e9c7(0x12c))?document[_0x57e9c7(0x1a5)](_0x57e9c7(0x12c))[_0x57e9c7(0xb3)]:null,_0x54c874=document['getElementById']('ai8_Ogle')?document[_0x57e9c7(0x1a5)](_0x57e9c7(0x163))[_0x57e9c7(0xb3)]:null,_0x5cd8d6=document['getElementById']('aiNightShiftSelect')?document[_0x57e9c7(0x1a5)](_0x57e9c7(0x1bb))[_0x57e9c7(0xb3)]:null;_0x47c6f1[_0x57e9c7(0x13b)](_0x5a87bc=>{const _0x5db52f=_0x57e9c7;let _0x4b8460=_0x5a87bc['querySelectorAll'](_0x5db52f(0xc4)),_0x15028a=_0x4b8460[_0x18cf75];if(_0x15028a){let _0x258ad6=_0x15028a['innerText']['trim']();if(_0x258ad6==='HT'||_0x258ad6==='İ'||_0x258ad6==='R'||_0x258ad6===''){}else{if(_0x258ad6===_0x406708||_0x258ad6===_0x5cd8d6||_0x258ad6['startsWith'](_0x5db52f(0x144))||_0x258ad6[_0x5db52f(0x1b1)]('24:')||_0x258ad6[_0x5db52f(0x1b1)](_0x5db52f(0x16a))||_0x258ad6[_0x5db52f(0x97)](_0x5db52f(0xfc))||_0x258ad6[_0x5db52f(0x97)](_0x5db52f(0x158)))_0x1cd845++;else _0x258ad6===_0x54c874?_0x2b0cf1++:_0x1ea9e2++;}}});let _0x17fb58=![],_0x54754e=_0x1ea9e2,_0x4da3ff=_0x1cd845,_0x16464c=_0x2b0cf1;_0x1ea9e2!==_0x4b9c76&&_0x4b9c76!==0x0&&(_0x54754e='<span\x20style=\x22color:#ef4444;\x22>'+_0x1ea9e2+_0x57e9c7(0x1a6),_0x17fb58=!![]);_0x1cd845!==_0x28ed15&&_0x28ed15!==0x0&&(_0x4da3ff='<span\x20style=\x22color:#ef4444;\x22>'+_0x1cd845+_0x57e9c7(0x1a6),_0x17fb58=!![]);(_0x31f01b>0x0||_0x2b0cf1>0x0)&&(_0x2b0cf1!==_0x31f01b&&_0x31f01b!==0x0&&(_0x16464c=_0x57e9c7(0x10f)+_0x2b0cf1+'</span>',_0x17fb58=!![]));let _0x1b98f7=_0x31f01b>0x0||_0x2b0cf1>0x0?_0x54754e+_0x57e9c7(0xaa)+_0x16464c+'\x20/\x20'+_0x4da3ff:_0x54754e+'\x20/\x20'+_0x4da3ff;if(_0x17fb58)_0x1b98f7=_0x57e9c7(0x1b5)+_0x1b98f7;if(_0x4457e3[_0x18cf75])_0x4457e3[_0x18cf75][_0x57e9c7(0xe5)]=_0x1b98f7;}}}let isDraggingCells=![],startSelectCell=null;function initTableEvents(){const _0x321dcb=_0x1fe305;document[_0x321dcb(0x14c)]('.shift-cell')[_0x321dcb(0x13b)](_0x1f4663=>{const _0x3d6b41=_0x321dcb;_0x1f4663['onmousedown']=_0xc4563a=>{const _0x43f9b6=_0x96b2;_0xc4563a[_0x43f9b6(0x115)]===0x0&&(isDraggingCells=!![],startSelectCell=_0x1f4663,clearTableSelection(),_0x1f4663[_0x43f9b6(0x179)][_0x43f9b6(0xdf)](_0x43f9b6(0x131)));},_0x1f4663['onmouseenter']=()=>{isDraggingCells&&(clearTableSelection(),selectCellRange(startSelectCell,_0x1f4663));},_0x1f4663[_0x3d6b41(0x114)]=_0x32c7fd=>{const _0x7d6396=_0x3d6b41;_0x32c7fd[_0x7d6396(0xc2)]();!_0x1f4663[_0x7d6396(0x179)][_0x7d6396(0xea)](_0x7d6396(0x131))&&(clearTableSelection(),_0x1f4663[_0x7d6396(0x179)]['add'](_0x7d6396(0x131)));const _0x5ba1f1=document['getElementById'](_0x7d6396(0x152));_0x5ba1f1['style']['display']=_0x7d6396(0xb9),_0x5ba1f1[_0x7d6396(0xbd)][_0x7d6396(0x183)]=_0x32c7fd[_0x7d6396(0x1c6)]+'px',_0x5ba1f1[_0x7d6396(0xbd)][_0x7d6396(0x1b7)]=_0x32c7fd[_0x7d6396(0x140)]+'px';},_0x1f4663[_0x3d6b41(0xbb)]=()=>{const _0x47c9f5=_0x3d6b41;let _0x5b47d3=_0x1f4663[_0x47c9f5(0xf7)][_0x47c9f5(0x9c)]();_0x1f4663[_0x47c9f5(0xbd)][_0x47c9f5(0x1c9)]=getShiftColor(_0x5b47d3),updateTableStats();};});}function clearTableSelection(){const _0x357b45=_0x1fe305;document['querySelectorAll'](_0x357b45(0x168))[_0x357b45(0x13b)](_0x91ca01=>_0x91ca01[_0x357b45(0x179)][_0x357b45(0x14e)](_0x357b45(0x131)));}function selectCellRange(_0x3e5584,_0x2551fa){const _0x5e4c44=_0x1fe305,_0x2cb097=_0x3e5584[_0x5e4c44(0x19d)](_0x5e4c44(0x19b)),_0x1ce7cf=Array[_0x5e4c44(0xc5)](_0x2cb097[_0x5e4c44(0x14c)]('tr')),_0x41785e=_0x1ce7cf[_0x5e4c44(0xf9)](_0x3e5584['closest']('tr')),_0x4b6aa6=_0x1ce7cf[_0x5e4c44(0xf9)](_0x2551fa[_0x5e4c44(0x19d)]('tr')),_0xa8a8fc=Array['from'](_0x3e5584[_0x5e4c44(0x19d)]('tr')[_0x5e4c44(0xce)])[_0x5e4c44(0xf9)](_0x3e5584),_0x561180=Array['from'](_0x2551fa[_0x5e4c44(0x19d)]('tr')[_0x5e4c44(0xce)])[_0x5e4c44(0xf9)](_0x2551fa),_0x20a689=Math[_0x5e4c44(0x1cc)](_0x41785e,_0x4b6aa6),_0x549073=Math['max'](_0x41785e,_0x4b6aa6),_0x2987c5=Math['min'](_0xa8a8fc,_0x561180),_0x407ab3=Math['max'](_0xa8a8fc,_0x561180);for(let _0x16223b=_0x20a689;_0x16223b<=_0x549073;_0x16223b++){for(let _0x2964ee=_0x2987c5;_0x2964ee<=_0x407ab3;_0x2964ee++){const _0x4feb57=_0x1ce7cf[_0x16223b][_0x5e4c44(0xce)][_0x2964ee];if(_0x4feb57&&_0x4feb57[_0x5e4c44(0x179)][_0x5e4c44(0xea)]('shift-cell'))_0x4feb57['classList'][_0x5e4c44(0xdf)](_0x5e4c44(0x131));}}}document[_0x1fe305(0x102)](_0x1fe305(0x1bf),()=>{isDraggingCells=![];}),document[_0x1fe305(0x102)](_0x1fe305(0x1cd),_0x1a058a=>{const _0x365ed9=_0x1fe305;if(!_0x1a058a[_0x365ed9(0xef)][_0x365ed9(0x19d)]('.context-menu'))document[_0x365ed9(0x1a5)](_0x365ed9(0x152))[_0x365ed9(0xbd)][_0x365ed9(0xd9)]='none';}),document[_0x1fe305(0x102)](_0x1fe305(0x199),_0x1f5ae3=>{const _0x16c9d3=_0x1fe305;if(document[_0x16c9d3(0x1a5)](_0x16c9d3(0x9b))['style'][_0x16c9d3(0xd9)]!==_0x16c9d3(0xcf))return;_0x1f5ae3[_0x16c9d3(0x17c)]&&(_0x1f5ae3['key']==='a'||_0x1f5ae3['key']==='A')&&(_0x1f5ae3[_0x16c9d3(0xc2)](),document[_0x16c9d3(0x14c)](_0x16c9d3(0xc4))[_0x16c9d3(0x13b)](_0xfe6463=>_0xfe6463[_0x16c9d3(0x179)][_0x16c9d3(0xdf)](_0x16c9d3(0x131)))),_0x1f5ae3[_0x16c9d3(0x17c)]&&(_0x1f5ae3[_0x16c9d3(0x135)]==='z'||_0x1f5ae3[_0x16c9d3(0x135)]==='Z')&&(_0x1f5ae3[_0x16c9d3(0xc2)](),undoHistory());}),document[_0x1fe305(0x102)](_0x1fe305(0x1af),_0x38c31f=>{const _0x34c52b=_0x1fe305;if(document[_0x34c52b(0x1a5)](_0x34c52b(0x9b))[_0x34c52b(0xbd)]['display']!=='flex')return;const _0x19d935=document[_0x34c52b(0x14c)](_0x34c52b(0x168));if(_0x19d935['length']>0x0){_0x38c31f[_0x34c52b(0xc2)]();let _0x26bf23=_0x34c52b(0x1be),_0x48bf37='',_0x56cfbc=_0x19d935[0x0][_0x34c52b(0x19d)]('tr');_0x19d935['forEach'](_0x1c01a6=>{const _0x35760c=_0x34c52b;_0x1c01a6['closest']('tr')!==_0x56cfbc&&(_0x26bf23+=_0x35760c(0xa4),_0x48bf37+='\x0a',_0x56cfbc=_0x1c01a6['closest']('tr')),_0x26bf23+='<td>'+_0x1c01a6[_0x35760c(0xf7)]+_0x35760c(0x1b0),_0x48bf37+=_0x1c01a6[_0x35760c(0xf7)]+'\x09';}),_0x26bf23+='</tr></table>',_0x38c31f[_0x34c52b(0x1c3)]&&(_0x38c31f[_0x34c52b(0x1c3)][_0x34c52b(0x12f)](_0x34c52b(0x9a),_0x26bf23),_0x38c31f[_0x34c52b(0x1c3)][_0x34c52b(0x12f)]('text/plain',_0x48bf37),showToast(_0x34c52b(0xdc)));}}),document[_0x1fe305(0x102)]('paste',_0x3cbba9=>{const _0x1e2857=_0x1fe305;if(document[_0x1e2857(0x1a5)](_0x1e2857(0x9b))['style'][_0x1e2857(0xd9)]!==_0x1e2857(0xcf))return;const _0x57d5b4=Array['from'](document[_0x1e2857(0x14c)]('.selected-cell'));if(_0x57d5b4[_0x1e2857(0xf0)]>0x0){_0x3cbba9[_0x1e2857(0xc2)](),saveHistory();let _0x10d735=(_0x3cbba9[_0x1e2857(0x1c3)]||window[_0x1e2857(0x1c3)])[_0x1e2857(0x124)](_0x1e2857(0x98)),_0x17a763=_0x10d735['split']('\x0a')[_0x1e2857(0x99)](_0x20ef4e=>_0x20ef4e['trim']()!==''),_0x3a304d=_0x57d5b4[0x0],_0x5b8c1f=_0x3a304d[_0x1e2857(0x19d)]('tr'),_0xb37f7=_0x5b8c1f[_0x1e2857(0x123)],_0x10e306=Array[_0x1e2857(0xc5)](_0xb37f7[_0x1e2857(0x14c)](_0x1e2857(0xe4))),_0x24108c=_0x10e306[_0x1e2857(0xf9)](_0x5b8c1f),_0x3a1470=Array[_0x1e2857(0xc5)](_0x5b8c1f[_0x1e2857(0x14c)]('.shift-cell')),_0x2fea81=_0x3a1470['indexOf'](_0x3a304d);for(let _0x352631=0x0;_0x352631<_0x17a763[_0x1e2857(0xf0)];_0x352631++){if(_0x24108c+_0x352631>=_0x10e306[_0x1e2857(0xf0)])break;let _0x2cc997=_0x10e306[_0x24108c+_0x352631],_0x4b37f0=_0x17a763[_0x352631]['split']('\x09'),_0x2411a5=Array[_0x1e2857(0xc5)](_0x2cc997['querySelectorAll']('.shift-cell'));for(let _0x558440=0x0;_0x558440<_0x4b37f0[_0x1e2857(0xf0)];_0x558440++){if(_0x2fea81+_0x558440>=_0x2411a5[_0x1e2857(0xf0)])break;let _0x40c0e8=_0x2411a5[_0x2fea81+_0x558440],_0x88a47=_0x4b37f0[_0x558440][_0x1e2857(0x9c)]();_0x40c0e8[_0x1e2857(0xf7)]=_0x88a47,_0x40c0e8[_0x1e2857(0xbd)][_0x1e2857(0x1c9)]=getShiftColor(_0x88a47);}}updateTableStats(),showToast('Yapıştırıldı!\x20✅');}});function exportWizardToExcel(){const _0x8318f1=_0x1fe305;let _0x490031=document[_0x8318f1(0xba)](_0x8318f1(0x138));if(!_0x490031)return alert(_0x8318f1(0xf6));let _0x35b9e6=_0x490031[_0x8318f1(0x14f)](!![]);_0x35b9e6[_0x8318f1(0x14c)]('[contenteditable]')[_0x8318f1(0x13b)](_0x16e6b2=>_0x16e6b2[_0x8318f1(0x19f)](_0x8318f1(0x9e))),_0x35b9e6[_0x8318f1(0x14c)](_0x8318f1(0x1c5))[_0x8318f1(0x13b)](_0x273dc7=>_0x273dc7['remove']());let _0x188941='<html\x20xmlns:o=\x22urn:schemas-microsoft-com:office:office\x22\x20xmlns:x=\x22urn:schemas-microsoft-com:office:excel\x22\x20xmlns=\x22http://www.w3.org/TR/REC-html40\x22><head><meta\x20charset=\x22UTF-8\x22></head><body><table\x20border=\x221\x22\x20style=\x22font-family:sans-serif;\x20text-align:center;\x22>';_0x188941+=_0x35b9e6['innerHTML'],_0x188941+=_0x8318f1(0x11f);const _0x3cc620=new Blob([_0x188941],{'type':_0x8318f1(0x141)}),_0x314715=document[_0x8318f1(0x15e)]('a');_0x314715['href']=URL[_0x8318f1(0x113)](_0x3cc620),_0x314715[_0x8318f1(0x180)]=_0x8318f1(0xee)+new Date()['toLocaleDateString'](_0x8318f1(0x10a))+_0x8318f1(0x103),_0x314715[_0x8318f1(0x1cd)]();}function saveHistory(){const _0x165834=_0x1fe305,_0x522e63=document[_0x165834(0x1a5)](_0x165834(0x177));if(_0x522e63&&_0x522e63[_0x165834(0xe5)]){historyStack['push'](_0x522e63[_0x165834(0xe5)]);if(historyStack[_0x165834(0xf0)]>0x14)historyStack[_0x165834(0x159)]();}}function _0x7e9b(){const _0x200bb4=['AKŞAM','shift','</span></div>','getDay','data-pin','aiStatusTitle','createElement','Lütfen\x208\x20Saatlik\x20AI\x20için\x20tüm\x20vardiya/izin\x20kodlarını\x20seçin!','match','update','<div\x20style=\x27padding:50px;\x20text-align:center;\x20color:white;\x20font-size:20px;\x27>Yapay\x20Zeka\x203\x27lü\x20Vardiya\x20Kombinasyonlarını\x20Çözüyor...</div>','ai8_Ogle','function','TEXTAREA','Haftalık\x20Matris\x20Dolduruldu!\x20🚀\x20Şimdi\x20\x27OLUŞTUR\x27\x20butonuna\x20basabilirsiniz.','🏆\x20KUSURSUZ\x20RİTİM\x20(0\x20Hata)','.selected-cell','<table><thead><tr><th\x20style=\x22min-width:180px;\x20text-align:left;\x22>PERSONEL\x20ADI</th>','00:','24:00\x20-\x2008:00','\x22\x20onclick=\x22toggleStaff(\x27','SABAH','<th\x20style=\x22color:var(--cyan);\x20min-width:60px;\x22>G.\x20SAAT</th><th\x20style=\x22color:var(--warning);\x20min-width:60px;\x22>GC.\x20SAAT</th><th\x20style=\x22color:var(--success);\x20min-width:60px;\x22>TOPLAM</th></tr></thead><tbody\x20id=\x22aiGeneratedBody\x22>','12S\x20GECE','⏳\x20AI:\x205000\x20Hamle\x20İlerisi\x20Hesaplanıyor...','.sum-col','\x20Kişi','getMonth','Önce\x20sağ\x20üstten\x20personel\x20seçin!','toLocaleDateString','kurumlar/','generatedTableContainer','aiDayShiftSelect','classList','assignedToday','weeklyWorkDays','ctrlKey','F12','selectedStaffList','shiftmaster1-7fc5f','download','max','shift-cell','left','linear-gradient(135deg,\x20#f59e0b,\x20#b45309)','isci_sihirbaz_arsiv','short','search','.shift-name-inp','\x22\x20class=\x22shift-w-inp\x20glass-input\x22\x20style=\x22width:100%;\x20padding:5px;\x20font-size:10px;\x20text-align:center;\x22\x20onchange=\x22updateTableStats();\x20autoSaveRules();\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20type=\x22number\x22\x20placeholder=\x22Gc.\x20Saat\x22\x20value=\x22','transparent','selectedCount','rgba(6,\x20182,\x20212,\x200.4)','🏆\x20Aİ\x20ÇIKTISI:\x20<span\x20style=\x22color:var(--success);\x20font-size:16px;\x22>','value=\x22','.shift-active-cb','get','https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app','\x27]\x20=\x20this.value\x22>','.shift-hours-inp','.total-all','lastShiftType','8\x20Saatlik\x20rotasyon\x20için\x20Atölyede\x20en\x20az\x203\x20aktif\x20çalışma\x20vardiyası\x20olmalı!','🏆\x20Aİ\x20ÇIKTISI:\x20<span\x20style=\x22color:var(--cyan);\x20font-size:16px;\x22>Kusursuz\x20Rotasyon</span>','\x20<br><small>(','keydown','<div\x20class=\x22menu-item\x22\x20style=\x22background:','table','linear-gradient(135deg,\x20#10b981,\x20#047857)','closest','\x27,\x20','removeAttribute','YILLIK\x20İZİN','checked','setDate','12592YrJyOn','\x27,\x20\x27','getElementById','</span>','rgba(0,0,0,0.6)','then','\x27)\x22>','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;\x20justify-content:space-between;\x20align-items:center;\x20margin-bottom:10px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;\x20align-items:center;\x20gap:8px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20type=\x22checkbox\x22\x20class=\x22shift-active-cb\x22\x20style=\x22width:16px;height:16px;\x20accent-color:var(--accent);\x22\x20','24USkOOU','12S\x20GÜNDÜZ','ref','ai8_Off','copy','</td>','startsWith','4_2_8kisi','\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',';\x22\x20contenteditable=\x22true\x22\x20oninput=\x22updateTableStats();\x20saveHistory();\x22>','<span\x20style=\x22color:#ef4444;\x20font-size:12px;\x22>⚠️</span><br>','week-stat-cell','top','inject','selected','database','aiNightShiftSelect','toLocaleString','findIndex','<table><tr>','mouseup','13139469hdzqmD','</select>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20onclick=\x22removeSelected(\x27','📥\x20DİREKT\x20TABLOYA\x20AKTAR\x20VE\x20KAPAT','clipboardData','stopPropagation','.no-export','pageX','ai8_Sabah','#aiGeneratedBody\x20tr:not(.summary-row)','background','<td\x20class=\x22no-export\x20week-summary-col\x20week-stat-cell\x22></td>','2_1_4kisi','min','click','mockStaffPool','sort','.total-w','vardiya_kurallari','<th\x20class=\x22no-export\x20week-summary-col\x22\x20style=\x22color:var(--purple);\x20font-size:9px;\x20width:50px;\x22>HAFTA<br>ÖZETİ</th>','includes','text','filter','text/html','resultModal','trim','dayConsecutive','contenteditable','hours','Oturum\x20hatası!\x20Lütfen\x20önce\x20Ana\x20Panele\x20giriş\x20yapın.','aiReq_G_','Başlangıç\x20tarihi\x20seçin.','.shift-n-inp','</tr><tr>','2xCWCpT','<td\x20class=\x22shift-cell\x22\x20style=\x22background:','mode','10onPIWo','<tr><td\x20style=\x22text-align:left;\x20background:rgba(0,0,0,0.8);\x20border-left:\x204px\x20solid\x20var(--accent);\x22><b\x20style=\x22font-size:12px;\x20color:#fff;\x22>','\x20/\x20','<div\x20style=\x27padding:50px;\x20text-align:center;\x20color:white;\x20font-size:20px;\x27>Nükleer\x20Çekirdek\x20Döngüde...\x20Lütfen\x20Bekleyin...</div>','N</span>','HATA:\x20Bu\x20rotasyonlar\x20için\x20seçilen\x20personel\x20sayısı\x204\x27ün\x20katı\x20olmalıdır!','entries','1205UHkSCM','<div\x20class=\x22staff-item\x22\x20id=\x22staff-','names','push','value','<option\x20value=\x22\x22\x20style=\x22color:#000;\x22>--\x20Seç\x20--</option>','name','</tbody></table>','\x20onchange=\x22toggleCardState(this)\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20type=\x22text\x22\x20value=\x22','simDays','block','querySelector','onkeyup','getAttribute','style','aiTableName','</b></td>','none','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22selected-chip\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22font-size:12px;\x20font-weight:900;\x20color:white;\x22>👤\x20','preventDefault','sm_current_tenant','.shift-cell','from','Yeni\x20Saat',';\x20border:none;\x22\x20onchange=\x22renderSelectedStaff();\x20autoSaveRules();\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20style=\x22color:var(--danger);\x20cursor:pointer;\x20font-weight:bold;\x20font-size:12px;\x22\x20onclick=\x22this.closest(\x27.shift-card\x27).remove();\x20renderSelectedStaff();\x20autoSaveRules();\x22>SİL</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22margin-bottom:5px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20type=\x22text\x22\x20value=\x22','1712632MDxlvT','parent','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;\x20gap:10px;\x20align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<select\x20class=\x22chip-select\x22\x20onchange=\x22staffPreferences[\x27','join','Bağlantı\x20veya\x20Güvenlik\x20Hatası:\x20','getDate','children','flex','simStartDate','aiOffShiftSelect','days','getItem','pref','2296679eqZfmN','totalHours','valueAsDate','<tr\x20class=\x22summary-row\x22\x20style=\x22background:\x20rgba(56,\x20189,\x20248,\x200.1);\x20border-top:\x202px\x20solid\x20var(--accent);\x22><td\x20style=\x22font-weight:\x20900;\x20color:\x20var(--accent);\x20text-align:\x20right;\x20padding-right:\x2015px;\x22>📊\x20GÜNLÜK\x20KADRO\x20(S\x20/\x20Ö\x20/\x20A)</td>','display','keyCode','message','Kopyalandı!\x20📋','linear-gradient(135deg,\x20#14b8a6,\x20#0f766e)','floor','add','random','splice','shiftmaster.html','selectstart','tr:not(.summary-row)','innerHTML','nightCount','penalty','btnTransfer','toUpperCase','contains','staffData','</option>','aCount','AI_Vardiya_','target','length','Lütfen\x20tabloya\x20bir\x20isim\x20verin!','exists','map','aiReq_O_','className','Tablo\x20bulunamadı!','innerText','href','indexOf','shiftLog','.shift-card','GECE','location','<option\x20value=\x22AI\x22>🤖\x20Aİ\x20MASTER\x20(Serbest)</option>','Ayarlar\x20Ana\x20Sisteme\x20Sabitlendi!\x20💾✅','⚠️\x20Hata\x20Skoru:\x20','Personel\x20seçmediniz!','addEventListener','.xls','\x22\x20class=\x22shift-hours-inp\x20glass-input\x22\x20style=\x22width:\x20100%;\x20padding:8px;\x20font-size:12px;\x20text-align:center;\x20font-weight:900;\x20box-sizing:border-box;\x22\x20onchange=\x22renderSelectedStaff();\x20autoSaveRules();\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:flex;\x20gap:5px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20type=\x22number\x22\x20placeholder=\x22G.\x20Saat\x22\x20value=\x22','replace','color:var(--warning);','appendChild',')</small></div>','toast','tr-TR','backgroundColor','fill','🏆\x208\x20SAATLİK\x20Aİ\x20ÇIKTISI:\x20<span\x20style=\x22color:var(--success);\x20font-size:16px;\x22>','linear-gradient(135deg,\x20#3b82f6,\x20#1d4ed8)','<span\x20style=\x22color:#ef4444;\x22>','24:','1134710VbfeuL','color','createObjectURL','oncontextmenu','button','aiLastShifts','tagName','keys','inactive','3_2_8kisi','weeklyHours','İşçi','linear-gradient(135deg,\x20#8b5cf6,\x20#5b21b6)','receiveDataFromAiWizard','</table></body></html>','.shift-color-inp','staff-','some','parentElement','getData','slice','show',')\x22><span\x20style=\x22font-weight:800;\x20font-size:12px;\x22>','12h','apps','rgba(245,\x20158,\x2011,\x200.4)',')</option>','ai8_Aksam','\x22\x20style=\x22color:#000;\x22>','val','setData','linear-gradient(135deg,\x20#f43f5e,\x20#9f1239)','selected-cell','metaKey','\x22><div>','<option\x20value=\x22','key','<div\x20style=\x27color:#64748b;\x20font-size:12px;\x20grid-column:span\x202;\x20text-align:center;\x27>Havuzda\x20personel\x20yok.</div>','\x27)\x22\x20style=\x22cursor:pointer;\x20color:var(--danger);\x20padding:4px\x208px;\x20border-radius:6px;\x20font-weight:bold;\x22>X</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','#generatedTableContainer\x20table','G</span>\x20-\x20<span\x20style=\x22color:var(--warning);\x22>','<td\x20colspan=\x223\x22></td></tr>','forEach','shiftKey','20:00\x20-\x2008:00','.total-n','shift-card','pageY','application/vnd.ms-excel','\x22\x20class=\x22shift-n-inp\x20glass-input\x22\x20style=\x22width:100%;\x20padding:5px;\x20font-size:10px;\x20text-align:center;\x22\x20onchange=\x22updateTableStats();\x20autoSaveRules();\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:none;\x22><input\x20type=\x22hidden\x22\x20class=\x22shift-color-inp\x22\x20value=\x22','<th\x20style=\x22','20:','5426313RJAlAV','<td\x20class=\x22no-export\x20week-summary-col\x22\x20style=\x22background:rgba(51,65,85,0.2);\x22></td>','pop','</div><small\x20style=\x22opacity:0.8;\x22>','addh','23127324AWGQjn','16:00\x20-\x2024:00','querySelectorAll','<td\x20class=\x22stat-cell\x20total-w\x22>0</td><td\x20class=\x22stat-cell-n\x20total-n\x22>0</td><td\x20class=\x22stat-cell-all\x20total-all\x22>0</td></tr>','remove','cloneNode','localeCompare','Daha\x20fazla\x20geri\x20alınamaz!','ctxMenu','aiReq_N_','find','dynamicMenuContainer','İSİM\x20GİRİNİZ...','08:00\x20-\x2020:00'];_0x7e9b=function(){return _0x200bb4;};return _0x7e9b();}function undoHistory(){const _0xf6715e=_0x1fe305;historyStack[_0xf6715e(0xf0)]>0x1?(historyStack[_0xf6715e(0x147)](),document['getElementById'](_0xf6715e(0x177))[_0xf6715e(0xe5)]=historyStack[historyStack[_0xf6715e(0xf0)]-0x1],initTableEvents(),showToast('Geri\x20Alındı\x20↩️')):showToast(_0xf6715e(0x151));}function buildContextMenu(){const _0xf59d03=_0x1fe305,_0x2e0262=document[_0xf59d03(0x1a5)](_0xf59d03(0x155));_0x2e0262['innerHTML']='';let _0xa7c5db=getDefinedShifts();_0xa7c5db['forEach'](_0x2c93f9=>{const _0x32e3ff=_0xf59d03;_0x2e0262[_0x32e3ff(0xe5)]+=_0x32e3ff(0x19a)+_0x2c93f9[_0x32e3ff(0x112)]+';\x20border-color:\x20rgba(255,255,255,0.4);\x22\x20onclick=\x22applyShiftToSelected(\x27'+_0x2c93f9[_0x32e3ff(0x9f)]+_0x32e3ff(0x1a4)+_0x2c93f9[_0x32e3ff(0x112)]+_0x32e3ff(0x1a9)+_0x2c93f9[_0x32e3ff(0xb5)]+_0x32e3ff(0x198)+_0x2c93f9[_0x32e3ff(0x9f)]+_0x32e3ff(0x108);});}function applyShiftToSelected(_0x59c5f3,_0x50a0d9){const _0x2a55f5=_0x1fe305;saveHistory(),document['querySelectorAll'](_0x2a55f5(0x168))[_0x2a55f5(0x13b)](_0x49f1b9=>{const _0x32061d=_0x2a55f5;_0x49f1b9['innerText']=_0x59c5f3,_0x49f1b9[_0x32061d(0xbd)]['background']=getShiftColor(_0x59c5f3);}),document[_0x2a55f5(0x1a5)]('ctxMenu')[_0x2a55f5(0xbd)][_0x2a55f5(0xd9)]=_0x2a55f5(0xc0),clearTableSelection(),updateTableStats();}function saveAITableToPool(){const _0x18367d=_0x1fe305;let _0x2c3c79=document[_0x18367d(0x1a5)](_0x18367d(0xbe))[_0x18367d(0xb3)][_0x18367d(0x9c)]();if(!_0x2c3c79)return alert(_0x18367d(0xf1));const _0x39cc4f=new URLSearchParams(window['location'][_0x18367d(0x187)]),_0x2960e5=[];document['querySelectorAll'](_0x18367d(0x1c8))['forEach'](_0x52c36e=>{const _0x30ca5d=_0x18367d,_0x3aa8ae=_0x52c36e[_0x30ca5d(0xba)]('b')[_0x30ca5d(0xf7)]['trim'](),_0x2d9920=Array['from'](_0x52c36e[_0x30ca5d(0x14c)](_0x30ca5d(0xc4)))['map'](_0x1487eb=>({'text':_0x1487eb[_0x30ca5d(0xf7)]['trim'](),'bg':_0x1487eb[_0x30ca5d(0xbd)][_0x30ca5d(0x1c9)],'pin':_0x1487eb[_0x30ca5d(0xbc)](_0x30ca5d(0x15c))||''}));_0x2960e5[_0x30ca5d(0xb2)]({'name':_0x3aa8ae,'unvan':_0x30ca5d(0x11c),'shifts':_0x2d9920});});if(_0x39cc4f['get'](_0x18367d(0xa7))===_0x18367d(0x1b8)){if(window[_0x18367d(0xc9)]&&typeof window['parent'][_0x18367d(0x11e)]===_0x18367d(0x164)){window[_0x18367d(0xc9)]['receiveDataFromAiWizard'](_0x2960e5,document[_0x18367d(0x1a5)](_0x18367d(0xd0))[_0x18367d(0xb3)],document[_0x18367d(0x1a5)](_0x18367d(0xb8))[_0x18367d(0xb3)]);return;}}const _0x593909={'name':_0x2c3c79,'date':new Date()[_0x18367d(0x1bc)](_0x18367d(0x10a)),'start':document[_0x18367d(0x1a5)](_0x18367d(0xd0))[_0x18367d(0xb3)],'days':document[_0x18367d(0x1a5)]('simDays')[_0x18367d(0xb3)],'rows':_0x2960e5};db[_0x18367d(0x1ad)](_0x18367d(0x185))[_0x18367d(0xb2)](_0x593909)[_0x18367d(0x1a8)](()=>{const _0x593c0e=_0x18367d;showToast('Tablo\x20Ana\x20Merkeze\x20Başarıyla\x20Gönderildi!\x20💾'),document['getElementById'](_0x593c0e(0x9b))['style']['display']=_0x593c0e(0xc0);})['catch'](_0x7cdf7c=>{const _0x50dc27=_0x18367d;alert(_0x50dc27(0xcc)+_0x7cdf7c[_0x50dc27(0xdb)]);});}function showToast(_0x18f561){const _0x4485f7=_0x1fe305,_0x5bdd9b=document[_0x4485f7(0x1a5)](_0x4485f7(0x109));_0x5bdd9b[_0x4485f7(0xf7)]=_0x18f561,_0x5bdd9b[_0x4485f7(0xf5)]=_0x4485f7(0x126),setTimeout(()=>_0x5bdd9b[_0x4485f7(0xf5)]='',0xbb8);}document[_0x1fe305(0x102)]('contextmenu',_0x99d6=>{const _0x25ebc8=_0x1fe305;!_0x99d6['target'][_0x25ebc8(0x179)][_0x25ebc8(0xea)](_0x25ebc8(0x182))&&!_0x99d6[_0x25ebc8(0xef)]['tagName'][_0x25ebc8(0x160)](/^TH$/i)&&_0x99d6[_0x25ebc8(0xc2)]();}),document['addEventListener'](_0x1fe305(0x199),function(_0x2a984b){const _0x4f86aa=_0x1fe305;if(_0x2a984b[_0x4f86aa(0x135)]===_0x4f86aa(0x17d)||_0x2a984b[_0x4f86aa(0xda)]===0x7b)return _0x2a984b['preventDefault'](),_0x2a984b[_0x4f86aa(0x1c4)](),![];if(_0x2a984b[_0x4f86aa(0x17c)]||_0x2a984b[_0x4f86aa(0x132)]){if(_0x2a984b[_0x4f86aa(0x13c)]&&(_0x2a984b[_0x4f86aa(0x135)]==='I'||_0x2a984b[_0x4f86aa(0x135)]==='i'||_0x2a984b[_0x4f86aa(0x135)]==='J'||_0x2a984b[_0x4f86aa(0x135)]==='j'||_0x2a984b[_0x4f86aa(0x135)]==='C'||_0x2a984b[_0x4f86aa(0x135)]==='c'))return _0x2a984b[_0x4f86aa(0xc2)](),_0x2a984b[_0x4f86aa(0x1c4)](),![];if(_0x2a984b[_0x4f86aa(0x135)]==='U'||_0x2a984b[_0x4f86aa(0x135)]==='u')return _0x2a984b[_0x4f86aa(0xc2)](),_0x2a984b['stopPropagation'](),![];if(_0x2a984b[_0x4f86aa(0x135)]==='S'||_0x2a984b[_0x4f86aa(0x135)]==='s')return _0x2a984b[_0x4f86aa(0xc2)](),_0x2a984b['stopPropagation'](),![];if(_0x2a984b[_0x4f86aa(0x135)]==='P'||_0x2a984b[_0x4f86aa(0x135)]==='p')return _0x2a984b['preventDefault'](),_0x2a984b[_0x4f86aa(0x1c4)](),![];}}),document[_0x1fe305(0x102)](_0x1fe305(0xe3),function(_0x48416b){const _0x36e07e=_0x1fe305;_0x48416b[_0x36e07e(0xef)][_0x36e07e(0x117)]!=='INPUT'&&_0x48416b[_0x36e07e(0xef)][_0x36e07e(0x117)]!==_0x36e07e(0x165)&&!_0x48416b[_0x36e07e(0xef)][_0x36e07e(0x179)][_0x36e07e(0xea)]('editable-name')&&!_0x48416b[_0x36e07e(0xef)][_0x36e07e(0x179)]['contains']('shift-cell')&&_0x48416b[_0x36e07e(0xc2)]();});
+        // 🔥 FİREBASE BAĞLANTISI 🔥
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const tenantId = localStorage.getItem('sm_current_tenant');
+        if (!tenantId) { alert("Oturum hatası! Lütfen önce Ana Panele giriş yapın."); window.location.href = 'shiftmaster.html'; }
+
+        const originalRef = db.ref.bind(db);
+        db.ref = function(path) {
+            if (tenantId === "addh") return originalRef(path); 
+            if (path) return originalRef("kurumlar/" + tenantId + "/" + path);
+            return originalRef("kurumlar/" + tenantId);
+        };
+
+        let selectedStaff = [];
+        let staffPreferences = {}; 
+        let historyStack = [];
+        let staffList = [];
+        let autoSelectDone = false; 
+        let shiftRules = {}; 
+
+        window.onload = () => {
+            loadStaffPool(); 
+            addInitialShifts();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const startParam = urlParams.get('start');
+            const daysParam = urlParams.get('days');
+            
+            if (startParam) document.getElementById('simStartDate').value = startParam;
+            else document.getElementById('simStartDate').valueAsDate = new Date();
+            
+            if (daysParam) document.getElementById('simDays').value = daysParam;
+
+            if (urlParams.get('mode') === 'inject') {
+                const btn = document.getElementById("btnTransfer");
+                if(btn) btn.innerHTML = "📥 DİREKT TABLOYA AKTAR VE KAPAT";
+            }
+        };
+
+        function loadStaffPool() { 
+            db.ref("personel_havuzu").on("value", snap => { 
+                const p = document.getElementById("mockStaffPool"); 
+                p.innerHTML = ""; 
+                let count = 0; 
+                staffList = []; 
+                if(snap.val()) { 
+                    Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); 
+                    staffList.sort((a, b) => a.name.localeCompare(b.name)); 
+                    staffList.forEach((item, index) => { 
+                        count++; 
+                        p.innerHTML += `<div class="staff-item" id="staff-${index}" onclick="toggleStaff('${item.name}', ${index})"><span style="font-weight:800; font-size:12px;">${item.name}</span></div>`; 
+                    }); 
+                    
+                    if(!autoSelectDone) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const namesParam = urlParams.get('names');
+                        if (namesParam) {
+                            const namesToSelect = namesParam.split(',').filter(n => n.trim() !== "" && n !== "İSİM GİRİNİZ...");
+                            namesToSelect.forEach(n => {
+                                const idx = staffList.findIndex(s => s.name === n);
+                                if(idx > -1) toggleStaff(n, idx);
+                                else { selectedStaff.push(n); staffPreferences[n] = "AI"; } 
+                            });
+                            renderSelectedStaff();
+                        }
+                        autoSelectDone = true;
+                    }
+                } else { p.innerHTML = "<div style='color:#64748b; font-size:12px; grid-column:span 2; text-align:center;'>Havuzda personel yok.</div>"; }
+            }); 
+        }
+
+        function toggleStaff(name, index) {
+            const el = document.getElementById(`staff-${index}`);
+            const idx = selectedStaff.indexOf(name);
+            if(idx > -1) { 
+                selectedStaff.splice(idx, 1); 
+                delete staffPreferences[name]; 
+                if(el) el.classList.remove('selected'); 
+            } 
+            else { 
+                selectedStaff.push(name); 
+                staffPreferences[name] = "AI"; 
+                if(el) el.classList.add('selected'); 
+            }
+            renderSelectedStaff();
+        }
+
+        function renderSelectedStaff() {
+            const box = document.getElementById('selectedStaffList');
+            document.getElementById('selectedCount').innerText = selectedStaff.length + " Kişi";
+            if(selectedStaff.length === 0) { box.innerHTML = '<div style="color:#64748b; font-size:12px; font-style:italic; padding: 10px; text-align:center;">Aşağıdan personel seçin...</div>'; return; }
+            
+            let definedShifts = getDefinedShifts();
+            let optionsHtml = `<option value="AI">🤖 Aİ MASTER (Serbest)</option>`;
+            definedShifts.forEach(s => { optionsHtml += `<option value="${s.hours}">📌 Sabit: ${s.hours}</option>`; });
+            
+            box.innerHTML = "";
+            selectedStaff.forEach(name => {
+                let currentPref = staffPreferences[name] || "AI";
+                if(currentPref !== "AI" && !definedShifts.some(s => s.hours === currentPref)) { currentPref = "AI"; staffPreferences[name] = "AI"; }
+                let thisSelect = optionsHtml.replace(`value="${currentPref}"`, `value="${currentPref}" selected`);
+
+                box.innerHTML += `
+                    <div class="selected-chip">
+                        <span style="font-size:12px; font-weight:900; color:white;">👤 ${name}</span>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <select class="chip-select" onchange="staffPreferences['${name}'] = this.value">${thisSelect}</select>
+                            <span onclick="removeSelected('${name}')" style="cursor:pointer; color:var(--danger); padding:4px 8px; border-radius:6px; font-weight:bold;">X</span>
+                        </div>
+                    </div>`;
+            });
+        }
+        
+        function removeSelected(name) { const itemObj = staffList.find(x => x.name === name); if(itemObj) toggleStaff(name, staffList.indexOf(itemObj)); }
+
+        const shiftGrid = document.getElementById("shiftDefinitionsGrid");
+        function addInitialShifts() {
+            db.ref('vardiya_kurallari').on('value', snap => {
+                if(snap.exists()) {
+                    shiftRules = snap.val(); 
+                    shiftGrid.innerHTML = "";
+                    Object.entries(shiftRules).forEach(([key, val]) => {
+                        createShiftCard(key.replace(/:/g,'.'), val.name || key, val.color, true, val.w, val.n);
+                    });
+                } else {
+                    createShiftCard("08:00 - 16:00", "SABAH", "linear-gradient(135deg, #0ea5e9, #0369a1)", true, 7.5, 0);
+                    createShiftCard("16:00 - 24:00", "AKŞAM", "linear-gradient(135deg, #f59e0b, #b45309)", true, 7.5, 0);
+                    createShiftCard("24:00 - 08:00", "GECE", "linear-gradient(135deg, #8b5cf6, #5b21b6)", true, 0, 7.5);
+                    createShiftCard("08:00 - 20:00", "12S GÜNDÜZ", "linear-gradient(135deg, #10b981, #047857)", true, 11, 0);
+                    createShiftCard("20:00 - 08:00", "12S GECE", "linear-gradient(135deg, #ef4444, #9f1239)", true, 0, 11);
+                    createShiftCard("HT", "HAFTA TATİLİ", "linear-gradient(135deg, #14b8a6, #0f766e)", true, 0, 0);
+                    createShiftCard("İ", "YILLIK İZİN", "linear-gradient(135deg, #f43f5e, #9f1239)", true, 0, 0);
+                }
+                updateAiSelects();
+            });
+        }
+
+        function autoSaveRules() {
+            const shifts = getDefinedShifts();
+            const updates = {};
+            shifts.forEach(s => {
+                const key = s.hours.replace(/\./g, ':');
+                updates[key] = { w: s.wH, n: s.nH, color: s.color, name: s.name };
+            });
+            db.ref('vardiya_kurallari').update(updates); 
+            buildContextMenu();
+        }
+
+        function saveAllShiftRulesToFirebase() {
+            autoSaveRules();
+            showToast("Ayarlar Ana Sisteme Sabitlendi! 💾✅");
+        }
+
+        function getShiftColor(val) {
+            if(!val) return "transparent";
+            val = val.trim();
+            let definedShifts = getDefinedShifts();
+            let fShift = definedShifts.find(x => x.hours.trim() === val || x.name.trim() === val);
+            if(fShift) return fShift.color;
+            let key1 = val.replace(/\./g, ':');
+            let key2 = val.replace(/\s+/g, '');
+            if(shiftRules[key1]) return shiftRules[key1].color;
+            if(shiftRules[key2]) return shiftRules[key2].color;
+            if(shiftRules[val]) return shiftRules[val].color;
+            return "transparent";
+        }
+
+        function createShiftCard(hours, codeName, color, isActive, wH = 0, nH = 0) {
+            const card = document.createElement("div"); card.className = "shift-card" + (isActive ? "" : " inactive");
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" class="shift-active-cb" style="width:16px;height:16px; accent-color:var(--accent);" ${isActive ? 'checked' : ''} onchange="toggleCardState(this)">
+                        <input type="text" value="${codeName}" class="shift-name-inp glass-input" style="width: 80px; padding:5px; font-size:10px; font-weight:900; color:#fff; background:${color}; border:none;" onchange="renderSelectedStaff(); autoSaveRules();">
+                    </div>
+                    <span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:12px;" onclick="this.closest('.shift-card').remove(); renderSelectedStaff(); autoSaveRules();">SİL</span>
+                </div>
+                <div style="margin-bottom:5px;">
+                    <input type="text" value="${hours}" class="shift-hours-inp glass-input" style="width: 100%; padding:8px; font-size:12px; text-align:center; font-weight:900; box-sizing:border-box;" onchange="renderSelectedStaff(); autoSaveRules();">
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <input type="number" placeholder="G. Saat" value="${wH}" class="shift-w-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); autoSaveRules();">
+                    <input type="number" placeholder="Gc. Saat" value="${nH}" class="shift-n-inp glass-input" style="width:100%; padding:5px; font-size:10px; text-align:center;" onchange="updateTableStats(); autoSaveRules();">
+                </div>
+                <div style="display:none;"><input type="hidden" class="shift-color-inp" value="${color}"></div>
+            `;
+            shiftGrid.appendChild(card); renderSelectedStaff(); updateAiSelects();
+        }
+        
+        function addCustomShiftUI() { const colors = ['linear-gradient(135deg, #f43f5e, #9f1239)', 'linear-gradient(135deg, #d946ef, #86198f)', 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 'linear-gradient(135deg, #10b981, #047857)', 'linear-gradient(135deg, #f59e0b, #b45309)']; createShiftCard("Yeni Saat", "YENİ", colors[Math.floor(Math.random() * colors.length)], true, 0, 0); autoSaveRules(); }
+        function toggleCardState(cb) { const card = cb.closest('.shift-card'); if(cb.checked) card.classList.remove('inactive'); else card.classList.add('inactive'); renderSelectedStaff(); autoSaveRules(); }
+        function getDefinedShifts() { let shifts = []; document.querySelectorAll('.shift-card').forEach(card => { if(card.querySelector('.shift-active-cb').checked) { shifts.push({ name: card.querySelector('.shift-name-inp').value, hours: card.querySelector('.shift-hours-inp').value, color: card.querySelector('.shift-color-inp').value, wH: parseFloat(card.querySelector('.shift-w-inp').value) || 0, nH: parseFloat(card.querySelector('.shift-n-inp').value) || 0 }); } }); return shifts; }
+
+        function updateAiSelects() {
+            let shifts = getDefinedShifts(); 
+            let optionsHtml = '<option value="" style="color:#000;">-- Seç --</option>';
+            shifts.forEach(s => { optionsHtml += `<option value="${s.hours}" style="color:#000;">${s.name} (${s.hours})</option>`; });
+            
+            const selectors = [
+                'aiDayShiftSelect', 'aiNightShiftSelect', 'aiOffShiftSelect',
+                'ai8_Sabah', 'ai8_Ogle', 'ai8_Aksam', 'ai8_Off'
+            ];
+            
+            selectors.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    let currentVal = el.value;
+                    el.innerHTML = optionsHtml;
+                    if(shifts.some(s => s.hours === currentVal)) el.value = currentVal;
+                }
+            });
+        }
+
+        // ==========================================
+        // 🔥 AKILLI MATRİS DOLDURUCU (Gündüz & Gece Olarak İşler)
+        // ==========================================
+        function fillMatrixWithTemplate(tip) {
+            let pattern = [];
+            // Şablon kuralları: [Gündüz Sayısı, Gece Sayısı] sırasıyla Pazartesi'den Pazar'a
+            if (tip === '4_2_8kisi') {
+                pattern = [[4,2], [2,2], [2,2], [2,2], [4,2], [2,2], [2,2]];
+            } else if (tip === '3_2_8kisi') {
+                pattern = [[3,2], [3,2], [2,2], [3,2], [3,2], [2,2], [2,2]];
+            } else if (tip === '2_1_4kisi') {
+                pattern = [[2,1], [1,1], [1,1], [1,1], [2,1], [1,1], [1,1]];
+            }
+
+            for(let i=0; i<7; i++) {
+                let dayIdx = i + 1;
+                let gInput = document.getElementById('aiReq_G_' + dayIdx);
+                let oInput = document.getElementById('aiReq_O_' + dayIdx);
+                let nInput = document.getElementById('aiReq_N_' + dayIdx);
+
+                if(gInput) { 
+                    gInput.value = pattern[i][0]; 
+                    gInput.parentElement.style.backgroundColor = "rgba(6, 182, 212, 0.4)"; 
+                }
+                if(oInput) { 
+                    oInput.value = 0; 
+                    oInput.parentElement.style.backgroundColor = "rgba(245, 158, 11, 0.4)"; 
+                }
+                if(nInput) { 
+                    nInput.value = pattern[i][1]; 
+                    nInput.parentElement.style.backgroundColor = "rgba(168, 85, 247, 0.4)"; 
+                }
+
+                setTimeout(() => {
+                    if(gInput) gInput.parentElement.style.backgroundColor = "rgba(0,0,0,0.6)";
+                    if(oInput) oInput.parentElement.style.backgroundColor = "rgba(0,0,0,0.6)";
+                    if(nInput) nInput.parentElement.style.backgroundColor = "rgba(0,0,0,0.6)";
+                }, 800);
+            }
+            showToast("Haftalık Matris Dolduruldu! 🚀 Şimdi 'OLUŞTUR' butonuna basabilirsiniz.");
+        }
+
+        let lastAiMode = null; 
+
+        function regenerateAiTable() {
+            if (lastAiMode === '12h') startAiDistribution12h();
+            else if (lastAiMode === '8h') startAiDistribution8h();
+        }
+
+        function selectBestSimulation(simulations) {
+            simulations.sort((a, b) => a.penalty - b.penalty); 
+            let minPenalty = simulations[0].penalty;
+            let bestSims = simulations.filter(s => s.penalty === minPenalty);
+            return bestSims[Math.floor(Math.random() * bestSims.length)];
+        }
+
+        // ==========================================
+        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - MUTEMET ZIRHLI
+        // ==========================================
+        function startAiDistribution12h() {
+            let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
+            if(!dayCode || !nightCode || !offCode) return alert("Lütfen AI Motoru için Gündüz, Gece ve İzin kodlarını seçiniz!");
+            if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
+            lastAiMode = '12h';
+            
+            let reqG = [], reqN = [];
+            for(let i=1; i<=7; i++) { reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0; reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0; }
+
+            let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
+            if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
+
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
+            document.getElementById('resultModal').style.display = 'flex';
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Maaşlar ve Mesailer Dengeleniyor... Lütfen Bekleyin...</div>";
+
+            setTimeout(() => {
+                let simulations = []; let totalSimulations = 5000; 
+                let definedShifts = getDefinedShifts();
+
+                let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
+                let normalizedLastShifts = {};
+                Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
+
+                for(let sim = 0; sim < totalSimulations; sim++) {
+                    let simStaff = selectedStaff.map(name => {
+                        let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
+                        let initialLastShift = normalizedLastShifts[cleanName] || 'O';
+                        
+                        return { 
+                            name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, totalHours: 0, nightCount: 0, 
+                            dayConsecutive: initialLastShift === 'G' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name],
+                            mutemetCezasi: 0 // 🔥 YENİ ZIRH: Maaş denge kontrolcüsü
+                        };
+                    });
+                    
+                    let unfilledSlots = 0; 
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; s.weeklyHours = 0; });
+                        
+                        let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
+                        simStaff.forEach(s => { s.assignedToday = null; });
+
+                        // 1. SABİT PERSONEL ATAMASI
+                        simStaff.forEach(s => {
+                            if (s.pref !== "AI") {
+                                let pDef = definedShifts.find(x => x.hours === s.pref);
+                                let sH = pDef ? (pDef.wH + pDef.nH) : 11; if(sH === 0) sH = 11;
+
+                                if (s.weeklyHours + sH > 48 || s.dayConsecutive >= 6) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
+                                } else {
+                                    s.assignedToday = s.pref; s.weeklyHours += sH; s.weeklyWorkDays++; s.dayConsecutive++;
+                                    if (s.pref === nightCode) { cReqN--; s.lastShiftType = 'N'; s.nightCount++; }
+                                    else { cReqG--; s.lastShiftType = 'G'; s.totalHours++; }
+                                }
+                            }
+                        });
+
+                        // 2. Aİ KURALLARI 
+                        simStaff.forEach(s => { 
+                            if (s.pref === "AI" && !s.assignedToday) {
+                                if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
+                                    s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
+                                } 
+                            } 
+                        });
+
+                        // 3. Aİ GECE ATAMASI
+                        let poolN = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random()));
+                        let nAssigned = 0; 
+                        for(let i=0; i<poolN.length && nAssigned<cReqN; i++) { 
+                            poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; 
+                            poolN[i].nightCount++; poolN[i].weeklyWorkDays++; poolN[i].weeklyHours += 11; poolN[i].dayConsecutive = 0; 
+                            nAssigned++; 
+                        }
+                        if(cReqN > 0 && nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
+
+                        // 4. Aİ GÜNDÜZ ATAMASI
+                        let poolG = simStaff.filter(s => s.pref === "AI" && !s.assignedToday && s.dayConsecutive < 2); 
+                        poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let dAssigned = 0; 
+                        for(let i=0; i<poolG.length && dAssigned<cReqG; i++) { 
+                            poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; 
+                            poolG[i].totalHours++; poolG[i].weeklyWorkDays++; poolG[i].weeklyHours += 11; poolG[i].dayConsecutive++; 
+                            dAssigned++; 
+                        }
+                        
+                        // 🔥 YENİ ZIRH: EKSİK MESAİ TAMAMLAMA (JOKER) 🔥
+                        // İhtiyaç doldu ama adamın saati dolmadıysa Joker olarak atamaya devam et!
+                        let remainingDays = 7 - (dow === 0 ? 7 : dow); 
+                        poolG.forEach(s => {
+                            if (!s.assignedToday && (s.weeklyHours + (remainingDays * 11)) < 40) {
+                                s.assignedToday = dayCode; 
+                                s.lastShiftType = 'G'; s.totalHours++; s.weeklyWorkDays++; s.weeklyHours += 11; s.dayConsecutive++;
+                            }
+                        });
+
+                        if(cReqG > 0 && dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
+
+                        // 5. KALANLARA İZİN
+                        simStaff.forEach(s => { 
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; } 
+                            s.shiftLog.push(s.assignedToday); 
+                        });
+
+                        // 🔥 HAFTALIK MUTEMET KONTROLÜ (PAZAR GECESİ) 🔥
+                        if (dow === 0 || c === colCount - 1) {
+                            let hedefSaat = (dow === 0) ? 44 : Math.round(dow * (44/7)); 
+                            simStaff.forEach(s => {
+                                let fark = s.weeklyHours - hedefSaat;
+                                if (fark < -4) s.mutemetCezasi += Math.abs(fark) * 2000000; // Eksik mesai (Ağır Ceza)
+                                else if (fark > 11) s.mutemetCezasi += Math.abs(fark) * 300000; // Fazla mesai (Orta Ceza)
+                            });
+                        }
+                    }
+                    
+                    let penalty = 0; penalty += (unfilledSlots * 50000000); 
+                    let maxN = -1, minN = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.map(x => x === nightCode ? 'N' : (x === offCode ? 'O' : 'G')).join(''); 
+                        penalty += ((seq.match(/NG/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/NN/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/GGG/g) || []).length * 500000); 
+                        maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
+                        penalty += s.mutemetCezasi; // 🔥 Yeni cezayı genel puana ekle
+                    });
+                    penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
+                }
+                
+                let bestSim = selectBestSimulation(simulations);
+                let penaltyText = bestSim.penalty < 10000 ? "🏆 KUSURSUZ (Tam Mesai)" : `⚠️ Skoru: ${bestSim.penalty}`;
+                document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
+                renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
+                autoSaveRules();
+            }, 500);
+        }
+        // ==========================================
+        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) - MUTEMET ZIRHLI
+        // ==========================================
+        function startAiDistribution8h() {
+            let sCode = document.getElementById('ai8_Sabah').value;
+            let oCode = document.getElementById('ai8_Ogle').value;
+            let aCode = document.getElementById('ai8_Aksam').value;
+            let offCode = document.getElementById('ai8_Off').value;
+            lastAiMode = '8h';
+            
+            if(!sCode || !oCode || !aCode || !offCode) return alert("Lütfen 8 Saatlik AI için tüm vardiya/izin kodlarını seçin!");
+            if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
+
+            let reqS = [], reqO = [], reqA = [];
+            for(let i=1; i<=7; i++) {
+                reqS[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
+                reqO[i] = parseInt(document.getElementById('aiReq_O_'+i).value) || 0;
+                reqA[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
+            }
+
+            let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
+            if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
+
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 8 Saatlik Varyasyonlar Hesaplanıyor...";
+            document.getElementById('resultModal').style.display = 'flex';
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Maaş ve Mesai Dengesi Kuruluyor... Lütfen Bekleyin...</div>";
+
+            setTimeout(() => {
+                let simulations = []; let totalSimulations = 5000;
+                let definedShifts = getDefinedShifts();
+                let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
+                let normalizedLastShifts = {};
+                Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
+
+                for(let sim = 0; sim < totalSimulations; sim++) {
+                    let simStaff = selectedStaff.map(name => {
+                        let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
+                        let initialLastShift = normalizedLastShifts[cleanName] || 'X';
+                        return {
+                            name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, aCount: 0,
+                            dayConsecutive: initialLastShift !== 'X' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name], assignedToday: null,
+                            mutemetCezasi: 0 // 🔥 YENİ ZIRH
+                        };
+                    });
+
+                    let unfilledSlots = 0;
+                    for(let c = 0; c < colCount; c++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                        if(dow === 1) simStaff.forEach(s => { s.weeklyWorkDays = 0; s.weeklyHours = 0; });
+
+                        let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
+                        simStaff.forEach(s => { s.assignedToday = null; });
+
+                        simStaff.forEach(s => {
+                            if (s.pref !== "AI") {
+                                let pDef = definedShifts.find(x => x.hours === s.pref);
+                                let sH = pDef ? (pDef.wH + pDef.nH) : 7.5; if(sH === 0) sH = 7.5;
+
+                                if (s.weeklyHours + sH > 48 || s.dayConsecutive >= 6) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
+                                } else {
+                                    s.assignedToday = s.pref; s.weeklyHours += sH; s.weeklyWorkDays++; s.dayConsecutive++;
+                                    if (s.pref === aCode) { cReqA--; s.lastShiftType = 'A'; s.aCount++; }
+                                    else if (s.pref === oCode) { cReqO--; s.lastShiftType = 'O'; }
+                                    else { cReqS--; s.lastShiftType = 'S'; }
+                                }
+                            }
+                        });
+
+                        simStaff.forEach(s => {
+                            if (s.pref === "AI" && !s.assignedToday) {
+                                if (s.lastShiftType === 'A' || s.lastShiftType === 'N' || s.weeklyWorkDays >= 6) {
+                                    s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0;
+                                }
+                            }
+                        });
+
+                        let poolA = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolA.sort((a,b) => (a.aCount - b.aCount) || (0.5 - Math.random()));
+                        let aAssigned = 0;
+                        for(let i=0; i<poolA.length && aAssigned < cReqA; i++) { 
+                            poolA[i].assignedToday = aCode; poolA[i].lastShiftType = 'A'; 
+                            poolA[i].aCount++; poolA[i].weeklyWorkDays++; poolA[i].weeklyHours += 7.5; poolA[i].dayConsecutive++; 
+                            aAssigned++; 
+                        }
+                        if(cReqA > 0 && aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
+
+                        let poolO = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolO.sort(() => 0.5 - Math.random());
+                        let oAssigned = 0;
+                        for(let i=0; i<poolO.length && oAssigned < cReqO; i++) { 
+                            poolO[i].assignedToday = oCode; poolO[i].lastShiftType = 'O'; 
+                            poolO[i].weeklyWorkDays++; poolO[i].weeklyHours += 7.5; poolO[i].dayConsecutive++; 
+                            oAssigned++; 
+                        }
+                        if(cReqO > 0 && oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
+
+                        let poolS = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        poolS.sort((a,b) => (b.dayConsecutive - a.dayConsecutive) || (0.5 - Math.random()));
+                        let sAssigned = 0;
+                        for(let i=0; i<poolS.length && sAssigned < cReqS; i++) { 
+                            poolS[i].assignedToday = sCode; poolS[i].lastShiftType = 'S'; 
+                            poolS[i].weeklyWorkDays++; poolS[i].weeklyHours += 7.5; poolS[i].dayConsecutive++; 
+                            sAssigned++; 
+                        }
+
+                        // 🔥 YENİ ZIRH: EKSİK MESAİ TAMAMLAMA (JOKER MESAİ) 🔥
+                        let remainingDays = 7 - (dow === 0 ? 7 : dow); 
+                        poolS.forEach(s => {
+                            if (!s.assignedToday && (s.weeklyHours + (remainingDays * 7.5)) < 40) {
+                                s.assignedToday = sCode; 
+                                s.lastShiftType = 'S'; s.weeklyWorkDays++; s.weeklyHours += 7.5; s.dayConsecutive++;
+                            }
+                        });
+
+                        if(cReqS > 0 && sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
+
+                        simStaff.forEach(s => { 
+                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0; } 
+                            s.shiftLog.push(s.assignedToday); 
+                        });
+
+                        // 🔥 HAFTALIK MUTEMET KONTROLÜ (PAZAR GECESİ) 🔥
+                        if (dow === 0 || c === colCount - 1) {
+                            let hedefSaat = (dow === 0) ? 45 : Math.round(dow * (45/7));
+                            simStaff.forEach(s => {
+                                let fark = s.weeklyHours - hedefSaat;
+                                if (fark < -5) s.mutemetCezasi += Math.abs(fark) * 2000000; 
+                                else if (fark > 12) s.mutemetCezasi += Math.abs(fark) * 300000; 
+                            });
+                        }
+                    }
+
+                    let penalty = unfilledSlots * 5000000;
+                    let maxA = -1, minA = 9999;
+                    simStaff.forEach(s => {
+                        let seq = s.shiftLog.map(x => x === aCode ? 'A' : (x === oCode ? 'O' : (x === sCode ? 'S' : 'X'))).join('');
+                        penalty += ((seq.match(/AS/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/AO/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/AA/g) || []).length * 1000000); 
+                        penalty += ((seq.match(/OS/g) || []).length * 500000); 
+                        maxA = Math.max(maxA, s.aCount); minA = Math.min(minA, s.aCount);
+                        penalty += s.mutemetCezasi; // 🔥 Yeni cezayı genel puana ekle
+                    });
+                    penalty += ((maxA - minA) * 100);
+                    simulations.push({ penalty: penalty, staffData: simStaff });
+                }
+
+                let bestSim = selectBestSimulation(simulations);
+                let penaltyText = bestSim.penalty < 10000 ? "🏆 KUSURSUZ (Tam Mesai)" : `⚠️ Skoru: ${bestSim.penalty}`;
+                document.getElementById("aiStatusTitle").innerHTML = `🏆 8 SAATLİK Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
+                renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
+                autoSaveRules();
+            }, 500);
+        }
+
+        // ==========================================
+        // 🌪️ HAZIR ROTASYON MOTORLARI
+        // ==========================================
+        function fireMagicRotation(type, hourMode) {
+            if(selectedStaff.length === 0 || selectedStaff.length % 4 !== 0) { return alert("HATA: Bu rotasyonlar için seçilen personel sayısı 4'ün katı olmalıdır!"); }
+            const startDtStr = document.getElementById('simStartDate').value; const daysCount = parseInt(document.getElementById('simDays').value);
+            if(!startDtStr) return alert("Başlangıç tarihi seçin.");
+            let activeShifts = getDefinedShifts().filter(s => s.hours !== "HT" && s.hours !== "İ" && s.hours !== "R"); let fHT = getDefinedShifts().find(x => x.hours === "HT"); let HT = fHT ? fHT.hours : "HT"; 
+            let pattern = []; let offsets = [];
+            if(hourMode === 8) {
+                if(activeShifts.length < 3) return alert("8 Saatlik rotasyon için Atölyede en az 3 aktif çalışma vardiyası olmalı!");
+                let G = activeShifts[0].hours; let A = activeShifts[1].hours; let N = activeShifts[2].hours; 
+                if (type === 1) { pattern = [G, G, A, A, N, N, HT, HT]; offsets = [0, 6, 4, 2]; } else if (type === 2) { pattern = [G, G, G, A, A, N, N, HT]; offsets = [0, 6, 4, 2]; } else if (type === 3) { pattern = [G, A, N, HT]; offsets = [0, 3, 2, 1]; }
+            } 
+            let finalStaffData = [];
+            for (let g = 0; g < selectedStaff.length; g += 4) {
+                let group = selectedStaff.slice(g, g + 4);
+                group.forEach((name, idx) => {
+                    let offset = offsets[idx % offsets.length] || 0; let cycleLen = pattern.length; let sLog = [];
+                    for(let day = 0; day < daysCount; day++) { sLog.push(pattern[(day + offset) % cycleLen]); }
+                    finalStaffData.push({name: name, shiftLog: sLog});
+                });
+            }
+            document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--cyan); font-size:16px;">Kusursuz Rotasyon</span>`;
+            renderFinalTableWithSummary(finalStaffData, startDtStr, daysCount, [], [], null, null, null);
+            document.getElementById('resultModal').style.display = 'flex';
+            autoSaveRules();
+        }
+
+        // =========================================
+        // 📄 TERTEMİZ BOŞ TABLO OLUŞTUR
+        // =========================================
+        function createBlankTable() {
+            if(selectedStaff.length === 0) return alert("Önce sağ üstten personel seçin!");
+            const daysCount = parseInt(document.getElementById('simDays').value);
+            const startDtStr = document.getElementById('simStartDate').value;
+            
+            let staffData = selectedStaff.map(name => {
+                return {name: name, shiftLog: new Array(daysCount).fill("")};
+            });
+
+            document.getElementById("aiStatusTitle").innerHTML = `🏆 TERTEMİZ ÇİZELGE <span style="color:var(--success); font-size:16px;">(Boş Şablon)</span>`;
+            renderFinalTableWithSummary(staffData, startDtStr, daysCount, [], [], null, null, null);
+            document.getElementById('resultModal').style.display = 'flex';
+            autoSaveRules();
+        }
+
+        // =========================================
+        // 🎨 TABLOYU ÇİZME VE AKILLI RENKLENDİRME
+        // =========================================
+        function renderFinalTableWithSummary(staffData, dateStr, daysCount, reqG, reqN, dayCode, nightCode, offCode) {
+            let container = document.getElementById('generatedTableContainer');
+            let h = `<table><thead><tr><th style="min-width:180px; text-align:left;">PERSONEL ADI</th>`;
+            let dBase = new Date(dateStr);
+            for(let i=0; i<daysCount; i++) {
+                let d = new Date(dBase); d.setDate(dBase.getDate() + i); let isWeekend = (d.getDay() === 0 || d.getDay() === 6);
+                h += `<th style="${isWeekend ? 'color:var(--warning);' : ''}"><div>${d.getDate()}.${d.getMonth()+1}</div><small style="opacity:0.8;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></th>`;
+                if (d.getDay() === 0) { h += `<th class="no-export week-summary-col" style="color:var(--purple); font-size:9px; width:50px;">HAFTA<br>ÖZETİ</th>`; }
+            }
+            h += `<th style="color:var(--cyan); min-width:60px;">G. SAAT</th><th style="color:var(--warning); min-width:60px;">GC. SAAT</th><th style="color:var(--success); min-width:60px;">TOPLAM</th></tr></thead><tbody id="aiGeneratedBody">`;
+
+            staffData.forEach(s => {
+                h += `<tr><td style="text-align:left; background:rgba(0,0,0,0.8); border-left: 4px solid var(--accent);"><b style="font-size:12px; color:#fff;">${s.name}</b></td>`;
+                for(let c=0; c<daysCount; c++) {
+                    let shiftVal = s.shiftLog[c]; 
+                    let bgColor = getShiftColor(shiftVal); 
+                    h += `<td class="shift-cell" style="background:${bgColor};" contenteditable="true" oninput="updateTableStats(); saveHistory();">${shiftVal}</td>`;
+                    let d = new Date(dBase); d.setDate(dBase.getDate() + c);
+                    if (d.getDay() === 0) { h += `<td class="no-export week-summary-col week-stat-cell"></td>`; }
+                }
+                h += `<td class="stat-cell total-w">0</td><td class="stat-cell-n total-n">0</td><td class="stat-cell-all total-all">0</td></tr>`;
+            });
+
+            if (dayCode && nightCode) {
+                h += `<tr class="summary-row" style="background: rgba(56, 189, 248, 0.1); border-top: 2px solid var(--accent);"><td style="font-weight: 900; color: var(--accent); text-align: right; padding-right: 15px;">📊 GÜNLÜK KADRO (S / Ö / A)</td>`;
+                for(let c = 0; c < daysCount; c++) {
+                    let d = new Date(dBase); d.setDate(dBase.getDate() + c);
+                    h += `<td class="sum-col" style="font-size: 11px; font-weight: 800; color: #fff; text-align:center;"></td>`;
+                    if (d.getDay() === 0) h += `<td class="no-export week-summary-col" style="background:rgba(51,65,85,0.2);"></td>`;
+                }
+                h += `<td colspan="3"></td></tr>`;
+            }
+            h += `</tbody></table>`; container.innerHTML = h;
+            initTableEvents(); updateTableStats(); saveHistory(); buildContextMenu();
+        }
+
+        function updateTableStats() {
+            let definedShifts = getDefinedShifts();
+            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                let totalW = 0; let totalN = 0; let weeklyW = 0; let weeklyN = 0;
+                let cells = tr.children;
+                for(let i=1; i<cells.length; i++) {
+                    let cell = cells[i];
+                    if (cell.classList.contains('shift-cell')) {
+                        let val = cell.innerText.trim(); 
+                        cell.style.background = getShiftColor(val); 
+                        
+                        let sDef = definedShifts.find(x => x.hours === val || x.name === val);
+                        if(sDef) { totalW += sDef.wH; totalN += sDef.nH; }
+                        if (val === "HT" || val === "İ" || val === "R" || val === "") {} 
+                        else if (val.startsWith("20:") || val.startsWith("24:") || val.startsWith("00:") || val.includes("GECE") || val.includes("AKŞAM") || val === document.getElementById('ai8_Aksam')?.value) { weeklyN++; } else { weeklyW++; }
+                    } else if (cell.classList.contains('week-stat-cell')) {
+                        cell.innerHTML = `<span style="color:var(--cyan);">${weeklyW}G</span> - <span style="color:var(--warning);">${weeklyN}N</span>`; weeklyW = 0; weeklyN = 0; 
+                    }
+                }
+                let tWCell = tr.querySelector('.total-w'); let tNCell = tr.querySelector('.total-n'); let tAllCell = tr.querySelector('.total-all');
+                if(tWCell) tWCell.innerText = totalW; if(tNCell) tNCell.innerText = totalN; if(tAllCell) tAllCell.innerText = totalW + totalN;
+            });
+
+            let summaryRow = document.querySelector('#aiGeneratedBody .summary-row');
+            if(summaryRow) {
+                let startDtStr = document.getElementById('simStartDate').value; if(!startDtStr) return;
+                let dBase = new Date(startDtStr); let daysCount = parseInt(document.getElementById('simDays').value) || 28;
+                let rows = document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)'); let sumCols = summaryRow.querySelectorAll('.sum-col');
+                for(let c = 0; c < daysCount; c++) {
+                    let d = new Date(dBase); d.setDate(dBase.getDate() + c); let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
+                    let targetG = parseInt(document.getElementById('aiReq_G_' + reqIndex).value) || 0; 
+                    let targetN = parseInt(document.getElementById('aiReq_N_' + reqIndex).value) || 0;
+                    let targetO = document.getElementById('aiReq_O_' + reqIndex) ? (parseInt(document.getElementById('aiReq_O_' + reqIndex).value) || 0) : 0;
+                    
+                    let dCount = 0, nCount = 0, oCount = 0;
+                    
+                    let aCode = document.getElementById('ai8_Aksam') ? document.getElementById('ai8_Aksam').value : null;
+                    let oCode = document.getElementById('ai8_Ogle') ? document.getElementById('ai8_Ogle').value : null;
+                    let n12Code = document.getElementById('aiNightShiftSelect') ? document.getElementById('aiNightShiftSelect').value : null;
+
+                    rows.forEach(tr => {
+                        let shiftCells = tr.querySelectorAll('.shift-cell'); let cell = shiftCells[c]; 
+                        if(cell) {
+                            let val = cell.innerText.trim();
+                            if (val === "HT" || val === "İ" || val === "R" || val === "") {} 
+                            else if (val === aCode || val === n12Code || val.startsWith("20:") || val.startsWith("24:") || val.startsWith("00:") || val.includes("GECE") || val.includes("AKŞAM")) { nCount++; } 
+                            else if (val === oCode) { oCount++; }
+                            else { dCount++; }
+                        }
+                    });
+                    let isWarning = false; let gText = dCount; let nText = nCount; let oText = oCount;
+                    if(dCount !== targetG && targetG !== 0) { gText = `<span style="color:#ef4444;">${dCount}</span>`; isWarning = true; }
+                    if(nCount !== targetN && targetN !== 0) { nText = `<span style="color:#ef4444;">${nCount}</span>`; isWarning = true; }
+                    if(targetO > 0 || oCount > 0) {
+                        if(oCount !== targetO && targetO !== 0) { oText = `<span style="color:#ef4444;">${oCount}</span>`; isWarning = true; }
+                    }
+                    
+                    let cellHtml = (targetO > 0 || oCount > 0) ? `${gText} / ${oText} / ${nText}` : `${gText} / ${nText}`;
+                    if(isWarning) cellHtml = `<span style="color:#ef4444; font-size:12px;">⚠️</span><br>` + cellHtml;
+                    if(sumCols[c]) sumCols[c].innerHTML = cellHtml;
+                }
+            }
+        }
+
+        // 🔥 KLAVYE KISAYOLLARI VE KUSURSUZ PASTE 🔥
+        let isDraggingCells = false; let startSelectCell = null;
+        function initTableEvents() {
+            document.querySelectorAll('.shift-cell').forEach(cell => {
+                cell.onmousedown = (e) => { if(e.button === 0) { isDraggingCells = true; startSelectCell = cell; clearTableSelection(); cell.classList.add('selected-cell'); } };
+                cell.onmouseenter = () => { if(isDraggingCells) { clearTableSelection(); selectCellRange(startSelectCell, cell); } };
+                cell.oncontextmenu = (e) => { e.preventDefault(); if(!cell.classList.contains('selected-cell')) { clearTableSelection(); cell.classList.add('selected-cell'); } const m = document.getElementById('ctxMenu'); m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; };
+                cell.onkeyup = () => { let val = cell.innerText.trim(); cell.style.background = getShiftColor(val); updateTableStats();  };
+            });
+        }
+        function clearTableSelection() { document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell')); }
+        function selectCellRange(start, end) { const table = start.closest('table'); const rows = Array.from(table.querySelectorAll('tr')); const startRowIdx = rows.indexOf(start.closest('tr')); const endRowIdx = rows.indexOf(end.closest('tr')); const startColIdx = Array.from(start.closest('tr').children).indexOf(start); const endColIdx = Array.from(end.closest('tr').children).indexOf(end); const minRow = Math.min(startRowIdx, endRowIdx); const maxRow = Math.max(startRowIdx, endRowIdx); const minCol = Math.min(startColIdx, endColIdx); const maxCol = Math.max(startColIdx, endColIdx); for(let r = minRow; r <= maxRow; r++) { for(let c = minCol; c <= maxCol; c++) { const target = rows[r].children[c]; if(target && target.classList.contains('shift-cell')) target.classList.add('selected-cell'); } } }
+        document.addEventListener('mouseup', () => { isDraggingCells = false; });
+        document.addEventListener('click', (e) => { if(!e.target.closest('.context-menu')) document.getElementById('ctxMenu').style.display = "none"; });
+        document.addEventListener('keydown', e => { if (document.getElementById('resultModal').style.display !== 'flex') return; if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) { e.preventDefault(); document.querySelectorAll('.shift-cell').forEach(c => c.classList.add('selected-cell')); } if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undoHistory(); } });
+
+        document.addEventListener('copy', e => {
+            if (document.getElementById('resultModal').style.display !== 'flex') return;
+            const selected = document.querySelectorAll('.selected-cell');
+            if(selected.length > 0) { e.preventDefault(); let html = "<table><tr>"; let tsv = ""; let currentRow = selected[0].closest('tr'); selected.forEach(cell => { if(cell.closest('tr') !== currentRow) { html += "</tr><tr>"; tsv += "\n"; currentRow = cell.closest('tr'); } html += `<td>${cell.innerText}</td>`; tsv += `${cell.innerText}\t`; }); html += "</tr></table>"; if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Kopyalandı! 📋"); } }
+        });
+
+        document.addEventListener('paste', e => {
+            if (document.getElementById('resultModal').style.display !== 'flex') return;
+            const selected = Array.from(document.querySelectorAll('.selected-cell'));
+            if(selected.length > 0) { e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = pasteData.split('\n').filter(r => r.trim() !== ""); let startCell = selected[0]; let startTr = startCell.closest('tr'); let tbody = startTr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr:not(.summary-row)')); let startRowIdx = allTrs.indexOf(startTr); let shiftCells = Array.from(startTr.querySelectorAll('.shift-cell')); let startShiftColIdx = shiftCells.indexOf(startCell); 
+                for (let i = 0; i < rows.length; i++) { if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentShiftCells = Array.from(currentTr.querySelectorAll('.shift-cell')); for (let j = 0; j < cols.length; j++) { if (startShiftColIdx + j >= currentShiftCells.length) break; let targetCell = currentShiftCells[startShiftColIdx + j]; let val = cols[j].trim(); targetCell.innerText = val; targetCell.style.background = getShiftColor(val); } }
+                updateTableStats(); showToast("Yapıştırıldı! ✅");
+            }
+        });
+
+        function exportWizardToExcel() { let table = document.querySelector("#generatedTableContainer table"); if(!table) return alert("Tablo bulunamadı!"); let clone = table.cloneNode(true); clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable')); clone.querySelectorAll('.no-export').forEach(el => el.remove()); let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body><table border="1" style="font-family:sans-serif; text-align:center;">`; html += clone.innerHTML; html += `</table></body></html>`; const blob = new Blob([html], { type: 'application/vnd.ms-excel' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI_Vardiya_${new Date().toLocaleDateString('tr-TR')}.xls`; a.click(); }
+        function saveHistory() { const tableContainer = document.getElementById('generatedTableContainer'); if(tableContainer && tableContainer.innerHTML) { historyStack.push(tableContainer.innerHTML); if(historyStack.length > 20) historyStack.shift(); } }
+        function undoHistory() { if(historyStack.length > 1) { historyStack.pop(); document.getElementById('generatedTableContainer').innerHTML = historyStack[historyStack.length - 1]; initTableEvents(); showToast("Geri Alındı ↩️"); } else { showToast("Daha fazla geri alınamaz!"); } }
+        function buildContextMenu() { const container = document.getElementById('dynamicMenuContainer'); container.innerHTML = ""; let definedShifts = getDefinedShifts(); definedShifts.forEach(s => { container.innerHTML += `<div class="menu-item" style="background:${s.color}; border-color: rgba(255,255,255,0.4);" onclick="applyShiftToSelected('${s.hours}', '${s.color}')">${s.name} <br><small>(${s.hours})</small></div>`; }); }
+        function applyShiftToSelected(text, color) { saveHistory(); document.querySelectorAll('.selected-cell').forEach(c => { c.innerText = text; c.style.background = getShiftColor(text); }); document.getElementById('ctxMenu').style.display = "none"; clearTableSelection(); updateTableStats(); }
+
+        // 🔥 DİREKT TABLOYA AKTARIM VEYA HAVUZA GÖNDERİM MOTORU 🔥
+        function saveAITableToPool() {
+            let tName = document.getElementById('aiTableName').value.trim();
+            if(!tName) return alert("Lütfen tabloya bir isim verin!");
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const rows = [];
+            document.querySelectorAll('#aiGeneratedBody tr:not(.summary-row)').forEach(tr => {
+                const name = tr.querySelector('b').innerText.trim();
+                const shifts = Array.from(tr.querySelectorAll('.shift-cell')).map(td => ({ 
+                    text: td.innerText.trim(), 
+                    bg: td.style.background, 
+                    pin: td.getAttribute("data-pin") || "" 
+                }));
+                rows.push({ name: name, unvan: "İşçi", shifts: shifts }); 
+            });
+
+            if (urlParams.get('mode') === 'inject') {
+                if (window.parent && typeof window.parent.receiveDataFromAiWizard === 'function') {
+                    window.parent.receiveDataFromAiWizard(rows, document.getElementById('simStartDate').value, document.getElementById('simDays').value);
+                    return; 
+                }
+            }
+
+            const data = { 
+                name: tName, 
+                date: new Date().toLocaleString('tr-TR'), 
+                start: document.getElementById('simStartDate').value, 
+                days: document.getElementById('simDays').value, 
+                rows: rows 
+            };
+            
+            db.ref("isci_sihirbaz_arsiv").push(data).then(() => { 
+                showToast("Tablo Ana Merkeze Başarıyla Gönderildi! 💾"); 
+                document.getElementById('resultModal').style.display='none'; 
+            }).catch(err => {
+                alert("Bağlantı veya Güvenlik Hatası: " + err.message);
+            });
+        }
+
+        function showToast(m) { const x = document.getElementById('toast'); x.innerText=m; x.className="show"; setTimeout(()=>x.className="",3000); }
+        
+        // ============================================================================
+        // 🛡️ ÇELİK KAPI: ANTİ-HIRSIZLIK VE DEVTOOLS ENGELLEYİCİ (FİNAL SÜRÜM)
+        // ============================================================================
+        document.addEventListener('contextmenu', event => {
+            if(!event.target.classList.contains('shift-cell') && !event.target.tagName.match(/^TH$/i)) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); e.stopPropagation(); return false; }
+            if (e.ctrlKey || e.metaKey) {
+                if (e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'U' || e.key === 'u') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'S' || e.key === 's') { e.preventDefault(); e.stopPropagation(); return false; }
+                if (e.key === 'P' || e.key === 'p') { e.preventDefault(); e.stopPropagation(); return false; }
+            }
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('editable-name') && !e.target.classList.contains('shift-cell')) { 
+                e.preventDefault(); 
+            }
+        });
     </script>
 </body>
 </html>
