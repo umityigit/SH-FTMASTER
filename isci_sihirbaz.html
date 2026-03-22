@@ -544,6 +544,127 @@
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - MUTEMET ZIRHLI
         // ==========================================
+       // ==========================================
+        // 🧩 SUDOKU ÇÖZÜCÜ (ZENGİNDEN ALIP FAKİRE VEREN DENGE MOTORU)
+        // ==========================================
+        function applySudokuMagic12h(staffData, colCount, dayCode, nightCode, offCode, definedShifts) {
+            let pDefG = definedShifts.find(x => x.hours === dayCode); let gHours = pDefG ? (pDefG.wH + pDefG.nH) : 11;
+            let pDefN = definedShifts.find(x => x.hours === nightCode); let nHours = pDefN ? (pDefN.wH + pDefN.nH) : 11;
+
+            for(let pass=0; pass<50; pass++) { // 50 tur boyunca tabloyu tara ve eşitle
+                let swapped = false;
+                for(let w=0; w<colCount; w+=7) {
+                    let wEnd = Math.min(w+6, colCount-1);
+                    
+                    // Haftalık saatleri hesapla
+                    staffData.forEach(s => {
+                        s.tmpH = 0;
+                        for(let d=w; d<=wEnd; d++) {
+                            if(s.shiftLog[d] === dayCode) s.tmpH += gHours;
+                            if(s.shiftLog[d] === nightCode) s.tmpH += nHours;
+                        }
+                    });
+
+                    // Zenginler (Çok Çalışanlar) ve Fakirler (Az Çalışanlar)
+                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
+                    
+                    for(let r=0; r<sortedStaff.length; r++) { // Zengin
+                        for(let p=sortedStaff.length-1; p>r; p--) { // Fakir
+                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
+                            
+                            // Aralarındaki saat farkı 1 nöbetten azsa eşittir, dokunma!
+                            if (rich.tmpH - poor.tmpH <= Math.max(gHours, nHours)) continue; 
+                            
+                            // Zenginden Fakire Nöbet Kaydırma (Sudoku Hamlesi)
+                            for(let d=w; d<=wEnd; d++) {
+                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
+                                
+                                if((rVal === dayCode || rVal === nightCode) && (pVal === offCode || pVal === "")) {
+                                    // Kural Kontrolü: Fakir bu nöbeti alırsa kurallar (NG, NN) bozulur mu?
+                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'O';
+                                    let pNext = d < colCount-1 ? poor.shiftLog[d+1] : 'O';
+                                    
+                                    let isSafe = true;
+                                    if(rVal === nightCode && (pPrev === nightCode || pNext === nightCode || pNext === dayCode)) isSafe = false;
+                                    if(rVal === dayCode && pPrev === nightCode) isSafe = false;
+                                    
+                                    // Peş peşe çalışma kontrolü (Maksimum 5 gün)
+                                    let consec = 0;
+                                    for(let checkD=d; checkD>=Math.max(0, d-5); checkD--) {
+                                        if(poor.shiftLog[checkD] === dayCode || poor.shiftLog[checkD] === nightCode) consec++; else break;
+                                    }
+                                    if(consec >= 5) isSafe = false;
+
+                                    if(isSafe) { // Şartlar uygunsa TAKAS YAP!
+                                        poor.shiftLog[d] = rVal;
+                                        rich.shiftLog[d] = offCode;
+                                        rich.tmpH -= (rVal === dayCode ? gHours : nHours);
+                                        poor.tmpH += (rVal === dayCode ? gHours : nHours);
+                                        swapped = true;
+                                        break; 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!swapped) break; // Kusursuz dengeye ulaşıldıysa döngüyü bitir
+            }
+            return staffData;
+        }
+
+        function applySudokuMagic8h(staffData, colCount, sCode, oCode, aCode, offCode, definedShifts) {
+            for(let pass=0; pass<50; pass++) {
+                let swapped = false;
+                for(let w=0; w<colCount; w+=7) {
+                    let wEnd = Math.min(w+6, colCount-1);
+                    staffData.forEach(s => {
+                        s.tmpH = 0;
+                        for(let d=w; d<=wEnd; d++) {
+                            let val = s.shiftLog[d];
+                            if(val === sCode || val === oCode || val === aCode) s.tmpH += 7.5;
+                        }
+                    });
+
+                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
+                    for(let r=0; r<sortedStaff.length; r++) {
+                        for(let p=sortedStaff.length-1; p>r; p--) {
+                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
+                            if (rich.tmpH - poor.tmpH <= 7.5) continue; 
+                            
+                            for(let d=w; d<=wEnd; d++) {
+                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
+                                if((rVal === sCode || rVal === oCode || rVal === aCode) && (pVal === offCode || pVal === "")) {
+                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'X';
+                                    let isSafe = true;
+                                    if (pPrev === aCode && (rVal === sCode || rVal === oCode)) isSafe = false;
+                                    
+                                    let consec = 0;
+                                    for(let checkD=d; checkD>=Math.max(0, d-6); checkD--) {
+                                        let v = poor.shiftLog[checkD];
+                                        if(v===sCode||v===oCode||v===aCode) consec++; else break;
+                                    }
+                                    if(consec >= 6) isSafe = false;
+
+                                    if(isSafe) {
+                                        poor.shiftLog[d] = rVal;
+                                        rich.shiftLog[d] = offCode;
+                                        rich.tmpH -= 7.5; poor.tmpH += 7.5;
+                                        swapped = true; break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!swapped) break;
+            }
+            return staffData;
+        }
+
+        // ==========================================
+        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - SUDOKU ZIRHLI
+        // ==========================================
         function startAiDistribution12h() {
             let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
             if(!dayCode || !nightCode || !offCode) return alert("Lütfen AI Motoru için Gündüz, Gece ve İzin kodlarını seçiniz!");
@@ -576,7 +697,7 @@
                         return { 
                             name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, totalHours: 0, nightCount: 0, 
                             dayConsecutive: initialLastShift === 'G' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name],
-                            mutemetCezasi: 0 // 🔥 YENİ ZIRH: Maaş denge kontrolcüsü
+                            mutemetCezasi: 0
                         };
                     });
                     
@@ -589,7 +710,6 @@
                         let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
                         simStaff.forEach(s => { s.assignedToday = null; });
 
-                        // 1. SABİT PERSONEL ATAMASI
                         simStaff.forEach(s => {
                             if (s.pref !== "AI") {
                                 let pDef = definedShifts.find(x => x.hours === s.pref);
@@ -605,7 +725,6 @@
                             }
                         });
 
-                        // 2. Aİ KURALLARI 
                         simStaff.forEach(s => { 
                             if (s.pref === "AI" && !s.assignedToday) {
                                 if (s.lastShiftType === 'N' || s.weeklyWorkDays >= 4) { 
@@ -614,7 +733,6 @@
                             } 
                         });
 
-                        // 3. Aİ GECE ATAMASI
                         let poolN = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
                         poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random()));
                         let nAssigned = 0; 
@@ -625,7 +743,6 @@
                         }
                         if(cReqN > 0 && nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
 
-                        // 4. Aİ GÜNDÜZ ATAMASI
                         let poolG = simStaff.filter(s => s.pref === "AI" && !s.assignedToday && s.dayConsecutive < 2); 
                         poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
                         let dAssigned = 0; 
@@ -635,8 +752,6 @@
                             dAssigned++; 
                         }
                         
-                        // 🔥 YENİ ZIRH: EKSİK MESAİ TAMAMLAMA (JOKER) 🔥
-                        // İhtiyaç doldu ama adamın saati dolmadıysa Joker olarak atamaya devam et!
                         let remainingDays = 7 - (dow === 0 ? 7 : dow); 
                         poolG.forEach(s => {
                             if (!s.assignedToday && (s.weeklyHours + (remainingDays * 11)) < 40) {
@@ -647,19 +762,17 @@
 
                         if(cReqG > 0 && dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
 
-                        // 5. KALANLARA İZİN
                         simStaff.forEach(s => { 
                             if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; } 
                             s.shiftLog.push(s.assignedToday); 
                         });
 
-                        // 🔥 HAFTALIK MUTEMET KONTROLÜ (PAZAR GECESİ) 🔥
                         if (dow === 0 || c === colCount - 1) {
                             let hedefSaat = (dow === 0) ? 44 : Math.round(dow * (44/7)); 
                             simStaff.forEach(s => {
                                 let fark = s.weeklyHours - hedefSaat;
-                                if (fark < -4) s.mutemetCezasi += Math.abs(fark) * 2000000; // Eksik mesai (Ağır Ceza)
-                                else if (fark > 11) s.mutemetCezasi += Math.abs(fark) * 300000; // Fazla mesai (Orta Ceza)
+                                if (fark < -4) s.mutemetCezasi += Math.abs(fark) * 2000000; 
+                                else if (fark > 11) s.mutemetCezasi += Math.abs(fark) * 300000; 
                             });
                         }
                     }
@@ -672,20 +785,25 @@
                         penalty += ((seq.match(/NN/g) || []).length * 1000000); 
                         penalty += ((seq.match(/GGG/g) || []).length * 500000); 
                         maxN = Math.max(maxN, s.nightCount); minN = Math.min(minN, s.nightCount);
-                        penalty += s.mutemetCezasi; // 🔥 Yeni cezayı genel puana ekle
+                        penalty += s.mutemetCezasi; 
                     });
                     penalty += ((maxN - minN) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
                 }
                 
                 let bestSim = selectBestSimulation(simulations);
+                
+                // 🔥 İŞTE SENİN BULUŞUN: SUDOKU DENGESİ BURADA ÇALIŞIYOR 🔥
+                bestSim.staffData = applySudokuMagic12h(bestSim.staffData, colCount, dayCode, nightCode, offCode, definedShifts);
+
                 let penaltyText = bestSim.penalty < 10000 ? "🏆 KUSURSUZ (Tam Mesai)" : `⚠️ Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
                 autoSaveRules();
             }, 500);
         }
+
         // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) - MUTEMET ZIRHLI
+        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) - SUDOKU ZIRHLI
         // ==========================================
         function startAiDistribution8h() {
             let sCode = document.getElementById('ai8_Sabah').value;
@@ -725,7 +843,7 @@
                         return {
                             name: name, shiftLog: [], weeklyWorkDays: 0, weeklyHours: 0, aCount: 0,
                             dayConsecutive: initialLastShift !== 'X' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name], assignedToday: null,
-                            mutemetCezasi: 0 // 🔥 YENİ ZIRH
+                            mutemetCezasi: 0
                         };
                     });
 
@@ -791,7 +909,6 @@
                             sAssigned++; 
                         }
 
-                        // 🔥 YENİ ZIRH: EKSİK MESAİ TAMAMLAMA (JOKER MESAİ) 🔥
                         let remainingDays = 7 - (dow === 0 ? 7 : dow); 
                         poolS.forEach(s => {
                             if (!s.assignedToday && (s.weeklyHours + (remainingDays * 7.5)) < 40) {
@@ -807,7 +924,6 @@
                             s.shiftLog.push(s.assignedToday); 
                         });
 
-                        // 🔥 HAFTALIK MUTEMET KONTROLÜ (PAZAR GECESİ) 🔥
                         if (dow === 0 || c === colCount - 1) {
                             let hedefSaat = (dow === 0) ? 45 : Math.round(dow * (45/7));
                             simStaff.forEach(s => {
@@ -827,21 +943,24 @@
                         penalty += ((seq.match(/AA/g) || []).length * 1000000); 
                         penalty += ((seq.match(/OS/g) || []).length * 500000); 
                         maxA = Math.max(maxA, s.aCount); minA = Math.min(minA, s.aCount);
-                        penalty += s.mutemetCezasi; // 🔥 Yeni cezayı genel puana ekle
+                        penalty += s.mutemetCezasi; 
                     });
                     penalty += ((maxA - minA) * 100);
                     simulations.push({ penalty: penalty, staffData: simStaff });
                 }
 
                 let bestSim = selectBestSimulation(simulations);
+                
+                // 🔥 İŞTE SENİN BULUŞUN: SUDOKU DENGESİ BURADA ÇALIŞIYOR 🔥
+                bestSim.staffData = applySudokuMagic8h(bestSim.staffData, colCount, sCode, oCode, aCode, offCode, definedShifts);
+
                 let penaltyText = bestSim.penalty < 10000 ? "🏆 KUSURSUZ (Tam Mesai)" : `⚠️ Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 8 SAATLİK Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
                 autoSaveRules();
             }, 500);
         }
-
-        // ==========================================
+         // ==========================================
         // 🌪️ HAZIR ROTASYON MOTORLARI
         // ==========================================
         function fireMagicRotation(type, hourMode) {
