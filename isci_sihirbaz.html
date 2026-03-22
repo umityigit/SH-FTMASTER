@@ -789,9 +789,48 @@
             return staffData;
         }
 
+       // ==========================================
+        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) - KATI KURAL DENETLEYİCİSİ
         // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
-        // ==========================================
+        
+        function canWork12h(s, day, shiftType, startDt, colCount, dayCode, nightCode, offCode) {
+            if (s.shiftLog[day] !== offCode && s.shiftLog[day] !== "") return false;
+            
+            let p1 = day >= 1 ? s.shiftLog[day-1] : s.initialLastShift;
+            let p2 = day >= 2 ? s.shiftLog[day-2] : 'O';
+            let p3 = day >= 3 ? s.shiftLog[day-3] : 'O';
+            
+            // 1. Gece çıkışı gündüz KESİNLİKLE YASAK
+            if (shiftType === dayCode && p1 === nightCode) return false;
+            
+            // 2. Maksimum 3 gün peş peşe çalışma KESİN KURAL
+            let cons = 0;
+            if (p1 !== offCode && p1 !== "") {
+                cons++;
+                if (p2 !== offCode && p2 !== "") {
+                    cons++;
+                    if (p3 !== offCode && p3 !== "") cons++;
+                }
+            }
+            if (cons >= 3) return false; // Zaten 3 gün peş peşe çalışmış, 4. gün YASAK!
+            
+            // 3. 3 Gündüz (G-G-G) veya 3 Gece (N-N-N) üst üste KESİNLİKLE YASAK
+            if (shiftType === dayCode && p1 === dayCode && p2 === dayCode) return false;
+            if (shiftType === nightCode && p1 === nightCode && p2 === nightCode) return false;
+            
+            // 4. HAFTALIK DENGESİZLİK YASAK (Bir haftada en fazla 4 nöbet)
+            let d = new Date(startDt); d.setDate(d.getDate() + day);
+            let dow = d.getDay() === 0 ? 7 : d.getDay(); // 1:Pzt, ..., 7:Paz
+            let weekStart = day - (dow - 1);
+            let weekShifts = 0;
+            for (let i = Math.max(0, weekStart); i < day; i++) {
+                if (s.shiftLog[i] === dayCode || s.shiftLog[i] === nightCode) weekShifts++;
+            }
+            if (weekShifts >= 4) return false; // O hafta 4 nöbeti dolduysa 5. YASAK!
+            
+            return true;
+        }
+
         function startAiDistribution12h() {
             let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
             if(!dayCode || !nightCode || !offCode) return alert("Lütfen AI Motoru için Gündüz, Gece ve İzin kodlarını seçiniz!");
@@ -804,14 +843,13 @@
             let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
             if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
 
-            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 5000 Hamle İlerisi Hesaplanıyor...";
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 10.000 İhtimal Taranıyor...";
             document.getElementById('resultModal').style.display = 'flex';
-            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>5000 İhtimal Taranıyor ve Takımlar Karıştırılıyor...</div>";
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Katı Kurallar Devrede... Kusursuz Denge Aranıyor...</div>";
 
             setTimeout(() => {
-                let simulations = []; let totalSimulations = 5000; 
+                let simulations = []; let totalSimulations = 10000; // Sayı 10.000'e çıkarıldı!
                 let definedShifts = getDefinedShifts();
-
                 let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
                 let normalizedLastShifts = {};
                 Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
@@ -820,140 +858,94 @@
                     let simStaff = selectedStaff.map(name => {
                         let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
                         let initialLastShift = normalizedLastShifts[cleanName] || 'O';
-                        return { 
-                            name: name, shiftLog: [], weeklyHours: 0, totalHours: 0, nightCount: 0, 
-                            dayConsecutive: initialLastShift === 'G' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name]
-                        };
+                        return { name: name, shiftLog: new Array(colCount).fill(""), weeklyHours: 0, totalHours: 0, initialLastShift: initialLastShift, pref: staffPreferences[name] };
                     });
                     
                     let unfilledSlots = 0; 
-                    for(let c = 0; c < colCount; c++) {
-                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                    for(let day = 0; day < colCount; day++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + day);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
-                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0); // Pazartesi saati sıfırla
+                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0); // Pzt sıfırla
                         
                         let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
-                        simStaff.forEach(s => s.assignedToday = null);
 
-                        // 1. Sabitler
-                        simStaff.forEach(s => {
-                            if (s.pref !== "AI") {
-                                s.assignedToday = s.pref; s.weeklyHours += 11; s.dayConsecutive++;
-                                if (s.pref === nightCode) { cReqN--; s.lastShiftType = 'N'; s.nightCount++; }
-                                else { cReqG--; s.lastShiftType = 'G'; s.totalHours++; }
-                            }
-                        });
-
-                        // 2. Kurallar
-                        simStaff.forEach(s => { 
-                            if (s.pref === "AI" && !s.assignedToday) {
-                                if (s.lastShiftType === 'N' || s.dayConsecutive >= 3) { // 3 GÜN KURALI
-                                    s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0;
-                                } 
-                            } 
-                        });
-
-                        // 3. Gece Ataması (YENİ: İlk öncelik weeklyHours, sonra random!)
-                        let poolN = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
-                        poolN.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.nightCount - b.nightCount) || (0.5 - Math.random())); 
+                        // Gece Ataması
+                        let poolN = simStaff.filter(s => s.pref === "AI" && canWork12h(s, day, nightCode, startDt, colCount, dayCode, nightCode, offCode)); 
+                        poolN.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random())); 
                         let nAssigned = 0; 
                         for(let i=0; i<poolN.length && nAssigned<cReqN; i++) { 
-                            poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; 
-                            poolN[i].nightCount++; poolN[i].weeklyHours += 11; poolN[i].dayConsecutive = 0; nAssigned++; 
+                            poolN[i].shiftLog[day] = nightCode; poolN[i].weeklyHours += 11; poolN[i].totalHours += 11; nAssigned++; 
                         }
-                        if(cReqN > 0 && nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
+                        if(nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
 
-                        // 4. Gündüz Ataması (YENİ: İlk öncelik weeklyHours, sonra random!)
-                        let poolG = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
+                        // Gündüz Ataması
+                        let poolG = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork12h(s, day, dayCode, startDt, colCount, dayCode, nightCode, offCode)); 
                         poolG.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random())); 
                         let dAssigned = 0; 
                         for(let i=0; i<poolG.length && dAssigned<cReqG; i++) { 
-                            poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; 
-                            poolG[i].totalHours++; poolG[i].weeklyHours += 11; poolG[i].dayConsecutive++; dAssigned++; 
+                            poolG[i].shiftLog[day] = dayCode; poolG[i].weeklyHours += 11; poolG[i].totalHours += 11; dAssigned++; 
                         }
-                        if(cReqG > 0 && dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
+                        if(dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
 
-                        // 5. Kalanlara İzin
+                        // Kalanlara İzin
                         simStaff.forEach(s => { 
-                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'O'; s.dayConsecutive = 0; } 
-                            s.shiftLog.push(s.assignedToday); 
+                            if (s.pref === "AI" && s.shiftLog[day] === "") s.shiftLog[day] = offCode; 
                         });
                     }
                     
-                    let penalty = 0; penalty += (unfilledSlots * 5000000); 
+                    let penalty = unfilledSlots * 1000000; 
                     let maxH = -1, minH = 9999;
-                    simStaff.forEach(s => {
-                        let total = s.totalHours + s.nightCount;
-                        maxH = Math.max(maxH, total); minH = Math.min(minH, total);
-                    });
-                    penalty += ((maxH - minH) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
+                    simStaff.forEach(s => { maxH = Math.max(maxH, s.totalHours); minH = Math.min(minH, s.totalHours); });
+                    penalty += (maxH - minH); 
+                    
+                    simulations.push({ penalty: penalty, staffData: simStaff });
+                    if(penalty === 0) break; // KUSURSUZ TABLO BULUNDU, DÖNGÜYÜ BİTİR!
                 }
                 
-                let bestSim = selectBestSimulation(simulations);
-                
-                // 🔥 İŞTE HAFTALIK SUDOKU: HAFTA HAFTA EŞİTLİYOR 🔥
-                bestSim.staffData = applyPerfectSudoku12h(bestSim.staffData, colCount, dayCode, nightCode, offCode);
+                simulations.sort((a,b) => a.penalty - b.penalty);
+                let bestSim = simulations[0];
 
-                let penaltyText = bestSim.penalty < 10000 ? "🏆 KUSURSUZ ÇÖZÜM" : `⚠️ Skoru: ${bestSim.penalty}`;
+                let penaltyText = bestSim.penalty < 1000 ? "🏆 KUSURSUZ ÇÖZÜM (Sıfır Hata)" : `⚠️ Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
                 autoSaveRules();
             }, 500);
         }
 
-      // ==========================================
-        // 🧩 KUSURSUZ SUDOKU (8 SAATLİK HAFTALIK DENGELEYİCİ)
         // ==========================================
-        function applyPerfectSudoku8h(staffData, colCount, sCode, oCode, aCode, offCode) {
-            for(let pass=0; pass<100; pass++) {
-                let swapped = false;
-                
-                // YENİ: HAFTA HAFTA TARAMA
-                for(let w=0; w<colCount; w+=7) {
-                    let wEnd = Math.min(w+6, colCount-1);
-                    
-                    staffData.forEach(s => {
-                        s.tmpH = 0;
-                        for(let d=w; d<=wEnd; d++) {
-                            let v = s.shiftLog[d]; if(v===sCode||v===oCode||v===aCode) s.tmpH += 7.5;
-                        }
-                    });
-
-                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                    for(let r=0; r<sortedStaff.length; r++) {
-                        for(let p=sortedStaff.length-1; p>r; p--) {
-                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
-                            if (rich.tmpH - poor.tmpH <= 7.5) continue; 
-                            
-                            for(let d=w; d<=wEnd; d++) {
-                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                                if((rVal === sCode || rVal === oCode || rVal === aCode) && (pVal === offCode || pVal === "")) {
-                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'X';
-                                    let isSafe = true;
-                                    if (pPrev === aCode && (rVal === sCode || rVal === oCode)) isSafe = false;
-                                    
-                                    let consec = 0;
-                                    for(let checkD=d-1; checkD>=Math.max(0, d-5); checkD--) { if(poor.shiftLog[checkD]!==offCode) consec++; else break; }
-                                    for(let checkD=d+1; checkD<=Math.min(colCount-1, d+5); checkD++) { if(poor.shiftLog[checkD]!==offCode) consec++; else break; }
-                                    if(consec >= 6) isSafe = false;
-
-                                    if(isSafe) {
-                                        poor.shiftLog[d] = rVal; rich.shiftLog[d] = offCode;
-                                        rich.tmpH -= 7.5; poor.tmpH += 7.5; swapped = true; break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if(!swapped) break;
+        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) - KATI KURAL DENETLEYİCİSİ
+        // ==========================================
+        
+        function canWork8h(s, day, shiftType, startDt, colCount, sCode, oCode, aCode, offCode) {
+            if (s.shiftLog[day] !== offCode && s.shiftLog[day] !== "") return false;
+            
+            let p1 = day >= 1 ? s.shiftLog[day-1] : s.initialLastShift;
+            
+            // 1. Akşam çıkışı Sabah veya Öğle KESİNLİKLE YASAK
+            if (p1 === aCode && (shiftType === sCode || shiftType === oCode)) return false;
+            
+            // 2. Maksimum 6 gün peş peşe çalışma KESİN KURAL (7. gün İZİN ŞART)
+            let cons = 0;
+            for(let i=1; i<=6; i++) {
+                let px = day >= i ? s.shiftLog[day-i] : (i===1 ? s.initialLastShift : 'O');
+                if (px !== offCode && px !== "") cons++; else break;
             }
-            return staffData;
+            if (cons >= 6) return false;
+            
+            // 3. HAFTALIK DENGESİZLİK YASAK (Bir haftada en fazla 6 nöbet)
+            let d = new Date(startDt); d.setDate(d.getDate() + day);
+            let dow = d.getDay() === 0 ? 7 : d.getDay(); 
+            let weekStart = day - (dow - 1);
+            let weekShifts = 0;
+            for (let i = Math.max(0, weekStart); i < day; i++) {
+                let val = s.shiftLog[i];
+                if (val === sCode || val === oCode || val === aCode) weekShifts++;
+            }
+            if (weekShifts >= 6) return false; // O hafta 6'yı doldurduysa YASAK!
+            
+            return true;
         }
 
-        // ==========================================
-        // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ)
-        // ==========================================
         function startAiDistribution8h() {
             let sCode = document.getElementById('ai8_Sabah').value; let oCode = document.getElementById('ai8_Ogle').value; let aCode = document.getElementById('ai8_Aksam').value; let offCode = document.getElementById('ai8_Off').value;
             lastAiMode = '8h';
@@ -967,12 +959,12 @@
             let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
             if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
 
-            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 8 Saatlik Varyasyonlar Hesaplanıyor...";
+            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 10.000 İhtimal Taranıyor...";
             document.getElementById('resultModal').style.display = 'flex';
-            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>5000 İhtimal Taranıyor ve Denge Kuruluyor...</div>";
+            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>Katı Kurallar Devrede... Kusursuz Denge Aranıyor...</div>";
 
             setTimeout(() => {
-                let simulations = []; let totalSimulations = 5000;
+                let simulations = []; let totalSimulations = 10000;
                 let definedShifts = getDefinedShifts();
                 let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
                 let normalizedLastShifts = {};
@@ -981,65 +973,64 @@
                 for(let sim = 0; sim < totalSimulations; sim++) {
                     let simStaff = selectedStaff.map(name => {
                         let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
-                        let initialLastShift = normalizedLastShifts[cleanName] || 'X';
-                        return { name: name, shiftLog: [], weeklyHours: 0, aCount: 0, totalHours:0, dayConsecutive: initialLastShift !== 'X' ? 1 : 0, lastShiftType: initialLastShift, pref: staffPreferences[name], assignedToday: null };
+                        let initialLastShift = normalizedLastShifts[cleanName] || 'O';
+                        return { name: name, shiftLog: new Array(colCount).fill(""), weeklyHours: 0, totalHours: 0, initialLastShift: initialLastShift, pref: staffPreferences[name] };
                     });
 
                     let unfilledSlots = 0;
-                    for(let c = 0; c < colCount; c++) {
-                        let d = new Date(startDt); d.setDate(d.getDate() + c);
+                    for(let day = 0; day < colCount; day++) {
+                        let d = new Date(startDt); d.setDate(d.getDate() + day);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
-                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0); // YENİ: Pazartesi haftalık saati sıfırla
+                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0);
 
                         let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
-                        simStaff.forEach(s => s.assignedToday = null);
 
+                        // Akşam
+                        let poolA = simStaff.filter(s => s.pref === "AI" && canWork8h(s, day, aCode, startDt, colCount, sCode, oCode, aCode, offCode));
+                        poolA.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let aAssigned = 0;
+                        for(let i=0; i<poolA.length && aAssigned < cReqA; i++) {
+                            poolA[i].shiftLog[day] = aCode; poolA[i].weeklyHours += 7.5; poolA[i].totalHours += 7.5; aAssigned++;
+                        }
+                        if (aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
+
+                        // Öğle
+                        let poolO = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork8h(s, day, oCode, startDt, colCount, sCode, oCode, aCode, offCode));
+                        poolO.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let oAssigned = 0;
+                        for(let i=0; i<poolO.length && oAssigned < cReqO; i++) {
+                            poolO[i].shiftLog[day] = oCode; poolO[i].weeklyHours += 7.5; poolO[i].totalHours += 7.5; oAssigned++;
+                        }
+                        if (oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
+
+                        // Sabah
+                        let poolS = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork8h(s, day, sCode, startDt, colCount, sCode, oCode, aCode, offCode));
+                        poolS.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let sAssigned = 0;
+                        for(let i=0; i<poolS.length && sAssigned < cReqS; i++) {
+                            poolS[i].shiftLog[day] = sCode; poolS[i].weeklyHours += 7.5; poolS[i].totalHours += 7.5; sAssigned++;
+                        }
+                        if (sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
+
+                        // Off
                         simStaff.forEach(s => {
-                            if (s.pref !== "AI") {
-                                s.assignedToday = s.pref; s.weeklyHours += 7.5; s.dayConsecutive++;
-                                if (s.pref === aCode) { cReqA--; s.lastShiftType = 'A'; s.aCount++; s.totalHours++;}
-                                else if (s.pref === oCode) { cReqO--; s.lastShiftType = 'O'; s.totalHours++;}
-                                else { cReqS--; s.lastShiftType = 'S'; s.totalHours++;}
-                            }
-                        });
-
-                        simStaff.forEach(s => {
-                            if (s.pref === "AI" && !s.assignedToday) {
-                                if (s.lastShiftType === 'A' || s.dayConsecutive >= 6) { s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0; }
-                            }
-                        });
-
-                        // YENİ: Önce weeklyHours'a göre sırala, sonra random at!
-                        let poolA = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolA.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.aCount - b.aCount) || (0.5 - Math.random()));
-                        let aAssigned = 0; for(let i=0; i<poolA.length && aAssigned < cReqA; i++) { poolA[i].assignedToday = aCode; poolA[i].lastShiftType = 'A'; poolA[i].aCount++; poolA[i].weeklyHours += 7.5; poolA[i].totalHours++; poolA[i].dayConsecutive++; aAssigned++; }
-                        if(cReqA > 0 && aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
-
-                        let poolO = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolO.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
-                        let oAssigned = 0; for(let i=0; i<poolO.length && oAssigned < cReqO; i++) { poolO[i].assignedToday = oCode; poolO[i].lastShiftType = 'O'; poolO[i].weeklyHours += 7.5; poolO[i].totalHours++; poolO[i].dayConsecutive++; oAssigned++; }
-                        if(cReqO > 0 && oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
-
-                        let poolS = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolS.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
-                        let sAssigned = 0; for(let i=0; i<poolS.length && sAssigned < cReqS; i++) { poolS[i].assignedToday = sCode; poolS[i].lastShiftType = 'S'; poolS[i].weeklyHours += 7.5; poolS[i].totalHours++; poolS[i].dayConsecutive++; sAssigned++; }
-                        if(cReqS > 0 && sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
-
-                        simStaff.forEach(s => { 
-                            if (!s.assignedToday) { s.assignedToday = offCode; s.lastShiftType = 'X'; s.dayConsecutive = 0; } 
-                            s.shiftLog.push(s.assignedToday); 
+                            if (s.pref === "AI" && s.shiftLog[day] === "") s.shiftLog[day] = offCode;
                         });
                     }
 
-                    let penalty = unfilledSlots * 5000000;
-                    let maxA = -1, minA = 9999;
-                    simStaff.forEach(s => {
-                        maxA = Math.max(maxA, s.totalHours); minA = Math.min(minA, s.totalHours);
-                    });
-                    penalty += ((maxA - minA) * 100); simulations.push({ penalty: penalty, staffData: simStaff });
+                    let penalty = unfilledSlots * 1000000;
+                    let maxH = -1, minH = 9999;
+                    simStaff.forEach(s => { maxH = Math.max(maxH, s.totalHours); minH = Math.min(minH, s.totalHours); });
+                    penalty += (maxH - minH); 
+                    
+                    simulations.push({ penalty: penalty, staffData: simStaff });
+                    if(penalty === 0) break;
                 }
 
-                let bestSim = selectBestSimulation(simulations);
-                bestSim.staffData = applyPerfectSudoku8h(bestSim.staffData, colCount, sCode, oCode, aCode, offCode); // Sudoku Devrede!
+                simulations.sort((a,b) => a.penalty - b.penalty);
+                let bestSim = simulations[0];
 
-                let penaltyText = bestSim.penalty < 10000 ? "🏆 KUSURSUZ ÇÖZÜM" : `⚠️ Skoru: ${bestSim.penalty}`;
+                let penaltyText = bestSim.penalty < 1000 ? "🏆 KUSURSUZ ÇÖZÜM" : `⚠️ Skoru: ${bestSim.penalty}`;
                 document.getElementById("aiStatusTitle").innerHTML = `🏆 8 SAATLİK Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
                 renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqS, reqA, sCode, aCode, offCode); 
                 autoSaveRules();
