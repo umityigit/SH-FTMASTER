@@ -1252,17 +1252,17 @@
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
         // ==========================================
-    // dayCode, nightCode, offCode örn: "08.00 - 20.00", "20.00 - 08.00", "HT"
+  // dayCode/nightCode/offCode örn: "08.00 - 20.00", "20.00 - 08.00", "HT"
 function generateWeeklyPatterns(dayCode, nightCode, offCode) {
     const patterns = [];
     function isValidPattern(p) {
         const workDays = p.filter(x => x !== offCode).length;
         if (workDays !== 4) return false;
         for (let i = 0; i < 7; i++) {
-            if (p[i] === nightCode && (i + 1 < 7) && p[i + 1] !== offCode) return false; // gece sonrası izin
-            if (i + 2 < 7 && p[i] === dayCode && p[i+1] === dayCode && p[i+2] === dayCode) return false; // 3 gündüz üst üste
-            if (i + 1 < 7 && p[i] === nightCode && p[i+1] === nightCode) return false; // 2 gece üst üste
-            if (i + 2 < 7 && p[i] === offCode && p[i+1] === offCode && p[i+2] === offCode) return false; // 3 izin üst üste
+            if (p[i] === nightCode && (i + 1 < 7) && p[i + 1] !== offCode) return false;
+            if (i + 2 < 7 && p[i] === dayCode && p[i+1] === dayCode && p[i+2] === dayCode) return false;
+            if (i + 1 < 7 && p[i] === nightCode && p[i+1] === nightCode) return false;
+            if (i + 2 < 7 && p[i] === offCode && p[i+1] === offCode && p[i+2] === offCode) return false;
         }
         return true;
     }
@@ -1278,110 +1278,224 @@ function generateWeeklyPatterns(dayCode, nightCode, offCode) {
         });
     }
     backtrack([]);
-    // önceden hesap: her pattern için gCount, nCount
     return patterns.map(p => ({ pattern: p, gCount: p.filter(x => x === dayCode).length, nCount: p.filter(x => x === nightCode).length }));
 }
 
-// Ana atama fonksiyonu: geri izlemeli (backtracking) çözüm
-function assignFourWeeksBacktracking(staffNames, reqG_weekly, reqN_weekly, dayCode, nightCode, offCode) {
-    const patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
-    const staffCount = staffNames.length;
-    // initialize staff state
-    const staffState = staffNames.map(name => ({ name, gTotal: 0, nTotal: 0, weeks: [] }));
-
-    // sonuç yapısı
-    const assignments = {}; staffNames.forEach(n => assignments[n] = []);
-
-    // recursive: weekIndex 0..3, personIndex 0..staffCount-1
-    function assignWeek(weekIndex, personIndex, dailyG, dailyN) {
-        if (personIndex === staffCount) {
-            // tüm personele bu hafta pattern atandı; kontrol: günlük tam eşitlik sağlanmış mı?
-            for (let d = 0; d < 7; d++) {
-                if (dailyG[d] !== reqG_weekly[d] || dailyN[d] !== reqN_weekly[d]) return false;
-            }
-            return true; // bu hafta başarılı
-        }
-
-        const staff = staffState[personIndex];
-        // iterate patterns in deterministic order; shuffle if çeşit istenirse
-        for (let i = 0; i < patterns.length; i++) {
-            const { pattern, gCount, nCount } = patterns[i];
-
-            // quota kontrolü (4 hafta sonunda 9/7 hedefi)
-            if (staff.gTotal + gCount > 9) continue;
-            if (staff.nTotal + nCount > 7) continue;
-
-            // hafta geçiş kontrolü: eğer önceki hafta varsa ve prevWeek[6] gece ise bu haftanın 0. günü gündüz olamaz
-            if (weekIndex > 0) {
-                const prevWeek = staff.weeks[weekIndex - 1];
-                if (prevWeek && prevWeek[6] === nightCode && pattern[0] === dayCode) continue;
-            }
-
-            // günlük ihtiyaç aşımı kontrolü
-            let ok = true;
-            for (let d = 0; d < 7; d++) {
-                const gTot = dailyG[d] + (pattern[d] === dayCode ? 1 : 0);
-                const nTot = dailyN[d] + (pattern[d] === nightCode ? 1 : 0);
-                if (gTot > reqG_weekly[d] || nTot > reqN_weekly[d]) { ok = false; break; }
-            }
-            if (!ok) continue;
-
-            // geçici ata
-            assignments[staff.name][weekIndex] = pattern;
-            staff.weeks[weekIndex] = pattern;
-            staff.gTotal += gCount;
-            staff.nTotal += nCount;
-            // günlük sayaçları güncelle
-            for (let d = 0; d < 7; d++) {
-                if (pattern[d] === dayCode) dailyG[d]++;
-                if (pattern[d] === nightCode) dailyN[d]++;
-            }
-
-            // sonraki personel için devam et
-            if (assignWeek(weekIndex, personIndex + 1, dailyG, dailyN)) return true;
-
-            // backtrack: geri al
-            for (let d = 0; d < 7; d++) {
-                if (pattern[d] === dayCode) dailyG[d]--;
-                if (pattern[d] === nightCode) dailyN[d]--;
-            }
-            staff.gTotal -= gCount;
-            staff.nTotal -= nCount;
-            assignments[staff.name][weekIndex] = undefined;
-            staff.weeks[weekIndex] = undefined;
-        }
-
-        // hiçbir pattern uymadıysa başarısız
-        return false;
-    }
-
-    // tüm 4 haftayı sırayla çöz
-    for (let w = 0; w < 4; w++) {
-        const dailyG = Array(7).fill(0);
-        const dailyN = Array(7).fill(0);
-
-        // eğer önceki haftalardan kalan atamalar varsa günlük sayaçları başlat
-        for (let p = 0; p < staffCount; p++) {
-            const prevWeeks = staffState[p].weeks;
-            // prevWeeks[0..w-1] zaten atanmışsa bunların günlük etkisi bu haftaya yansımamalı (her hafta ayrı sayaç)
-            // burada sadece bu haftanın atamalarını yapıyoruz, önceki haftalar assignments içinde saklı
-        }
-
-        const ok = assignWeek(w, 0, dailyG, dailyN);
-        if (!ok) {
-            // başarısız: bu haftayı dolduramadık -> hata raporu
-            return { success: false, message: `Hafta ${w+1} için uygun dağıtım bulunamadı. Günlük ihtiyaçlar veya kotalar çakışıyor.` , assignments };
+// Swap yardımcı: iki personelin haftalık patternlerini takas et ve günlük sayaçları güncelle
+function trySwap(assignments, staffState, aName, bName, weekIndex, reqG, reqN, dayCode, nightCode) {
+    const A = assignments[aName][weekIndex];
+    const B = assignments[bName][weekIndex];
+    if(!A || !B) return false;
+    // swap edince günlük sayaçlar nasıl değişir kontrol et
+    // önce mevcut günlük sayıları hesapla
+    const dailyG = Array(7).fill(0), dailyN = Array(7).fill(0);
+    for (let s of Object.keys(assignments)) {
+        const p = assignments[s][weekIndex];
+        if(!p) continue;
+        for (let d=0; d<7; d++) {
+            if (p[d] === dayCode) dailyG[d]++;
+            if (p[d] === nightCode) dailyN[d]++;
         }
     }
+    // swap etkisini uygula
+    for (let d=0; d<7; d++) {
+        if (A[d] === dayCode) dailyG[d]--;
+        if (A[d] === nightCode) dailyN[d]--;
+        if (B[d] === dayCode) dailyG[d]--;
+        if (B[d] === nightCode) dailyN[d]--;
+        if (B[d] === dayCode) dailyG[d]++;
+        if (B[d] === nightCode) dailyN[d]++;
+        if (A[d] === dayCode) dailyG[d]++;
+        if (A[d] === nightCode) dailyN[d]++;
+    }
+    // swap sonrası herhangi bir gün ihtiyacı aşılırsa geri dön
+    for (let d=0; d<7; d++) {
+        if (dailyG[d] > reqG[d] || dailyN[d] > reqN[d]) return false;
+    }
+    // kota kontrolü: personel toplamlarını güncelle ve 9/7 sınırını aşmamalı
+    const sa = staffState.find(s=>s.name===aName);
+    const sb = staffState.find(s=>s.name===bName);
+    const a_g = A.filter(x=>x===dayCode).length, a_n = A.filter(x=>x===nightCode).length;
+    const b_g = B.filter(x=>x===dayCode).length, b_n = B.filter(x=>x===nightCode).length;
+    if (sa.gTotal - a_g + b_g > 9) return false;
+    if (sa.nTotal - a_n + b_n > 7) return false;
+    if (sb.gTotal - b_g + a_g > 9) return false;
+    if (sb.nTotal - b_n + a_n > 7) return false;
+    // swap uygula
+    assignments[aName][weekIndex] = B;
+    assignments[bName][weekIndex] = A;
+    sa.gTotal = sa.gTotal - a_g + b_g;
+    sa.nTotal = sa.nTotal - a_n + b_n;
+    sb.gTotal = sb.gTotal - b_g + a_g;
+    sb.nTotal = sb.nTotal - b_n + a_n;
+    return true;
+}
 
-    // 4 hafta sonunda toplam kontroller: herkesin 9 gündüz 7 gece olduğundan emin ol
-    for (let s of staffState) {
-        if (s.gTotal !== 9 || s.nTotal !== 7) {
-            return { success: false, message: `Kota sapması: ${s.name} için G:${s.gTotal} N:${s.nTotal}`, assignments };
-        }
+// Ana fonksiyon: güçlü backtracking + deficit-first + swap düzeltme
+function startAiDistribution12h_Full() {
+    const dayCode = document.getElementById('aiDayShiftSelect').value;
+    const nightCode = document.getElementById('aiNightShiftSelect').value;
+    const offCode = document.getElementById('aiOffShiftSelect').value;
+    if(!dayCode || !nightCode || !offCode) return alert("Lütfen gündüz, gece ve izin kodlarını seçiniz!");
+    if(!selectedStaff || selectedStaff.length === 0) return alert("Personel seçmediniz!");
+
+    const reqG = [], reqN = [];
+    for(let i=1;i<=7;i++){
+        reqG[i-1] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0;
+        reqN[i-1] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0;
     }
 
-    return { success: true, assignments };
+    document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: Tam çözüm aranıyor...";
+    document.getElementById('resultModal').style.display = 'flex';
+    document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:40px; text-align:center; color:white;'>Çalışıyor... Lütfen bekleyin.</div>";
+
+    setTimeout(() => {
+        const patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
+        if(patterns.length === 0) {
+            document.getElementById("aiStatusTitle").innerHTML = "❌ Geçerli haftalık pattern bulunamadı.";
+            return;
+        }
+
+        const staffNames = selectedStaff.slice();
+        const staffState = staffNames.map(n => ({ name: n, gTotal: 0, nTotal: 0, weeks: [] }));
+        const assignments = {}; staffNames.forEach(n => assignments[n] = []);
+
+        // haftalar arası döngü
+        for (let w=0; w<4; w++) {
+            // günlük sayaçlar bu hafta için
+            const dailyG = Array(7).fill(0), dailyN = Array(7).fill(0);
+
+            // personel order: deficit-first heuristic
+            let order = staffState.map((s,idx)=>idx);
+            // başlangıç sıralaması: en kısıtlı önce (basit heuristic: daha az kalan kota önce)
+            order.sort((a,b) => {
+                const sa = staffState[a], sb = staffState[b];
+                return (sa.gTotal+sa.nTotal) - (sb.gTotal+sb.nTotal);
+            });
+
+            // recursive assign with deficit-first preference
+            function assignRec(idx) {
+                if (idx === order.length) {
+                    // hafta tamamlandı; kontrol et
+                    for (let d=0; d<7; d++) {
+                        if (dailyG[d] !== reqG[d] || dailyN[d] !== reqN[d]) return false;
+                    }
+                    return true;
+                }
+                const sIdx = order[idx];
+                const staff = staffState[sIdx];
+
+                // öncelik: patternler içinde bu haftanın en açık günlerini dolduranları önce dene
+                // hesapla deficit skoru
+                const deficits = [];
+                for (let d=0; d<7; d++) {
+                    deficits[d] = (reqG[d] - dailyG[d]) + (reqN[d] - dailyN[d]);
+                }
+                // score pattern için: toplam deficit doldurma potansiyeli (yüksek önce)
+                const scoredPatterns = patterns.map(p => {
+                    let score = 0;
+                    for (let d=0; d<7; d++) {
+                        if (p.pattern[d] === dayCode && deficits[d] > 0) score++;
+                        if (p.pattern[d] === nightCode && deficits[d] > 0) score++;
+                    }
+                    return { p: p.pattern, gCount: p.gCount, nCount: p.nCount, score };
+                }).sort((a,b) => b.score - a.score);
+
+                for (let item of scoredPatterns) {
+                    const pattern = item.p;
+                    const gCount = item.gCount, nCount = item.nCount;
+
+                    if (staff.gTotal + gCount > 9) continue;
+                    if (staff.nTotal + nCount > 7) continue;
+                    if (w > 0) {
+                        const prev = staff.weeks[w-1];
+                        if (prev && prev[6] === nightCode && pattern[0] === dayCode) continue;
+                    }
+                    // günlük aşım kontrolü
+                    let ok = true;
+                    for (let d=0; d<7; d++) {
+                        const gTot = dailyG[d] + (pattern[d] === dayCode ? 1 : 0);
+                        const nTot = dailyN[d] + (pattern[d] === nightCode ? 1 : 0);
+                        if (gTot > reqG[d] || nTot > reqN[d]) { ok = false; break; }
+                    }
+                    if (!ok) continue;
+
+                    // ata
+                    assignments[staff.name][w] = pattern;
+                    staff.weeks[w] = pattern;
+                    staff.gTotal += gCount;
+                    staff.nTotal += nCount;
+                    for (let d=0; d<7; d++) {
+                        if (pattern[d] === dayCode) dailyG[d]++;
+                        if (pattern[d] === nightCode) dailyN[d]++;
+                    }
+
+                    if (assignRec(idx+1)) return true;
+
+                    // backtrack
+                    for (let d=0; d<7; d++) {
+                        if (pattern[d] === dayCode) dailyG[d]--;
+                        if (pattern[d] === nightCode) dailyN[d]--;
+                    }
+                    staff.gTotal -= gCount;
+                    staff.nTotal -= nCount;
+                    assignments[staff.name][w] = undefined;
+                    staff.weeks[w] = undefined;
+                }
+                return false;
+            }
+
+            const ok = assignRec(0);
+            if (!ok) {
+                // post-swap denemesi: basit çift swap denemeleri ile eksikleri kapat
+                // önce hangi günler eksik
+                const deficits = [];
+                for (let d=0; d<7; d++) deficits[d] = { day: d, needG: reqG[d], gotG: dailyG[d], needN: reqN[d], gotN: dailyN[d] };
+                // çiftler halinde swap dene
+                let swapped = false;
+                const names = Object.keys(assignments);
+                for (let i=0; i<names.length && !swapped; i++) {
+                    for (let j=i+1; j<names.length && !swapped; j++) {
+                        if (trySwap(assignments, staffState, names[i], names[j], w, reqG, reqN, dayCode, nightCode)) {
+                            // swap sonrası günlükleri yeniden hesapla
+                            const newDailyG = Array(7).fill(0), newDailyN = Array(7).fill(0);
+                            for (let s of names) {
+                                const p = assignments[s][w];
+                                if(!p) continue;
+                                for (let d=0; d<7; d++) {
+                                    if (p[d] === dayCode) newDailyG[d]++;
+                                    if (p[d] === nightCode) newDailyN[d]++;
+                                }
+                            }
+                            let allOk = true;
+                            for (let d=0; d<7; d++) if (newDailyG[d] !== reqG[d] || newDailyN[d] !== reqN[d]) { allOk = false; break; }
+                            if (allOk) swapped = true;
+                        }
+                    }
+                }
+                if (!swapped) {
+                    document.getElementById("aiStatusTitle").innerHTML = `❌ Hafta ${w+1} için uygun dağıtım bulunamadı.`;
+                    let detail = [];
+                    for (let d=0; d<7; d++) detail.push({ day: d+1, needG: reqG[d], needN: reqN[d], gotG: dailyG[d], gotN: dailyN[d] });
+                    renderErrorDetail(detail, w+1);
+                    return;
+                }
+            }
+        }
+
+        // 4 hafta sonunda kota kontrolü
+        for (let s of staffState) {
+            if (s.gTotal !== 9 || s.nTotal !== 7) {
+                document.getElementById("aiStatusTitle").innerHTML = "❌ Kota sapması tespit edildi.";
+                renderKotaError(s);
+                return;
+            }
+        }
+
+        document.getElementById("aiStatusTitle").innerHTML = "🏆 AI ÇIKTISI: Kusursuz tablo üretildi";
+        renderFinalTableWithSummary(assignments, document.getElementById('simStartDate').value, 28, reqG, reqN, dayCode, nightCode, offCode);
+        autoSaveRules();
+    }, 50);
 }
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) 
