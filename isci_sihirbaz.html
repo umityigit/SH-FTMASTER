@@ -1252,88 +1252,82 @@
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
         // ==========================================
-        function startAiDistribution12h() {
-            let dayCode = document.getElementById('aiDayShiftSelect').value; let nightCode = document.getElementById('aiNightShiftSelect').value; let offCode = document.getElementById('aiOffShiftSelect').value;
-            if(!dayCode || !nightCode || !offCode) return alert("Lütfen AI Motoru için Gündüz, Gece ve İzin kodlarını seçiniz!");
-            if(selectedStaff.length === 0) return alert("Personel seçmediniz!");
-            lastAiMode = '12h';
-            
-            let reqG = [], reqN = [];
-            for(let i=1; i<=7; i++) { reqG[i] = parseInt(document.getElementById('aiReq_G_'+i).value) || 0; reqN[i] = parseInt(document.getElementById('aiReq_N_'+i).value) || 0; }
+        function generateWeeklyPatterns(dayCode, nightCode, offCode) {
+    let patterns = [];
+    function isValidPattern(p) {
+        let workDays = p.filter(x => x !== offCode).length;
+        if(workDays !== 4) return false;
 
-            let startDtStr = document.getElementById('simStartDate').value; let colCount = parseInt(document.getElementById('simDays').value);
-            if(!startDtStr) return alert("Başlangıç tarihi seçin."); let startDt = new Date(startDtStr);
-
-            document.getElementById("aiStatusTitle").innerHTML = "⏳ AI: 10.000 Hamle İlerisi Hesaplanıyor...";
-            document.getElementById('resultModal').style.display = 'flex';
-            document.getElementById('generatedTableContainer').innerHTML = "<div style='padding:50px; text-align:center; color:white; font-size:20px;'>KATI KURALLAR KİLİTLENDİ. Lütfen Bekleyin...</div>";
-
-            setTimeout(() => {
-                let simulations = []; let totalSimulations = 10000; 
-                let parentLastShifts = (window.parent && window.parent.aiLastShifts) ? window.parent.aiLastShifts : {};
-                let normalizedLastShifts = {};
-                Object.keys(parentLastShifts).forEach(k => { normalizedLastShifts[k.replace(/\s+/g, ' ').trim().toUpperCase()] = parentLastShifts[k]; });
-
-                for(let sim = 0; sim < totalSimulations; sim++) {
-                    let simStaff = selectedStaff.map(name => {
-                        let cleanName = name.replace(/\s+/g, ' ').trim().toUpperCase();
-                        let initialLastShift = normalizedLastShifts[cleanName] || 'O';
-                        return { name: name, shiftLog: new Array(colCount).fill(""), initialLastShift: initialLastShift, pref: staffPreferences[name] };
-                    });
-                    
-                    let unfilledSlots = 0; 
-                    for(let day = 0; day < colCount; day++) {
-                        let d = new Date(startDt); d.setDate(d.getDate() + day);
-                        let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
-                        let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
-
-                        simStaff.forEach(s => {
-                            if (s.pref !== "AI") {
-                                s.shiftLog[day] = s.pref;
-                                if (s.pref === nightCode) cReqN--; else if(s.pref !== offCode) cReqG--;
-                            }
-                        });
-
-                        // Gece Ataması
-                        let poolN = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork12h(s, day, nightCode, startDt, colCount, dayCode, nightCode, offCode)); 
-                        poolN.sort(() => 0.5 - Math.random()); 
-                        let nAssigned = 0; 
-                        for(let i=0; i<poolN.length && nAssigned<cReqN; i++) { 
-                            poolN[i].shiftLog[day] = nightCode; nAssigned++; 
-                        }
-                        if(nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
-
-                        // Gündüz Ataması
-                        let poolG = simStaff.filter(s => s.pref === "AI" && s.shiftLog[day] === "" && canWork12h(s, day, dayCode, startDt, colCount, dayCode, nightCode, offCode)); 
-                        poolG.sort(() => 0.5 - Math.random());
-                        let dAssigned = 0; 
-                        for(let i=0; i<poolG.length && dAssigned<cReqG; i++) { 
-                            poolG[i].shiftLog[day] = dayCode; dAssigned++; 
-                        }
-                        if(dAssigned < cReqG) unfilledSlots += (cReqG - dAssigned);
-
-                        // Kalanlara İzin (Boşluk)
-                        simStaff.forEach(s => { if (s.pref === "AI" && s.shiftLog[day] === "") s.shiftLog[day] = offCode; });
-                    }
-                    
-                    let penalty = unfilledSlots * 1000000; 
-                    simulations.push({ penalty: penalty, staffData: simStaff });
-                    if(penalty === 0) break; // Kırmızı renk (boşluk) olmayan kusursuz tablo bulundu!
-                }
-                
-                simulations.sort((a, b) => a.penalty - b.penalty);
-                let bestSim = simulations[0];
-                
-                // KUSURSUZ TABLOYU BOZMADAN TAKAS YAPAN SUDOKU ZIRHI!
-                bestSim.staffData = applyStrictSudoku12h(bestSim.staffData, colCount, dayCode, nightCode, offCode, startDt);
-
-                let penaltyText = bestSim.penalty === 0 ? "🏆 KUSURSUZ DENGE (Sıfır Hata)" : `⚠️ Kırmızı Uyarı Skoru: ${bestSim.penalty}`;
-                document.getElementById("aiStatusTitle").innerHTML = `🏆 Aİ ÇIKTISI: <span style="color:var(--success); font-size:16px;">${penaltyText}</span>`;
-                renderFinalTableWithSummary(bestSim.staffData, startDtStr, colCount, reqG, reqN, dayCode, nightCode, offCode);
-                autoSaveRules();
-            }, 500);
+        for(let i=0; i<p.length; i++) {
+            // Gece sonrası izin
+            if(p[i] === nightCode && (i+1 < p.length) && p[i+1] !== offCode) return false;
+            // 3 gündüz üst üste yasak
+            if(p.slice(i,i+3).every(x => x === dayCode)) return false;
+            // 2 gece üst üste yasak
+            if(p.slice(i,i+2).every(x => x === nightCode)) return false;
+            // 3 izin üst üste yasak
+            if(p.slice(i,i+3).every(x => x === offCode)) return false;
         }
+        return true;
+    }
 
+    function backtrack(curr) {
+        if(curr.length === 7) {
+            if(isValidPattern(curr)) patterns.push([...curr]);
+            return;
+        }
+        [dayCode, nightCode, offCode].forEach(code => {
+            curr.push(code);
+            backtrack(curr);
+            curr.pop();
+        });
+    }
+    backtrack([]);
+    return patterns;
+}
+
+function assignFourWeeks(staffList, reqG, reqN, dayCode, nightCode, offCode) {
+    let patterns = generateWeeklyPatterns(dayCode, nightCode, offCode);
+    let assignments = {};
+
+    staffList.forEach(staff => {
+        staff.gCount = 0;
+        staff.nCount = 0;
+        assignments[staff.name] = [];
+    });
+
+    for(let week=0; week<4; week++) {
+        staffList.forEach(staff => {
+            let validPattern = patterns.find(p => {
+                let gCount = p.filter(x => x === dayCode).length;
+                let nCount = p.filter(x => x === nightCode).length;
+                return (staff.gCount + gCount <= 9) && (staff.nCount + nCount <= 7);
+            });
+            if(validPattern) {
+                assignments[staff.name].push(validPattern);
+                staff.gCount += validPattern.filter(x => x === dayCode).length;
+                staff.nCount += validPattern.filter(x => x === nightCode).length;
+            } else {
+                console.error("⚠️ Uygun pattern bulunamadı:", staff.name, "hafta", week+1);
+            }
+        });
+
+        // Günlük ihtiyaç kontrolü
+        for(let day=0; day<7; day++) {
+            let gTotal = 0, nTotal = 0;
+            staffList.forEach(staff => {
+                let shift = assignments[staff.name][week][day];
+                if(shift === dayCode) gTotal++;
+                if(shift === nightCode) nTotal++;
+            });
+            if(gTotal !== reqG[day] || nTotal !== reqN[day]) {
+                console.error(`🚨 Hafta ${week+1}, Gün ${day+1}: İhtiyaç tutmuyor! G:${gTotal}/${reqG[day]} N:${nTotal}/${reqN[day]}`);
+            }
+        }
+    }
+
+    return assignments;
+}
         // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (8 SAATLİK 3'LÜ) 
         // ==========================================
