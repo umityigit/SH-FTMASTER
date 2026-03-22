@@ -724,6 +724,72 @@
         }
 
         // ==========================================
+        // 🧩 KUSURSUZ SUDOKU (HAFTALIK SAAT VE GECE DENGELEYİCİ)
+        // ==========================================
+        function applyPerfectSudoku12h(staffData, colCount, dayCode, nightCode, offCode) {
+            let gHours = 11; let nHours = 11;
+
+            for(let pass=0; pass<100; pass++) { // 100 tur boyunca dengele
+                let swapped = false;
+                
+                // YENİ: Bütün aya değil, 7 günlük HAFTALARA bölerek dengele!
+                for(let w=0; w<colCount; w+=7) { 
+                    let wEnd = Math.min(w+6, colCount-1);
+                    
+                    // 1. Sadece o haftanın saatlerini hesapla
+                    staffData.forEach(s => {
+                        s.tmpH = 0; s.tmpN = 0;
+                        for(let d=w; d<=wEnd; d++) {
+                            if(s.shiftLog[d] === dayCode) s.tmpH += gHours;
+                            if(s.shiftLog[d] === nightCode) { s.tmpH += nHours; s.tmpN++; }
+                        }
+                    });
+
+                    // O haftanın Zenginleri ve Fakirleri
+                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
+                    
+                    for(let r=0; r<sortedStaff.length; r++) { 
+                        for(let p=sortedStaff.length-1; p>r; p--) { 
+                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
+                            
+                            if (rich.tmpH - poor.tmpH <= gHours) continue; // O hafta denge sağlandıysa geç
+                            
+                            // Zenginden Fakire Nöbet Pasla (Sadece o hafta içinde)!
+                            for(let d=w; d<=wEnd; d++) {
+                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
+                                
+                                if((rVal === dayCode || rVal === nightCode) && (pVal === offCode || pVal === "")) {
+                                    // Kuralları bozuyor mu kontrol et
+                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'O';
+                                    let pNext = d < colCount-1 ? poor.shiftLog[d+1] : 'O';
+                                    
+                                    let isSafe = true;
+                                    if(rVal === nightCode && (pPrev === nightCode || pNext === nightCode || pNext === dayCode)) isSafe = false;
+                                    if(rVal === dayCode && pPrev === nightCode) isSafe = false;
+                                    
+                                    let consec = 0;
+                                    for(let checkD=d-1; checkD>=Math.max(0, d-3); checkD--) { if(poor.shiftLog[checkD] !== offCode) consec++; else break; }
+                                    for(let checkD=d+1; checkD<=Math.min(colCount-1, d+3); checkD++) { if(poor.shiftLog[checkD] !== offCode) consec++; else break; }
+                                    if(consec >= 3) isSafe = false; // Maksimum 3 gün peş peşe!
+
+                                    if(isSafe) { // Takas yap ve haftalık dengeyi koru!
+                                        poor.shiftLog[d] = rVal;
+                                        rich.shiftLog[d] = offCode;
+                                        rich.tmpH -= (rVal === dayCode ? gHours : nHours);
+                                        poor.tmpH += (rVal === dayCode ? gHours : nHours);
+                                        swapped = true; break; 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!swapped) break;
+            }
+            return staffData;
+        }
+
+        // ==========================================
         // 🧠 Aİ DAĞITIM MOTORU (12 SAATLİK) 
         // ==========================================
         function startAiDistribution12h() {
@@ -764,7 +830,7 @@
                     for(let c = 0; c < colCount; c++) {
                         let d = new Date(startDt); d.setDate(d.getDate() + c);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
-                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0);
+                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0); // Pazartesi saati sıfırla
                         
                         let cReqG = reqG[reqIndex]; let cReqN = reqN[reqIndex];
                         simStaff.forEach(s => s.assignedToday = null);
@@ -787,9 +853,9 @@
                             } 
                         });
 
-                        // 3. Gece Ataması (Zar atarak karıştır)
+                        // 3. Gece Ataması (YENİ: İlk öncelik weeklyHours, sonra random!)
                         let poolN = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
-                        poolN.sort((a,b) => (a.nightCount - b.nightCount) || (0.5 - Math.random())); // Takımları ayırmak için kura (random)
+                        poolN.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.nightCount - b.nightCount) || (0.5 - Math.random())); 
                         let nAssigned = 0; 
                         for(let i=0; i<poolN.length && nAssigned<cReqN; i++) { 
                             poolN[i].assignedToday = nightCode; poolN[i].lastShiftType = 'N'; 
@@ -797,9 +863,9 @@
                         }
                         if(cReqN > 0 && nAssigned < cReqN) unfilledSlots += (cReqN - nAssigned);
 
-                        // 4. Gündüz Ataması (Zar atarak karıştır)
+                        // 4. Gündüz Ataması (YENİ: İlk öncelik weeklyHours, sonra random!)
                         let poolG = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); 
-                        poolG.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random())); // Kura payı eklendi
+                        poolG.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random())); 
                         let dAssigned = 0; 
                         for(let i=0; i<poolG.length && dAssigned<cReqG; i++) { 
                             poolG[i].assignedToday = dayCode; poolG[i].lastShiftType = 'G'; 
@@ -825,7 +891,7 @@
                 
                 let bestSim = selectBestSimulation(simulations);
                 
-                // 🔥 İŞTE SUDOKU: BOŞLUKLARI VE SAYILARI BOZMADAN EŞİTLİYOR 🔥
+                // 🔥 İŞTE HAFTALIK SUDOKU: HAFTA HAFTA EŞİTLİYOR 🔥
                 bestSim.staffData = applyPerfectSudoku12h(bestSim.staffData, colCount, dayCode, nightCode, offCode);
 
                 let penaltyText = bestSim.penalty < 10000 ? "🏆 KUSURSUZ ÇÖZÜM" : `⚠️ Skoru: ${bestSim.penalty}`;
@@ -835,40 +901,46 @@
             }, 500);
         }
 
-       // ==========================================
-        // 🧩 KUSURSUZ SUDOKU (8 SAATLİK DENGELEYİCİ)
+      // ==========================================
+        // 🧩 KUSURSUZ SUDOKU (8 SAATLİK HAFTALIK DENGELEYİCİ)
         // ==========================================
         function applyPerfectSudoku8h(staffData, colCount, sCode, oCode, aCode, offCode) {
             for(let pass=0; pass<100; pass++) {
                 let swapped = false;
-                staffData.forEach(s => {
-                    s.tmpH = 0;
-                    for(let d=0; d<colCount; d++) {
-                        let v = s.shiftLog[d]; if(v===sCode||v===oCode||v===aCode) s.tmpH += 7.5;
-                    }
-                });
+                
+                // YENİ: HAFTA HAFTA TARAMA
+                for(let w=0; w<colCount; w+=7) {
+                    let wEnd = Math.min(w+6, colCount-1);
+                    
+                    staffData.forEach(s => {
+                        s.tmpH = 0;
+                        for(let d=w; d<=wEnd; d++) {
+                            let v = s.shiftLog[d]; if(v===sCode||v===oCode||v===aCode) s.tmpH += 7.5;
+                        }
+                    });
 
-                let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
-                for(let r=0; r<sortedStaff.length; r++) {
-                    for(let p=sortedStaff.length-1; p>r; p--) {
-                        let rich = sortedStaff[r]; let poor = sortedStaff[p];
-                        if (rich.tmpH - poor.tmpH <= 7.5) continue; 
-                        
-                        for(let d=0; d<colCount; d++) {
-                            let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
-                            if((rVal === sCode || rVal === oCode || rVal === aCode) && (pVal === offCode || pVal === "")) {
-                                let pPrev = d > 0 ? poor.shiftLog[d-1] : 'X';
-                                let isSafe = true;
-                                if (pPrev === aCode && (rVal === sCode || rVal === oCode)) isSafe = false;
-                                
-                                let consec = 0;
-                                for(let checkD=d-1; checkD>=Math.max(0, d-5); checkD--) { if(poor.shiftLog[checkD]!==offCode) consec++; else break; }
-                                for(let checkD=d+1; checkD<=Math.min(colCount-1, d+5); checkD++) { if(poor.shiftLog[checkD]!==offCode) consec++; else break; }
-                                if(consec >= 6) isSafe = false;
+                    let sortedStaff = [...staffData].filter(s => s.pref === "AI").sort((a,b) => b.tmpH - a.tmpH);
+                    for(let r=0; r<sortedStaff.length; r++) {
+                        for(let p=sortedStaff.length-1; p>r; p--) {
+                            let rich = sortedStaff[r]; let poor = sortedStaff[p];
+                            if (rich.tmpH - poor.tmpH <= 7.5) continue; 
+                            
+                            for(let d=w; d<=wEnd; d++) {
+                                let rVal = rich.shiftLog[d]; let pVal = poor.shiftLog[d];
+                                if((rVal === sCode || rVal === oCode || rVal === aCode) && (pVal === offCode || pVal === "")) {
+                                    let pPrev = d > 0 ? poor.shiftLog[d-1] : 'X';
+                                    let isSafe = true;
+                                    if (pPrev === aCode && (rVal === sCode || rVal === oCode)) isSafe = false;
+                                    
+                                    let consec = 0;
+                                    for(let checkD=d-1; checkD>=Math.max(0, d-5); checkD--) { if(poor.shiftLog[checkD]!==offCode) consec++; else break; }
+                                    for(let checkD=d+1; checkD<=Math.min(colCount-1, d+5); checkD++) { if(poor.shiftLog[checkD]!==offCode) consec++; else break; }
+                                    if(consec >= 6) isSafe = false;
 
-                                if(isSafe) {
-                                    poor.shiftLog[d] = rVal; rich.shiftLog[d] = offCode;
-                                    rich.tmpH -= 7.5; poor.tmpH += 7.5; swapped = true; break;
+                                    if(isSafe) {
+                                        poor.shiftLog[d] = rVal; rich.shiftLog[d] = offCode;
+                                        rich.tmpH -= 7.5; poor.tmpH += 7.5; swapped = true; break;
+                                    }
                                 }
                             }
                         }
@@ -917,7 +989,7 @@
                     for(let c = 0; c < colCount; c++) {
                         let d = new Date(startDt); d.setDate(d.getDate() + c);
                         let dow = d.getDay(); let reqIndex = dow === 0 ? 7 : dow;
-                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0);
+                        if(dow === 1) simStaff.forEach(s => s.weeklyHours = 0); // YENİ: Pazartesi haftalık saati sıfırla
 
                         let cReqS = reqS[reqIndex], cReqO = reqO[reqIndex], cReqA = reqA[reqIndex];
                         simStaff.forEach(s => s.assignedToday = null);
@@ -937,16 +1009,16 @@
                             }
                         });
 
-                        // Kuraya Math.random() eklendi
-                        let poolA = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolA.sort((a,b) => (a.aCount - b.aCount) || (0.5 - Math.random()));
+                        // YENİ: Önce weeklyHours'a göre sırala, sonra random at!
+                        let poolA = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolA.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.aCount - b.aCount) || (0.5 - Math.random()));
                         let aAssigned = 0; for(let i=0; i<poolA.length && aAssigned < cReqA; i++) { poolA[i].assignedToday = aCode; poolA[i].lastShiftType = 'A'; poolA[i].aCount++; poolA[i].weeklyHours += 7.5; poolA[i].totalHours++; poolA[i].dayConsecutive++; aAssigned++; }
                         if(cReqA > 0 && aAssigned < cReqA) unfilledSlots += (cReqA - aAssigned);
 
-                        let poolO = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolO.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let poolO = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolO.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
                         let oAssigned = 0; for(let i=0; i<poolO.length && oAssigned < cReqO; i++) { poolO[i].assignedToday = oCode; poolO[i].lastShiftType = 'O'; poolO[i].weeklyHours += 7.5; poolO[i].totalHours++; poolO[i].dayConsecutive++; oAssigned++; }
                         if(cReqO > 0 && oAssigned < cReqO) unfilledSlots += (cReqO - oAssigned);
 
-                        let poolS = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolS.sort((a,b) => (a.totalHours - b.totalHours) || (0.5 - Math.random()));
+                        let poolS = simStaff.filter(s => s.pref === "AI" && !s.assignedToday); poolS.sort((a,b) => (a.weeklyHours - b.weeklyHours) || (a.totalHours - b.totalHours) || (0.5 - Math.random()));
                         let sAssigned = 0; for(let i=0; i<poolS.length && sAssigned < cReqS; i++) { poolS[i].assignedToday = sCode; poolS[i].lastShiftType = 'S'; poolS[i].weeklyHours += 7.5; poolS[i].totalHours++; poolS[i].dayConsecutive++; sAssigned++; }
                         if(cReqS > 0 && sAssigned < cReqS) unfilledSlots += (cReqS - sAssigned);
 
