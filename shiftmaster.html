@@ -1551,11 +1551,36 @@ function autoFillDates() {
             let gunSayisi = 30;
             let startIndex = 0;
 
-            // 1. Başlıkları Atla ve Tarih/Gün Bul
+            // 1. Başlıkları Atla ve TARİHİ KESİN OLARAK BUL (Burası güncellendi!)
             for (let i=0; i<Math.min(5, lines.length); i++) {
+                let cols = lines[i].split('\t');
+                let firstCell = cols[0] ? cols[0].toUpperCase('tr-TR') : "";
                 let upperLine = lines[i].toUpperCase('tr-TR');
-                if(upperLine.includes("PERSONEL") || upperLine.includes("AD SOYAD") || upperLine.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/)) {
-                    startIndex = i + 1;
+
+                if(firstCell.includes("PERSONEL") || firstCell.includes("AD SOYAD") || upperLine.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/)) {
+                    startIndex = i + 1; // Veriler başlıktan bir sonraki satırda
+                    
+                    // Sütun 1'e (Personel isminin yanındaki ilk hücreye) bak ve tarihi çöz
+                    if (cols.length > 1) {
+                        let ilkTarih = cols[1].trim();
+                        
+                        // Format: 01.05.2026 veya 01/05/26 veya 01-05-2026
+                        let dateMatch = ilkTarih.match(/(\d{1,2})[\.\/ -](\d{1,2})(?:[\.\/ -](\d{2,4}))?/);
+                        if (dateMatch) {
+                            let gun = parseInt(dateMatch[1]);
+                            let ay = parseInt(dateMatch[2]) - 1; // Yazılımda aylar 0'dan başlar
+                            let yil = dateMatch[3] ? parseInt(dateMatch[3]) : new Date().getFullYear();
+                            if (yil < 100) yil += 2000; // 26 yazıyorsa 2026 yap
+                            baslangicTarihi = new Date(yil, ay, gun);
+                        } 
+                        // Format: Sadece "1" veya "01" (Sadece gün yazılmışsa)
+                        else if (ilkTarih.match(/^(\d{1,2})$/)) {
+                            let gun = parseInt(ilkTarih);
+                            let now = new Date();
+                            baslangicTarihi = new Date(now.getFullYear(), now.getMonth(), gun);
+                        }
+                    }
+                    break;
                 }
             }
 
@@ -1592,15 +1617,13 @@ function autoFillDates() {
 
                     if(sVal !== "") {
                         let tNorm = sVal.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
-                        // Excel'deki 00:00'ları ShiftMaster'ın anlayacağı 24:00'a çeviren ZEKA:
                         let tNormGeceCevrim = tNorm.replace(/00:00/g, '24:00');
                         let tNormGunduzCevrim = tNorm.replace(/24:00/g, '00:00');
 
                         for (let sysKey of Object.keys(shiftRules)) {
                             let sysNorm = sysKey.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
-                            // Hem düzünü, hem 24:00 çevrilmişini hem de 00:00 çevrilmişini kontrol et
                             if (sysNorm === tNorm || sysNorm === tNormGeceCevrim || sysNorm === tNormGunduzCevrim) {
-                                finalShiftText = sysKey; // Sistemdeki orjinal adını al (Yani 16:00-24:00 olarak basar)
+                                finalShiftText = sysKey; 
                                 finalBg = shiftRules[sysKey].color;
                                 break;
                             }
