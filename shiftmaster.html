@@ -876,7 +876,7 @@ function closeAiWizardPopup() {
             }
         };
 
-        window.onload = () => {
+       document.addEventListener('DOMContentLoaded', () => {
             try {
                 let aktifKurum = localStorage.getItem('sm_current_kurum_adi');
                 let splashBaslik = document.getElementById('dynamicSplashTitle');
