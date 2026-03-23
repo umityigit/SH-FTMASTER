@@ -1586,16 +1586,21 @@ function autoFillDates() {
                 for (let j = 0; j < gunSayisi; j++) {
                     let sVal = rawShifts[j] || "";
                     
-                    // ✨ AKILLI VARDİYA ÇEVİRİCİ (08:00-20:00 -> 08.00 - 20.00)
+                    // ✨ AKILLI VARDİYA ÇEVİRİCİ (00:00 ile 24:00 BİRLEŞTİRİLDİ!)
                     let finalShiftText = sVal;
                     let finalBg = "transparent";
 
                     if(sVal !== "") {
                         let tNorm = sVal.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
+                        // Excel'deki 00:00'ları ShiftMaster'ın anlayacağı 24:00'a çeviren ZEKA:
+                        let tNormGeceCevrim = tNorm.replace(/00:00/g, '24:00');
+                        let tNormGunduzCevrim = tNorm.replace(/24:00/g, '00:00');
+
                         for (let sysKey of Object.keys(shiftRules)) {
                             let sysNorm = sysKey.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
-                            if (sysNorm === tNorm) {
-                                finalShiftText = sysKey; // Sistemdeki orjinal adını al
+                            // Hem düzünü, hem 24:00 çevrilmişini hem de 00:00 çevrilmişini kontrol et
+                            if (sysNorm === tNorm || sysNorm === tNormGeceCevrim || sysNorm === tNormGunduzCevrim) {
+                                finalShiftText = sysKey; // Sistemdeki orjinal adını al (Yani 16:00-24:00 olarak basar)
                                 finalBg = shiftRules[sysKey].color;
                                 break;
                             }
@@ -1638,7 +1643,7 @@ function autoFillDates() {
         }
 
         // =========================================
-        // 🧩 AKILLI YAPIŞTIR (PASTE) MOTORU (KAYMA HATASI DÜZELTİLDİ!)
+        // 🧩 AKILLI YAPIŞTIR (PASTE) MOTORU (KAYMA VE 00:00 HATASI DÜZELTİLDİ!)
         // =========================================
         document.addEventListener('paste', e => {
             const activeInput = document.activeElement; 
@@ -1658,9 +1663,16 @@ function autoFillDates() {
                     let finalBg = "transparent";
                     if(val !== "") {
                         let tNorm = val.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
+                        let tNormGeceCevrim = tNorm.replace(/00:00/g, '24:00');
+                        let tNormGunduzCevrim = tNorm.replace(/24:00/g, '00:00');
+
                         for (let sysKey of Object.keys(shiftRules)) {
                             let sysNorm = sysKey.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
-                            if (sysNorm === tNorm) { finalShiftText = sysKey; finalBg = shiftRules[sysKey].color; break; }
+                            if (sysNorm === tNorm || sysNorm === tNormGeceCevrim || sysNorm === tNormGunduzCevrim) { 
+                                finalShiftText = sysKey; 
+                                finalBg = shiftRules[sysKey].color; 
+                                break; 
+                            }
                         }
                     }
 
@@ -1672,7 +1684,7 @@ function autoFillDates() {
                         cell.style.background = finalBg; 
                     });
                 } 
-                // Çoklu Tablo Yapıştırması (İşte Pazar Kaymasını Çözen Kısım)
+                // Çoklu Tablo Yapıştırması (Pazar Kaymasını Çözen Kısım)
                 else {
                     let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; 
                     let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); 
@@ -1698,9 +1710,16 @@ function autoFillDates() {
                                 let finalBg = "transparent";
                                 if(sVal !== "") {
                                     let tNorm = sVal.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
+                                    let tNormGeceCevrim = tNorm.replace(/00:00/g, '24:00');
+                                    let tNormGunduzCevrim = tNorm.replace(/24:00/g, '00:00');
+
                                     for (let sysKey of Object.keys(shiftRules)) {
                                         let sysNorm = sysKey.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
-                                        if (sysNorm === tNorm) { finalShiftText = sysKey; finalBg = shiftRules[sysKey].color; break; }
+                                        if (sysNorm === tNorm || sysNorm === tNormGeceCevrim || sysNorm === tNormGunduzCevrim) { 
+                                            finalShiftText = sysKey; 
+                                            finalBg = shiftRules[sysKey].color; 
+                                            break; 
+                                        }
                                     }
                                 }
 
