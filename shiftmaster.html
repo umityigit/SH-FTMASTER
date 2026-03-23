@@ -516,13 +516,13 @@
         </div>
     </div>
 
-    <div id="excelModal" class="modal-overlay">
+   <div id="excelModal" class="modal-overlay">
         <div class="modal-box">
-            <h3 style="margin-top:0; color:var(--accent); font-size:24px; text-shadow:0 0 15px var(--glass-glow);">📥 Excel'den Veri Çek</h3>
-            <p style="font-size:12px; color:#cbd5e1; margin-top:-10px; margin-bottom:20px;">Sadece veriyi yapıştırın. Sistem başlıkları, tarihleri ve gereksiz alanları otomatik temizler.</p>
+            <h3 style="margin-top:0; color:var(--accent); font-size:24px; text-shadow:0 0 15px var(--glass-glow);">📥 AKILLI EXCEL OKUYUCU</h3>
+            <p style="font-size:12px; color:#cbd5e1; margin-top:-10px; margin-bottom:20px;">Excel'deki tablonuzu (İsimler ve Vardiyalar dahil) kopyalayıp buraya yapıştırın. Sistem saat formatlarını ve renkleri otomatik uyarlayacaktır.</p>
             <textarea id="excelInput" class="glass-input" style="width:100%; height:250px; font-family:monospace; font-size:12px; margin-bottom:20px; box-sizing:border-box;"></textarea>
             <div style="display:flex; gap:15px;">
-                <button class="btn btn-green" style="flex:1; justify-content:center; padding:15px; font-size:14px;" onclick="importFromExcel()">VERİLERİ İŞLE VE TABLOYU KUR</button>
+                <button class="btn btn-green" style="flex:1; justify-content:center; padding:15px; font-size:14px; box-shadow: 0 0 15px rgba(16,185,129,0.5);" onclick="importFromExcel()">EXCELDEN TABLO AL</button>
                 <button class="btn btn-red" style="padding:15px 30px; font-size:14px;" onclick="closeModal('excelModal')">İPTAL</button>
             </div>
         </div>
@@ -1384,8 +1384,135 @@ function addStaff() {
 
         function openExcelModal() { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'new'); }
         function openExcelModalForTable(btn) { document.getElementById("excelInput").value = ""; openModal('excelModal'); document.getElementById('excelModal').setAttribute('data-target', 'append'); window.currentTableWrapperForExcel = btn.closest('.table-wrapper'); }
-        function cleanExcelRows(raw) { let rows = raw.split("\n").filter(r => r.trim() !== ""); while (rows.length > 0) { let rText = rows[0].toUpperCase(); let cols = rows[0].split("\t"); if (rText.includes("PERSONEL") || rText.includes("AD SOYAD") || rText.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/) || rText.includes("S | G") || rText.includes("TOPLAM") || cols.every(val => val.trim() === "" || val.trim().match(/^[0-9]{1,2}\.[0-9]{1,2}/) || val.trim().match(/^[0-9]+$/))) { rows.shift(); } else break; } return rows; }
-        function importFromExcel() { const text = document.getElementById("excelInput").value; if(!text.trim()) return alert("Veri yapıştırın!"); const targetMode = document.getElementById('excelModal').getAttribute('data-target'); const rows = cleanExcelRows(text); if(targetMode === 'new') { const colsCount = rows[0].split("\t").length - 1; document.getElementById("colCount").value = colsCount > 0 ? colsCount : 30; startNewSession(); generateTable(true, rows.map(r => { const c = r.split("\t"); return { name: c[0] ? c[0].trim() : "İsimsiz", shifts: c.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }) }; }), "İçe Aktarılan Liste", new Date(), colsCount); } else if (targetMode === 'append' && window.currentTableWrapperForExcel) { const wrapper = window.currentTableWrapperForExcel; const tbody = wrapper.querySelector('tbody'); const colCount = parseInt(wrapper.getAttribute("data-colcount")); const startDt = new Date(wrapper.getAttribute("data-startdt")); rows.forEach(row => { const cols = row.split("\t"); let name = cols[0] ? cols[0].trim() : "İSİM GİRİNİZ..."; let shifts = cols.slice(1).map(s => { let t = s ? s.trim() : ""; let sT = t.replace(/\./g, ':'); let rObj = shiftRules[sT] || shiftRules[t]; return { text: t, bg: rObj ? rObj.color : "transparent" }; }); tbody.insertAdjacentHTML('beforeend', createRowHtml(name, colCount, startDt, shifts)); }); updateAllStats(); showToast("Veriler Tabloya Eklendi!"); } closeModal('excelModal'); }
+       // =========================================
+        // 🧠 YENİ NESİL: AKILLI EXCEL OKUYUCU MOTORU
+        // =========================================
+        function importFromExcel() {
+            const text = document.getElementById("excelInput").value;
+            if (!text.trim()) return alert("Lütfen Excel'den kopyaladığınız veriyi yapıştırın!");
+            
+            let lines = text.split('\n').map(line => line.trimRight()).filter(line => line.length > 0);
+            if (lines.length === 0) return;
+
+            let targetMode = document.getElementById('excelModal').getAttribute('data-target');
+            let baslangicTarihi = new Date();
+            let gunSayisi = 30;
+            let startIndex = 0;
+            let tarihBulundu = false;
+
+            // 1. Başlıkları Atla ve TARİHİ KESİN OLARAK BUL (Bütün Sütunları Tarar)
+            for (let i=0; i<Math.min(5, lines.length); i++) {
+                let cols = lines[i].split('\t');
+                
+                // O satırdaki tarih olabilecek hücreleri ara
+                for(let j=1; j<cols.length; j++) {
+                    let val = cols[j].trim();
+                    let dateMatch = val.match(/^(\d{1,2})[\.\/ -](\d{1,2})(?:[\.\/ -](\d{2,4}))?/);
+                    if (dateMatch) {
+                        let gun = parseInt(dateMatch[1]);
+                        let ay = parseInt(dateMatch[2]) - 1; // Javascript'te aylar 0'dan başlar
+                        let yil = dateMatch[3] ? parseInt(dateMatch[3]) : new Date().getFullYear();
+                        if (yil < 100) yil += 2000;
+                        baslangicTarihi = new Date(yil, ay, gun);
+                        tarihBulundu = true;
+                        break;
+                    }
+                }
+                
+                let upperLine = lines[i].toUpperCase('tr-TR');
+                if(upperLine.includes("PERSONEL") || upperLine.includes("AD SOYAD") || upperLine.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/)) {
+                    startIndex = i + 1; // İsimler bu satırdan sonra başlıyor
+                    if(tarihBulundu) break;
+                }
+            }
+
+            // GÜVENLİK AŞAMASI: Tabloyu kurmadan önce kullanıcıya tarihi onaylat! (Pazar kaymasını engeller)
+            if (targetMode === 'new' || !targetMode) {
+                let isoStr = `${baslangicTarihi.getFullYear()}-${String(baslangicTarihi.getMonth()+1).padStart(2,'0')}-${String(baslangicTarihi.getDate()).padStart(2,'0')}`;
+                let onayliTarihStr = prompt("Sistem tablonun başlangıç tarihini buldu.\n\nDoğruysa TAMAM'a basın, yanlışsa düzeltin (YIL-AY-GÜN):", isoStr);
+                if (!onayliTarihStr) return; // İptal ettiyse işlemi durdur
+                baslangicTarihi = new Date(onayliTarihStr);
+                if (isNaN(baslangicTarihi.getTime())) return alert("Hatalı tarih girdiniz! Lütfen YIL-AY-GÜN formatında girin.");
+            }
+
+            let parsedData = [];
+            let eklenecekPersoneller = [];
+
+            // 2. Akıllı Çevirici ve Okuyucu
+            for (let i = startIndex; i < lines.length; i++) {
+                let cols = lines[i].split('\t');
+                if (cols.length <= 1) continue; 
+                
+                let rawName = cols[0].trim();
+                if(!rawName || rawName.toUpperCase('tr-TR').includes("TOPLAM") || rawName.toUpperCase('tr-TR').includes("S | G")) continue;
+                
+                let name = rawName.toUpperCase('tr-TR');
+                eklenecekPersoneller.push(name);
+                
+                let rawShifts = [];
+                for(let j=1; j<cols.length; j++) {
+                    if(j > 31) break; 
+                    rawShifts.push(cols[j].trim());
+                }
+                
+                if (i === startIndex) gunSayisi = rawShifts.length; 
+
+                let shifts = [];
+                for (let j = 0; j < gunSayisi; j++) {
+                    let sVal = rawShifts[j] || "";
+                    
+                    let finalShiftText = sVal;
+                    let finalBg = "transparent";
+
+                    if(sVal !== "") {
+                        let tNorm = sVal.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
+                        let tNormGeceCevrim = tNorm.replace(/00:00/g, '24:00');
+                        let tNormGunduzCevrim = tNorm.replace(/24:00/g, '00:00');
+
+                        for (let sysKey of Object.keys(shiftRules)) {
+                            let sysNorm = sysKey.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
+                            if (sysNorm === tNorm || sysNorm === tNormGeceCevrim || sysNorm === tNormGunduzCevrim) {
+                                finalShiftText = sysKey; 
+                                finalBg = shiftRules[sysKey].color;
+                                break;
+                            }
+                        }
+                    }
+                    shifts.push({ text: finalShiftText, bg: finalBg, pin: "" });
+                }
+                parsedData.push({ name: name, shifts: shifts });
+            }
+
+            if (parsedData.length === 0) return alert("Okunabilir veri bulunamadı!");
+
+            // 3. Havuza Otomatik Ekle
+            db.ref("personel_havuzu").once("value").then(snap => {
+                let mevcutHavuz = snap.val() ? Object.values(snap.val()) : [];
+                eklenecekPersoneller.forEach(p => {
+                    if(!mevcutHavuz.includes(p)) db.ref("personel_havuzu").push(p);
+                });
+            });
+
+            // 4. Tabloyu Kur
+            if (targetMode === 'new' || !targetMode) {
+                startNewSession(); 
+                generateTable(true, parsedData, "Excelden Gelen Tablo", baslangicTarihi, gunSayisi);
+            } else if (targetMode === 'append' && window.currentTableWrapperForExcel) {
+                const wrapper = window.currentTableWrapperForExcel;
+                const tbody = wrapper.querySelector('tbody');
+                const colCount = parseInt(wrapper.getAttribute("data-colcount"));
+                const startDt = new Date(wrapper.getAttribute("data-startdt"));
+                
+                parsedData.forEach(row => {
+                    let rowShifts = row.shifts;
+                    if(rowShifts.length < colCount) for(let x=rowShifts.length; x<colCount; x++) rowShifts.push({text:"", bg:"transparent", pin:""});
+                    tbody.insertAdjacentHTML('beforeend', createRowHtml(row.name, colCount, startDt, rowShifts));
+                });
+                updateAllStats();
+            }
+            closeModal('excelModal');
+            showToast("Excel okundu ve sisteme uyarlandı! ✅");
+        }
 
         db.ref("vardiya_kurallari").on('value', snap => { if(snap.val()) shiftRules = snap.val(); else shiftRules = defaultRules; renderContextMenu(); });
         // --- 1. BAŞLIK (TARİH) SAĞ TIK MENÜSÜ FONKSİYONLARI ---
@@ -1625,8 +1752,56 @@ function autoFillDates() {
         function showAllColumns(btn) { saveHistory(); const table = btn.closest('.table-wrapper').querySelector('table'); table.querySelectorAll('.hidden-by-snipper').forEach(el => el.classList.remove('hidden-by-snipper')); }
         
         let activeHeaderCell = null;
-        function editColumnDate() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); if(newVal && newVal.trim() !== "") { saveHistory(); activeHeaderCell.setAttribute("data-date", newVal); let parts = newVal.split("."); if(parts.length === 3) { let d = new Date(parts[2], parts[1]-1, parts[0]); activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); } } }
-        
+       // --- 1. BAŞLIK (TARİH) SAĞ TIK MENÜSÜ FONKSİYONLARI (PAZAR KAYMASI ÇÖZÜLDÜ) ---
+        function editColumnDate() { 
+            document.getElementById("headerContextMenu").style.display = "none"; 
+            if(!activeHeaderCell) return; 
+            
+            let wrapper = activeHeaderCell.closest('.table-wrapper');
+            let oldStartStr = wrapper.getAttribute("data-startdt");
+            let oldDate = new Date(oldStartStr);
+            let isoStr = `${oldDate.getFullYear()}-${String(oldDate.getMonth()+1).padStart(2,'0')}-${String(oldDate.getDate()).padStart(2,'0')}`;
+            
+            let newVal = prompt("Tablonun Başlangıç Tarihini Değiştirin (YIL-AY-GÜN)\n\n⚠️ DİKKAT: Bu işlem Pazar (S|G) sütunlarını yeni tarihe göre otomatik hizalayacaktır!", isoStr); 
+            
+            if(newVal && newVal.trim() !== "") { 
+                let d = new Date(newVal);
+                if(isNaN(d.getTime())) return alert("Geçersiz tarih!");
+                
+                saveHistory(); 
+                
+                // 1. Mevcut tablodaki herkesi ve vardiyalarını kopyala
+                let tName = wrapper.getAttribute("data-tablename");
+                let cols = parseInt(wrapper.getAttribute("data-colcount"));
+                let isPub = wrapper.getAttribute("data-published") === "true";
+                let notes = wrapper.querySelector(".table-notes") ? wrapper.querySelector(".table-notes").value : "";
+                
+                let extractedData = [];
+                wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => {
+                    let nameEl = tr.querySelector(".editable-name");
+                    if(!nameEl) return;
+                    let shifts = [];
+                    tr.querySelectorAll(".shift-cell").forEach(td => {
+                        shifts.push({ 
+                            text: td.innerText.replace(/[\n\r]/g, ""), 
+                            bg: td.style.background || "transparent", 
+                            pin: td.getAttribute("data-pin") || "" 
+                        });
+                    });
+                    extractedData.push({name: nameEl.innerText.trim(), shifts: shifts});
+                });
+
+                // 2. Tabloyu yeni tarihle sıfırdan çiz (Pazar sütunları milimetrik oturur!)
+                generateTable(true, extractedData, tName, d, cols, wrapper, notes, isPub);
+                wrapper.remove(); // Eskisini sil
+                showToast("Tarihler güncellendi ve Pazar (S|G) sütunları hizalandı! 📅");
+            } 
+        }
+
+        // Artık tarihi ileri sarmakla manuel değiştirmek aynı işlemi yapmalı (Tabloyu yeniden çizmeli)
+        function autoFillDates() {
+            editColumnDate(); 
+        }
         function insertColumn(dir) { 
             document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; saveHistory(); 
             const theadTr = activeHeaderCell.parentElement; const table = activeHeaderCell.closest('table'); const tbodyRows = table.querySelectorAll('tbody tr'); 
@@ -1921,9 +2096,7 @@ function toggleTablePublish(btn) {
             const selected = document.querySelectorAll('.selected-cell');
             if(selected.length > 0) { e.preventDefault(); const { html, tsv } = generateExcelClipboardData(selected, false); if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Seçili alan kopyalandı! 📋"); } }
         });
-
-        document.addEventListener('paste', e => {
-            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
+          const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
             const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
             if(selected.length > 0) {
                 e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = cleanExcelRows(pasteData);
