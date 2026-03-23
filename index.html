@@ -521,44 +521,29 @@
         }
     
     </script>
-<div id="premiumModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,11,20,0.9); backdrop-filter:blur(15px); z-index:9999999; justify-content:center; align-items:center; opacity:0; transition:0.4s;">
-        
-        <div style="background:linear-gradient(145deg, #0f172a, #050b14); border:1px solid var(--accent); border-radius:25px; padding:40px; max-width:800px; width:90%; position:relative; box-shadow:0 20px 70px rgba(0,0,0,0.9), inset 0 0 30px rgba(56,189,248,0.1); text-align:center;">
+<div id="premiumModal" class="modal-overlay" onclick="if(event.target.id==='premiumModal') closeModal('premiumModal')">
+        <div class="modal-box" style="background: #121b2a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; width: 90%; max-width: 450px; padding: 40px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); color: #e2e8f0; margin: 0 auto;">
             
-            <span onclick="document.getElementById('premiumModal').style.opacity='0'; setTimeout(()=>document.getElementById('premiumModal').style.display='none',400)" style="position:absolute; top:20px; right:25px; font-size:28px; color:#64748b; cursor:pointer; font-weight:900; transition:0.3s;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='#64748b'">×</span>
+            <div style="font-size: 45px; margin-bottom: 15px; filter: drop-shadow(0px 0px 10px rgba(59, 130, 246, 0.5));">💎</div>
             
-            <h2 style="color:#fff; font-size:28px; font-weight:900; margin:0 0 10px 0; letter-spacing:1px;">SHIFT<span style="color:var(--accent);">MASTER</span> PRO</h2>
-            <p style="color:var(--accent); font-size:16px; font-weight:600; margin:0 0 30px 0; font-style:italic;">"Büyük bir zaman tasarrufu için en küçük bedel..."</p>
+            <h2 style="margin: 0 0 10px 0; color: #ffffff; font-weight: 700; font-size: 26px; letter-spacing: 0.5px;">ShiftMaster <span style="color: #3b82f6;">PRO</span></h2>
             
-            <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
+                Yapay zeka destekli kusursuz vardiya dağıtımı, tek tıkla puantaj hesabı ve gelişmiş raporlama özelliklerinin kilidini açın.
+            </p>
+            
+            <ul style="text-align: left; color: #cbd5e1; font-size: 14px; line-height: 2.2; list-style-type: none; padding: 0; margin: 0 auto 30px auto; display: table;">
+                <li><span style="color: #059669; margin-right: 8px;">✔</span> Aİ Sihirbazı ile Kusursuz Dağıtım</li>
+                <li><span style="color: #059669; margin-right: 8px;">✔</span> Otomatik Saat ve Mesai Dengeleme</li>
+                <li><span style="color: #059669; margin-right: 8px;">✔</span> Excel ve PDF Olarak İndirme</li>
+            </ul>
+
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button onclick="closeModal('premiumModal')" style="padding: 12px 24px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94a3b8; font-weight: 600; cursor: pointer; transition: 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">Kapat</button>
                 
-                <div style="flex:1; min-width:250px; background:rgba(255,255,255,0.02); border:1px solid #334155; border-radius:20px; padding:30px; transition:0.3s;">
-                    <h3 style="color:#94a3b8; font-size:20px; margin:0 0 15px 0;">BUZKIRAN</h3>
-                    <div style="font-size:36px; font-weight:900; color:#fff; margin-bottom:20px;">0 ₺ <span style="font-size:14px; color:#64748b; font-weight:normal;">/ay</span></div>
-                    <ul style="text-align:left; color:#cbd5e1; font-size:13px; line-height:2; list-style:none; padding:0; margin-bottom:30px;">
-                        <li>✔️ Maksimum 50 Personel</li>
-                        <li>✔️ Otomatik Vardiya Dağıtımı</li>
-                        <li>✔️ Temel Puantaj Hesaplama</li>
-                        <li>❌ Öncelikli Destek Merkezi</li>
-                    </ul>
-                    <button class="btn" style="width:100%; background:transparent; border:1px solid #64748b; color:#94a3b8; padding:12px; border-radius:12px; cursor:not-allowed;">Mevcut Plan</button>
-                </div>
-
-                <div style="flex:1; min-width:250px; background:rgba(56,189,248,0.05); border:2px solid var(--accent); border-radius:20px; padding:30px; position:relative; transform:scale(1.05); box-shadow:0 10px 30px rgba(56,189,248,0.2);">
-                    <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent); color:#000; font-size:10px; font-weight:900; padding:4px 12px; border-radius:20px; letter-spacing:1px;">EN ÇOK TERCİH EDİLEN</div>
-                    <h3 style="color:var(--accent); font-size:22px; margin:0 0 15px 0; font-weight:900;">PRO PLAN</h3>
-                    <div style="font-size:36px; font-weight:900; color:#fff; margin-bottom:5px;">199 ₺ <span style="font-size:14px; color:#64748b; font-weight:normal;">/ay</span></div>
-                    <div style="font-size:12px; color:var(--success); font-weight:600; margin-bottom:20px;">(Veya Yıllık Peşin 1990 ₺ - 2 Ay Bizden!)</div>
-                    <ul style="text-align:left; color:#fff; font-size:13px; line-height:2; list-style:none; padding:0; margin-bottom:30px;">
-                        <li>🚀 <b>SINIRSIZ</b> Personel Ekleme</li>
-                        <li>🚀 Gelişmiş İzin ve Rapor Matrisi</li>
-                        <li>🚀 VIP Destek Merkezi Erişimi</li>
-                        <li>🚀 Ücretsiz Yeni Sürüm Güncellemeleri</li>
-                    </ul>
-                    <button class="btn btn-cyan" onclick="odemeAdiminaGec()" style="width:100%; padding:15px; font-size:14px; font-weight:900; border-radius:12px; box-shadow:0 5px 15px rgba(56,189,248,0.4);">ŞİMDİ YÜKSELT</button>
-                </div>
-
+                <button onclick="alert('Destek ve lisanslama sistemi çok yakında aktif edilecektir. İlginiz için teşekkürler!'); closeModal('premiumModal');" style="padding: 12px 24px; border-radius: 8px; border: none; background: #2563eb; color: white; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39); transition: 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Bilgi Al</button>
             </div>
+            
         </div>
     </div>
 
