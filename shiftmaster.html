@@ -1427,20 +1427,6 @@ function openHeaderMenu(e, th) {
     }
 }
 
-function autoFillDates() {
-    document.getElementById("headerContextMenu").style.display = "none";
-    if(!activeHeaderCell) return;
-    let dateStr = activeHeaderCell.getAttribute("data-date");
-    if(!dateStr) return;
-    let parts = dateStr.split(".");
-    let d = new Date(parts[2], parts[1]-1, parts[0]);
-    if(confirm("Bu tarihten itibaren sağa doğru tüm günler sırayla (takvime göre) yeniden hesaplansın mı?")) {
-        saveHistory();
-        recalculateDatesFrom(activeHeaderCell, d);
-        if(typeof showToast === 'function') showToast("Tarihler ileriye doğru güncellendi! 📅");
-    }
-}
-
 // --- 2. HÜCRE İÇİ (DİLLERE DESTAN) SAĞ TIK MENÜSÜ VE SÜRÜKLE BIRAK ---
         let vardiyaSiralamasi = [];
         
@@ -1536,7 +1522,7 @@ function autoFillDates() {
                 db.ref("vardiya_siralamasi").set(vardiyaSiralamasi); 
             }
         }
-        // =========================================
+       // =========================================
         // 🧠 YENİ NESİL: AKILLI EXCEL OKUYUCU MOTORU
         // =========================================
         function importFromExcel() {
@@ -1550,38 +1536,41 @@ function autoFillDates() {
             let baslangicTarihi = new Date();
             let gunSayisi = 30;
             let startIndex = 0;
+            let tarihBulundu = false;
 
-            // 1. Başlıkları Atla ve TARİHİ KESİN OLARAK BUL (Burası güncellendi!)
+            // 1. Başlıkları Atla ve TARİHİ KESİN OLARAK BUL (Bütün Sütunları Tarar)
             for (let i=0; i<Math.min(5, lines.length); i++) {
                 let cols = lines[i].split('\t');
-                let firstCell = cols[0] ? cols[0].toUpperCase('tr-TR') : "";
-                let upperLine = lines[i].toUpperCase('tr-TR');
-
-                if(firstCell.includes("PERSONEL") || firstCell.includes("AD SOYAD") || upperLine.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/)) {
-                    startIndex = i + 1; // Veriler başlıktan bir sonraki satırda
-                    
-                    // Sütun 1'e (Personel isminin yanındaki ilk hücreye) bak ve tarihi çöz
-                    if (cols.length > 1) {
-                        let ilkTarih = cols[1].trim();
-                        
-                        // Format: 01.05.2026 veya 01/05/26 veya 01-05-2026
-                        let dateMatch = ilkTarih.match(/(\d{1,2})[\.\/ -](\d{1,2})(?:[\.\/ -](\d{2,4}))?/);
-                        if (dateMatch) {
-                            let gun = parseInt(dateMatch[1]);
-                            let ay = parseInt(dateMatch[2]) - 1; // Yazılımda aylar 0'dan başlar
-                            let yil = dateMatch[3] ? parseInt(dateMatch[3]) : new Date().getFullYear();
-                            if (yil < 100) yil += 2000; // 26 yazıyorsa 2026 yap
-                            baslangicTarihi = new Date(yil, ay, gun);
-                        } 
-                        // Format: Sadece "1" veya "01" (Sadece gün yazılmışsa)
-                        else if (ilkTarih.match(/^(\d{1,2})$/)) {
-                            let gun = parseInt(ilkTarih);
-                            let now = new Date();
-                            baslangicTarihi = new Date(now.getFullYear(), now.getMonth(), gun);
-                        }
+                
+                // O satırdaki tarih olabilecek hücreleri ara
+                for(let j=1; j<cols.length; j++) {
+                    let val = cols[j].trim();
+                    let dateMatch = val.match(/^(\d{1,2})[\.\/ -](\d{1,2})(?:[\.\/ -](\d{2,4}))?/);
+                    if (dateMatch) {
+                        let gun = parseInt(dateMatch[1]);
+                        let ay = parseInt(dateMatch[2]) - 1; // Javascript'te aylar 0'dan başlar
+                        let yil = dateMatch[3] ? parseInt(dateMatch[3]) : new Date().getFullYear();
+                        if (yil < 100) yil += 2000;
+                        baslangicTarihi = new Date(yil, ay, gun);
+                        tarihBulundu = true;
+                        break;
                     }
-                    break;
                 }
+                
+                let upperLine = lines[i].toUpperCase('tr-TR');
+                if(upperLine.includes("PERSONEL") || upperLine.includes("AD SOYAD") || upperLine.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/)) {
+                    startIndex = i + 1; // İsimler bu satırdan sonra başlıyor
+                    if(tarihBulundu) break;
+                }
+            }
+
+            // GÜVENLİK AŞAMASI: Tabloyu kurmadan önce kullanıcıya tarihi onaylat! (Pazar kaymasını engeller)
+            if (targetMode === 'new' || !targetMode) {
+                let isoStr = `${baslangicTarihi.getFullYear()}-${String(baslangicTarihi.getMonth()+1).padStart(2,'0')}-${String(baslangicTarihi.getDate()).padStart(2,'0')}`;
+                let onayliTarihStr = prompt("Sistem tablonun başlangıç tarihini buldu.\n\nDoğruysa TAMAM'a basın, yanlışsa düzeltin (YIL-AY-GÜN):", isoStr);
+                if (!onayliTarihStr) return; // İptal ettiyse işlemi durdur
+                baslangicTarihi = new Date(onayliTarihStr);
+                if (isNaN(baslangicTarihi.getTime())) return alert("Hatalı tarih girdiniz! Lütfen YIL-AY-GÜN formatında girin.");
             }
 
             let parsedData = [];
@@ -1598,20 +1587,18 @@ function autoFillDates() {
                 let name = rawName.toUpperCase('tr-TR');
                 eklenecekPersoneller.push(name);
                 
-                // Vardiyaları topla (Toplam/Özet sütunlarını almamak için max 31'de keseriz)
                 let rawShifts = [];
                 for(let j=1; j<cols.length; j++) {
                     if(j > 31) break; 
                     rawShifts.push(cols[j].trim());
                 }
                 
-                if (i === startIndex) gunSayisi = rawShifts.length; // Gün sayısını ilk personelden al
+                if (i === startIndex) gunSayisi = rawShifts.length; 
 
                 let shifts = [];
                 for (let j = 0; j < gunSayisi; j++) {
                     let sVal = rawShifts[j] || "";
                     
-                    // ✨ AKILLI VARDİYA ÇEVİRİCİ (00:00 ile 24:00 BİRLEŞTİRİLDİ!)
                     let finalShiftText = sVal;
                     let finalBg = "transparent";
 
@@ -1634,7 +1621,7 @@ function autoFillDates() {
                 parsedData.push({ name: name, shifts: shifts });
             }
 
-            if (parsedData.length === 0) return alert("Okunabilir veri bulunamadı! Lütfen düzgün kopyalayın.");
+            if (parsedData.length === 0) return alert("Okunabilir veri bulunamadı!");
 
             // 3. Havuza Otomatik Ekle
             db.ref("personel_havuzu").once("value").then(snap => {
@@ -1868,8 +1855,56 @@ function autoFillDates() {
         function showAllColumns(btn) { saveHistory(); const table = btn.closest('.table-wrapper').querySelector('table'); table.querySelectorAll('.hidden-by-snipper').forEach(el => el.classList.remove('hidden-by-snipper')); }
         
         let activeHeaderCell = null;
-        function editColumnDate() { document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; let newVal = prompt("Yeni tarih:", activeHeaderCell.getAttribute("data-date")); if(newVal && newVal.trim() !== "") { saveHistory(); activeHeaderCell.setAttribute("data-date", newVal); let parts = newVal.split("."); if(parts.length === 3) { let d = new Date(parts[2], parts[1]-1, parts[0]); activeHeaderCell.innerHTML = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}<br><span style="font-size:10px; opacity:0.7;">${d.toLocaleDateString('tr-TR',{weekday:'short'})}</span>`; if(confirm("Sonraki günleri de sıralı güncelleyelim mi?")) recalculateDatesFrom(activeHeaderCell, d); } } }
-        
+        // --- 1. BAŞLIK (TARİH) SAĞ TIK MENÜSÜ FONKSİYONLARI (PAZAR KAYMASI ÇÖZÜLDÜ) ---
+        function editColumnDate() { 
+            document.getElementById("headerContextMenu").style.display = "none"; 
+            if(!activeHeaderCell) return; 
+            
+            let wrapper = activeHeaderCell.closest('.table-wrapper');
+            let oldStartStr = wrapper.getAttribute("data-startdt");
+            let oldDate = new Date(oldStartStr);
+            let isoStr = `${oldDate.getFullYear()}-${String(oldDate.getMonth()+1).padStart(2,'0')}-${String(oldDate.getDate()).padStart(2,'0')}`;
+            
+            let newVal = prompt("Tablonun Başlangıç Tarihini Değiştirin (YIL-AY-GÜN)\n\n⚠️ DİKKAT: Bu işlem Pazar (S|G) sütunlarını yeni tarihe göre otomatik hizalayacaktır!", isoStr); 
+            
+            if(newVal && newVal.trim() !== "") { 
+                let d = new Date(newVal);
+                if(isNaN(d.getTime())) return alert("Geçersiz tarih!");
+                
+                saveHistory(); 
+                
+                // 1. Mevcut tablodaki herkesi ve vardiyalarını kopyala
+                let tName = wrapper.getAttribute("data-tablename");
+                let cols = parseInt(wrapper.getAttribute("data-colcount"));
+                let isPub = wrapper.getAttribute("data-published") === "true";
+                let notes = wrapper.querySelector(".table-notes") ? wrapper.querySelector(".table-notes").value : "";
+                
+                let extractedData = [];
+                wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => {
+                    let nameEl = tr.querySelector(".editable-name");
+                    if(!nameEl) return;
+                    let shifts = [];
+                    tr.querySelectorAll(".shift-cell").forEach(td => {
+                        shifts.push({ 
+                            text: td.innerText.replace(/[\n\r]/g, ""), 
+                            bg: td.style.background || "transparent", 
+                            pin: td.getAttribute("data-pin") || "" 
+                        });
+                    });
+                    extractedData.push({name: nameEl.innerText.trim(), shifts: shifts});
+                });
+
+                // 2. Tabloyu yeni tarihle sıfırdan çiz (Pazar sütunları milimetrik oturur!)
+                generateTable(true, extractedData, tName, d, cols, wrapper, notes, isPub);
+                wrapper.remove(); // Eskisini sil
+                showToast("Tarihler güncellendi ve Pazar (S|G) sütunları hizalandı! 📅");
+            } 
+        }
+
+        // Artık tarihi ileri sarmakla manuel değiştirmek aynı işlemi yapmalı (Tabloyu yeniden çizmeli)
+        function autoFillDates() {
+            editColumnDate(); 
+        }
         function insertColumn(dir) { 
             document.getElementById("headerContextMenu").style.display = "none"; if(!activeHeaderCell) return; saveHistory(); 
             const theadTr = activeHeaderCell.parentElement; const table = activeHeaderCell.closest('table'); const tbodyRows = table.querySelectorAll('tbody tr'); 
