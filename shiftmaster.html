@@ -2092,30 +2092,78 @@ function toggleTablePublish(btn) {
             executeExcelCopy(html, tsv); logAction("Tüm tabloları kopyaladı.");
         }
 
+       // =========================================
+        // KUSURSUZ KOPYALA / YAPIŞTIR MOTORU
+        // =========================================
         document.addEventListener('copy', e => {
             const selected = document.querySelectorAll('.selected-cell');
-            if(selected.length > 0) { e.preventDefault(); const { html, tsv } = generateExcelClipboardData(selected, false); if(e.clipboardData) { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', tsv); showToast("Seçili alan kopyalandı! 📋"); } }
+            if(selected.length > 0) { 
+                e.preventDefault(); 
+                const { html, tsv } = generateExcelClipboardData(selected, false); 
+                if(e.clipboardData) { 
+                    e.clipboardData.setData('text/html', html); 
+                    e.clipboardData.setData('text/plain', tsv); 
+                    showToast("Seçili alan kopyalandı! 📋"); 
+                } 
+            }
         });
-          const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
+
+        // 🚨 İŞTE SİLİNEN VE SİSTEMİ ÇÖKERTEN O SATIR BURASIYDI (EKLENDİ) 🚨
+        document.addEventListener('paste', e => {
+            const activeInput = document.activeElement; 
+            if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name') || activeInput.tagName === 'SELECT')) return;
+            
             const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
             if(selected.length > 0) {
-                e.preventDefault(); saveHistory(); let pasteData = (e.clipboardData || window.clipboardData).getData('text'); let rows = cleanExcelRows(pasteData);
+                e.preventDefault(); 
+                saveHistory(); 
+                
+                let pasteData = (e.clipboardData || window.clipboardData).getData('text'); 
+                // Olmayan fonksiyon yerine doğrusu eklendi:
+                let rows = pasteData.split('\n').map(r => r.trimRight()).filter(r => r !== "");
+                
                 if (rows.length === 1 && rows[0].split('\t').length === 1) {
-                    let val = rows[0].trim(); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val];
-                    selected.forEach(cell => { if(cell.classList.contains('hidden-by-snipper')) return; let oldPin = cell.getAttribute("data-pin"); cell.innerText = val; if(oldPin) cell.setAttribute("data-pin", oldPin); cell.style.background = r ? r.color : "transparent"; });
+                    let val = rows[0].trim(); 
+                    let safeVal = val.replace(/\./g, ':'); 
+                    let r = shiftRules[safeVal] || shiftRules[val];
+                    
+                    selected.forEach(cell => { 
+                        if(cell.classList.contains('hidden-by-snipper')) return; 
+                        let oldPin = cell.getAttribute("data-pin"); 
+                        cell.innerText = val; 
+                        if(oldPin) cell.setAttribute("data-pin", oldPin); 
+                        cell.style.background = r ? r.color : "transparent"; 
+                    });
                 } else {
-                    let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); let rowCells = Array.from(tr.querySelectorAll('td')); let startColIdx = rowCells.indexOf(startCell);
+                    let startCell = selected[0]; let tr = startCell.closest('tr'); let tbody = tr.parentElement; 
+                    let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); 
+                    let rowCells = Array.from(tr.querySelectorAll('td')); let startColIdx = rowCells.indexOf(startCell);
+                    
                     for (let i = 0; i < rows.length; i++) {
-                        if (startRowIdx + i >= allTrs.length) break; let currentTr = allTrs[startRowIdx + i]; let cols = rows[i].split('\t'); let currentTrCells = Array.from(currentTr.querySelectorAll('td'));
+                        if (startRowIdx + i >= allTrs.length) break; 
+                        let currentTr = allTrs[startRowIdx + i]; 
+                        let cols = rows[i].split('\t'); 
+                        let currentTrCells = Array.from(currentTr.querySelectorAll('td'));
+                        
                         for (let j = 0; j < cols.length; j++) {
-                            if (startColIdx + j >= currentTrCells.length) break; let targetCell = currentTrCells[startColIdx + j];
+                            if (startColIdx + j >= currentTrCells.length) break; 
+                            let targetCell = currentTrCells[startColIdx + j];
+                            
                             if (targetCell.classList.contains('shift-cell') && !targetCell.classList.contains('hidden-by-snipper')) {
-                                let val = cols[j].trim(); let oldPin = targetCell.getAttribute("data-pin"); targetCell.innerText = val; if(oldPin) targetCell.setAttribute("data-pin", oldPin); let safeVal = val.replace(/\./g, ':'); let r = shiftRules[safeVal] || shiftRules[val]; targetCell.style.background = r ? r.color : "transparent";
+                                let val = cols[j].trim(); 
+                                let oldPin = targetCell.getAttribute("data-pin"); 
+                                targetCell.innerText = val; 
+                                if(oldPin) targetCell.setAttribute("data-pin", oldPin); 
+                                
+                                let safeVal = val.replace(/\./g, ':'); 
+                                let r = shiftRules[safeVal] || shiftRules[val]; 
+                                targetCell.style.background = r ? r.color : "transparent";
                             }
                         }
                     }
                 }
-                updateAllStats(); showToast("Yapıştırıldı! ✅");
+                updateAllStats(); 
+                showToast("Yapıştırıldı! ✅");
             }
         });
 
