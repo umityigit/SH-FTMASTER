@@ -1387,7 +1387,7 @@ function addStaff() {
        // =========================================
         // 🧠 YENİ NESİL: AKILLI EXCEL OKUYUCU MOTORU
         // =========================================
-        function importFromExcel() {
+        window.importFromExcel = function() {
             const text = document.getElementById("excelInput").value;
             if (!text.trim()) return alert("Lütfen Excel'den kopyaladığınız veriyi yapıştırın!");
             
@@ -1400,17 +1400,16 @@ function addStaff() {
             let startIndex = 0;
             let tarihBulundu = false;
 
-            // 1. Başlıkları Atla ve TARİHİ KESİN OLARAK BUL (Bütün Sütunları Tarar)
+            // 1. Başlıkları Atla ve TARİHİ KESİN OLARAK BUL
             for (let i=0; i<Math.min(5, lines.length); i++) {
                 let cols = lines[i].split('\t');
                 
-                // O satırdaki tarih olabilecek hücreleri ara
                 for(let j=1; j<cols.length; j++) {
                     let val = cols[j].trim();
                     let dateMatch = val.match(/^(\d{1,2})[\.\/ -](\d{1,2})(?:[\.\/ -](\d{2,4}))?/);
                     if (dateMatch) {
                         let gun = parseInt(dateMatch[1]);
-                        let ay = parseInt(dateMatch[2]) - 1; // Javascript'te aylar 0'dan başlar
+                        let ay = parseInt(dateMatch[2]) - 1; 
                         let yil = dateMatch[3] ? parseInt(dateMatch[3]) : new Date().getFullYear();
                         if (yil < 100) yil += 2000;
                         baslangicTarihi = new Date(yil, ay, gun);
@@ -1419,18 +1418,17 @@ function addStaff() {
                     }
                 }
                 
-                let upperLine = lines[i].toUpperCase('tr-TR');
+                let upperLine = lines[i].toLocaleUpperCase('tr-TR');
                 if(upperLine.includes("PERSONEL") || upperLine.includes("AD SOYAD") || upperLine.match(/\b(PZT|SAL|ÇAR|PER|CUM|CMT|PAZ)\b/)) {
-                    startIndex = i + 1; // İsimler bu satırdan sonra başlıyor
+                    startIndex = i + 1; 
                     if(tarihBulundu) break;
                 }
             }
 
-            // GÜVENLİK AŞAMASI: Tabloyu kurmadan önce kullanıcıya tarihi onaylat! (Pazar kaymasını engeller)
             if (targetMode === 'new' || !targetMode) {
                 let isoStr = `${baslangicTarihi.getFullYear()}-${String(baslangicTarihi.getMonth()+1).padStart(2,'0')}-${String(baslangicTarihi.getDate()).padStart(2,'0')}`;
                 let onayliTarihStr = prompt("Sistem tablonun başlangıç tarihini buldu.\n\nDoğruysa TAMAM'a basın, yanlışsa düzeltin (YIL-AY-GÜN):", isoStr);
-                if (!onayliTarihStr) return; // İptal ettiyse işlemi durdur
+                if (!onayliTarihStr) return; 
                 baslangicTarihi = new Date(onayliTarihStr);
                 if (isNaN(baslangicTarihi.getTime())) return alert("Hatalı tarih girdiniz! Lütfen YIL-AY-GÜN formatında girin.");
             }
@@ -1438,15 +1436,14 @@ function addStaff() {
             let parsedData = [];
             let eklenecekPersoneller = [];
 
-            // 2. Akıllı Çevirici ve Okuyucu
             for (let i = startIndex; i < lines.length; i++) {
                 let cols = lines[i].split('\t');
                 if (cols.length <= 1) continue; 
                 
                 let rawName = cols[0].trim();
-                if(!rawName || rawName.toUpperCase('tr-TR').includes("TOPLAM") || rawName.toUpperCase('tr-TR').includes("S | G")) continue;
+                if(!rawName || rawName.toLocaleUpperCase('tr-TR').includes("TOPLAM") || rawName.toLocaleUpperCase('tr-TR').includes("S | G")) continue;
                 
-                let name = rawName.toUpperCase('tr-TR');
+                let name = rawName.toLocaleUpperCase('tr-TR');
                 eklenecekPersoneller.push(name);
                 
                 let rawShifts = [];
@@ -1460,17 +1457,16 @@ function addStaff() {
                 let shifts = [];
                 for (let j = 0; j < gunSayisi; j++) {
                     let sVal = rawShifts[j] || "";
-                    
                     let finalShiftText = sVal;
                     let finalBg = "transparent";
 
                     if(sVal !== "") {
-                        let tNorm = sVal.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
+                        let tNorm = sVal.toLocaleUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
                         let tNormGeceCevrim = tNorm.replace(/00:00/g, '24:00');
                         let tNormGunduzCevrim = tNorm.replace(/24:00/g, '00:00');
 
                         for (let sysKey of Object.keys(shiftRules)) {
-                            let sysNorm = sysKey.toUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
+                            let sysNorm = sysKey.toLocaleUpperCase('tr-TR').replace(/\s+/g, '').replace(/\./g, ':');
                             if (sysNorm === tNorm || sysNorm === tNormGeceCevrim || sysNorm === tNormGunduzCevrim) {
                                 finalShiftText = sysKey; 
                                 finalBg = shiftRules[sysKey].color;
@@ -1485,7 +1481,6 @@ function addStaff() {
 
             if (parsedData.length === 0) return alert("Okunabilir veri bulunamadı!");
 
-            // 3. Havuza Otomatik Ekle
             db.ref("personel_havuzu").once("value").then(snap => {
                 let mevcutHavuz = snap.val() ? Object.values(snap.val()) : [];
                 eklenecekPersoneller.forEach(p => {
@@ -1493,7 +1488,6 @@ function addStaff() {
                 });
             });
 
-            // 4. Tabloyu Kur
             if (targetMode === 'new' || !targetMode) {
                 startNewSession(); 
                 generateTable(true, parsedData, "Excelden Gelen Tablo", baslangicTarihi, gunSayisi);
@@ -1512,7 +1506,7 @@ function addStaff() {
             }
             closeModal('excelModal');
             showToast("Excel okundu ve sisteme uyarlandı! ✅");
-        }
+        };
 
         db.ref("vardiya_kurallari").on('value', snap => { if(snap.val()) shiftRules = snap.val(); else shiftRules = defaultRules; renderContextMenu(); });
         // --- 1. BAŞLIK (TARİH) SAĞ TIK MENÜSÜ FONKSİYONLARI ---
