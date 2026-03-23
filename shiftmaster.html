@@ -1348,35 +1348,6 @@ function pullFromPuantaj() {
     });
 }
 
-// 2. GÜNCELLENEN: EKRANDA TC GİZLEYEN HAVUZ GÖRÜNÜM MOTORU
-function loadStaffPool() { 
-    db.ref("personel_havuzu").on("value", snap => { 
-        const p = document.getElementById("staffPool"); p.innerHTML = ""; 
-        const sSelect = document.getElementById("sorumluIsim"); 
-        if(sSelect) sSelect.innerHTML = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>'; 
-        let count = 0; staffList = []; 
-        
-        if(snap.val()) { 
-            Object.entries(snap.val()).forEach(([id, name]) => { staffList.push({id: id, name: name}); }); 
-            
-            staffList.sort((a, b) => {
-                let nameA = a.name.includes("-") ? a.name.split("-")[1].trim() : a.name;
-                let nameB = b.name.includes("-") ? b.name.split("-")[1].trim() : b.name;
-                return nameA.localeCompare(nameB, 'tr');
-            }); 
-            
-            staffList.forEach(item => { 
-                count++; 
-                let displayAdi = item.name.includes("-") ? item.name.split("-")[1].trim() : item.name;
-                
-                p.innerHTML += `<div class="staff-chip" onclick="this.classList.toggle('selected')"><input type="checkbox" value="${displayAdi}" style="display:none;"> <span>${displayAdi}</span> <span class="staff-del" onclick="removeStaff(event, '${item.id}')">×</span></div>`; 
-                if(sSelect) sSelect.innerHTML += `<option value="${item.name}" style="color:black;">${displayAdi}</option>`; 
-            }); 
-        } 
-        document.getElementById("staffCounter").innerText = count; 
-    }); 
-}
-
 // 3. GÜNCELLENEN: AKILLI ELLE EKLEME MOTORU
 function addStaff() { 
     const inp = document.getElementById("staffInput"); 
@@ -1930,22 +1901,6 @@ function openHeaderMenu(e, th) {
             } 
         }
 
-      function loadArchives() { 
-    db.ref("arsivlenmis_shiftler").on("value", snap => { 
-        const l = document.getElementById("archiveList"); l.innerHTML = ""; 
-        if(snap.val()) { 
-            let arr = Object.entries(snap.val()).map(([id, val]) => ({id, val})); 
-            arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); 
-            arr.forEach(({id, val}) => { 
-                let count = val.tables ? val.tables.length : 1; 
-                const div = document.createElement("div"); div.className = "archive-card"; 
-                div.innerHTML = `<div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', false)"><b style="color:var(--accent); font-size:16px; text-shadow:0 0 10px var(--glass-glow);">📁 ${val.name || 'İsimsiz'}</b><br><small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-orange" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button><button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div>`; 
-                l.appendChild(div); 
-            }); 
-        } 
-    }); 
-}
-
 // Yayınlama İşlemini Yapan Tetikleyici (Bu fonksiyonu loadArchives'in hemen altına ekle)
 function togglePublish(e, id, currentState) {
     e.stopPropagation();
@@ -2026,27 +1981,7 @@ function toggleTablePublish(btn) {
     saveMasterArchive(); 
     showToast(isPub ? "Tablo personele açıldı! 📢" : "Tablo yayından kaldırıldı! 🔒");
 }
-        function updateAllStats() {
-            document.querySelectorAll(".table-wrapper").forEach(wrapper => {
-                wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(row => {
-                    const cells = Array.from(row.querySelectorAll("td")); let aW=0, aN=0, hW=0, hN=0;
-                    cells.forEach(td => {
-                        if(td.classList.contains("shift-cell") && !td.classList.contains("hidden-by-snipper")) {
-                            const val = td.innerText.trim(); 
-                            let safeVal = val.replace(/\./g, ':'); 
-                            // YENİ EKLENEN ZIRH: Boşlukları silip de arar, böylece sihirbazdan gelen uyuşmazlık çözülür
-                            let noSpaceVal = safeVal.replace(/\s+/g, ''); 
-                            
-                            let r = shiftRules[safeVal] || shiftRules[val] || shiftRules[noSpaceVal];
-                            
-                            if(r) { td.style.background = r.color; hW += r.w; hN += r.n; aW += r.w; aN += r.n; } 
-                            else if(val === "") { td.style.background = "transparent"; }
-                        }
-                        if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
-                        if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
-                    });
-                });
-            });
+
       if(typeof refreshStaffBadges === 'function') setTimeout(refreshStaffBadges, 300);
         }
         function setShift(v, c) { const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); logAction(`Vardiya atandı: ${v}`); } document.getElementById("contextMenu").style.display = "none"; }
@@ -2567,75 +2502,7 @@ function toggleTablePublish(btn) {
             setTimeout(refreshStaffBadges, 300);
         }); 
     };
-
-    // 1. KUSURSUZ "BUGÜN KİMLER VAR" MANTIKLI RADAR (Veritabanını Bekler)
-    window.refreshStaffBadges = function() {
-        let calisilanYerler = {};
-        
-        // A) Önce Ekranda Açık Olan (Henüz Kaydedilmemiş) Tabloları Tara
-        document.querySelectorAll(".table-wrapper").forEach(wrapper => {
-            let tabloAdi = wrapper.getAttribute("data-tablename") || "Açık Tablo";
-            wrapper.querySelectorAll("tbody tr:not(.summary-row) .editable-name").forEach(isimDiv => {
-                let isim = isimDiv.textContent.trim().toUpperCase();
-                if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
-                if (!calisilanYerler[isim].includes(tabloAdi)) calisilanYerler[isim].push(tabloAdi);
-            });
-        });
-
-        // B) FİREBASE "BUGÜN KİMLER VAR" MANTIĞIYLA KUSURSUZ TARAMA
-        db.ref("arsivlenmis_shiftler").once('value').then(snap => {
-            if(snap.val()) {
-                Object.values(snap.val()).forEach(archive => {
-                    if(archive.tables) {
-                        archive.tables.forEach(table => {
-                            let tabloAdi = table.tableName || table.name || archive.name || "Kayıtlı Tablo";
-                            if(table.data) {
-                                table.data.forEach(row => {
-                                    if(row.name) {
-                                        let isim = row.name.trim().toUpperCase();
-                                        if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
-                                        if (!calisilanYerler[isim].includes(tabloAdi)) calisilanYerler[isim].push(tabloAdi);
-                                    }
-                                });
-                            }
-                        });
-                    } else if (archive.data) {
-                        // Eski nesil (tekli) tablolar için
-                        let tabloAdi = archive.name || "Kayıtlı Tablo";
-                        archive.data.forEach(row => {
-                            if(row.name) {
-                                let isim = row.name.trim().toUpperCase();
-                                if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
-                                if (!calisilanYerler[isim].includes(tabloAdi)) calisilanYerler[isim].push(tabloAdi);
-                            }
-                        });
-                    }
-                });
-            }
-            
-            // C) VERİTABANI TARAMASI BİTTİKTEN SONRA EKRANI BOYAMA (İşte Sihir Burada)
-            document.querySelectorAll("#staffPool .staff-chip").forEach(chip => {
-                let nameSpan = chip.querySelector(".isim-metni");
-                let badgeContainer = chip.querySelector(".badge-container");
-                if(!nameSpan || !badgeContainer) return;
-                
-                let isim = nameSpan.textContent.trim().toUpperCase();
-
-                if(calisilanYerler[isim]) {
-                    let yerler = calisilanYerler[isim].join(", ");
-                    badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(245, 158, 11, 0.2); color:#fcd34d; padding:4px 6px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${yerler}">📍 ${yerler}</span>`;
-                    chip.style.opacity = "0.5"; 
-                    chip.style.borderStyle = "dashed";
-                    chip.style.borderColor = "rgba(255,255,255,0.1)";
-                } else {
-                    badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(16, 185, 129, 0.2); color:#34d399; padding:4px 6px; border-radius:6px; border:1px solid rgba(16, 185, 129, 0.4); text-align:center;">🟢 BOŞTA (Müsait)</span>`;
-                    chip.style.opacity = "1";
-                    chip.style.borderStyle = "solid";
-                    chip.style.borderColor = "var(--glass-border)";
-                }
-            });
-        }).catch(err => console.log("Radar Hatası:", err));
-    };
+   
     // ==========================================
     // 💎 DİNAMİK LİMİT OKUYUCU VE AKILLI EKLEME MOTORU
     // ==========================================
@@ -2656,7 +2523,33 @@ function toggleTablePublish(btn) {
         }
     }, 1500);
 
-    // 3. ZIRHLI: Akıllı Elle Ekleme Motoru
+  // =========================================================
+        // 🚀 HIZ OPTİMİZASYONU 2: AĞ KULLANIMI VE RAM (ARŞİV)
+        // =========================================================
+        window.cachedArchives = null; 
+        function loadArchives() { 
+            db.ref("arsivlenmis_shiftler").on("value", snap => { 
+                const l = document.getElementById("archiveList"); 
+                window.cachedArchives = snap.val(); 
+                
+                if(window.cachedArchives) { 
+                    let htmlStr = ""; 
+                    let arr = Object.entries(window.cachedArchives).map(([id, val]) => ({id, val})); 
+                    arr.sort((a, b) => (a.val.name || "").localeCompare((b.val.name || ""), 'tr', { numeric: true })); 
+                    
+                    arr.forEach(({id, val}) => { 
+                        let count = val.tables ? val.tables.length : 1; 
+                        htmlStr += `<div class="archive-card"><div style="flex:1" onclick="openArchive('${id}', '${(val.name||"İsimsiz").replace(/'/g,"\\'")}', false)"><b style="color:var(--accent); font-size:16px; text-shadow:0 0 10px var(--glass-glow);">📁 ${val.name || 'İsimsiz'}</b><br><small style="color:#cbd5e1; font-size:11px;">${val.date} | <b>${count}</b> Tablo</small></div><div style="display:flex; flex-direction:column; gap:8px; margin-left:15px; z-index:10;"><button class="btn btn-orange" style="padding:6px 12px; font-size:10px; justify-content:center;" onclick="sendToPermanentArchive(event, '${id}')">📦 DEPOYA AT</button><button class="btn" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:6px 12px; font-size:10px; justify-content:center;" onclick="delArchive(event, '${id}')">🗑️ SİL</button></div></div>`; 
+                    }); 
+                    l.innerHTML = htmlStr; 
+                } else {
+                    l.innerHTML = "";
+                }
+                if(typeof window.refreshStaffBadges === 'function') window.refreshStaffBadges();
+            }); 
+        }
+        
+        // 3. ZIRHLI: Akıllı Elle Ekleme Motoru
     window.addStaff = function() { 
         const inp = document.getElementById("staffInput"); 
         if(!inp) return;
@@ -2795,27 +2688,73 @@ function toggleTablePublish(btn) {
     // 🚀 SİSTEM GÜNCELLEMESİ: KUSURSUZ RADAR (ANA KLASÖR ADINI GÖSTERİR)
     // ============================================================
 
-    window.refreshStaffBadges = function() {
-        let calisilanYerler = {};
-        
-        // A) ÖNCE EKRANDA AÇIK OLAN TABLOLARI TARA (Ekranda hangi klasör açıksa onun adını al)
-        let aktifKlasor = (typeof currentMasterArchiveName !== 'undefined' && currentMasterArchiveName !== "Yeni Dosya") ? currentMasterArchiveName : "Yeni Kayıtsız Tablo";
-        
-        document.querySelectorAll(".table-wrapper").forEach(wrapper => {
-            wrapper.querySelectorAll("tbody tr:not(.summary-row) .editable-name").forEach(isimDiv => {
-                let isim = isimDiv.textContent.trim().toLocaleUpperCase('tr-TR');
-                if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
-                if (!calisilanYerler[isim].includes(aktifKlasor)) calisilanYerler[isim].push(aktifKlasor);
-            });
-        });
-
-        // B) FİREBASE "KAYITLI KLASÖRLERİ" TARA (Alt tabloyu değil, Ana Klasör Adını Al!)
-        db.ref("arsivlenmis_shiftler").once('value').then(snap => {
-            if(snap.val()) {
-                Object.values(snap.val()).forEach(archive => {
-                    // SİHİR BURADA: Tablo adını değil, Ana Klasörün (Dosyanın) Adını alıyoruz
-                    let anaKlasorAdi = archive.name || "Kayıtlı Klasör"; 
+    // =========================================================
+        // 🚀 HIZ OPTİMİZASYONU 3: RAM DESTEKLİ RADAR VE HAVUZ
+        // =========================================================
+        window.loadStaffPool = function() { 
+            db.ref("personel_havuzu").on("value", snap => { 
+                const p = document.getElementById("staffPool"); 
+                const sSelect = document.getElementById("sorumluIsim"); 
+                let count = 0; 
+                window.staffList = []; 
+                let poolHtml = "";
+                let selectHtml = '<option value="" style="color:black;">-- Havuzdan Yönetici Seçin --</option>';
+                
+                if(snap.val()) { 
+                    Object.entries(snap.val()).forEach(([id, name]) => { window.staffList.push({id: id, name: name}); }); 
                     
+                    window.staffList.sort((a, b) => {
+                        let nameA = a.name.includes("-") ? a.name.split("-")[1].trim() : a.name;
+                        let nameB = b.name.includes("-") ? b.name.split("-")[1].trim() : b.name;
+                        return nameA.localeCompare(nameB, 'tr');
+                    }); 
+                    
+                    window.staffList.forEach(item => { 
+                        count++; 
+                        let displayAdi = item.name.includes("-") ? item.name.split("-")[1].trim() : item.name;
+                        
+                        poolHtml += `
+                        <div class="staff-chip" style="display:flex; flex-direction:column; align-items:flex-start; gap:8px;" onclick="this.classList.toggle('selected')">
+                            <input type="checkbox" value="${displayAdi}" style="display:none;"> 
+                            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                                <span class="isim-metni" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; font-weight:800;">${displayAdi}</span> 
+                                <span class="staff-del" style="margin-left:5px;" onclick="removeStaff(event, '${item.id}')">×</span>
+                            </div>
+                            <div class="badge-container" style="width:100%; text-align:left;">
+                                <span style="font-size:10px; background:rgba(255,255,255,0.1); color:#94a3b8; padding:3px 6px; border-radius:6px; display:inline-block; width:100%;">🔄 Taranıyor...</span>
+                            </div>
+                        </div>`; 
+                        
+                        selectHtml += `<option value="${displayAdi}" style="color:black;">${displayAdi}</option>`; 
+                    }); 
+                } 
+                
+                if(p) p.innerHTML = poolHtml; 
+                if(sSelect) sSelect.innerHTML = selectHtml;
+                const counter = document.getElementById("staffCounter");
+                if(counter) counter.innerText = count; 
+                
+                setTimeout(window.refreshStaffBadges, 100);
+            }); 
+        };
+
+        window.refreshStaffBadges = function() {
+            let calisilanYerler = {};
+            let aktifKlasor = (typeof currentMasterArchiveName !== 'undefined' && currentMasterArchiveName !== "Yeni Dosya") ? currentMasterArchiveName : "Yeni Kayıtsız Tablo";
+            
+            // A) Ekrandaki Açık Tabloları Tara
+            document.querySelectorAll(".table-wrapper").forEach(wrapper => {
+                wrapper.querySelectorAll("tbody tr:not(.summary-row) .editable-name").forEach(isimDiv => {
+                    let isim = isimDiv.textContent.trim().toLocaleUpperCase('tr-TR');
+                    if (!calisilanYerler[isim]) calisilanYerler[isim] = [];
+                    if (!calisilanYerler[isim].includes(aktifKlasor)) calisilanYerler[isim].push(aktifKlasor);
+                });
+            });
+
+            // B) FİREBASE YERİNE RAM'DEN (CACHE'DEN) OKU (İnterneti Asla Yormaz!)
+            if(window.cachedArchives) {
+                Object.values(window.cachedArchives).forEach(archive => {
+                    let anaKlasorAdi = archive.name || "Kayıtlı Klasör"; 
                     if(archive.tables) {
                         archive.tables.forEach(table => {
                             if(table.data) {
@@ -2840,7 +2779,7 @@ function toggleTablePublish(btn) {
                 });
             }
             
-            // C) VERİTABANI TARAMASI BİTTİKTEN SONRA EKRANI BOYAMA (ÇÖZÜM)
+            // C) EKRANI BOYAMA (Döngü Optimizasyonu)
             document.querySelectorAll("#staffPool .staff-chip").forEach(chip => {
                 let nameSpan = chip.querySelector(".isim-metni");
                 let badgeContainer = chip.querySelector(".badge-container");
@@ -2850,7 +2789,6 @@ function toggleTablePublish(btn) {
 
                 if(calisilanYerler[isim] && calisilanYerler[isim].length > 0) {
                     let yerler = calisilanYerler[isim].join(", ");
-                    // Rozet simgesini de Klasör (📁) yaptık
                     badgeContainer.innerHTML = `<span class="grup-rozeti" style="display:inline-block; width:100%; font-size:10px; background:rgba(245, 158, 11, 0.2); color:#fcd34d; padding:4px 6px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${yerler}">📁 ${yerler}</span>`;
                     chip.style.opacity = "0.5"; 
                     chip.style.borderStyle = "dashed";
@@ -2862,9 +2800,7 @@ function toggleTablePublish(btn) {
                     chip.style.borderColor = "var(--glass-border)";
                 }
             });
-        }).catch(err => console.log("Radar Hatası:", err));
-    };
-
+        };
     // 2. SEÇİLİLERLE NORMAL TABLO KURMA (Gün/Tarih Sormama Hatası Çözüldü)
     window.generateTableFromSelected = function() {
         const selectedChips = document.querySelectorAll(".staff-chip.selected .isim-metni");
