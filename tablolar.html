@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ShiftMaster Ultimate | Operasyon Masası</title>
+    <link rel="icon" href="LOGO.SVG" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* =========================================
+           ✨ PREMIUM NEON & GLASSMORPHISM UI ✨
+           ========================================= */
+        :root { 
+            --bg-dark: #020617; --bg-light: #0f172a;
+            --glass-bg: rgba(15, 23, 42, 0.4); --glass-border: rgba(56, 189, 248, 0.2); 
+            --accent: #38bdf8; --warning: #facc15; --danger: #f43f5e; --success: #10b981; --purple: #a855f7;
+        }
+        
+        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at top left, var(--bg-light), var(--bg-dark)); background-attachment: fixed; color: #f8fafc; padding: 25px; margin: 0; padding-bottom: 100px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; box-shadow: inset 0 0 10px rgba(56,189,248,0.5); }
+
+        .container { max-width: 1550px; margin: 0 auto; }
+        
+        /* 🌟 EFSANEVİ BUTONLAR VE HEADER */
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; background: rgba(2, 6, 23, 0.7); padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
+        
+        .btn { 
+            position: relative; overflow: hidden; padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 13px; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; color: white; letter-spacing: 1px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transform: skewX(-20deg); transition: 0.5s; }
+        .btn:hover::before { left: 150%; }
+        .btn:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+        .btn:active { transform: translateY(2px); }
+
+        .btn-cyan { background: linear-gradient(135deg, rgba(14,165,233,0.8), rgba(3,105,161,0.9)); border-color: var(--accent); box-shadow: 0 0 15px rgba(14,165,233,0.4); }
+        .btn-cyan:hover { box-shadow: 0 0 25px rgba(14,165,233,0.7); }
+        .btn-green { background: linear-gradient(135deg, rgba(16,185,129,0.8), rgba(4,120,87,0.9)); border-color: var(--success); box-shadow: 0 0 15px rgba(16,185,129,0.4); }
+        .btn-green:hover { box-shadow: 0 0 25px rgba(16,185,129,0.7); }
+        .btn-orange { background: linear-gradient(135deg, rgba(245,158,11,0.8), rgba(180,83,9,0.9)); border-color: #fbbf24; box-shadow: 0 0 15px rgba(245,158,11,0.4); }
+        .btn-orange:hover { box-shadow: 0 0 25px rgba(245,158,11,0.7); }
+        .btn-purple { background: linear-gradient(135deg, rgba(168,85,247,0.8), rgba(91,33,182,0.9)); border-color: var(--purple); box-shadow: 0 0 15px rgba(168,85,247,0.4); }
+        .btn-purple:hover { box-shadow: 0 0 25px rgba(168,85,247,0.7); }
+        .btn-red { background: linear-gradient(135deg, rgba(244,63,94,0.8), rgba(190,18,60,0.9)); border-color: var(--danger); box-shadow: 0 0 15px rgba(244,63,94,0.4); }
+        .btn-red:hover { box-shadow: 0 0 25px rgba(244,63,94,0.7); }
+
+        .btn-pin { background: #000 !important; color: var(--warning) !important; border: 1px solid var(--warning) !important; box-shadow: 0 0 15px rgba(250,204,21,0.2) !important; }
+        .btn-pin:hover { box-shadow: 0 0 25px rgba(250,204,21,0.6) !important; background: #111 !important; }
+
+        .glass-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(56, 189, 248, 0.3); color: white; padding: 15px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 600; transition: 0.3s; width: 100%; box-sizing: border-box; }
+        .glass-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.8); }
+        
+        /* 💎 PERSONEL HAVUZU VE 3D NEON İSİM BUTONLARI */
+        details summary::-webkit-details-marker { display:none; }
+        .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; background: rgba(0,0,0,0.4); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;} 
+        
+        .staff-chip { 
+            position: relative; background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(56,189,248,0.3); padding: 15px; border-radius: 15px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 14px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 5px 15px rgba(0,0,0,0.6); overflow: hidden; z-index: 1;
+        }
+        /* Arkadan Vuran Neon Işık Efekti */
+        .staff-chip::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: radial-gradient(circle, rgba(56,189,248,0.4) 0%, transparent 70%); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; z-index: -1; border-radius: 50%;
+        }
+        .staff-chip:hover::before { width: 300%; height: 300%; }
+        .staff-chip:hover { transform: translateY(-5px) scale(1.05); border-color: var(--accent); box-shadow: 0 15px 30px rgba(56,189,248,0.3); color: #fff; }
+        .staff-chip:active { transform: translateY(2px) scale(0.98); }
+        .staff-chip.selected { border-color: var(--success); background: linear-gradient(145deg, rgba(16, 185, 129, 0.4), #0f172a); box-shadow: 0 0 25px rgba(16, 185, 129, 0.6); }
+
+        /* 📊 KUSURSUZ TABLO TASARIMI */
+        .table-wrapper { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); backdrop-filter: blur(20px); animation: popIn 0.5s ease-out; }
+        @keyframes popIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .table-title { font-size: 22px; font-weight: 900; color: var(--accent); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px var(--accent-glow); }
+        .table-title:hover { transform: translateX(5px); filter: brightness(1.2); }
+        
+        .scroll-area { overflow: auto; max-height: 65vh; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); background: #020617; position: relative; }
+        table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; user-select: none; padding: 4px; }
+        
+        th, td { border-radius: 6px; padding: 12px 6px; text-align: center; font-size: 13px; font-weight: 800; position: relative; transition: background 0.1s, transform 0.1s; }
+        th { background: #1e293b; color: var(--accent); position: sticky; top: 0; z-index: 20; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; text-shadow: 1px 1px 3px #000; }
+        th:hover { background: #334155; }
+        
+        table tbody td:nth-child(2) { position: sticky; left: 0; z-index: 30; background: #0f172a; border-right: 2px solid var(--accent); box-shadow: 3px 0 10px rgba(0,0,0,0.6); display: flex; justify-content: space-between; align-items: center; min-width: 150px; }
+        table thead th:nth-child(2) { position: sticky; left: 0; top: 0; z-index: 40; background: #020617; border-right: 2px solid var(--accent); }
+        
+        /* 🎯 HÜCRE VE BLOK SEÇİMİ */
+        .shift-cell { cursor: crosshair; color: #fff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
+        .shift-cell:hover { box-shadow: inset 0 0 15px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5); z-index: 5 !important; }
+        .selected-cell { background: rgba(56, 189, 248, 0.4) !important; outline: 2px solid var(--accent) !important; box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.6) !important; z-index: 10; }
+        
+        /* 📍 MÜKEMMEL İĞNE NOTU BALONCUĞU (EN ÖNE ÇIKAN Z-INDEX) */
+        .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: -3px; right: -3px; font-size: 16px; z-index: 15; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.9)); animation: pinPulse 1.5s infinite; }
+        @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(15deg); } 100% { transform: scale(1); } }
+        
+        .shift-cell[data-pin]:hover { z-index: 999999 !important; }
+        .shift-cell[data-pin]:hover::after {
+            content: attr(data-pin); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+            background: var(--warning); color: #000; padding: 10px 15px; border-radius: 10px; font-size: 13px;
+            white-space: pre-wrap; z-index: 9999999 !important; box-shadow: 0 15px 40px rgba(0,0,0,0.9); pointer-events: none; font-weight: 900;
+            border: 2px solid #000; width: max-content; max-width: 250px; text-align: center;
+        }
+        
+        .editable-name { outline: none; font-weight: 900; padding: 4px; cursor: text; user-select: text; border-bottom: 1px dashed transparent; flex: 1; text-align: left; }
+        .select-icon { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; font-size: 10px; border-radius: 4px; padding: 4px 6px; margin-left: 5px; transition: 0.2s; }
+        .select-icon:hover { background: var(--accent); border-color: var(--accent); color: #000; }
+        
+        /* 🎨 ZARİF VE KAYDIRILABİLİR SAĞ TIK MENÜSÜ */
+        .custom-menu { display: none; position: absolute; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent); border-radius: 16px; z-index: 100010; width: 320px; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); max-height: 400px; overflow-y: auto; animation: menuFade 0.2s ease-out; }
+        @keyframes menuFade { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .menu-item-wrapper { position: relative; width: 100%; }
+        .menu-item { padding: 12px 6px; cursor: pointer; border-radius: 8px; text-align: center; font-weight: 900; font-size: 12px; border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.2s; color: white; text-shadow: 1px 1px 2px #000; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 4px 6px rgba(0,0,0,0.4); }
+        .menu-item:hover { transform: scale(1.02); border-color: #fff; filter: brightness(1.2); }
+        .delete-custom-btn { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid #000; }
+        .delete-custom-btn:hover { transform: scale(1.2); background: #991b1b; }
+
+        .quick-color-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 10px; margin-bottom: 15px; }
+        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); transition: 0.2s; }
+        .color-swatch:hover { transform: scale(1.2); border-color: #fff; }
+
+        /* İSİM SEÇİM DROPDOWN */
+        #staffSelectMenu { width: 220px; max-height: 300px; padding: 10px; }
+        #staffSelectMenu .menu-item { background: rgba(30,41,59,0.9); margin-bottom: 5px; font-size: 12px; }
+        #staffSelectMenu .menu-item:hover { background: var(--accent); color: #000; text-shadow: none; }
+
+        /* MODALLAR VE TOAST */
+        .modal-overlay, .full-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(10px); z-index: 10005; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: #0f172a; padding: 40px; border-radius: 20px; border: 1px solid var(--accent); width: 90%; max-width: 500px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .full-modal-content { background: #020617; width: 98%; height: 98%; border-radius: 20px; border: 1px solid var(--purple); display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header-bar { padding: 20px 30px; background: #1e293b; border-bottom: 1px solid var(--purple); display: flex; justify-content: space-between; align-items: center; }
+        
+        #toast { visibility: hidden; background: #10b981; color: #fff; text-align: center; border-radius: 30px; padding: 15px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 50px; font-weight: 900; font-size: 14px; transform: translateX(-50%); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        #toast.show { visibility: visible; animation: popUp 0.3s forwards, fadeout 0.3s 2.5s forwards; }
+        @keyframes popUp { from { bottom: -50px; opacity: 0; } to { bottom: 50px; opacity: 1; } }
+        @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
+        .stat-sub { display: inline-block; width: 40%; font-size: 11px; padding: 4px 0; background: rgba(0,0,0,0.5); border-radius: 4px; margin: 2px; font-weight: 900; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="container">
+        <div class="main-header">
+            <button class="btn btn-red" onclick="window.location.href='anasayfa.html'">⬅️ LOBİYE DÖN</button>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap:wrap;">
+                <span id="masterArchiveTitle" style="font-size:20px; font-weight:900; color:var(--accent); margin-right:15px;">📁 DOSYA: YENİ</span>
+                <button class="btn btn-orange" onclick="openModal('excelModal')">📥 EXCELDEN AL</button>
+                <button class="btn btn-purple" onclick="openAiWizard()">🪄 A.I. SİHİRBAZI</button>
+                <button class="btn btn-green" onclick="saveMasterArchive()">💾 KAYDET</button>
+            </div>
+        </div>
+
+        <details id="poolDetails" open style="margin-bottom: 25px;">
+            <summary style="background: rgba(15,23,42,0.8); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <h3 style="color:white; margin:0;">👥 PERSONEL HAVUZU</h3>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-green" onclick="generateTableFromSelected()">➕ SEÇİLİLERLE TABLO KUR</button>
+                    <button class="btn btn-cyan" onclick="addStaffFromInput()">⚡ KİŞİ EKLE</button>
+                </div>
+            </summary>
+            <div style="padding: 15px 0;">
+                <textarea id="staffInput" class="glass-input" style="height:60px; margin-bottom:10px;" placeholder="> TC ve İsimleri buraya yapıştırın (Örn: 12345678901 Ümit Yiğit). TC'ler gizlenecektir..."></textarea>
+                <div id="staffPool" class="pool-grid"></div>
+            </div>
+        </details>
+
+        <div id="tablesContainer"></div>
+    </div>
+
+    <div id="excelModal" class="modal-overlay" onclick="if(event.target.id==='excelModal') closeModal('excelModal')">
+        <div class="modal-box">
+            <h3 style="color:var(--accent);">📥 AKILLI EXCEL OKUYUCU</h3>
+            <textarea id="excelInput" class="glass-input" style="height:200px; margin-bottom:20px;"></textarea>
+            <div style="display:flex; gap:15px;">
+                <button class="btn btn-green" style="flex:1; justify-content:center;" onclick="importFromExcel()">İÇERİ AKTAR</button>
+                <button class="btn btn-red" onclick="closeModal('excelModal')">İPTAL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiWizardPopup" class="full-modal-overlay">
+        <div class="full-modal-content">
+            <div class="modal-header-bar">
+                <div style="font-size:22px; font-weight:900; color:#fff;">🪄 A.I. MOTORU</div>
+                <button class="btn btn-red" onclick="closeAiWizardPopup()">❌ KAPAT</button>
+            </div>
+            <iframe id="aiWizardFrame" src="" style="width:100%; height:100%; border:none; background:#020617;"></iframe>
+        </div>
+    </div>
+
+    <div id="contextMenu" class="custom-menu">
+        <div class="menu-grid" id="dynamicMenuGrid"></div>
+        <div style="border-top:1px dashed rgba(255,255,255,0.2); padding-top:15px; margin-top:5px;">
+            <span style="color:var(--accent); font-size:11px; font-weight:900; display:block; margin-bottom:10px; text-align:center;">🎨 HIZLI RENKLER</span>
+            <div class="quick-color-grid" id="quickColors"></div>
+        </div>
+        <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn btn-pin" style="justify-content:center; padding:10px;" onclick="addGhostPinToCell()">📍 İĞNE TAK / NOT YAZ</button>
+            <button class="btn btn-red" style="justify-content:center; padding:10px;" onclick="removeGhostPinFromCell()">🗑️ İĞNEYİ SİL</button>
+        </div>
+    </div>
+
+    <div id="headerContextMenu" class="custom-menu" style="width:250px;">
+        <div class="menu-item btn-cyan" style="margin-bottom:10px;" onclick="editColumnDate()">✏️ TARİHİ DEĞİŞTİR</div>
+        <div class="menu-item btn-green" style="margin-bottom:10px;" onclick="insertColumn()">➕ YANINA SÜTUN EKLE</div>
+        <div class="menu-item btn-red" style="border-color:#fff;" onclick="deleteColumn()">🗑️ BU SÜTUNU SİL</div>
+    </div>
+    
+    <div id="staffSelectMenu" class="custom-menu"></div>
+
+    <div id="toast">İşlem Başarılı!</div>
+
+    <script>
+        const tenantId = localStorage.getItem('sm_current_tenant') || "TEST_KURUM";
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const originalRef = db.ref.bind(db);
+        db.ref = function(path) { if (tenantId === "addh") return originalRef(path); if (path) return originalRef("kurumlar/" + tenantId + "/" + path); return originalRef("kurumlar/" + tenantId); };
+
+        let activeCell = null; let activeHeaderCell = null; let activeColIndex = -1; let historyStack = [];
+        let currentMasterArchiveId = localStorage.getItem('sm_active_archive_id') || null; 
+        let shiftRules = { '08:00-20:00': { w: 11, n: 0, color: '#f59e0b' }, '20:00-08:00': { w: 11, n: 11, color: '#1e3a8a' }, 'HT': { w: 0, n: 0, color: '#14b8a6' } };
+        let havuzIsimleri = []; 
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function showToast(m) { let t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 3000); }
+        function saveHistory() { historyStack.push(document.getElementById("tablesContainer").innerHTML); if(historyStack.length > 20) historyStack.shift(); }
+
+        // 🛡️ TİRE SİLİCİ VE TC GİZLEYEN HAVUZ SİSTEMİ
+        function loadStaffPool() { 
+            db.ref("personel_havuzu").on("value", snap => { 
+                const p = document.getElementById("staffPool"); let poolHtml = ""; havuzIsimleri = [];
+                if(snap.val()) { 
+                    Object.entries(snap.val()).forEach(([id, rawName]) => { 
+                        // Önce baştaki tire vb. işaretleri temizle
+                        let cleanName = rawName.replace(/^[-_\s]+/, '').trim();
+                        let parts = cleanName.split(/[\s-]/); 
+                        let tc = parts.find(part => part.length === 11 && !isNaN(part));
+                        let displayName = cleanName;
+                        if(tc) { displayName = cleanName.replace(tc, "").replace(/^-/, "").trim(); }
+                        
+                        havuzIsimleri.push({name: displayName, tc: tc || ""});
+                        poolHtml += `<div class="staff-chip" data-tc="${tc||""}" onclick="this.classList.toggle('selected')"><span class="name-text">${displayName}</span></div>`; 
+                    }); 
+                } 
+                if(p) p.innerHTML = poolHtml; 
+            }); 
+        }
+        function addStaffFromInput() {
+            const inp = document.getElementById("staffInput"); let lines = inp.value.trim().split('\n').filter(l => l.trim() !== "");
+            if(lines.length === 0) return alert("Lütfen veri girin!");
+            lines.forEach(l => db.ref("personel_havuzu").push(l.trim().toUpperCase('tr')));
+            inp.value = ""; showToast("Personel Eklendi! ✅");
+        }
+
+        // 📅 TABLO MOTORU
+        function generateTableFromSelected() {
+            const selectedChips = document.querySelectorAll(".staff-chip.selected");
+            if(selectedChips.length === 0) return alert("Havuzdan kişi seçin!");
+            const sel = Array.from(selectedChips).map(el => { return { name: el.querySelector(".name-text").innerText.trim(), tc: el.getAttribute("data-tc") }; });
+            let pDate = new Date(); let userDays = prompt("Kaç Günlük Tablo?", "30"); if (!userDays) return;
+            generateTable(false, sel, "YENİ VARDİYA LİSTESİ", pDate, parseInt(userDays));
+            document.getElementById('poolDetails').open = false; selectedChips.forEach(c => c.classList.remove('selected'));
+        }
+
+        function generateTable(isArch, data, tableName, customStart, customCols, insertAfter, savedNotes) {
+            const cols = customCols || 30; let startDt = customStart || new Date();
+            let h = `<table><thead><tr><th class="no-export">AYAR</th><th>PERSONEL</th>`;
+            for(let i=0; i<cols; i++) {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullD = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                h += `<th data-date="${fullD}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></th>`;
+                if(d.getDay() === 0) h += `<th class="week-summary-cell">H.S</th>`;
+            }
+            h += `<th class="total-summary-cell">TOP</th></tr></thead><tbody class="table-body">`;
+            data.forEach(r => { let pName = typeof r === 'string' ? r : (r.name || ""); let pTc = typeof r === 'object' && r.tc ? r.tc : ""; h += createRowHtml(pName, pTc, cols, startDt, r.shifts || null); }); 
+            h += '</tbody></table>';
+            
+            const wrapper = document.createElement("div"); wrapper.className = "table-wrapper";
+            wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName);
+            
+            wrapper.innerHTML = `
+                <div class="table-header">
+                    <span class="table-title" onclick="renameLocalTable(this)">📌 ${tableName}</span>
+                    <button class="btn btn-purple" onclick="openAiWizardForSpecificTable(this)">🪄 SİHİRBAZA GÖNDER</button>
+                </div>
+                <div class="scroll-area">${h}</div>
+                <textarea class="glass-input table-notes" style="margin-top:15px; height:50px;" placeholder="Notlar...">${savedNotes || ""}</textarea>
+                <div style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;">
+                    <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR</button>
+                    <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button>
+                    <button class="btn btn-orange" onclick="takePhoto(this)">📸 FOTO AL</button>
+                    <button class="btn btn-red" onclick="closeTable(this)">🗑️ SİL</button>
+                </div>`;
+            const tContainer = document.getElementById("tablesContainer");
+            if(insertAfter) insertAfter.parentNode.insertBefore(wrapper, insertAfter.nextSibling); else tContainer.insertBefore(wrapper, tContainer.firstChild); 
+            updateAllStats(); saveHistory();
+        }
+
+        function createRowHtml(name, tc, colCount, startDt, savedShifts) {
+            let cells = `<td class="no-export">
+                            <button class="row-move-btn" onclick="moveRow(this,-1)" style="background:transparent; border:none; color:white; cursor:pointer;">▲</button>
+                            <button class="row-move-btn" onclick="moveRow(this,1)" style="background:transparent; border:none; color:white; cursor:pointer;">▼</button>
+                         </td>
+                         <td style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="editable-name" data-tc="${tc}" contenteditable="true">${name}</div>
+                            <button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button>
+                         </td>`;
+            for(let i=0; i<colCount; i++) {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); const s = savedShifts?.[i] || {text:"", bg:"transparent", pin:""}; const pinAttr = s.pin ? ` data-pin="${s.pin.replace(/"/g, '&quot;')}"` : ""; 
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${s.bg}" ${pinAttr}>${s.text}</td>`;
+                if(d.getDay() === 0) cells += `<th class="week-summary-cell"></th>`;
+            }
+            cells += `<th class="total-summary-cell"></th>`; return `<tr>${cells}</tr>`;
+        }
+
+        function moveRow(btn, direction) {
+            const row = btn.closest('tr'); const tbody = row.parentElement;
+            if (direction === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling);
+            else if (direction === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row);
+        }
+
+        function openStaffQuickMenu(e, btn) {
+            e.preventDefault(); e.stopPropagation();
+            activeCell = btn.previousElementSibling; 
+            const m = document.getElementById("staffSelectMenu"); m.innerHTML = "";
+            if(havuzIsimleri.length === 0) { m.innerHTML = `<div style="color:white; padding:10px; font-size:12px;">Havuz Boş</div>`; }
+            havuzIsimleri.forEach(kisi => {
+                const d = document.createElement("div"); d.className = "menu-item"; d.innerText = kisi.name;
+                d.onclick = () => { saveHistory(); activeCell.innerText = kisi.name; activeCell.setAttribute("data-tc", kisi.tc); m.style.display = "none"; };
+                m.appendChild(d);
+            });
+            m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px";
+        }
+
+        // 🎯 MÜKEMMEL ÇOKLU KOPYALAMA VE OTOMATİK KAYDIRMA (SCROLL)
+        let isSelecting = false; let startCell = null; let paintModeData = null;
+
+        document.addEventListener('mousedown', e => {
+            if(e.button !== 0) return; 
+            let shiftCell = e.target.closest('.shift-cell');
+            if(shiftCell) {
+                isSelecting = true; startCell = shiftCell;
+                if(e.altKey) { paintModeData = { text: shiftCell.innerText, bg: shiftCell.style.background }; }
+                if(!e.ctrlKey && !e.altKey) document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell'));
+                shiftCell.classList.add('selected-cell');
+            }
+        });
+
+        document.addEventListener('mousemove', e => {
+            // Otomatik Kaydırma (Auto-Scroll) Motoru
+            if(isSelecting && startCell) {
+                let scrollArea = startCell.closest('.scroll-area');
+                if(scrollArea) {
+                    let rect = scrollArea.getBoundingClientRect();
+                    if(e.clientY > rect.bottom - 40) scrollArea.scrollTop += 20; // Aşağı kaydır
+                    if(e.clientY < rect.top + 40) scrollArea.scrollTop -= 20;    // Yukarı kaydır
+                    if(e.clientX > rect.right - 40) scrollArea.scrollLeft += 20; // Sağa kaydır
+                    if(e.clientX < rect.left + 40) scrollArea.scrollLeft -= 20;  // Sola kaydır
+                }
+            }
+
+            let currentCell = e.target.closest('.shift-cell');
+            if(isSelecting && currentCell && startCell) {
+                const table = startCell.closest('table'); if(currentCell.closest('table') !== table) return; 
+                
+                if(paintModeData) { currentCell.innerText = paintModeData.text; currentCell.style.background = paintModeData.bg; updateAllStats(); return; }
+
+                const rows = Array.from(table.querySelector('tbody').querySelectorAll('tr'));
+                let startRowIdx = rows.indexOf(startCell.closest('tr')); let currentRowIdx = rows.indexOf(currentCell.closest('tr'));
+                let startRowCells = Array.from(rows[startRowIdx].querySelectorAll('.shift-cell')); let currentRowCells = Array.from(rows[currentRowIdx].querySelectorAll('.shift-cell'));
+                let startColIdx = startRowCells.indexOf(startCell); let currentColIdx = currentRowCells.indexOf(currentCell);
+                
+                let minRow = Math.min(startRowIdx, currentRowIdx); let maxRow = Math.max(startRowIdx, currentRowIdx);
+                let minCol = Math.min(startColIdx, currentColIdx); let maxCol = Math.max(startColIdx, currentColIdx);
+
+                if(!e.ctrlKey) document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell'));
+                for(let r = minRow; r <= maxRow; r++) {
+                    let rCells = Array.from(rows[r].querySelectorAll('.shift-cell'));
+                    for(let c = minCol; c <= maxCol; c++) { if(rCells[c]) rCells[c].classList.add('selected-cell'); }
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => { isSelecting = false; startCell = null; paintModeData = null; });
+
+        // ⌨️ KISA YOL TUŞLARI MOTORU (CTRL+A, CTRL+Z, CTRL+X, CTRL+C)
+        document.addEventListener('keydown', e => {
+            if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.classList.contains('editable-name')) return;
+
+            // CTRL + Z (Geri Al)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+                if (historyStack.length > 0) { document.getElementById("tablesContainer").innerHTML = historyStack.pop(); updateAllStats(); showToast("Geri Alındı! ↩️"); }
+            }
+            
+            // CTRL + A (Tüm Tabloyu Seç)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                let hoveredTable = document.querySelector('.table-wrapper:hover') || document.querySelector('.table-wrapper');
+                if(hoveredTable) {
+                    document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell'));
+                    hoveredTable.querySelectorAll('.shift-cell').forEach(c=>c.classList.add('selected-cell'));
+                }
+            }
+
+            // CTRL + X (Kes) veya CTRL + C (Kopyala)
+            if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'x')) {
+                const selected = document.querySelectorAll('.selected-cell');
+                if(selected.length > 0) {
+                    e.preventDefault();
+                    let table = selected[0].closest('table'); let rows = Array.from(table.querySelectorAll('tr'));
+                    let minR = Infinity, maxR = -1, minC = Infinity, maxC = -1;
+                    selected.forEach(c => {
+                        let r = rows.indexOf(c.closest('tr')); let col = Array.from(c.closest('tr').querySelectorAll('td')).indexOf(c);
+                        if(r < minR) minR = r; if(r > maxR) maxR = r; if(col < minC) minC = col; if(col > maxC) maxC = col;
+                    });
+                    
+                    let tsv = "";
+                    for(let r=minR; r<=maxR; r++) {
+                        let rowCells = Array.from(rows[r].querySelectorAll('td')); let rowData = [];
+                        for(let c=minC; c<=maxC; c++) {
+                            let cell = rowCells[c];
+                            if(cell && cell.classList.contains('selected-cell')) {
+                                rowData.push(cell.innerText.replace(/\n/g, ' '));
+                                if(e.key.toLowerCase() === 'x') { saveHistory(); cell.innerText = ""; cell.style.background = "transparent"; }
+                            } else { rowData.push(""); }
+                        }
+                        tsv += rowData.join("\t") + "\n";
+                    }
+                    if(e.key.toLowerCase() === 'x') updateAllStats();
+                    
+                    const temp = document.createElement("textarea"); temp.value = tsv; document.body.appendChild(temp); temp.select();
+                    document.execCommand("copy"); document.body.removeChild(temp);
+                    showToast(e.key.toLowerCase() === 'x' ? "Kesildi! ✂️" : "Kopyalandı! 📋");
+                }
+            }
+        });
+
+        // 🎁 ÇİFT TIKLA TÜM SATIRI DOLDUR
+        document.addEventListener('dblclick', e => {
+            if(e.target.classList.contains('shift-cell')) {
+                let val = e.target.innerText; let bg = e.target.style.background; if(!val) return;
+                saveHistory(); let row = e.target.closest('tr');
+                row.querySelectorAll('.shift-cell').forEach(cell => { if(cell.innerText === "") { cell.innerText = val; cell.style.background = bg; } });
+                updateAllStats(); showToast("Tüm Satır Dolduruldu! 🚀");
+            }
+        });
+
+        // 🎡 ÇARK İLE VARDİYA DEĞİŞTİRME
+        document.addEventListener('wheel', e => {
+            let cell = e.target.closest('.shift-cell');
+            if(cell && !isSelecting) {
+                e.preventDefault(); saveHistory();
+                let keys = Object.keys(shiftRules); keys.push(""); 
+                let currentText = cell.innerText.trim(); let idx = keys.indexOf(currentText);
+                if(e.deltaY > 0) idx = (idx + 1) % keys.length; else idx = (idx - 1 + keys.length) % keys.length;
+                let newShift = keys[idx]; cell.innerText = newShift; cell.style.background = newShift ? shiftRules[newShift].color : "transparent";
+                updateAllStats();
+            }
+        }, {passive: false});
+
+        // 📋 ÇOKLU KOPYALANAN HÜCRELERİ (GRİD) AYNI SAYIDA HÜCREYE YAPIŞTIRMA!
+        document.addEventListener('paste', e => {
+            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name'))) return;
+            const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
+            if(selected.length > 0) {
+                e.preventDefault(); saveHistory(); 
+                let pasteData = (e.clipboardData || window.clipboardData).getData('text'); 
+                let rows = pasteData.split("\n").map(r => r.trimRight()).filter(r => r !== "");
+                if(rows.length === 0) return;
+                
+                let startCell = selected[0]; 
+                let tr = startCell.closest('tr'); let tbody = tr.parentElement; 
+                let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); 
+                let shiftCellsInStartRow = Array.from(tr.querySelectorAll('.shift-cell')); let startColIdx = shiftCellsInStartRow.indexOf(startCell);
+                
+                for (let i = 0; i < rows.length; i++) {
+                    if (startRowIdx + i >= allTrs.length) break; 
+                    let currentTr = allTrs[startRowIdx + i]; 
+                    let cols = rows[i].split('\t'); 
+                    let shiftCellsInRow = Array.from(currentTr.querySelectorAll('.shift-cell'));
+                    
+                    for (let j = 0; j < cols.length; j++) {
+                        if (startColIdx + j >= shiftCellsInRow.length) break; 
+                        let targetCell = shiftCellsInRow[startColIdx + j];
+                        let sVal = cols[j].trim(); let finalBg = "transparent";
+                        
+                        if(sVal) { 
+                            let tNorm = sVal.replace(/[\s.,]/g, ':').toUpperCase(); 
+                            for (let key in shiftRules) { 
+                                let kNorm = key.replace(/[\s.,]/g, ':').toUpperCase(); 
+                                if (kNorm === tNorm || (tNorm.includes(kNorm) && kNorm.length > 2)) { sVal = key; finalBg = shiftRules[key].color; break; } 
+                            } 
+                        }
+                        targetCell.innerText = sVal; targetCell.style.background = finalBg;
+                        targetCell.classList.add('selected-cell'); // Yapıştırılan yeri seçili bırak
+                    }
+                }
+                updateAllStats(); showToast("Yapıştırma Başarılı! ✅");
+            }
+        });
+
+        // 🖱️ SAĞ TIK MENÜSÜ & AKILLI KONUMLAMA
+        document.addEventListener('contextmenu', function(e) {
+            let shiftCell = e.target.closest('.shift-cell');
+            if (shiftCell) { 
+                e.preventDefault(); 
+                if (!shiftCell.classList.contains('selected-cell')) { document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); shiftCell.classList.add('selected-cell'); } 
+                activeCell = shiftCell; 
+                const m = document.getElementById("contextMenu"); m.style.display = "block"; 
+                
+                let x = e.pageX; let y = e.pageY;
+                if (x + m.offsetWidth > window.innerWidth) x = window.innerWidth - m.offsetWidth - 20;
+                if (y + m.offsetHeight > window.innerHeight) y = window.innerHeight - m.offsetHeight - 20;
+                m.style.left = x + "px"; m.style.top = y + "px"; 
+            } 
+            else if (e.target.tagName === 'TH' && e.target.hasAttribute('data-date')) { 
+                e.preventDefault(); activeHeaderCell = e.target; 
+                activeColIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
+                const m = document.getElementById("headerContextMenu"); m.style.display = "block"; 
+                m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; 
+            }
+            else if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); }
+        });
+        window.onclick = (e) => { if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { document.querySelectorAll('.custom-menu').forEach(m => m.style.display = "none"); } };
+
+        const geminiColors = ['#ef4444','#f97316','#f59e0b','#eab308','#84cc16','#22c55e','#10b981','#14b8a6','#06b6d4','#0ea5e9','#3b82f6','#6366f1','#8b5cf6','#a855f7','#d946ef','#ec4899','#f43f5e','#94a3b8','#334155','#0f172a','#000000'];
+        
+        function renderContextMenu() { 
+            const grid = document.getElementById("dynamicMenuGrid"); if(!grid) return; grid.innerHTML = ""; 
+            Object.keys(shiftRules).forEach(sName => { 
+                let r = shiftRules[sName]; 
+                grid.innerHTML += `<div class="menu-item-wrapper"><div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div><div class="delete-custom-btn" onclick="deleteCustomShift(event, '${sName}')">X</div></div>`; 
+            }); 
+            grid.innerHTML += `<div class="menu-item" style="background:rgba(255,255,255,0.1);" onclick="setShift('')">❌ BOŞALT</div>`; 
+            
+            const colorGrid = document.getElementById("quickColors"); colorGrid.innerHTML = "";
+            geminiColors.forEach(c => { colorGrid.innerHTML += `<div class="color-swatch" style="background:${c};" onclick="applyCustomColor('${c}')"></div>`; });
+        }
+
+        function setShift(v, c) { 
+            const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); 
+            if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); } 
+            document.getElementById("contextMenu").style.display = "none"; 
+        }
+        function applyCustomColor(color) {
+            const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); 
+            if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.style.background = color; }); updateAllStats(); } 
+            document.getElementById("contextMenu").style.display = "none"; 
+        }
+        function deleteCustomShift(e, shiftName) {
+            e.stopPropagation(); if(confirm(`"${shiftName}" kuralını silmek istiyor musunuz?`)) { delete shiftRules[shiftName]; db.ref("vardiya_kurallari/" + shiftName.replace(/\./g, ':')).remove(); renderContextMenu(); }
+        }
+
+        // 📍 NOTLU İĞNE SİSTEMİ (GERÇEK NOT!)
+        function addGhostPinToCell() { 
+            let notText = prompt("İğne için bir not yazın:", "");
+            if(notText !== null && notText.trim() !== "") {
+                const selected = document.querySelectorAll('.selected-cell'); 
+                selected.forEach(c => { c.setAttribute("data-pin", notText); }); 
+                saveHistory();
+            }
+            document.getElementById("contextMenu").style.display = "none"; 
+        }
+        function removeGhostPinFromCell() { const selected = document.querySelectorAll('.selected-cell'); selected.forEach(c => { c.removeAttribute("data-pin"); }); document.getElementById("contextMenu").style.display = "none"; }
+
+        // 📝 OTOMATİK TARİH KAYDIRMALI SÜTUN EKLEME / SİLME 
+        function recalculateTableDates(wrapper) {
+            let startDtStr = wrapper.getAttribute("data-startdt"); if(!startDtStr) return;
+            let startDt = new Date(startDtStr); let table = wrapper.querySelector('table');
+            let dateHeaders = Array.from(table.querySelectorAll('thead th[data-date]'));
+            wrapper.setAttribute("data-colcount", dateHeaders.length); // Sütun sayısını güncelle
+            
+            dateHeaders.forEach((th, i) => {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i);
+                let fullD = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                th.innerHTML = `${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small>`;
+                th.setAttribute("data-date", fullD);
+            });
+        }
+
+        function deleteColumn() {
+            if(activeColIndex > -1) {
+                if(!confirm("Sütun tamamen silinsin mi? (Tarihler kaydırılacak!)")) return;
+                saveHistory();
+                let table = activeHeaderCell.closest('table');
+                table.querySelectorAll('tr').forEach(tr => { if(tr.children[activeColIndex]) tr.children[activeColIndex].remove(); });
+                recalculateTableDates(table.closest('.table-wrapper'));
+                updateAllStats();
+            }
+            document.getElementById("headerContextMenu").style.display = "none"; showToast("Sütun Silindi, Tarihler Güncellendi 🗑️");
+        }
+
+        function insertColumn() {
+            if(activeColIndex > -1) {
+                saveHistory();
+                let table = activeHeaderCell.closest('table');
+                table.querySelectorAll('tr').forEach((tr, index) => {
+                    let cellToClone = tr.children[activeColIndex]; let newCell = cellToClone.cloneNode(true);
+                    if(index > 0) { newCell.innerText = ""; newCell.style.background = "transparent"; newCell.classList.remove('selected-cell'); newCell.removeAttribute('data-pin'); } 
+                    tr.insertBefore(newCell, cellToClone.nextSibling);
+                });
+                recalculateTableDates(table.closest('.table-wrapper'));
+                updateAllStats();
+            }
+            document.getElementById("headerContextMenu").style.display = "none"; showToast("Sütun Eklendi, Tarihler Kaydırıldı ➕");
+        }
+
+        function editColumnDate() {
+            let tableWrapper = activeHeaderCell.closest('.table-wrapper');
+            let currentStart = tableWrapper.getAttribute("data-startdt");
+            let isoStr = new Date(currentStart).toISOString().split('T')[0];
+            let newDateStr = prompt("Tablonun başlangıç tarihini değiştirin (YIL-AY-GÜN):", isoStr);
+            if(newDateStr) { 
+                let nDate = new Date(newDateStr);
+                if(!isNaN(nDate.getTime())) {
+                    tableWrapper.setAttribute("data-startdt", nDate.toISOString());
+                    recalculateTableDates(tableWrapper);
+                    showToast("Tüm tarihler yeniden hesaplandı! 🗓️");
+                }
+            }
+            document.getElementById("headerContextMenu").style.display = "none";
+        }
+
+        // 🪄 AI SİHİRBAZ BAĞLANTISI
+        window.targetTableWrapperForAI = null;
+        function openAiWizardForSpecificTable(btn) {
+            const wrapper = btn.closest('.table-wrapper'); window.targetTableWrapperForAI = wrapper;
+            const startDateVal = wrapper.getAttribute("data-startdt"); const colCountVal = wrapper.getAttribute("data-colcount") || 30;
+            const names = Array.from(wrapper.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector(".editable-name").innerText.trim());
+            const namesParam = encodeURIComponent(names.join(','));
+            document.getElementById('aiWizardFrame').src = `isci_sihirbaz.html?mode=inject&names=${namesParam}&start=${startDateVal}&days=${colCountVal}`;
+            openModal('aiWizardPopup');
+        }
+        function openAiWizard() { document.getElementById('aiWizardFrame').src = `isci_sihirbaz.html`; openModal('aiWizardPopup'); }
+        function closeAiWizardPopup() { closeModal('aiWizardPopup'); document.getElementById('aiWizardFrame').src = ""; }
+        window.receiveDataFromAiWizard = function(aiRows, startDateStr, colCount) {
+            let sDate = new Date(startDateStr);
+            if (window.targetTableWrapperForAI) {
+                const oldWrapper = window.targetTableWrapperForAI; const tName = oldWrapper.getAttribute("data-tablename") || "AI Tablosu";
+                generateTable(true, aiRows, tName, sDate, parseInt(colCount), oldWrapper, ""); oldWrapper.remove();
+            } else { generateTable(true, aiRows, "🤖 A.I. Yeni Tablo", sDate, parseInt(colCount)); }
+            closeAiWizardPopup(); showToast("Sihirbaz Tablosu Çizildi! 🪄");
+        };
+
+        // EXCEL VE FOTO
+        function importFromExcel() { alert("Excel verinizi Ctrl+C yapıp direkt tablonun üstüne tıklayarak yapıştırabilirsiniz (Ctrl+V). Otomatik tanır."); }
+        function copyTableRows(btn) {
+            const table = btn.closest('.table-wrapper').querySelector('table'); let html = "<table border='1'>"; let tsv = "";
+            table.querySelectorAll('tr').forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll('th, td').forEach(cell => { if(!cell.classList.contains('no-export')){ let text = cell.innerText || ""; html += `<td>${text}</td>`; rowData.push(text.replace(/\n/g," ")); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>";
+            const container = document.createElement('div'); container.innerHTML = html; container.style.position = 'fixed'; container.style.top = '-9999px'; document.body.appendChild(container);
+            const selection = window.getSelection(); const range = document.createRange(); range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range);
+            try { document.execCommand('copy'); showToast("Excel İçin Kopyalandı! 📋"); } catch(e) {} document.body.removeChild(container);
+        }
+        function takePhoto(btn) { const wrapper = btn.closest('.table-wrapper'); showToast("Fotoğraf Çekiliyor... 📸"); html2canvas(wrapper.querySelector('.scroll-area'), { scale: 2, backgroundColor: "#020617" }).then(canvas => { let link = document.createElement('a'); link.download = 'ShiftMaster.png'; link.href = canvas.toDataURL('image/png'); link.click(); showToast("İndirildi! ✅"); }); }
+
+        // İSTATİSTİK MOTORU
+        let statsTimer = null;
+        function updateAllStats() {
+            if(statsTimer) clearTimeout(statsTimer);
+            statsTimer = setTimeout(() => {
+                document.querySelectorAll(".table-wrapper").forEach(wrapper => {
+                    wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(row => {
+                        const cells = Array.from(row.querySelectorAll("td, th")); let aW=0, aN=0, hW=0, hN=0;
+                        cells.forEach(td => {
+                            if(td.classList.contains("shift-cell")) {
+                                const val = td.innerText.trim(); let safeVal = val.replace(/[\s.,]/g, ':').toUpperCase(); 
+                                let matchedRule = null; for (let key in shiftRules) { if (key.replace(/[\s.,]/g, ':').toUpperCase() === safeVal) { matchedRule = shiftRules[key]; break; } }
+                                if(matchedRule) { td.style.background = matchedRule.color; hW += parseFloat(matchedRule.w)||0; hN += parseFloat(matchedRule.n)||0; aW += parseFloat(matchedRule.w)||0; aN += parseFloat(matchedRule.n)||0; } 
+                                else if(val === "") td.style.background = "transparent";
+                            }
+                            if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
+                            if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
+                        });
+                    });
+                });
+            }, 400); 
+        }
+
+        function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', createRowHtml("İSİM GİRİNİZ...", "", parseInt(wrapper.getAttribute("data-colcount")), new Date(wrapper.getAttribute("data-startdt")))); updateAllStats(); }
+        function closeTable(btn) { if(confirm("Tabloyu silmek istiyor musunuz?")) btn.closest('.table-wrapper').remove(); }
+        function renameLocalTable(span) { let pName = prompt("Tablo adı:", span.innerText.replace("📌", "").trim()); if(pName) span.innerHTML = `📌 ${pName.trim()} <small style="font-size:10px; color:#fff; opacity:0.5;">(İsmi Değiştir)</small>`; }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            db.ref("vardiya_kurallari").once('value', snap => { if(snap.exists()) { shiftRules = snap.val(); renderContextMenu(); } });
+            loadStaffPool();
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ShiftMaster Premium | Operasyon Masası</title>
+    <link rel="icon" href="LOGO.SVG" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* =========================================
+           ✨ PREMIUM NEON & GLASSMORPHISM UI ✨
+           ========================================= */
+        :root { 
+            --bg-dark: #020617; --bg-light: #0f172a;
+            --glass-bg: rgba(15, 23, 42, 0.4); --glass-border: rgba(56, 189, 248, 0.2); 
+            --accent: #38bdf8; --warning: #facc15; --danger: #f43f5e; --success: #10b981; --purple: #a855f7;
+        }
+        
+        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at top left, var(--bg-light), var(--bg-dark)); background-attachment: fixed; color: #f8fafc; padding: 25px; margin: 0; padding-bottom: 100px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .container { max-width: 1550px; margin: 0 auto; }
+        
+        /* 🌟 EFSANEVİ BUTONLAR (NEON GLOW) */
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; background: rgba(2, 6, 23, 0.7); padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
+        
+        .btn { 
+            position: relative; overflow: hidden; padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 13px; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; color: white; letter-spacing: 1px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transform: skewX(-20deg); transition: 0.5s; }
+        .btn:hover::before { left: 150%; }
+        .btn:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+        .btn:active { transform: translateY(2px); }
+
+        .btn-cyan { background: linear-gradient(135deg, rgba(14,165,233,0.8), rgba(3,105,161,0.9)); border-color: var(--accent); box-shadow: 0 0 15px rgba(14,165,233,0.4); }
+        .btn-cyan:hover { box-shadow: 0 0 25px rgba(14,165,233,0.7); }
+        .btn-green { background: linear-gradient(135deg, rgba(16,185,129,0.8), rgba(4,120,87,0.9)); border-color: var(--success); box-shadow: 0 0 15px rgba(16,185,129,0.4); }
+        .btn-green:hover { box-shadow: 0 0 25px rgba(16,185,129,0.7); }
+        .btn-orange { background: linear-gradient(135deg, rgba(245,158,11,0.8), rgba(180,83,9,0.9)); border-color: #fbbf24; box-shadow: 0 0 15px rgba(245,158,11,0.4); }
+        .btn-orange:hover { box-shadow: 0 0 25px rgba(245,158,11,0.7); }
+        .btn-purple { background: linear-gradient(135deg, rgba(168,85,247,0.8), rgba(91,33,182,0.9)); border-color: var(--purple); box-shadow: 0 0 15px rgba(168,85,247,0.4); }
+        .btn-purple:hover { box-shadow: 0 0 25px rgba(168,85,247,0.7); }
+        .btn-red { background: linear-gradient(135deg, rgba(244,63,94,0.8), rgba(190,18,60,0.9)); border-color: var(--danger); box-shadow: 0 0 15px rgba(244,63,94,0.4); }
+        .btn-red:hover { box-shadow: 0 0 25px rgba(244,63,94,0.7); }
+        
+        /* ÖZEL İĞNE BUTONU */
+        .btn-pin { background: #000 !important; color: var(--warning) !important; border: 1px solid var(--warning) !important; box-shadow: 0 0 15px rgba(250,204,21,0.2) !important; }
+        .btn-pin:hover { box-shadow: 0 0 25px rgba(250,204,21,0.6) !important; background: #111 !important; }
+
+        .glass-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(56, 189, 248, 0.3); color: white; padding: 15px; border-radius: 12px; outline: none; font-family: 'Poppins', sans-serif; font-weight: 600; transition: 0.3s; width: 100%; box-sizing: border-box; }
+        .glass-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.8); }
+        
+        /* 📊 KUSURSUZ TABLO TASARIMI */
+        .table-wrapper { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); backdrop-filter: blur(20px); animation: popIn 0.5s ease-out; }
+        @keyframes popIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .table-title { font-size: 22px; font-weight: 900; color: var(--accent); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        
+        .scroll-area { overflow: auto; max-height: 65vh; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); background: #020617; }
+        table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; user-select: none; padding: 4px; }
+        
+        th, td { border-radius: 6px; padding: 12px 6px; text-align: center; font-size: 13px; font-weight: 800; position: relative; transition: background 0.1s, transform 0.1s; }
+        th { background: #1e293b; color: var(--accent); position: sticky; top: 0; z-index: 20; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        th:hover { background: #334155; }
+        
+        table tbody td:nth-child(2) { position: sticky; left: 0; z-index: 30; background: #0f172a; border-right: 2px solid var(--accent); box-shadow: 3px 0 10px rgba(0,0,0,0.6); display: flex; justify-content: space-between; align-items: center; min-width: 150px; }
+        table thead th:nth-child(2) { position: sticky; left: 0; top: 0; z-index: 40; background: #020617; border-right: 2px solid var(--accent); }
+        
+        /* 🎯 HÜCRE VE BLOK SEÇİMİ */
+        .shift-cell { cursor: crosshair; color: #fff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
+        .shift-cell:hover { box-shadow: inset 0 0 15px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5); z-index: 5 !important; }
+        .selected-cell { background: rgba(56, 189, 248, 0.4) !important; outline: 2px solid var(--accent) !important; box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.6) !important; z-index: 10; }
+        
+        /* 📍 İĞNE NOTU BALONCUĞU (TOOLTIP) */
+        .shift-cell[data-pin]::before { content: '📍'; position: absolute; top: -3px; right: -3px; font-size: 16px; z-index: 10; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.9)); animation: pinPulse 1.5s infinite; }
+        @keyframes pinPulse { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(15deg); } 100% { transform: scale(1); } }
+        .shift-cell[data-pin]:hover::after {
+            content: attr(data-pin); position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
+            background: var(--warning); color: #000; padding: 6px 12px; border-radius: 8px; font-size: 12px;
+            white-space: pre-wrap; z-index: 9999; box-shadow: 0 5px 15px rgba(0,0,0,0.8); pointer-events: none; font-weight: 900;
+        }
+        
+        .editable-name { outline: none; font-weight: 900; padding: 4px; cursor: text; user-select: text; border-bottom: 1px dashed transparent; flex: 1; text-align: left; }
+        .select-icon { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; font-size: 10px; border-radius: 4px; padding: 4px 6px; margin-left: 5px; transition: 0.2s; }
+        .select-icon:hover { background: var(--accent); border-color: var(--accent); color: #000; }
+        
+        /* 🎨 ZARİF VE KAYDIRILABİLİR SAĞ TIK MENÜSÜ */
+        .custom-menu { display: none; position: absolute; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent); border-radius: 16px; z-index: 100010; width: 320px; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); max-height: 400px; overflow-y: auto; animation: menuFade 0.2s ease-out; }
+        @keyframes menuFade { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .menu-item-wrapper { position: relative; width: 100%; }
+        .menu-item { padding: 12px 6px; cursor: pointer; border-radius: 8px; text-align: center; font-weight: 900; font-size: 12px; border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.2s; color: white; text-shadow: 1px 1px 2px #000; box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1), 0 4px 6px rgba(0,0,0,0.4); }
+        .menu-item:hover { transform: scale(1.02); border-color: #fff; filter: brightness(1.2); }
+        .delete-custom-btn { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid #000; }
+        .delete-custom-btn:hover { transform: scale(1.2); background: #991b1b; }
+
+        .quick-color-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 10px; margin-bottom: 15px; }
+        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); transition: 0.2s; }
+        .color-swatch:hover { transform: scale(1.2); border-color: #fff; }
+
+        /* PERSONEL İSİM SEÇİM DROPDOWN */
+        #staffSelectMenu { width: 200px; max-height: 300px; padding: 10px; }
+        #staffSelectMenu .menu-item { background: rgba(30,41,59,0.9); margin-bottom: 5px; font-size: 12px; }
+        #staffSelectMenu .menu-item:hover { background: var(--accent); color: #000; }
+
+        /* HAVUZ VE MODALLAR */
+        details summary::-webkit-details-marker { display:none; }
+        .pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px inset rgba(255,255,255,0.05); margin-bottom: 15px;} 
+        .staff-chip { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; transition: 0.2s; }
+        .staff-chip:hover { border-color: var(--accent); background: #334155; }
+        .staff-chip.selected { border-color: var(--success); background: rgba(16, 185, 129, 0.2); }
+        
+        .modal-overlay, .full-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(10px); z-index: 10005; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: #0f172a; padding: 40px; border-radius: 20px; border: 1px solid var(--accent); width: 90%; max-width: 500px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .full-modal-content { background: #020617; width: 98%; height: 98%; border-radius: 20px; border: 1px solid var(--purple); display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header-bar { padding: 20px 30px; background: #1e293b; border-bottom: 1px solid var(--purple); display: flex; justify-content: space-between; align-items: center; }
+        
+        #toast { visibility: hidden; background: #10b981; color: #fff; text-align: center; border-radius: 30px; padding: 15px 25px; position: fixed; z-index: 999999; left: 50%; bottom: 50px; font-weight: 900; font-size: 14px; transform: translateX(-50%); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        #toast.show { visibility: visible; animation: popUp 0.3s forwards, fadeout 0.3s 2.5s forwards; }
+        @keyframes popUp { from { bottom: -50px; opacity: 0; } to { bottom: 50px; opacity: 1; } }
+        @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
+
+        .stat-sub { display: inline-block; width: 40%; font-size: 11px; padding: 4px 0; background: rgba(0,0,0,0.5); border-radius: 4px; margin: 2px; font-weight: 900; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="container">
+        <div class="main-header">
+            <button class="btn btn-red" onclick="window.location.href='anasayfa.html'">⬅️ LOBİYE DÖN</button>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap:wrap;">
+                <span id="masterArchiveTitle" style="font-size:20px; font-weight:900; color:var(--accent); margin-right:15px;">📁 DOSYA: YENİ</span>
+                <button class="btn btn-orange" onclick="openModal('excelModal')">📥 EXCELDEN AL</button>
+                <button class="btn btn-purple" onclick="openAiWizard()">🪄 A.I. SİHİRBAZI</button>
+                <button class="btn btn-green" onclick="saveMasterArchive()">💾 KAYDET</button>
+            </div>
+        </div>
+
+        <details id="poolDetails" open style="margin-bottom: 25px;">
+            <summary style="background: rgba(15,23,42,0.8); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <h3 style="color:white; margin:0;">👥 PERSONEL HAVUZU</h3>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-green" onclick="generateTableFromSelected()">➕ SEÇİLİLERLE TABLO KUR</button>
+                    <button class="btn btn-cyan" onclick="addStaffFromInput()">⚡ KİŞİ EKLE</button>
+                </div>
+            </summary>
+            <div style="padding: 15px 0;">
+                <textarea id="staffInput" class="glass-input" style="height:60px; margin-bottom:10px;" placeholder="> TC ve İsimleri buraya yapıştırın (Örn: 12345678901 Ümit Yiğit). TC'ler gizlenecektir..."></textarea>
+                <div id="staffPool" class="pool-grid"></div>
+            </div>
+        </details>
+
+        <div id="tablesContainer"></div>
+    </div>
+
+    <div id="excelModal" class="modal-overlay" onclick="if(event.target.id==='excelModal') closeModal('excelModal')">
+        <div class="modal-box">
+            <h3 style="color:var(--accent);">📥 AKILLI EXCEL OKUYUCU</h3>
+            <textarea id="excelInput" class="glass-input" style="height:200px; margin-bottom:20px;"></textarea>
+            <div style="display:flex; gap:15px;">
+                <button class="btn btn-green" style="flex:1; justify-content:center;" onclick="importFromExcel()">İÇERİ AKTAR</button>
+                <button class="btn btn-red" onclick="closeModal('excelModal')">İPTAL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiWizardPopup" class="full-modal-overlay">
+        <div class="full-modal-content">
+            <div class="modal-header-bar">
+                <div style="font-size:22px; font-weight:900; color:#fff;">🪄 A.I. MOTORU</div>
+                <button class="btn btn-red" onclick="closeAiWizardPopup()">❌ KAPAT</button>
+            </div>
+            <iframe id="aiWizardFrame" src="" style="width:100%; height:100%; border:none; background:#020617;"></iframe>
+        </div>
+    </div>
+
+    <div id="contextMenu" class="custom-menu">
+        <div class="menu-grid" id="dynamicMenuGrid"></div>
+        <div style="border-top:1px dashed rgba(255,255,255,0.2); padding-top:15px; margin-top:5px;">
+            <span style="color:var(--accent); font-size:11px; font-weight:900; display:block; margin-bottom:10px; text-align:center;">🎨 HIZLI RENKLER</span>
+            <div class="quick-color-grid" id="quickColors"></div>
+        </div>
+        <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn btn-pin" style="justify-content:center; padding:10px;" onclick="addGhostPinToCell()">📍 İĞNE TAK / NOT YAZ</button>
+            <button class="btn btn-red" style="justify-content:center; padding:10px;" onclick="removeGhostPinFromCell()">🗑️ İĞNEYİ SİL</button>
+        </div>
+    </div>
+
+    <div id="headerContextMenu" class="custom-menu" style="width:250px;">
+        <div class="menu-item btn-cyan" style="margin-bottom:10px;" onclick="editColumnDate()">✏️ TARİHİ DEĞİŞTİR</div>
+        <div class="menu-item btn-green" style="margin-bottom:10px;" onclick="insertColumn()">➕ YANINA SÜTUN EKLE</div>
+        <div class="menu-item btn-red" style="border-color:#fff;" onclick="deleteColumn()">🗑️ BU SÜTUNU SİL</div>
+    </div>
+    
+    <div id="staffSelectMenu" class="custom-menu"></div>
+
+    <div id="toast">İşlem Başarılı!</div>
+
+    <script>
+        const tenantId = localStorage.getItem('sm_current_tenant') || "TEST_KURUM";
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const originalRef = db.ref.bind(db);
+        db.ref = function(path) { if (tenantId === "addh") return originalRef(path); if (path) return originalRef("kurumlar/" + tenantId + "/" + path); return originalRef("kurumlar/" + tenantId); };
+
+        let activeCell = null; let activeHeaderCell = null; let activeColIndex = -1; let historyStack = [];
+        let currentMasterArchiveId = localStorage.getItem('sm_active_archive_id') || null; 
+        let shiftRules = { '08:00-20:00': { w: 11, n: 0, color: '#f59e0b' }, '20:00-08:00': { w: 11, n: 11, color: '#1e3a8a' }, 'HT': { w: 0, n: 0, color: '#14b8a6' } };
+        let havuzIsimleri = []; 
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function showToast(m) { let t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 3000); }
+        function saveHistory() { historyStack.push(document.getElementById("tablesContainer").innerHTML); if(historyStack.length > 20) historyStack.shift(); }
+
+        // 🛡️ TC GİZLEYEN HAVUZ SİSTEMİ
+        function loadStaffPool() { 
+            db.ref("personel_havuzu").on("value", snap => { 
+                const p = document.getElementById("staffPool"); let poolHtml = ""; havuzIsimleri = [];
+                if(snap.val()) { 
+                    Object.entries(snap.val()).forEach(([id, rawName]) => { 
+                        let parts = rawName.split(/[\s-]/); 
+                        let tc = parts.find(part => part.length === 11 && !isNaN(part));
+                        let displayName = rawName;
+                        if(tc) { displayName = rawName.replace(tc, "").replace(/^-/, "").trim(); }
+                        havuzIsimleri.push({name: displayName, tc: tc || ""});
+                        poolHtml += `<div class="staff-chip" data-tc="${tc||""}" onclick="this.classList.toggle('selected')"><span class="name-text">${displayName}</span></div>`; 
+                    }); 
+                } 
+                if(p) p.innerHTML = poolHtml; 
+            }); 
+        }
+        function addStaffFromInput() {
+            const inp = document.getElementById("staffInput"); let lines = inp.value.trim().split('\n').filter(l => l.trim() !== "");
+            if(lines.length === 0) return alert("Lütfen veri girin!");
+            lines.forEach(l => db.ref("personel_havuzu").push(l.trim().toUpperCase('tr')));
+            inp.value = ""; showToast("Personel Eklendi! ✅");
+        }
+
+        // 📅 TABLO MOTORU
+        function generateTableFromSelected() {
+            const selectedChips = document.querySelectorAll(".staff-chip.selected");
+            if(selectedChips.length === 0) return alert("Havuzdan kişi seçin!");
+            const sel = Array.from(selectedChips).map(el => { return { name: el.querySelector(".name-text").innerText.trim(), tc: el.getAttribute("data-tc") }; });
+            let pDate = new Date(); let userDays = prompt("Kaç Günlük Tablo?", "30"); if (!userDays) return;
+            generateTable(false, sel, "YENİ VARDİYA LİSTESİ", pDate, parseInt(userDays));
+            document.getElementById('poolDetails').open = false; selectedChips.forEach(c => c.classList.remove('selected'));
+        }
+
+        function generateTable(isArch, data, tableName, customStart, customCols, insertAfter, savedNotes) {
+            const cols = customCols || 30; let startDt = customStart || new Date();
+            let h = `<table><thead><tr><th class="no-export">AYAR</th><th>PERSONEL</th>`;
+            for(let i=0; i<cols; i++) {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullD = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                h += `<th data-date="${fullD}">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></th>`;
+                if(d.getDay() === 0) h += `<th class="week-summary-cell">H.S</th>`;
+            }
+            h += `<th class="total-summary-cell">TOP</th></tr></thead><tbody class="table-body">`;
+            data.forEach(r => { let pName = typeof r === 'string' ? r : (r.name || ""); let pTc = typeof r === 'object' && r.tc ? r.tc : ""; h += createRowHtml(pName, pTc, cols, startDt, r.shifts || null); }); 
+            h += '</tbody></table>';
+            
+            const wrapper = document.createElement("div"); wrapper.className = "table-wrapper";
+            wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName);
+            
+            wrapper.innerHTML = `
+                <div class="table-header">
+                    <span class="table-title" onclick="renameLocalTable(this)">📌 ${tableName}</span>
+                    <button class="btn btn-purple" onclick="openAiWizardForSpecificTable(this)">🪄 SİHİRBAZA GÖNDER</button>
+                </div>
+                <div class="scroll-area">${h}</div>
+                <textarea class="glass-input table-notes" style="margin-top:15px; height:50px;" placeholder="Notlar...">${savedNotes || ""}</textarea>
+                <div style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;">
+                    <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR</button>
+                    <button class="btn btn-cyan" onclick="copyTableRows(this)">📋 KOPYALA</button>
+                    <button class="btn btn-orange" onclick="takePhoto(this)">📸 FOTO AL</button>
+                    <button class="btn btn-red" onclick="closeTable(this)">🗑️ SİL</button>
+                </div>`;
+            const tContainer = document.getElementById("tablesContainer");
+            if(insertAfter) insertAfter.parentNode.insertBefore(wrapper, insertAfter.nextSibling); else tContainer.insertBefore(wrapper, tContainer.firstChild); 
+            updateAllStats(); saveHistory();
+        }
+
+        function createRowHtml(name, tc, colCount, startDt, savedShifts) {
+            let cells = `<td class="no-export">
+                            <button class="row-move-btn" onclick="moveRow(this,-1)" style="background:transparent; border:none; color:white; cursor:pointer;">▲</button>
+                            <button class="row-move-btn" onclick="moveRow(this,1)" style="background:transparent; border:none; color:white; cursor:pointer;">▼</button>
+                         </td>
+                         <td style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="editable-name" data-tc="${tc}" contenteditable="true">${name}</div>
+                            <button class="select-icon" onclick="openStaffQuickMenu(event, this)">▼</button>
+                         </td>`;
+            for(let i=0; i<colCount; i++) {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); const s = savedShifts?.[i] || {text:"", bg:"transparent", pin:""}; const pinAttr = s.pin ? ` data-pin="${s.pin.replace(/"/g, '&quot;')}"` : ""; 
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${s.bg}" ${pinAttr}>${s.text}</td>`;
+                if(d.getDay() === 0) cells += `<th class="week-summary-cell"></th>`;
+            }
+            cells += `<th class="total-summary-cell"></th>`; return `<tr>${cells}</tr>`;
+        }
+
+        function moveRow(btn, direction) {
+            const row = btn.closest('tr'); const tbody = row.parentElement;
+            if (direction === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling);
+            else if (direction === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row);
+        }
+
+        function openStaffQuickMenu(e, btn) {
+            e.preventDefault(); e.stopPropagation();
+            activeCell = btn.previousElementSibling; 
+            const m = document.getElementById("staffSelectMenu"); m.innerHTML = "";
+            if(havuzIsimleri.length === 0) { m.innerHTML = `<div style="color:white; padding:10px; font-size:12px;">Havuz Boş</div>`; }
+            havuzIsimleri.forEach(kisi => {
+                const d = document.createElement("div"); d.className = "menu-item"; d.innerText = kisi.name;
+                d.onclick = () => { saveHistory(); activeCell.innerText = kisi.name; activeCell.setAttribute("data-tc", kisi.tc); m.style.display = "none"; };
+                m.appendChild(d);
+            });
+            m.style.display = "block"; m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px";
+        }
+
+        // 🎯 MÜKEMMEL ÇOKLU KOPYALAMA (BLOK SEÇİM)
+        let isSelecting = false; let startCell = null; let paintModeData = null;
+
+        document.addEventListener('mousedown', e => {
+            if(e.button !== 0) return; 
+            let shiftCell = e.target.closest('.shift-cell');
+            if(shiftCell) {
+                isSelecting = true; startCell = shiftCell;
+                if(e.altKey) { paintModeData = { text: shiftCell.innerText, bg: shiftCell.style.background }; }
+                if(!e.ctrlKey && !e.altKey) document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell'));
+                shiftCell.classList.add('selected-cell');
+            }
+        });
+
+        document.addEventListener('mouseover', e => {
+            let currentCell = e.target.closest('.shift-cell');
+            if(isSelecting && currentCell && startCell) {
+                const table = startCell.closest('table'); if(currentCell.closest('table') !== table) return; 
+                
+                if(paintModeData) { currentCell.innerText = paintModeData.text; currentCell.style.background = paintModeData.bg; updateAllStats(); return; }
+
+                const rows = Array.from(table.querySelector('tbody').querySelectorAll('tr'));
+                let startRowIdx = rows.indexOf(startCell.closest('tr')); let currentRowIdx = rows.indexOf(currentCell.closest('tr'));
+                let startRowCells = Array.from(rows[startRowIdx].querySelectorAll('.shift-cell')); let currentRowCells = Array.from(rows[currentRowIdx].querySelectorAll('.shift-cell'));
+                let startColIdx = startRowCells.indexOf(startCell); let currentColIdx = currentRowCells.indexOf(currentCell);
+                
+                let minRow = Math.min(startRowIdx, currentRowIdx); let maxRow = Math.max(startRowIdx, currentRowIdx);
+                let minCol = Math.min(startColIdx, currentColIdx); let maxCol = Math.max(startColIdx, currentColIdx);
+
+                if(!e.ctrlKey) document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell'));
+                for(let r = minRow; r <= maxRow; r++) {
+                    let rCells = Array.from(rows[r].querySelectorAll('.shift-cell'));
+                    for(let c = minCol; c <= maxCol; c++) { if(rCells[c]) rCells[c].classList.add('selected-cell'); }
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => { isSelecting = false; startCell = null; paintModeData = null; });
+
+        // 🎁 ÇİFT TIKLA TÜM SATIRI DOLDUR
+        document.addEventListener('dblclick', e => {
+            if(e.target.classList.contains('shift-cell')) {
+                let val = e.target.innerText; let bg = e.target.style.background; if(!val) return;
+                saveHistory(); let row = e.target.closest('tr');
+                row.querySelectorAll('.shift-cell').forEach(cell => { if(cell.innerText === "") { cell.innerText = val; cell.style.background = bg; } });
+                updateAllStats(); showToast("Tüm Satır Dolduruldu! 🚀");
+            }
+        });
+
+        // 🎡 ÇARK İLE VARDİYA DEĞİŞTİRME
+        document.addEventListener('wheel', e => {
+            let cell = e.target.closest('.shift-cell');
+            if(cell && !isSelecting) {
+                e.preventDefault(); saveHistory();
+                let keys = Object.keys(shiftRules); keys.push(""); 
+                let currentText = cell.innerText.trim(); let idx = keys.indexOf(currentText);
+                if(e.deltaY > 0) idx = (idx + 1) % keys.length; else idx = (idx - 1 + keys.length) % keys.length;
+                let newShift = keys[idx]; cell.innerText = newShift; cell.style.background = newShift ? shiftRules[newShift].color : "transparent";
+                updateAllStats();
+            }
+        }, {passive: false});
+
+        // 📋 ÇOKLU KOPYALANAN HÜCRELERİ (GRİD) AYNI SAYIDA HÜCREYE YAPIŞTIRMA!
+        document.addEventListener('paste', e => {
+            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name'))) return;
+            const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
+            if(selected.length > 0) {
+                e.preventDefault(); saveHistory(); 
+                let pasteData = (e.clipboardData || window.clipboardData).getData('text'); 
+                let rows = pasteData.split("\n").map(r => r.trimRight()).filter(r => r !== "");
+                
+                // Senaryo 1: Tek hücre kopyalandı, çoklu seçildi (Hepsine aynı değeri yaz)
+                if (rows.length === 1 && rows[0].split('\t').length === 1) {
+                    let val = rows[0].trim(); let safeVal = val.replace(/[\s.,]/g, ':').toUpperCase(); 
+                    let matchedKey = val; let matchedColor = "transparent";
+                    for (let key in shiftRules) { if (key.replace(/[\s.,]/g, ':').toUpperCase() === safeVal) { matchedKey = key; matchedColor = shiftRules[key].color; break; } }
+                    selected.forEach(cell => { cell.innerText = matchedKey; cell.style.background = matchedColor; });
+                } 
+                // Senaryo 2: Çoklu hücre kopyalandı (Grid Yapıştırma)
+                else {
+                    let startCell = selected[0]; 
+                    let tr = startCell.closest('tr'); let tbody = tr.parentElement; 
+                    let allTrs = Array.from(tbody.querySelectorAll('tr')); let startRowIdx = allTrs.indexOf(tr); 
+                    let shiftCellsInStartRow = Array.from(tr.querySelectorAll('.shift-cell')); let startColIdx = shiftCellsInStartRow.indexOf(startCell);
+                    
+                    for (let i = 0; i < rows.length; i++) {
+                        if (startRowIdx + i >= allTrs.length) break; 
+                        let currentTr = allTrs[startRowIdx + i]; 
+                        let cols = rows[i].split('\t'); 
+                        let shiftCellsInRow = Array.from(currentTr.querySelectorAll('.shift-cell'));
+                        
+                        for (let j = 0; j < cols.length; j++) {
+                            if (startColIdx + j >= shiftCellsInRow.length) break; 
+                            let targetCell = shiftCellsInRow[startColIdx + j];
+                            let sVal = cols[j].trim(); let finalBg = "transparent";
+                            if(sVal) { 
+                                let tNorm = sVal.replace(/[\s.,]/g, ':').toUpperCase(); 
+                                for (let key in shiftRules) { 
+                                    let kNorm = key.replace(/[\s.,]/g, ':').toUpperCase(); 
+                                    if (kNorm === tNorm || (tNorm.includes(kNorm) && kNorm.length > 2)) { sVal = key; finalBg = shiftRules[key].color; break; } 
+                                } 
+                            }
+                            targetCell.innerText = sVal; targetCell.style.background = finalBg;
+                        }
+                    }
+                }
+                updateAllStats(); showToast("Yapıştırma Başarılı! ✅");
+            }
+        });
+
+        // 🖱️ SAĞ TIK MENÜSÜ & AKILLI KONUMLAMA
+        document.addEventListener('contextmenu', function(e) {
+            let shiftCell = e.target.closest('.shift-cell');
+            if (shiftCell) { 
+                e.preventDefault(); 
+                if (!shiftCell.classList.contains('selected-cell')) { document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell')); shiftCell.classList.add('selected-cell'); } 
+                activeCell = shiftCell; 
+                const m = document.getElementById("contextMenu"); m.style.display = "block"; 
+                
+                let x = e.pageX; let y = e.pageY;
+                if (x + m.offsetWidth > window.innerWidth) x = window.innerWidth - m.offsetWidth - 20;
+                if (y + m.offsetHeight > window.innerHeight) y = window.innerHeight - m.offsetHeight - 20;
+                m.style.left = x + "px"; m.style.top = y + "px"; 
+            } 
+            else if (e.target.tagName === 'TH' && e.target.hasAttribute('data-date')) { 
+                e.preventDefault(); activeHeaderCell = e.target; 
+                activeColIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
+                const m = document.getElementById("headerContextMenu"); m.style.display = "block"; 
+                m.style.left = e.pageX + "px"; m.style.top = e.pageY + "px"; 
+            }
+            else if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); }
+        });
+        window.onclick = (e) => { if(!e.target.closest('.custom-menu') && !e.target.closest('.select-icon')) { document.querySelectorAll('.custom-menu').forEach(m => m.style.display = "none"); } };
+
+        const geminiColors = ['#ef4444','#f97316','#f59e0b','#eab308','#84cc16','#22c55e','#10b981','#14b8a6','#06b6d4','#0ea5e9','#3b82f6','#6366f1','#8b5cf6','#a855f7','#d946ef','#ec4899','#f43f5e','#94a3b8','#334155','#0f172a','#000000'];
+        
+        function renderContextMenu() { 
+            const grid = document.getElementById("dynamicMenuGrid"); if(!grid) return; grid.innerHTML = ""; 
+            Object.keys(shiftRules).forEach(sName => { 
+                let r = shiftRules[sName]; 
+                grid.innerHTML += `<div class="menu-item-wrapper"><div class="menu-item" style="background:${r.color};" onclick="setShift('${sName}','${r.color}')">${sName}</div><div class="delete-custom-btn" onclick="deleteCustomShift(event, '${sName}')">X</div></div>`; 
+            }); 
+            grid.innerHTML += `<div class="menu-item" style="background:rgba(255,255,255,0.1);" onclick="setShift('')">❌ BOŞALT</div>`; 
+            
+            const colorGrid = document.getElementById("quickColors"); colorGrid.innerHTML = "";
+            geminiColors.forEach(c => { colorGrid.innerHTML += `<div class="color-swatch" style="background:${c};" onclick="applyCustomColor('${c}')"></div>`; });
+        }
+
+        function setShift(v, c) { 
+            const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); 
+            if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; }); updateAllStats(); } 
+            document.getElementById("contextMenu").style.display = "none"; 
+        }
+        function applyCustomColor(color) {
+            const selectedCells = document.querySelectorAll('.selected-cell.shift-cell'); 
+            if(selectedCells.length > 0) { saveHistory(); selectedCells.forEach(cell => { cell.style.background = color; }); updateAllStats(); } 
+            document.getElementById("contextMenu").style.display = "none"; 
+        }
+        function deleteCustomShift(e, shiftName) {
+            e.stopPropagation(); if(confirm(`"${shiftName}" kuralını silmek istiyor musunuz?`)) { delete shiftRules[shiftName]; db.ref("vardiya_kurallari/" + shiftName.replace(/\./g, ':')).remove(); renderContextMenu(); }
+        }
+        
+        // 📍 NOTLU İĞNE SİSTEMİ
+        function addGhostPinToCell() { 
+            let notText = prompt("İğne için bir not yazın (Boş bırakırsanız sadece 'Not' yazar):", "");
+            if(notText !== null) {
+                if(notText.trim() === "") notText = "Not";
+                const selected = document.querySelectorAll('.selected-cell'); 
+                selected.forEach(c => { c.setAttribute("data-pin", notText); }); 
+                saveHistory();
+            }
+            document.getElementById("contextMenu").style.display = "none"; 
+        }
+        function removeGhostPinFromCell() { const selected = document.querySelectorAll('.selected-cell'); selected.forEach(c => { c.removeAttribute("data-pin"); }); document.getElementById("contextMenu").style.display = "none"; }
+
+        // 📝 OTOMATİK TARİH KAYDIRMALI SÜTUN EKLEME / SİLME 
+        function recalculateTableDates(wrapper) {
+            let startDtStr = wrapper.getAttribute("data-startdt"); if(!startDtStr) return;
+            let startDt = new Date(startDtStr); let table = wrapper.querySelector('table');
+            let dateHeaders = Array.from(table.querySelectorAll('thead th[data-date]'));
+            wrapper.setAttribute("data-colcount", dateHeaders.length); // Sütun sayısını güncelle
+            
+            dateHeaders.forEach((th, i) => {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i);
+                let fullD = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                th.innerHTML = `${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small>`;
+                th.setAttribute("data-date", fullD);
+            });
+        }
+
+        function deleteColumn() {
+            if(activeColIndex > -1) {
+                if(!confirm("Sütun tamamen silinsin mi? (Tarihler kaydırılacak!)")) return;
+                saveHistory();
+                let table = activeHeaderCell.closest('table');
+                table.querySelectorAll('tr').forEach(tr => { if(tr.children[activeColIndex]) tr.children[activeColIndex].remove(); });
+                recalculateTableDates(table.closest('.table-wrapper'));
+                updateAllStats();
+            }
+            document.getElementById("headerContextMenu").style.display = "none"; showToast("Sütun Silindi, Tarihler Güncellendi 🗑️");
+        }
+        function insertColumn() {
+            if(activeColIndex > -1) {
+                saveHistory();
+                let table = activeHeaderCell.closest('table');
+                table.querySelectorAll('tr').forEach((tr, index) => {
+                    let cellToClone = tr.children[activeColIndex]; let newCell = cellToClone.cloneNode(true);
+                    if(index > 0) { newCell.innerText = ""; newCell.style.background = "transparent"; newCell.classList.remove('selected-cell'); newCell.removeAttribute('data-pin'); } 
+                    tr.insertBefore(newCell, cellToClone.nextSibling);
+                });
+                recalculateTableDates(table.closest('.table-wrapper'));
+                updateAllStats();
+            }
+            document.getElementById("headerContextMenu").style.display = "none"; showToast("Sütun Eklendi, Tarihler Kaydırıldı ➕");
+        }
+        function editColumnDate() {
+            let tableWrapper = activeHeaderCell.closest('.table-wrapper');
+            let currentStart = tableWrapper.getAttribute("data-startdt");
+            let isoStr = new Date(currentStart).toISOString().split('T')[0];
+            let newDateStr = prompt("Tablonun başlangıç tarihini değiştirin (YIL-AY-GÜN):", isoStr);
+            if(newDateStr) { 
+                let nDate = new Date(newDateStr);
+                if(!isNaN(nDate.getTime())) {
+                    tableWrapper.setAttribute("data-startdt", nDate.toISOString());
+                    recalculateTableDates(tableWrapper);
+                    showToast("Tüm tarihler yeniden hesaplandı! 🗓️");
+                }
+            }
+            document.getElementById("headerContextMenu").style.display = "none";
+        }
+
+        // 🪄 AI SİHİRBAZ BAĞLANTISI
+        window.targetTableWrapperForAI = null;
+        function openAiWizardForSpecificTable(btn) {
+            const wrapper = btn.closest('.table-wrapper'); window.targetTableWrapperForAI = wrapper;
+            const startDateVal = wrapper.getAttribute("data-startdt"); const colCountVal = wrapper.getAttribute("data-colcount") || 30;
+            const names = Array.from(wrapper.querySelectorAll("tbody tr:not(.summary-row)")).map(tr => tr.querySelector(".editable-name").innerText.trim());
+            const namesParam = encodeURIComponent(names.join(','));
+            document.getElementById('aiWizardFrame').src = `isci_sihirbaz.html?mode=inject&names=${namesParam}&start=${startDateVal}&days=${colCountVal}`;
+            openModal('aiWizardPopup');
+        }
+        function openAiWizard() { document.getElementById('aiWizardFrame').src = `isci_sihirbaz.html`; openModal('aiWizardPopup'); }
+        function closeAiWizardPopup() { closeModal('aiWizardPopup'); document.getElementById('aiWizardFrame').src = ""; }
+        window.receiveDataFromAiWizard = function(aiRows, startDateStr, colCount) {
+            let sDate = new Date(startDateStr);
+            if (window.targetTableWrapperForAI) {
+                const oldWrapper = window.targetTableWrapperForAI; const tName = oldWrapper.getAttribute("data-tablename") || "AI Tablosu";
+                generateTable(true, aiRows, tName, sDate, parseInt(colCount), oldWrapper, ""); oldWrapper.remove();
+            } else { generateTable(true, aiRows, "🤖 A.I. Yeni Tablo", sDate, parseInt(colCount)); }
+            closeAiWizardPopup(); showToast("Sihirbaz Tablosu Çizildi! 🪄");
+        };
+
+        // EXCEL KOPYALAMA
+        function copyTableRows(btn) {
+            const table = btn.closest('.table-wrapper').querySelector('table'); let html = "<table border='1'>"; let tsv = "";
+            table.querySelectorAll('tr').forEach(tr => { html += "<tr>"; let rowData = []; tr.querySelectorAll('th, td').forEach(cell => { if(!cell.classList.contains('no-export')){ let text = cell.innerText || ""; html += `<td>${text}</td>`; rowData.push(text.replace(/\n/g," ")); } }); html += "</tr>"; tsv += rowData.join("\t") + "\n"; }); html += "</table>";
+            const container = document.createElement('div'); container.innerHTML = html; container.style.position = 'fixed'; container.style.top = '-9999px'; document.body.appendChild(container);
+            const selection = window.getSelection(); const range = document.createRange(); range.selectNodeContents(container); selection.removeAllRanges(); selection.addRange(range);
+            try { document.execCommand('copy'); showToast("Excel İçin Kopyalandı! 📋"); } catch(e) {} document.body.removeChild(container);
+        }
+        function takePhoto(btn) { const wrapper = btn.closest('.table-wrapper'); showToast("Fotoğraf Çekiliyor... 📸"); html2canvas(wrapper.querySelector('.scroll-area'), { scale: 2, backgroundColor: "#020617" }).then(canvas => { let link = document.createElement('a'); link.download = 'ShiftMaster.png'; link.href = canvas.toDataURL('image/png'); link.click(); showToast("İndirildi! ✅"); }); }
+
+        // İSTATİSTİK MOTORU
+        let statsTimer = null;
+        function updateAllStats() {
+            if(statsTimer) clearTimeout(statsTimer);
+            statsTimer = setTimeout(() => {
+                document.querySelectorAll(".table-wrapper").forEach(wrapper => {
+                    wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(row => {
+                        const cells = Array.from(row.querySelectorAll("td, th")); let aW=0, aN=0, hW=0, hN=0;
+                        cells.forEach(td => {
+                            if(td.classList.contains("shift-cell")) {
+                                const val = td.innerText.trim(); let safeVal = val.replace(/[\s.,]/g, ':').toUpperCase(); 
+                                let matchedRule = null; for (let key in shiftRules) { if (key.replace(/[\s.,]/g, ':').toUpperCase() === safeVal) { matchedRule = shiftRules[key]; break; } }
+                                if(matchedRule) { td.style.background = matchedRule.color; hW += parseFloat(matchedRule.w)||0; hN += parseFloat(matchedRule.n)||0; aW += parseFloat(matchedRule.w)||0; aN += parseFloat(matchedRule.n)||0; } 
+                                else if(val === "") td.style.background = "transparent";
+                            }
+                            if(td.classList.contains("week-summary-cell")) { td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`; hW=0; hN=0; }
+                            if(td.classList.contains("total-summary-cell")) { td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`; }
+                        });
+                    });
+                });
+            }, 400); 
+        }
+
+        function addEmptyRow(btn) { const wrapper = btn.closest('.table-wrapper'); wrapper.querySelector('tbody').insertAdjacentHTML('beforeend', createRowHtml("İSİM GİRİNİZ...", "", parseInt(wrapper.getAttribute("data-colcount")), new Date(wrapper.getAttribute("data-startdt")))); updateAllStats(); }
+        function closeTable(btn) { if(confirm("Tabloyu silmek istiyor musunuz?")) btn.closest('.table-wrapper').remove(); }
+        function renameLocalTable(span) { let pName = prompt("Tablo adı:", span.innerText.replace("📌", "").trim()); if(pName) span.innerHTML = `📌 ${pName.trim()} <small style="font-size:10px; color:#fff; opacity:0.5;">(İsmi Değiştir)</small>`; }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            db.ref("vardiya_kurallari").once('value', snap => { if(snap.exists()) { shiftRules = snap.val(); renderContextMenu(); } });
+            loadStaffPool();
+        });
+    </script>
+</body>
+</html>
