@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Atık Takip Pro V24 | ShiftMaster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        :root { --accent: #facc15; --bg: #000; --card: #050b14; --success: #10b981; --danger: #ef4444; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--accent); margin: 0; padding: 10px; padding-bottom: 220px; color-scheme: dark; overflow-x: hidden; }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; position: sticky; top: 0; z-index: 2000; background: var(--bg); padding-top: 10px; }
+        .tab-btn { flex: 1; padding: 15px 5px; border-radius: 12px; border: 2px solid var(--accent); background: #000; color: var(--accent); font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase; }
+        .tab-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 20px rgba(250,204,21,0.5); }
+
+        /* AI HIZLI KOMUT SATIRI VE MİKROFON */
+        .ai-komut-kutusu { background: rgba(56, 189, 248, 0.1); border: 2px solid #38bdf8; border-radius: 12px; padding: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); transition: 0.3s; }
+        .btn-ses-inline { background: #38bdf8; border: none; border-radius: 50%; min-width: 45px; height: 45px; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); flex-shrink: 0; }
+        .btn-ses-inline.dinliyor { background: var(--danger); animation: pulse 1.5s infinite; box-shadow: 0 0 15px var(--danger); }
+        .ai-input { flex: 1; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; font-weight: 600; font-family: 'Poppins', sans-serif; }
+        .ai-input::placeholder { color: rgba(255,255,255,0.6); font-weight: normal; font-size:11px; }
+        .btn-ai-ekle { background: #38bdf8; color: #000; border: none; border-radius: 8px; padding: 10px 15px; font-weight: 900; cursor: pointer; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .analiz-tablosu-konteyner { overflow: auto; border-radius: 12px; border: 2px solid #333; background: #000; max-height: 500px; margin-top: 10px;}
+        .analiz-tablosu { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 11px; color: #fff; cursor: crosshair; }
+        .analiz-tablosu th { background: var(--accent); color: #000; padding: 12px 15px; font-weight: 900; position: sticky; top: 0; z-index: 10; white-space: nowrap; border: 1px solid #000; }
+        .analiz-tablosu td { border: 1px solid #222; padding: 10px; font-family: monospace; white-space: nowrap; text-align: center; transition: 0.2s; }
+        
+        .edit-cell { background: rgba(56, 189, 248, 0.1); color: #38bdf8; outline: none; border: 1px dashed #38bdf8 !important; }
+        .deger-var { color: var(--success); font-weight: bold; }
+        .highlighted-cell { background: #38bdf8 !important; color: #000 !important; font-weight: 900; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); z-index: 5; border: 2px solid #fff !important; }
+
+        .atik-satir { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; margin-bottom: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .birim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .birim-ad { font-size: 14px; font-weight: 900; color: #fff; }
+        .satir-toplam { color: var(--success); font-weight: 900; font-size: 16px; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--success); display: inline-block; }
+
+        .tartim-grubu { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .tartim-kutu { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 8px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; }
+        .buyuk-input { background: transparent; border: none; color: #fff; font-size: 20px; font-weight: 900; width: 60px; text-align: center; outline: none; }
+        .btn-plus { background: rgba(250,204,21,0.2); color: var(--accent); border: 1px dashed var(--accent); width: 45px; height: 45px; border-radius: 10px; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        .top-nav { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; padding: 10px; background: var(--card); border-radius: 15px; border: 1px dashed var(--accent); }
+        .btn-excel { flex: 1; background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid var(--success); border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer; }
+        .btn-kaydet-dev { flex: 1.5; background: var(--accent); color: #000; font-size: 16px; font-weight: 900; border: none; border-radius: 10px; cursor: pointer; }
+        
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; font-weight: 900; font-size: 10px; cursor: pointer; padding: 8px; }
+
+        .footer-panel { background: rgba(5,11,20,0.98); border: 2px dashed var(--accent); padding: 15px; border-radius: 15px; margin-top: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .btn-footer { flex: 1; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer; }
+
+        #excelModal, #raporModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; flex-direction: column; padding: 15px; overflow-y: auto; }
+        .excel-area { background: #050b14; border: 2px dashed var(--accent); color: var(--accent); width: 100%; height: 100px; padding: 10px; box-sizing: border-box; border-radius: 10px; font-family: monospace; margin-bottom: 10px; }
+        
+        #toast { visibility: hidden; background: var(--success); color: #fff; text-align: center; border-radius: 10px; padding: 15px; position: fixed; z-index: 9999; left: 50%; top: 20px; font-weight: 900; transform: translateX(-50%); box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #fff; }
+        #toast.show { visibility: visible; }
+    </style>
+</head>
+<body>
+
+    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <button onclick="window.location.href='shiftmaster.html?direktGecis=1'" style="background:none; border:none; color:white; font-size:14px; cursor:pointer;">◀ Lobiye Dön</button>
+        <button class="btn-danger" onclick="veritabaniniSifirla()">🗑️ TÜM VERİLERİ SIFIRLA</button>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="sekmeyiDegistir('tibbi', this)">Tıbbi Atık</button>
+        <button class="tab-btn" onclick="sekmeyiDegistir('tehlikeli', this)">Tehlikeli</button>
+        <button class="tab-btn" onclick="sekmeyiDegistir('kesici', this)">Kesici Delici</button>
+    </div>
+
+    <div class="top-nav">
+        <button class="btn-excel" onclick="acExcelModal()">📥 EXCEL'DEN AL</button>
+        <button class="btn-kaydet-dev" onclick="showToast('SİSTEM GÜNCEL')">GÜNÜ KAPAT</button>
+        <div style="background:#000; border:1px solid var(--accent); border-radius:10px; padding:5px; flex:1;">
+            <input type="date" id="anaTakvim" style="background:transparent; border:none; color:var(--accent); font-weight:900; font-size:13px; outline:none; width:100%;" onchange="tarihDegisti(this.value)">
+        </div>
+    </div>
+
+    <div class="ai-komut-kutusu" id="aiKutu">
+        <button id="btnSesliAsistan" class="btn-ses-inline" onclick="sesliAsistanTetikle()" title="Konuşmak için basın">🎤</button>
+        <input type="text" id="aiHizliInput" class="ai-input" placeholder="Mikrofon kapalı. Manuel yazabilirsiniz..." onkeypress="if(event.key === 'Enter') hizliAsistanCalistir()">
+        <button class="btn-ai-ekle" onclick="hizliAsistanCalistir()">EKLE</button>
+    </div>
+    <div id="aiMatchText" style="text-align:center; font-size:11px; margin-top:-5px; margin-bottom:15px; font-weight:bold; height:15px;"></div>
+
+    <div id="birimlerSahasi"></div>
+
+    <div class="footer-panel">
+        <div style="text-align:center; color:var(--accent); font-size:12px; font-weight:bold; margin-bottom:10px;">📊 DÖKÜM VE RAPORLAMA</div>
+        <div class="rapor-butonlar" style="display:flex; gap:8px; margin-bottom:10px;">
+            <button class="btn-footer" onclick="hizliRaporAl('hafta')">Haftalık Döküm</button>
+            <button class="btn-footer" onclick="hizliRaporAl('ay')">Aylık Döküm</button>
+            <button class="btn-footer" onclick="hizliRaporAl('yil')">Yıllık Döküm</button>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:center; gap:5px;">
+            <input type="date" id="repStart" style="background:#000; border:1px solid #333; color:white; padding:8px; border-radius:5px; font-size:11px;">
+            <span style="font-size:10px; font-weight:900;">-</span>
+            <input type="date" id="repEnd" style="background:#000; border:1px solid #333; color:white; padding:8px; border-radius:5px; font-size:11px;">
+            <button class="btn-footer" onclick="ozelRaporAl()" style="background:var(--accent); color:#000; border:none; padding:10px 15px; flex:none;">DÖKÜM GÖSTER</button>
+        </div>
+    </div>
+
+    <div id="excelModal">
+        <h2 style="color:var(--accent); text-align:center; margin:0 0 15px 0;">📥 EXCEL AKILLI MOTOR V24</h2>
+        
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button id="btnAnaliz" class="btn-kaydet-dev" style="background:#38bdf8; width:100%; height:45px;" onclick="excelAnalizEt()">🔍 VERİLERİ ANALİZ ET</button>
+            <button id="btnOnay" class="btn-kaydet-dev" style="display:none; width:100%; height:45px; background:var(--success);" onclick="excelOnaylaVeKaydet()">🚀 ONAYLA VE YÜKLE</button>
+            <button class="btn-kaydet-dev" style="background:var(--danger); color:#fff; width:auto; padding:0 20px;" onclick="kapatExcelModal()">KAPAT</button>
+        </div>
+
+        <textarea id="excelInput" class="excel-area" placeholder="Excel verinizi buraya yapıştırın..."></textarea>
+        
+        <div id="analizGosterge" style="display:none; flex:1; flex-direction:column;">
+            <div class="analiz-tablosu-konteyner" id="onizlemeAlani" style="flex:1;"></div>
+        </div>
+    </div>
+
+    <div id="raporModal">
+        <h2 style="color:var(--accent); text-align:center; margin:0 0 15px 0;">📊 GEÇMİŞ DÖKÜM RAPORU</h2>
+        
+        <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+            <button class="btn-kaydet-dev" style="background:#10b981; flex:1; height:45px; font-size:12px;" onclick="downloadRaporExcel()">📥 EXCEL İNDİR</button>
+            <button class="btn-kaydet-dev" style="background:#f97316; flex:1; height:45px; font-size:12px;" onclick="yazdirA4()">🖨️ A4 ÇIKTI AL</button>
+            <button class="btn-kaydet-dev" style="background:var(--danger); color:#fff; width:auto; padding:0 20px;" onclick="document.getElementById('raporModal').style.display='none'">KAPAT</button>
+        </div>
+
+        <div id="raporTabloAlani" class="analiz-tablosu-konteyner" style="flex:1; max-height:450px;"></div>
+    </div>
+
+    <div id="toast">BAŞARILI! ✅</div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const tenantId = localStorage.getItem('sm_current_tenant') || "genel";
+
+        let aktifKategori = "tibbi";
+        let seciliTarih = new Date().toISOString().split('T')[0];
+        document.getElementById('anaTakvim').value = seciliTarih;
+
+        const birimler = [
+            "Yoğun Bakım", "Karma Yataklı Servisler 3", "Ameliyathane", "Acil Servis", "Laboratuvarlar", 
+            "Zemin Kat Poliklinikler", "1_Kat Poliklinikler", "Diş Polikliniği", "Sterilizasyon", 
+            "Diyaliz", "Çamaşırhane", "Palyatif Ünitesi", "Endoskopi", "Sdl", "Eczane", "Evde Sağlık"
+        ];
+
+        const anahtarlar = { 
+            "Yoğun Bakım": ["yogun"], "Karma Yataklı Servisler 3": ["karma", "yts3", "yatakli"], 
+            "Ameliyathane": ["ameli"], "Acil Servis": ["acil"], "Laboratuvarlar": ["labor"], 
+            "Zemin Kat Poliklinikler": ["zemin"], "1_Kat Poliklinikler": ["1kat", "1inci", "birinci"], 
+            "Diş Polikliniği": ["dis"], "Sterilizasyon": ["steri"], "Diyaliz": ["diyal"], 
+            "Çamaşırhane": ["camas"], "Palyatif Ünitesi": ["palya"], "Endoskopi": ["endos"],
+            "Sdl": ["sdl"], "Eczane": ["ecza"], "Evde Sağlık": ["evde"]
+        };
+
+        function trTemizle(text) {
+            if(!text) return "";
+            let trMap = {'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'C','Ğ':'G','İ':'I','Ö':'O','Ş':'S','Ü':'U'};
+            for(let key in trMap) { text = text.replace(new RegExp(key, 'g'), trMap[key]); }
+            return text.toLowerCase().replace(/[^a-z0-9]/g, '').trim(); 
+        }
+
+        window.veritabaniniSifirla = function() {
+            let onay = prompt("DİKKAT: Tüm atık verileriniz kalıcı olarak silinecek! Onaylıyorsanız kutuya 'SİL' yazın:");
+            if(onay === "SİL" || onay === "sil") {
+                db.ref(`kurumlar/${tenantId}/atik_verileri`).remove().then(() => {
+                    alert("Veritabanı tertemiz oldu! Sistem yenileniyor...");
+                    location.reload();
+                }).catch(err => alert("Hata: " + err.message));
+            }
+        };
+
+        function sekmeyiDegistir(k, b) { aktifKategori = k; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); b.classList.add('active'); sahaCiz(); }
+        function tarihDegisti(t) { seciliTarih = t; sahaCiz(); }
+
+        function sahaCiz() {
+            const saha = document.getElementById('birimlerSahasi'); saha.innerHTML = "";
+            let d = new Date(seciliTarih);
+            let tStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+
+            birimler.forEach((ad, idx) => {
+                let gorunenAd = ad.replace('_', '.'); 
+                saha.innerHTML += `
+                <div class="atik-satir" id="birim_${idx}">
+                    <div class="birim-header">
+                        <span class="birim-ad">${gorunenAd}</span>
+                        <div style="text-align:right;">
+                            <span class="satir-toplam" id="toplam_${idx}">0.0 KG</span>
+                            <div style="font-size:10px; color:#64748b; font-weight:bold; margin-top:4px;">${tStr}</div>
+                        </div>
+                    </div>
+                    <div class="tartim-grubu" id="grup_${idx}">
+                        <button class="btn-plus" onclick="yeniTartimKutusuAc(${idx})">+</button>
+                    </div>
+                </div>`;
+            });
+            verileriFirebaseDenCek();
+        }
+
+        function yeniTartimKutusuAc(idx) {
+            const g = document.getElementById(`grup_${idx}`); const b = g.querySelector('.btn-plus');
+            let d = new Date(seciliTarih);
+            let tStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+            let timeStr = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+            
+            const div = document.createElement('div'); div.className = "tartim-kutu"; 
+            div.innerHTML = `
+                <span style="font-size:9px; color:#94a3b8; margin-bottom:2px;">${tStr} <span style="color:var(--accent); font-weight:bold;">${timeStr}</span></span>
+                <div style="display:flex; align-items:center; gap:3px;">
+                    <input type="number" step="0.1" class="buyuk-input" oninput="otomatikKaydet(${idx})" placeholder="0.0">
+                    <span style="font-size:12px; color:var(--accent); font-weight:900;">KG</span>
+                </div>`;
+            g.insertBefore(div, b);
+        }
+
+        function otomatikKaydet(idx) {
+            try {
+                const inps = document.querySelectorAll(`#birim_${idx} .buyuk-input`);
+                let t = 0; let det = []; inps.forEach(i => { let v = parseFloat(i.value); if(v > 0) { t += v; det.push(v); } });
+                document.getElementById(`toplam_${idx}`).innerText = t.toFixed(1) + " KG";
+                db.ref(`kurumlar/${tenantId}/atik_verileri/${seciliTarih}/${aktifKategori}/${birimler[idx]}`).set({ 
+                    toplam: parseFloat(t.toFixed(1)), 
+                    detaylar: det, 
+                    son_islem: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) 
+                });
+            } catch(e) {
+                console.log("Kayıt Hatası: ", e);
+            }
+        }
+
+        function verileriFirebaseDenCek() {
+            db.ref(`kurumlar/${tenantId}/atik_verileri/${seciliTarih}/${aktifKategori}`).once('value', snap => {
+                const data = snap.val();
+                let d = new Date(seciliTarih);
+                let tStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+
+                birimler.forEach((ad, idx) => {
+                    const g = document.getElementById(`grup_${idx}`); const b = g.querySelector('.btn-plus');
+                    Array.from(g.children).forEach(c => { if(c!==b) c.remove(); });
+                    
+                    if(data && data[ad]) {
+                        let timeStr = data[ad].son_islem ? data[ad].son_islem.substring(0,5) : "--:--";
+                        (data[ad].detaylar || [data[ad].toplam]).forEach(v => {
+                            const div = document.createElement('div'); div.className = "tartim-kutu"; 
+                            div.innerHTML = `
+                                <span style="font-size:9px; color:#94a3b8; margin-bottom:2px;">${tStr} <span style="color:var(--accent); font-weight:bold;">${timeStr}</span></span>
+                                <div style="display:flex; align-items:center; gap:3px;">
+                                    <input type="number" step="0.1" class="buyuk-input" value="${v}" oninput="otomatikKaydet(${idx})">
+                                    <span style="font-size:12px; color:var(--accent); font-weight:900;">KG</span>
+                                </div>`;
+                            g.insertBefore(div, b);
+                        });
+                        document.getElementById(`toplam_${idx}`).innerText = data[ad].toplam.toFixed(1) + " KG";
+                    } else {
+                        yeniTartimKutusuAc(idx);
+                    }
+                });
+            });
+        }
+
+        // ==========================================
+        // GÜLLÜ AI: WAKE WORD (UYANDIRMA) SİSTEMİ 
+        // ==========================================
+        const SesTanima = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let asistan = null;
+        let asistanDinliyor = false;
+        let asistanUyandi = false;
+
+        if (SesTanima) {
+            asistan = new SesTanima();
+            asistan.lang = 'tr-TR';
+            asistan.continuous = false; // Apple/Safari bug'ı olmaması için false, manuel döngü yapıyoruz
+            asistan.interimResults = false; 
+
+            asistan.onresult = function(event) {
+                const metin = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+                
+                if (!asistanUyandi) {
+                    // Robot uyuyor, sadece "YAZ" kelimesini arıyor
+                    if (metin.includes("yaz")) {
+                        asistanUyandi = true;
+                        document.getElementById('aiKutu').style.borderColor = "var(--success)";
+                        document.getElementById('aiHizliInput').placeholder = "DİNLİYORUM... Birim ve rakam söyleyin";
+                        document.getElementById('aiHizliInput').value = "";
+                        document.getElementById('aiMatchText').innerText = "🟢 DİNLİYORUM...";
+                        document.getElementById('aiMatchText').style.color = "var(--success)";
+                        
+                        // Eğer "yaz acil 20" dediyse hem uyanır hem işler
+                        let kalanMetin = metin.replace(/yaz/g, "").trim();
+                        if (kalanMetin.length > 2) {
+                            hizliAsistanCalistir(kalanMetin);
+                        }
+                    } else {
+                        document.getElementById('aiMatchText').innerText = "💤 Bekleniyor... (Uyandırmak için 'YAZ' deyin)";
+                        document.getElementById('aiMatchText').style.color = "#64748b";
+                    }
+                } else {
+                    // Robot zaten uyanık, direkt işleme gönder
+                    document.getElementById('aiHizliInput').value = metin;
+                    hizliAsistanCalistir(metin);
+                }
+            };
+
+            asistan.onend = function() {
+                if (asistanDinliyor) {
+                    asistan.start(); // Kesintisiz dinleme döngüsü
+                }
+            };
+            
+            asistan.onerror = function(e) {
+                if(e.error === 'not-allowed') {
+                    asistanDinliyor = false;
+                    asistanUyandi = false;
+                    document.getElementById('btnSesliAsistan').classList.remove('dinliyor');
+                    alert("Mikrofona izin verilmedi!");
+                }
+            }
+        }
+
+        window.sesliAsistanTetikle = function() {
+            if(!asistan) return alert("Bu tarayıcı sesi desteklemiyor. Chrome, Edge veya Safari kullanın.");
+            
+            const btn = document.getElementById('btnSesliAsistan');
+            const input = document.getElementById('aiHizliInput');
+            
+            if (asistanDinliyor) {
+                // Mikrofonu Kapat
+                asistanDinliyor = false;
+                asistanUyandi = false;
+                asistan.stop();
+                btn.classList.remove('dinliyor');
+                document.getElementById('aiKutu').style.borderColor = "#38bdf8";
+                input.placeholder = "Mikrofon kapalı. Manuel yazabilirsiniz...";
+                input.value = "";
+                document.getElementById('aiMatchText').innerText = "";
+            } else {
+                // Mikrofonu Aç (Uyku Modunda Başlar)
+                asistanDinliyor = true;
+                asistanUyandi = false;
+                asistan.start();
+                btn.classList.add('dinliyor');
+                document.getElementById('aiKutu').style.borderColor = "#64748b";
+                input.placeholder = "Uyku modunda. Uyanmak için 'YAZ' deyin...";
+                input.value = "";
+                document.getElementById('aiMatchText').innerText = "💤 Uyku Modu. 'Yaz' demeniz bekleniyor.";
+                document.getElementById('aiMatchText').style.color = "#64748b";
+            }
+        };
+
+        window.hizliAsistanCalistir = function(sesliMetin = null) {
+            // İster mikrofondan gelen sesli metni al, ister manuel girilen input değerini al
+            let metin = (sesliMetin || document.getElementById('aiHizliInput').value).trim();
+            if(!metin) return;
+
+            let islenmis = metin.toLowerCase().replace(/buçuk/g, '.5').replace(/yarım/g, '.5').replace(/virgül/g, '.').replace(/nokta/g, '.');
+            const sayilar = {"sıfır":0,"bir":1,"iki":2,"üç":3,"dört":4,"beş":5,"altı":6,"yedi":7,"sekiz":8,"dokuz":9,"on":10,"onbir":11,"oniki":12,"onüç":13,"ondört":14,"onbeş":15,"yirmi":20,"otuz":30};
+            Object.keys(sayilar).forEach(s => {
+                let regex = new RegExp(`\\b${s}\\b`, "g");
+                islenmis = islenmis.replace(regex, sayilar[s]);
+            });
+
+            let rakamMatch = islenmis.match(/(\d+(?:[\.,]\d+)?)/);
+            if(!rakamMatch) {
+                document.getElementById('aiMatchText').innerText = "❌ Rakam bulunamadı! Lütfen birim ve kilo söyleyin.";
+                document.getElementById('aiMatchText').style.color = "var(--danger)";
+                document.getElementById('aiHizliInput').value = "";
+                return;
+            }
+            
+            let kilo = parseFloat(rakamMatch[0].replace(',','.'));
+            let temizMetin = trTemizle(metin);
+            let bulunanIdx = -1;
+            
+            birimler.forEach((bName, idx) => {
+                if(bulunanIdx !== -1) return;
+                Object.keys(anahtarlar).forEach(key => {
+                    if (key === bName) {
+                        if(anahtarlar[key].some(k => temizMetin.includes(k))) {
+                            bulunanIdx = idx;
+                        }
+                    }
+                });
+            });
+            
+            if(bulunanIdx !== -1) {
+                let inps = document.querySelectorAll(`#birim_${bulunanIdx} .buyuk-input`);
+                let sonInput = inps[inps.length - 1];
+                
+                if(sonInput.value !== "") {
+                    yeniTartimKutusuAc(bulunanIdx);
+                    inps = document.querySelectorAll(`#birim_${bulunanIdx} .buyuk-input`);
+                    sonInput = inps[inps.length - 1];
+                }
+                
+                sonInput.value = kilo;
+                otomatikKaydet(bulunanIdx);
+                
+                let gorunenAd = birimler[bulunanIdx].replace('_', '.');
+                document.getElementById('aiMatchText').innerText = `✅ BAŞARILI! [${gorunenAd}] -> [${kilo} KG] Eklendi.`;
+                document.getElementById('aiMatchText').style.color = "var(--success)";
+                document.getElementById('aiHizliInput').value = ""; 
+                
+            } else {
+                document.getElementById('aiMatchText').innerText = "❌ Birim anlaşılamadı, çöpe atıldı.";
+                document.getElementById('aiMatchText').style.color = "var(--danger)";
+                document.getElementById('aiHizliInput').value = "";
+            }
+        };
+
+        // --- AKILLI EXCEL ANALİZ MOTORU ---
+        let onbellekData = {};
+        function acExcelModal() { 
+            document.getElementById('excelModal').style.display='flex'; 
+            document.getElementById('analizGosterge').style.display='none'; 
+            document.getElementById('btnAnaliz').style.display='block'; 
+            document.getElementById('btnOnay').style.display='none'; 
+            document.getElementById('excelInput').style.display='block'; 
+            document.getElementById('excelInput').value = "";
+        }
+        function kapatExcelModal() { document.getElementById('excelModal').style.display='none'; }
+
+        function excelAnalizEt() {
+            const metin = document.getElementById('excelInput').value.trim();
+            if(!metin) return alert("Lütfen boş kutuya verileri yapıştırın!");
+            const satirlar = metin.split('\n').map(s => s.trimRight());
+            onbellekData = {}; let sutunMap = {}; let tabloAktif = false;
+
+            let html = '<table class="analiz-tablosu"><thead><tr><th>TARİH</th>';
+            birimler.forEach(b => html += `<th>${b.replace('_', '.')}</th>`);
+            html += '<th style="background:#f59e0b">GÜN TOPLAMI</th></tr></thead><tbody>';
+
+            let birimBazliToplamlar = {};
+            birimler.forEach(b => birimBazliToplamlar[b] = 0);
+            let genelToplam = 0;
+
+            satirlar.forEach(satir => {
+                let tSatir = trTemizle(satir);
+                
+                if(tSatir.includes("tarih")) {
+                    sutunMap = {};
+                    let basliklar = satir.split('\t');
+                    basliklar.forEach((h, i) => {
+                        let t = trTemizle(h);
+                        Object.keys(anahtarlar).forEach(b => { 
+                            if(anahtarlar[b].some(key => t.includes(key)) || (t==="1" && b==="1_Kat Poliklinikler")) {
+                                sutunMap[i] = b; 
+                            }
+                        });
+                    });
+                    tabloAktif = true;
+                    return; 
+                }
+
+                if(!tabloAktif || satir.length < 5) return;
+                
+                let hucreler = satir.split('\t');
+                let tarihHucresi = hucreler[0] ? hucreler[0].trim() : "";
+                let dateMatch = tarihHucresi.match(/(\d{1,2})[\.\/ -](\d{1,2})[\.\/ -](\d{2,4})/);
+                
+                if(dateMatch) {
+                    let y = dateMatch[3].length==2?"20"+dateMatch[3]:dateMatch[3];
+                    let tKey = `${y}-${dateMatch[2].padStart(2,'0')}-${dateMatch[1].padStart(2,'0')}`;
+                    if(!onbellekData[tKey]) onbellekData[tKey] = {};
+                    
+                    let gunToplam = 0; html += `<tr><td>${tKey}</td>`;
+                    birimler.forEach(bName => {
+                        let val = 0;
+                        Object.keys(sutunMap).forEach(idx => {
+                            if(sutunMap[idx] === bName) {
+                                let num = parseFloat(hucreler[idx]?.toString().replace(',','.')) || 0;
+                                if(num > 0) val = num;
+                            }
+                        });
+                        onbellekData[tKey][bName] = val; gunToplam += val; birimBazliToplamlar[bName] += val;
+                        html += `<td contenteditable="true" class="edit-cell ${val>0?'deger-var':''}" onclick="this.classList.toggle('highlighted-cell')" oninput="hucreGuncelle('${tKey}', '${bName}', this.innerText)">${val || ''}</td>`;
+                    });
+                    genelToplam += gunToplam;
+                    html += `<td style="font-weight:900; color:var(--accent)" id="gunSum_${tKey}">${gunToplam.toFixed(1)}</td></tr>`;
+                }
+            });
+
+            html += `<tr style="background:#050b14; font-weight:900; color:var(--accent); border-top:2px solid var(--accent);"><td>BİRİM TOPLAM</td>`;
+            birimler.forEach((b, idx) => { html += `<td id="birimSum_${idx}">${birimBazliToplamlar[b].toFixed(1)}</td>`; });
+            html += `<td id="genelToplamLabel">${genelToplam.toFixed(1)} KG</td></tr></tbody></table>`;
+            
+            if(Object.keys(onbellekData).length === 0) return alert("HATA: Excel'de Tarih veya veri eşleşmedi.");
+
+            document.getElementById('excelInput').style.display = 'none';
+            document.getElementById('analizGosterge').style.display = 'flex';
+            document.getElementById('btnAnaliz').style.display = 'none';
+            document.getElementById('btnOnay').style.display = 'block';
+            document.getElementById('onizlemeAlani').innerHTML = html;
+        }
+
+        window.hucreGuncelle = function(t, b, val) {
+            let n = parseFloat(val.replace(',', '.')) || 0; onbellekData[t][b] = n;
+            let gTop = 0; birimler.forEach(br => gTop += onbellekData[t][br]);
+            document.getElementById(`gunSum_${t}`).innerText = gTop.toFixed(1);
+
+            let bIdx = birimler.indexOf(b); let bTop = 0;
+            Object.keys(onbellekData).forEach(tKey => bTop += onbellekData[tKey][b]);
+            document.getElementById(`birimSum_${bIdx}`).innerText = bTop.toFixed(1);
+
+            let total = 0;
+            Object.keys(onbellekData).forEach(tKey => { birimler.forEach(br => total += onbellekData[tKey][br]); });
+            document.getElementById('genelToplamLabel').innerText = total.toFixed(1) + " KG";
+        };
+
+        function excelOnaylaVeKaydet() {
+            try {
+                Object.keys(onbellekData).forEach(t => {
+                    Object.keys(onbellekData[t]).forEach(b => {
+                        let val = onbellekData[t][b];
+                        if(val > 0) {
+                            db.ref(`kurumlar/${tenantId}/atik_verileri/${t}/${aktifKategori}/${b}`).set({ 
+                                toplam: parseFloat(val.toFixed(1)), 
+                                detaylar: [val], 
+                                son_islem: new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) 
+                            });
+                        }
+                    });
+                });
+                kapatExcelModal(); showToast("VERİLER İŞLENDİ! 🚀"); sahaCiz();
+            } catch(e) {
+                alert("Veritabanı Hatası: " + e.message);
+            }
+        }
+
+        // --- GEÇMİŞ DÖKÜM VE YAZDIRMA (A4) ---
+        window.lastExcelData = []; window.lastExcelFileName = "";
+
+        function raporOlustur(baslangic, bitis) {
+            db.ref(`kurumlar/${tenantId}/atik_verileri`).orderByKey().startAt(baslangic).endAt(bitis).once('value', snap => {
+                const data = snap.val(); 
+                if(!data) return showToast("Bu tarihlerde kayıt yok! ❌");
+                
+                let html = '<table class="analiz-tablosu" id="yazdirilacakTablo"><thead><tr><th>TARİH</th>';
+                birimler.forEach(b => html += `<th>${b.replace('_', '.')}</th>`);
+                html += '<th style="background:#f59e0b">GÜN TOPLAMI</th></tr></thead><tbody>';
+
+                let rowsForExcel = [];
+                let birimBazliToplamlar = {};
+                birimler.forEach(b => birimBazliToplamlar[b] = 0);
+                let genelToplam = 0;
+
+                Object.keys(data).forEach(t => {
+                    let gunVerisi = data[t][aktifKategori];
+                    if(gunVerisi) {
+                        let rowExcel = { "TARİH": t }; let gunToplam = 0;
+                        html += `<tr><td>${t}</td>`;
+                        
+                        birimler.forEach(b => { 
+                            let kg = gunVerisi[b] ? parseFloat(gunVerisi[b].toplam) : 0; 
+                            rowExcel[b.replace('_', '.')] = kg; gunToplam += kg; birimBazliToplamlar[b] += kg;
+                            html += `<td onclick="this.classList.toggle('highlighted-cell')" class="${kg>0?'deger-var':''}">${kg || '-'}</td>`;
+                        });
+                        
+                        rowExcel["TOPLAM"] = parseFloat(gunToplam.toFixed(1)); 
+                        rowsForExcel.push(rowExcel); genelToplam += gunToplam;
+                        html += `<td style="font-weight:900; color:var(--accent)">${gunToplam.toFixed(1)}</td></tr>`;
+                    }
+                });
+                
+                html += `<tr style="background:#050b14; font-weight:900; color:var(--accent); border-top:2px solid var(--accent);"><td>BİRİM TOPLAM</td>`;
+                birimler.forEach(b => { html += `<td>${birimBazliToplamlar[b].toFixed(1)}</td>`; });
+                html += `<td>${genelToplam.toFixed(1)} KG</td></tr></tbody></table>`;
+
+                window.lastExcelData = rowsForExcel; 
+                window.lastExcelFileName = `${aktifKategori.toUpperCase()}_Rapor_${baslangic}_${bitis}.xlsx`;
+
+                document.getElementById('raporTabloAlani').innerHTML = html;
+                document.getElementById('raporModal').style.display = 'flex';
+            });
+        }
+
+        function downloadRaporExcel() {
+            if(window.lastExcelData.length === 0) return;
+            const ws = XLSX.utils.json_to_sheet(window.lastExcelData); const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Rapor"); XLSX.writeFile(wb, window.lastExcelFileName);
+        }
+
+        window.yazdirA4 = function() {
+            let tabloHTML = document.getElementById('raporTabloAlani').innerHTML;
+            if(!tabloHTML) return alert("Yazdırılacak veri yok!");
+            
+            let yazdirPenceresi = window.open('', 'PrintWindow', 'width=1000,height=800');
+            yazdirPenceresi.document.open();
+            yazdirPenceresi.document.write(`
+                <html>
+                <head>
+                    <title>Atık Döküm Raporu</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; color: #000; background: #fff; }
+                        h2 { text-align: center; font-size: 18px; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; }
+                        th, td { border: 1px solid #000; padding: 6px; color: #000 !important; }
+                        th { background-color: #f1f5f9; font-weight: bold; }
+                        tr:nth-child(even) { background-color: #f8fafc; }
+                        @media print {
+                            @page { size: A4 landscape; margin: 10mm; }
+                            button { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>ATIK DÖKÜM RAPORU (${aktifKategori.toUpperCase()})</h2>
+                    ${tabloHTML}
+                    <script>
+                        window.onload = function() { window.print(); window.close(); }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            yazdirPenceresi.document.close();
+        }
+
+        function hizliRaporAl(tip) {
+            let end = new Date(); let start = new Date();
+            if(tip==='hafta') start.setDate(end.getDate() - 7);
+            if(tip==='ay') start.setMonth(end.getMonth() - 1);
+            if(tip==='yil') start.setFullYear(end.getFullYear() - 1);
+            raporOlustur(start.toISOString().split('T')[0], end.toISOString().split('T')[0]);
+        }
+
+        function ozelRaporAl() {
+            let s = document.getElementById('repStart').value; let e = document.getElementById('repEnd').value;
+            if(!s || !e) return alert("Takvimden başlangıç ve bitiş tarihini seçin!"); 
+            raporOlustur(s, e);
+        }
+
+        function showToast(m) { const t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(() => t.className = "", 2800); }
+        sahaCiz();
+    </script>
+</body>
+</html>

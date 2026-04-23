@@ -8,11 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+<<<<<<< HEAD
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+ <style>
+=======
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
         :root { --bg-dark: #020617; --bg-light: #0f172a; --glass-bg: rgba(15, 23, 42, 0.4); --glass-border: rgba(56, 189, 248, 0.2); --accent: #38bdf8; --warning: #facc15; --danger: #f43f5e; --success: #10b981; --purple: #a855f7; }
         body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at top left, var(--bg-light), var(--bg-dark)); background-attachment: fixed; color: #f8fafc; padding: 25px; margin: 0; padding-bottom: 100px; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -21,7 +29,11 @@
 
         .container { max-width: 1650px; margin: 0 auto; }
         
+<<<<<<< HEAD
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; background: rgba(2, 6, 23, 0.7); padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.9); backdrop-filter: blur(15px); flex-wrap: wrap; gap: 20px;}
+=======
         .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; background: rgba(2, 6, 23, 0.7); padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
         .btn { position: relative; overflow: hidden; padding: 12px 25px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 13px; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; color: white; letter-spacing: 1px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         .btn:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.6); filter: brightness(1.2); }
         
@@ -36,12 +48,21 @@
         .glass-input:focus { border-color: var(--accent); background: rgba(15, 23, 42, 0.8); }
         
         .name-capsule {
+<<<<<<< HEAD
+            display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box;
+=======
             display: flex; justify-content: space-between; align-items: center; width: 100%;
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
             padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);
             background: linear-gradient(145deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95));
             box-shadow: 2px 5px 10px rgba(0,0,0,0.6), inset 1px 1px 3px rgba(255,255,255,0.2);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+<<<<<<< HEAD
+        .name-capsule:hover { transform: scale(1.05); filter: brightness(1.2); }
+        
+        .editable-name { outline: none; font-weight: 900; cursor: text; user-select: text; flex: 1; text-align: left; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.4); }
+=======
         .name-capsule.male { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
         .name-capsule.female { border-color: #ec4899; box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); }
         .name-capsule:hover { transform: scale(1.05); filter: brightness(1.2); }
@@ -49,6 +70,7 @@
         .editable-name { outline: none; font-weight: 900; cursor: text; user-select: text; flex: 1; text-align: left; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.4); }
         .name-capsule.male .editable-name { color: #38bdf8; text-shadow: 0 0 8px #38bdf8; }
         .name-capsule.female .editable-name { color: #ec4899; text-shadow: 0 0 8px #ec4899; }
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
 
         .select-icon { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; font-size: 10px; border-radius: 4px; padding: 4px 6px; margin-left: 8px; transition: 0.2s; }
         .select-icon:hover { background: var(--accent); color: #000; }
@@ -57,7 +79,11 @@
         @keyframes popIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; }
+<<<<<<< HEAD
+        .table-title { font-size: 22px; font-weight: 900; color: var(--accent); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(56,189,248,0.5); }
+=======
         .table-title { font-size: 22px; font-weight: 900; color: var(--accent); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px var(--accent-glow); }
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
         
         .scroll-area { overflow: auto; max-height: 65vh; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); background: #020617; position: relative; transition: max-height 0.3s; }
         table { width: auto; border-collapse: separate; border-spacing: 2px; min-width: 100%; user-select: none; padding: 4px; }
@@ -69,12 +95,16 @@
         thead .sticky-col-1, thead .sticky-col-2 { z-index: 45; background: #020617; } 
         
         table tbody tr { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+<<<<<<< HEAD
+        table tbody tr:not(.summary-row):hover { background-color: rgba(56, 189, 248, 0.15) !important; transform: scale(1.01) translateX(5px); box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.3), 0 10px 20px rgba(0,0,0,0.8); z-index: 50; position: relative; }
+=======
         table tbody tr:not(.summary-row):hover {
             background-color: rgba(56, 189, 248, 0.15) !important;
             transform: scale(1.01) translateX(5px);
             box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.3), 0 10px 20px rgba(0,0,0,0.8);
             z-index: 50; position: relative;
         }
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
         table tbody tr:not(.summary-row):hover td { border-top: 1px solid rgba(56, 189, 248, 0.4); border-bottom: 1px solid rgba(56, 189, 248, 0.4); }
 
         .shift-cell { cursor: crosshair; color: #fff !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); border: 1px solid transparent; transition: 0.1s; }
@@ -109,12 +139,65 @@
         
         .row-checkbox { transform: scale(1.3); cursor: pointer; accent-color: var(--accent); }
         
+<<<<<<< HEAD
+        .floating-lobby-btn {
+=======
 .floating-lobby-btn {
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
             position: fixed; top: 25px; left: 25px; z-index: 999999;
             background: linear-gradient(135deg, #ef4444, #991b1b); border: 2px solid #fca5a5;
             color: white; padding: 18px 35px; border-radius: 50px; font-weight: 900; font-size: 18px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.8), 0 0 20px rgba(239,68,68,0.6); cursor: pointer; transition: 0.3s;
             display: flex; align-items: center; gap: 12px; text-transform: uppercase;
+<<<<<<< HEAD
+            animation: pointLeft 1.5s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+        .floating-lobby-btn:hover { animation: none; transform: scale(1.05); filter: brightness(1.2); box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 40px rgba(239,68,68,0.8); }
+        @keyframes pointLeft { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-15px); } }
+        .floating-lobby-btn span { font-size: 24px; font-weight: 900; letter-spacing: -2px; animation: arrowBlink 1s infinite alternate; }
+        @keyframes arrowBlink { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 15px #fff; } }
+
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 15px rgba(16,185,129,0.4); } 50% { box-shadow: 0 0 35px rgba(16,185,129,0.9); } 100% { box-shadow: 0 0 15px rgba(16,185,129,0.4); } }
+   
+  .full-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(15px); z-index: 10005; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.4s; }
+        .full-modal-content { background: var(--bg-light); width: 98%; height: 98%; border-radius: 30px; border: 2px solid var(--accent); box-shadow: 0 0 80px rgba(0,0,0,0.9), inset 0 0 30px var(--glass-glow); display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9) translateY(50px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .full-modal-overlay.show { opacity: 1; }
+        .full-modal-overlay.show .full-modal-content { transform: scale(1) translateY(0); }
+        .modal-header-bar { padding: 25px 35px; background: rgba(15,23,42,0.8); backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 10; }
+
+        /* ========================================================= */
+        /* V5 CYBER MENU STYLES (Enjekte Edilen) */
+        /* ========================================================= */
+        .cyber-menu-container { position: fixed; display: none; z-index: 999999; font-family: 'Consolas', 'Courier New', monospace; animation: cyberGlitch 0.3s ease-out forwards; }
+        @keyframes cyberGlitch { 0% { opacity: 0; transform: scale(0.9) translateY(10px); filter: hue-rotate(90deg); } 100% { opacity: 1; transform: scale(1) translateY(0); filter: hue-rotate(0deg); } }
+        .cyber-panel { background: rgba(10, 15, 25, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 10px; width: 300px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(56, 189, 248, 0.1); position: relative; overflow: hidden; }
+        .cyber-scanline { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: rgba(56, 189, 248, 0.5); box-shadow: 0 0 10px #38bdf8; animation: scanline 3s linear infinite; pointer-events: none; z-index: 100; }
+        @keyframes scanline { 0% { transform: translateY(-10px); } 100% { transform: translateY(400px); } }
+        .cyber-scroll::-webkit-scrollbar { width: 5px; }
+        .cyber-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 5px; }
+        .cyber-scroll::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 5px; }
+        .cyber-btn { background: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 8px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 11px; text-transform: uppercase; }
+        .cyber-btn:hover { background: #38bdf8; color: #000; box-shadow: 0 0 10px #38bdf8; letter-spacing: 1px; }
+        .cyber-btn-red { border-color: #ef4444; color: #ef4444; }
+        .cyber-btn-red:hover { background: #ef4444; box-shadow: 0 0 10px #ef4444; color: white; }
+        .cyber-btn-purple { border-color: #a855f7; color: #a855f7; }
+        .cyber-btn-purple:hover { background: #a855f7; box-shadow: 0 0 10px #a855f7; color: white; }
+        .cyber-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #38bdf8; color: #fff; padding: 8px; border-radius: 4px; outline: none; margin-bottom: 8px; font-family: inherit; }
+        .cyber-input:focus { box-shadow: 0 0 8px rgba(56, 189, 248, 0.5); }
+        .shift-badge { position: relative; border-radius: 6px; cursor: pointer; transition: 0.2s; text-align: center; color: white; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; height: 35px; border: 1px solid rgba(255,255,255,0.2); }
+        .shift-badge:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
+        .color-dot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; transition: 0.2s; }
+        .color-dot:hover { transform: scale(1.4); z-index: 10; border-color: white; }
+        .rainbow-btn { background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; text-shadow: 0 0 2px black; box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+ </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="container">
+        <div class="main-header">
+            <div style="display:flex; gap:15px; align-items:center;">
+                <button class="floating-lobby-btn" onclick="window.location.href='shiftmaster.html'"><span><<<</span> LOBİYE DÖN</button>
+=======
             /* YENİ: Sola doğru sürekli gidip gelme animasyonu */
             animation: pointLeft 1.5s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
         }
@@ -147,14 +230,25 @@
 <body oncontextmenu="return false;">
 
 <button class="floating-lobby-btn" onclick="window.location.href='shiftmaster.html'"><span><<<</span> LOBİYE DÖN</button>
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
                 <button class="btn btn-green" onclick="window.location.href='puantaj_motoru.html'">💰 PUANTAJA GİT</button>
             </div>
             
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap:wrap;">
                 <span id="masterArchiveTitle" style="font-size:20px; font-weight:900; color:var(--accent); margin-right:15px;">📁 DOSYA: YENİ</span>
+<<<<<<< HEAD
+                
+                <button class="btn btn-cyan" style="padding: 15px 20px; font-size: 14px;" onclick="openNewTableModal(null)">➕ YENİ TABLO EKLE</button>
+
+                <button class="btn btn-orange" onclick="openModal('excelModal')">📥 EXCELDEN AL (ÇOKLU)</button>
+                <button class="btn btn-purple" onclick="window.open('isci_sihirbaz.html', '_blank')">🪄 A.I. SİHİRBAZI</button>
+                
+                <button class="btn" style="background: linear-gradient(135deg, #10b981, #047857); color: white; padding: 15px 40px; font-size: 16px; font-weight: 900; border-radius: 15px; border: 2px solid #34d399; animation: pulseGlow 2s infinite; transition: 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="saveMasterArchive()">💾 DEĞİŞİKLİKLERİ KAYDET</button>
+=======
                 <button class="btn btn-orange" onclick="openModal('excelModal')">📥 EXCELDEN AL (ÇOKLU)</button>
                 <button class="btn btn-purple" onclick="openAiWizard()">🪄 A.I. SİHİRBAZI</button>
                 <button class="btn btn-cyan" onclick="saveMasterArchive()">💾 KAYDET</button>
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
             </div>
         </div>
 
@@ -201,6 +295,8 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
     <div id="contextMenu" class="custom-menu">
         <div class="menu-grid" id="dynamicMenuGrid"></div>
         <button class="btn btn-cyan" style="width:100%; justify-content:center; margin-top:5px; border-style:dashed;" onclick="yeniVardiyaEkle()">➕ YENİ VARDİYA KURALI EKLE</button>
@@ -216,6 +312,7 @@
         </div>
     </div>
 
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
     <div id="headerContextMenu" class="custom-menu" style="width:260px;">
         <div class="menu-item btn-cyan" style="margin-bottom:10px; pointer-events:auto;" onclick="editColumnDate()">✏️ TARİHİ DEĞİŞTİR</div>
         <div class="menu-item btn-green" style="margin-bottom:10px; pointer-events:auto;" onclick="insertColumn('left')">➕ SOLA SÜTUN EKLE</div>
@@ -224,6 +321,1481 @@
     </div>
     
     <div id="staffSelectMenu" class="custom-menu"></div>
+<<<<<<< HEAD
+    <div id="aiWizardPopup" class="full-modal-overlay" style="z-index: 100020;">
+        <div class="full-modal-content" style="border-color: var(--purple); background: #020617;">
+            <div class="modal-header-bar" style="border-bottom-color: var(--purple); background: rgba(168, 85, 247, 0.1);">
+                <div style="font-size:22px; font-weight:900; color:#fff; text-shadow:0 0 15px var(--purple);">
+                    🪄 YAPAY ZEKA MOTORU <span id="targetFolderNameDisplay" style="font-size:12px; color:var(--accent); margin-left:10px;"></span>
+                </div>
+                <button class="btn btn-red" onclick="closeAiWizardPopup()">❌ SİHİRBAZI KAPAT</button>
+            </div>
+            <div style="flex: 1; position: relative;">
+                <iframe id="aiWizardFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+            </div>
+        </div>
+    </div>
+<div id="toast">İşlem Başarılı!</div>
+
+    <script>
+        const tenantId = localStorage.getItem('sm_current_tenant') || "addh";
+        const firebaseConfig = { apiKey: "AIzaSyAAqT74kCwyr6ZULTR_ClRDJ5Iu4AhmXJQ", databaseURL: "https://shiftmaster1-7fc5f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "shiftmaster1-7fc5f" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const originalRef = db.ref.bind(db);
+        db.ref = function(path) { if (tenantId === "addh") return originalRef(path); return originalRef("kurumlar/" + tenantId + (path ? "/" + path : "")); };
+        
+        let activeCell = null; let activeHeaderCell = null; let activeColIndex = -1; let historyStack = [];
+        let currentMasterArchiveId = localStorage.getItem('sm_active_archive_id') || null; 
+        let currentUser = localStorage.getItem('sm_active_user') || "Bilinmeyen Kullanıcı";
+        
+        let shiftRules = { '08:00-20:00': { w: 11, n: 0, color: '#f59e0b' }, '20:00-08:00': { w: 11, n: 11, color: '#1e3a8a' }, 'HT': { w: 0, n: 0, color: '#14b8a6' } };
+        let vardiyaSiralamasi = [];
+        let havuzIsimleri = []; 
+// 🔥 VERİLERİ FİREBASE'DEN CANLI ÇEK VE HAFIZADA TUT 🔥
+        db.ref("vardiya_kurallari").on('value', snap => {
+            if(snap.exists()) {
+                shiftRules = snap.val();
+                vardiyaSiralamasi = Object.keys(shiftRules);
+                if(typeof updateAllStats === "function") updateAllStats();
+                if(document.getElementById("cyberContextMenu")?.style.display === "block") {
+                    if(typeof renderCyberMenu === "function") renderCyberMenu('main');
+                }
+            }
+        });
+       function openModal(id) { let m = document.getElementById(id); m.style.display = 'flex'; setTimeout(() => m.style.opacity = '1', 10); }
+       function closeModal(id) { let m = document.getElementById(id); m.style.opacity = '0'; setTimeout(() => m.style.display = 'none', 400); }
+        function showToast(m) { let t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(()=>t.className="", 3000); }
+        function saveHistory() { historyStack.push(document.getElementById("tablesContainer").innerHTML); if(historyStack.length > 20) historyStack.shift(); }
+
+        function logKaydet(actionText) {
+            db.ref("islem_loglari").push({ user: currentUser, action: actionText, time: new Date().toLocaleString('tr-TR') });
+        }
+function takePhoto(btn) { 
+            const wrapper = btn.closest('.table-wrapper'); 
+            const scrollArea = wrapper.querySelector('.scroll-area');
+            const table = wrapper.querySelector('table');
+            const actionsDiv = wrapper.querySelector('div[style*="margin-top:15px; display:flex"]'); 
+            const aiBtn = wrapper.querySelector('.table-header .btn-purple');
+            
+            showToast("Tam Ekran Fotoğraf Hazırlanıyor... Lütfen Bekleyin 📸"); 
+            
+            const origZoom = table.style.zoom || 1;
+            table.style.zoom = 1;
+
+            const origMaxHeight = scrollArea.style.maxHeight;
+            const origOverflow = scrollArea.style.overflow;
+            const origWidth = wrapper.style.width;
+            
+            scrollArea.style.maxHeight = 'none';
+            scrollArea.style.overflow = 'visible';
+            wrapper.style.width = 'max-content';
+            
+            const hiddenElements = wrapper.querySelectorAll('.no-export');
+            hiddenElements.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            if(actionsDiv) actionsDiv.style.setProperty('display', 'none', 'important');
+            if(aiBtn) aiBtn.style.setProperty('display', 'none', 'important');
+
+            const stickyElements = wrapper.querySelectorAll('.sticky-col-1, .sticky-col-2, th');
+            const originalPositions = [];
+            stickyElements.forEach(el => {
+                originalPositions.push({ el: el, pos: el.style.position });
+                el.style.setProperty('position', 'static', 'important');
+            });
+
+            setTimeout(() => {
+                domtoimage.toPng(wrapper, {
+                    width: wrapper.scrollWidth,
+                    height: wrapper.scrollHeight,
+                    bgcolor: '#0f172a' 
+                })
+                .then(function (dataUrl) {
+                    let link = document.createElement('a'); 
+                    let tName = wrapper.getAttribute('data-tablename') || 'Tablo';
+                    link.download = `ShiftMaster_${tName}.png`; 
+                    link.href = dataUrl; 
+                    link.click(); 
+                    showToast("Fotoğraf Başarıyla İndirildi! ✅"); 
+                    logKaydet(`"${tName}" adlı tablonun tam ve temiz fotoğrafını aldı.`);
+                    
+                    restorePhotoStyles();
+                })
+                .catch(function (error) {
+                    alert("Fotoğraf çekilirken hata oluştu: " + error);
+                    restorePhotoStyles();
+                });
+            }, 150);
+
+            function restorePhotoStyles() {
+                table.style.zoom = origZoom;
+                scrollArea.style.maxHeight = origMaxHeight;
+                scrollArea.style.overflow = origOverflow;
+                wrapper.style.width = origWidth;
+                
+                hiddenElements.forEach(el => el.style.removeProperty('display'));
+                if(actionsDiv) actionsDiv.style.removeProperty('display');
+                if(aiBtn) aiBtn.style.removeProperty('display');
+                
+                originalPositions.forEach(item => {
+                    item.el.style.position = item.pos;
+                });
+            }
+        }
+
+window.insertAfterTarget = null;
+        
+        window.openNewTableModal = function(wrapperTarget) { 
+            window.insertAfterTarget = wrapperTarget; 
+            let defaultDate = new Date();
+            if(wrapperTarget) {
+                let oldStart = new Date(wrapperTarget.getAttribute("data-startdt"));
+                let oldDays = parseInt(wrapperTarget.getAttribute("data-colcount")) || 30;
+                defaultDate = new Date(oldStart);
+                defaultDate.setDate(defaultDate.getDate() + oldDays);
+            }
+            document.getElementById("newTableDate").valueAsDate = defaultDate; 
+            openModal('newTableModal'); 
+        };
+
+        window.confirmGenerateTable = function() {
+            let dateVal = document.getElementById("newTableDate").value; 
+            let daysVal = document.getElementById("newTableDays").value;
+            if(!dateVal || !daysVal) return alert("Tarih ve gün sayısı girin!");
+            
+            let sel = [];
+            let tName = "YENİ VARDİYA LİSTESİ";
+
+            if (window.insertAfterTarget) {
+                window.insertAfterTarget.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => {
+                    let nameEl = tr.querySelector(".editable-name");
+                    if(nameEl) sel.push({ name: nameEl.innerText.trim(), tc: nameEl.getAttribute("data-tc") || "" });
+                });
+                let oldName = window.insertAfterTarget.querySelector('.table-title').innerText.replace("📌", "").trim();
+                tName = oldName + " (Devam)";
+            } 
+            
+            if (sel.length === 0) {
+                sel = [ {name: "İSİM GİRİNİZ...", tc: ""}, {name: "İSİM GİRİNİZ...", tc: ""}, {name: "İSİM GİRİNİZ...", tc: ""}, {name: "İSİM GİRİNİZ...", tc: ""} ];
+            }
+            
+            generateTable(false, sel, tName, new Date(dateVal), parseInt(daysVal), window.insertAfterTarget);
+            
+            window.insertAfterTarget = null; 
+            closeModal('newTableModal'); 
+            logKaydet(`"${tName}" adlı yeni bir tablo oluşturdu.`);
+        };
+
+      // 🔥 DÜZELTİLMİŞ KOD: summary-row (Özet Satırı) Eklendi 🔥
+function generateTable(isArch, data, tableName, customStart, customCols, insertAfter, savedNotes, isPublished = false) {
+    let rowData = Array.isArray(data) ? data : Object.values(data || {});
+
+    const cols = customCols || 30; let startDt = customStart || new Date();
+    let h = `<table><thead><tr>
+                <th class="no-export sticky-col-1"><input type="checkbox" onclick="toggleAllRows(this)" style="cursor:pointer; transform:scale(1.2);"></th>
+                <th class="sticky-col-2">PERSONEL</th>`;
+    for(let i=0; i<cols; i++) {
+        let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullD = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+        h += `<th data-date="${fullD}" oncontextmenu="openHeaderMenu(event, this)">${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></th>`;
+        if(d.getDay() === 0) h += `<th class="week-summary-cell">H.S</th>`;
+    }
+    h += `<th class="total-summary-cell">TOP</th></tr></thead><tbody class="table-body">`;
+    
+    rowData.forEach(r => { 
+        let pName = typeof r === 'string' ? r : (r.name || ""); 
+        let pTc = typeof r === 'object' && r.tc ? r.tc : ""; 
+        let rShifts = typeof r === 'object' && r.shifts ? (Array.isArray(r.shifts) ? r.shifts : Object.values(r.shifts)) : null;
+        h += createRowHtml(pName, pTc, cols, startDt, rShifts); 
+    }); 
+    
+    // 🛑 DÜZELTME BURADA: Tablo gövdesi kapanmadan hemen önce summary-row ekleniyor!
+    let summaryCells = `<td class="no-export sticky-col-1" style="background:#020617; border:none;"></td>
+                        <td class="sticky-col-2" style="background:#0f172a; text-align:right; padding-right:15px; color:#94a3b8; font-size:10px;"></td>`;
+    for(let i=0; i<cols; i++) {
+        let d = new Date(startDt); d.setDate(startDt.getDate() + i);
+        summaryCells += `<td style="background:transparent; border:none; pointer-events:none;"></td>`;
+        if(d.getDay() === 0) summaryCells += `<th class="week-summary-cell" style="background:transparent; border:none;"></th>`;
+    }
+    summaryCells += `<th class="total-summary-cell" style="background:transparent; border:none;"></th>`;
+    h += `<tr class="summary-row" style="height:20px;">${summaryCells}</tr>`;
+    
+    h += '</tbody></table>';
+    
+    const wrapper = document.createElement("div"); wrapper.className = "table-wrapper";
+    wrapper.setAttribute("data-startdt", startDt.toISOString()); wrapper.setAttribute("data-colcount", cols); wrapper.setAttribute("data-tablename", tableName);
+    
+    let pubBtnStyle = isPublished ? "background:var(--success) !important; color:white !important; border-color:white !important; box-shadow:0 0 15px rgba(16,185,129,0.5) !important;" : "background:rgba(255,255,255,0.05); color:#94a3b8; border:1px dashed #475569;";
+    let pubText = isPublished ? "📢 YAYINDA" : "🔒 YAYINLA";
+    let isPubAttr = isPublished ? "true" : "false";
+
+    wrapper.innerHTML = `
+        <div class="table-header">
+            <span class="table-title" onclick="renameLocalTable(this)">📌 ${tableName}</span>
+            <button class="btn btn-purple" onclick="openAiWizardForSpecificTable(this)">🪄 A.I. İLE YAP</button>
+        </div>
+        <div class="scroll-area">${h}</div>
+        <textarea class="glass-input table-notes" style="margin-top:15px; height:50px;" placeholder="Notlar...">${savedNotes || ""}</textarea>
+        <div style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+            <button class="btn" style="${pubBtnStyle}" data-ispub="${isPubAttr}" onclick="yayinlaTablo(this)">${pubText}</button>
+            <span style="width: 2px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 5px;"></span>
+            
+            <button class="btn btn-green" onclick="addEmptyRow(this)">➕ SATIR EKLE</button>
+            <button class="btn btn-danger" style="background:linear-gradient(135deg, #ef4444, #991b1b);" onclick="deleteSelectedRows(this)">🗑️ SEÇİLİLERİ SİL</button>
+            <button class="btn btn-cyan" onclick="copyTableToExcel(this)">📋 EXCEL'E KOPYALA</button>
+            <button class="btn btn-orange" onclick="takePhoto(this)">📸 FOTO AL</button>
+            
+            <button class="btn btn-success" style="background:#059669; color:white;" onclick="openNewTableModal(this.closest('.table-wrapper'))">➕ YENİ TABLO EKLE</button>
+            
+            <button class="btn" style="background:#1e293b; color:var(--accent); border:1px solid var(--accent);" onclick="sendTableToDepot(this)">📦 DEPOYA AT</button>
+            <button class="btn btn-red" onclick="closeTable(this)">🗑️ SİL</button>
+        </div>`;
+    const tContainer = document.getElementById("tablesContainer");
+    if(insertAfter) insertAfter.parentNode.insertBefore(wrapper, insertAfter.nextSibling); else tContainer.appendChild(wrapper); 
+    updateAllStats(); saveHistory();
+}
+
+        function createRowHtml(name, tc, colCount, startDt, savedShifts) {
+            let capsuleStyle = "display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box; background: linear-gradient(145deg, #1e3a8a, #172554); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 6px 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);";
+            let nameStyle = "color: #ffffff; font-weight: 800; font-size: 13px; outline: none; flex: 1; text-align: left; letter-spacing: 0.5px;";
+            let btnStyle = "background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.4); color: #ffffff; cursor: pointer; border-radius: 4px; padding: 2px 6px; font-size: 10px; margin-left: 5px; transition: 0.3s; flex-shrink: 0;";
+
+            let cells = `<td class="no-export sticky-col-1" style="white-space:nowrap; text-align:center; background:#020617;">
+                            <input type="checkbox" class="row-checkbox">
+                            <div style="display:inline-flex; flex-direction:column; gap:2px; margin-left:5px; vertical-align:middle;">
+                                <button class="row-move-btn" onclick="moveRow(this,-1)" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:10px;">▲</button>
+                                <button class="row-move-btn" onclick="moveRow(this,1)" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:10px;">▼</button>
+                            </div>
+                         </td>
+                         <td class="sticky-col-2" style="background:#0f172a; border-right: 2px solid var(--accent); padding: 5px 10px;">
+                            <div style="${capsuleStyle}">
+                                <div class="editable-name" data-tc="${tc || ''}" contenteditable="true" style="${nameStyle}">${name}</div>
+                                <button class="select-icon" onmouseover="this.style.background='#ffffff'; this.style.color='#1e3a8a';" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#ffffff';" onclick="openStaffQuickMenu(event, this)" style="${btnStyle}">▼</button>
+                            </div>
+                         </td>`;
+                         
+            for(let i=0; i<colCount; i++) {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); 
+                const s = savedShifts?.[i] || {text:"", bg:"transparent", pin:""}; 
+                const pinAttr = s.pin ? ` data-pin="${s.pin.replace(/"/g, '&quot;')}"` : ""; 
+                cells += `<td class="shift-cell" contenteditable="true" style="background:${s.bg}" ${pinAttr}>${s.text}</td>`;
+                if(d.getDay() === 0) cells += `<th class="week-summary-cell"></th>`;
+            }
+            cells += `<th class="total-summary-cell"></th>`; return `<tr>${cells}</tr>`;
+        }
+
+        window.openHeaderMenu = function(e, th) {
+            e.preventDefault(); activeHeaderCell = th; 
+            activeColIndex = Array.from(th.parentNode.children).indexOf(th);
+            const m = document.getElementById("headerContextMenu");
+            m.style.position = "fixed";
+            m.style.left = e.clientX + "px"; m.style.top = e.clientY + "px"; 
+            m.style.display = "block";
+        };
+
+        function toggleAllRows(mainCb) { const table = mainCb.closest('table'); table.querySelectorAll('tbody .row-checkbox').forEach(cb => cb.checked = mainCb.checked); }
+        
+        function deleteSelectedRows(btn) {
+            const wrapper = btn.closest('.table-wrapper'); const cbs = wrapper.querySelectorAll('tbody .row-checkbox:checked');
+            let tName = wrapper.querySelector('.table-title').innerText.replace("📌", "").trim();
+            if(cbs.length === 0) return alert("Silinecek satır seçmediniz!");
+            if(confirm(cbs.length + " satırı silmek istediğinize emin misiniz?")) { 
+                saveHistory(); cbs.forEach(cb => cb.closest('tr').remove()); updateAllStats(); showToast("Satırlar silindi! 🗑️"); 
+                logKaydet(`[${tName}] tablosundan ${cbs.length} adet personeli/satırı sildi.`);
+            }
+        }
+
+        function moveRow(btn, direction) {
+            const row = btn.closest('tr'); const tbody = row.parentElement;
+            if (direction === -1 && row.previousElementSibling) tbody.insertBefore(row, row.previousElementSibling);
+            else if (direction === 1 && row.nextElementSibling) tbody.insertBefore(row.nextElementSibling, row);
+        }
+
+        function openStaffQuickMenu(e, btn) {
+            e.preventDefault(); e.stopPropagation();
+            activeCell = btn.previousElementSibling; 
+            const m = document.getElementById("staffSelectMenu"); 
+            
+            m.innerHTML = `<div style="color:#1e3a8a; background:#ffffff; padding:15px; font-size:12px; border-radius:8px; font-weight:800; text-align:center;">⏳ Veriler Çekiliyor...</div>`;
+            
+            m.style.background = "#ffffff";
+            m.style.border = "2px solid #1e3a8a";
+            m.style.borderRadius = "12px";
+            m.style.boxShadow = "0 15px 35px rgba(0,0,0,0.6)";
+            m.style.padding = "5px";
+            m.style.position = "fixed";
+            m.style.display = "block"; 
+            
+            let x = e.clientX; let y = e.clientY;
+            if (x + 240 > window.innerWidth) x = window.innerWidth - 250;
+            if (y + 350 > window.innerHeight) y = window.innerHeight - 360;
+            m.style.left = x + "px"; m.style.top = y + "px"; 
+
+            db.ref("personel_havuzu").once("value").then(snap => {
+                m.innerHTML = "";
+                if(!snap.val()) { 
+                    m.innerHTML = `<div style="color:#ef4444; padding:15px; font-size:12px; font-weight:800; text-align:center;">Havuzda Kimse Yok!</div>`; 
+                    return; 
+                }
+                
+                let uniqueNames = new Map();
+                Object.entries(snap.val()).forEach(([id, rawVal]) => { 
+                    let rawName = typeof rawVal === 'string' ? rawVal : (rawVal.name || rawVal.isim || "");
+                    if(rawName) {
+                        let cleanName = rawName.toString().includes("-") ? rawName.split("-")[1].trim() : rawName.toString().trim();
+                        cleanName = cleanName.toLocaleUpperCase('tr-TR');
+                        if(!uniqueNames.has(cleanName)) uniqueNames.set(cleanName, cleanName);
+                    }
+                }); 
+                
+                let isimler = Array.from(uniqueNames.values()).sort((a, b) => a.localeCompare(b, 'tr'));
+                
+                isimler.forEach(isim => {
+                    const d = document.createElement("div"); 
+                    d.className = "menu-item"; 
+                    d.innerText = isim;
+                    d.style.cssText = "padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.05); color: #1e3a8a; cursor: pointer; font-size: 13px; font-weight: 800; transition: 0.2s; text-align:left;";
+                    d.onmouseover = function() { this.style.background = "#f1f5f9"; this.style.transform = "translateX(5px)"; };
+                    d.onmouseout = function() { this.style.background = "transparent"; this.style.transform = "translateX(0)"; };
+                    
+                    d.onclick = () => { 
+                        if(typeof saveHistory === 'function') saveHistory(); 
+                        activeCell.innerText = isim; 
+                        m.style.display = "none"; 
+                    };
+                    m.appendChild(d);
+                });
+            }).catch(err => {
+                m.innerHTML = `<div style="color:#ef4444; padding:15px; font-size:12px; font-weight:800; text-align:center;">Bağlantı Hatası!</div>`; 
+            });
+        }
+
+        let isSelecting = false; let startCell = null; let paintModeData = null;
+        let activeTableGrid = []; let activeTableDOM = null;
+
+        document.addEventListener('mousedown', e => {
+            if(e.button !== 0) return; 
+            let shiftCell = e.target.closest('.shift-cell');
+            if(shiftCell) {
+                isSelecting = true; startCell = shiftCell;
+                const table = shiftCell.closest('table');
+                if (activeTableDOM !== table) {
+                    activeTableDOM = table;
+                    const rows = Array.from(table.querySelector('tbody').querySelectorAll('tr:not(.summary-row)'));
+                    activeTableGrid = rows.map(tr => Array.from(tr.querySelectorAll('.shift-cell')));
+                }
+                if(e.altKey) { paintModeData = { text: shiftCell.innerText, bg: shiftCell.style.background }; }
+                if(!e.ctrlKey && !e.altKey) document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell'));
+                shiftCell.classList.add('selected-cell');
+            }
+        });
+
+        let scrollAnimationFrame = null;
+        function autoScroll(scrollArea, clientY, clientX) {
+            if(!isSelecting) return;
+            let rect = scrollArea.getBoundingClientRect(); let scrolled = false;
+            if(clientY > rect.bottom - 40) { scrollArea.scrollTop += 15; scrolled = true; }
+            if(clientY < rect.top + 40) { scrollArea.scrollTop -= 15; scrolled = true; }
+            if(clientX > rect.right - 40) { scrollArea.scrollLeft += 15; scrolled = true; }
+            if(clientX < rect.left + 40) { scrollArea.scrollLeft -= 15; scrolled = true; }
+            if(scrolled) { scrollAnimationFrame = requestAnimationFrame(() => autoScroll(scrollArea, clientY, clientX)); } 
+            else { cancelAnimationFrame(scrollAnimationFrame); }
+        }
+
+        document.addEventListener('mousemove', e => {
+            if(isSelecting && startCell) {
+                let scrollArea = startCell.closest('.scroll-area');
+                if(scrollArea) { cancelAnimationFrame(scrollAnimationFrame); scrollAnimationFrame = requestAnimationFrame(() => autoScroll(scrollArea, e.clientY, e.clientX)); }
+                let currentCell = e.target.closest('.shift-cell');
+                if(currentCell && activeTableDOM === currentCell.closest('table')) {
+                    if(paintModeData) { currentCell.innerText = paintModeData.text; currentCell.style.background = paintModeData.bg; updateAllStats(); return; }
+                    let startR = -1, startC = -1, currR = -1, currC = -1;
+                    for(let r=0; r<activeTableGrid.length; r++) {
+                        let cIdxStart = activeTableGrid[r].indexOf(startCell); let cIdxCurr = activeTableGrid[r].indexOf(currentCell);
+                        if(cIdxStart !== -1) { startR = r; startC = cIdxStart; }
+                        if(cIdxCurr !== -1) { currR = r; currC = cIdxCurr; }
+                        if(startR !== -1 && currR !== -1) break; 
+                    }
+                    if(startR !== -1 && currR !== -1) {
+                        let minRow = Math.min(startR, currR); let maxRow = Math.max(startR, currR);
+                        let minCol = Math.min(startC, currC); let maxCol = Math.max(startC, currC);
+                        if(!e.ctrlKey) document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell'));
+                        for(let r = minRow; r <= maxRow; r++) { for(let c = minCol; c <= maxCol; c++) { if(activeTableGrid[r][c]) activeTableGrid[r][c].classList.add('selected-cell'); } }
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => { isSelecting = false; startCell = null; paintModeData = null; cancelAnimationFrame(scrollAnimationFrame); });
+
+        document.addEventListener('keydown', e => {
+            if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.classList.contains('editable-name')) return;
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (historyStack.length > 0) { document.getElementById("tablesContainer").innerHTML = historyStack.pop(); updateAllStats(); showToast("Geri Alındı! ↩️"); activeTableDOM = null; } }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') { e.preventDefault(); let hoveredTable = document.querySelector('.table-wrapper:hover') || document.querySelector('.table-wrapper'); if(hoveredTable) { document.querySelectorAll('.selected-cell').forEach(c=>c.classList.remove('selected-cell')); hoveredTable.querySelectorAll('.shift-cell').forEach(c=>c.classList.add('selected-cell')); } }
+            if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'x')) {
+                const selected = document.querySelectorAll('.selected-cell');
+                if(selected.length > 0) {
+                    e.preventDefault();
+                    let table = selected[0].closest('table'); let rows = Array.from(table.querySelectorAll('tbody tr:not(.summary-row)'));
+                    let minR = Infinity, maxR = -1, minC = Infinity, maxC = -1;
+                    selected.forEach(c => { let r = rows.indexOf(c.closest('tr')); let col = Array.from(c.closest('tr').querySelectorAll('.shift-cell')).indexOf(c); if(r < minR) minR = r; if(r > maxR) maxR = r; if(col < minC) minC = col; if(col > maxC) maxC = col; });
+                    let tsv = "";
+                    for(let r=minR; r<=maxR; r++) {
+                        let rowCells = Array.from(rows[r].querySelectorAll('.shift-cell')); let rowData = [];
+                        for(let c=minC; c<=maxC; c++) {
+                            let cell = rowCells[c];
+                            if(cell && cell.classList.contains('selected-cell')) { rowData.push(cell.innerText.replace(/\n/g, ' ')); if(e.key.toLowerCase() === 'x') { saveHistory(); cell.innerText = ""; cell.style.background = "transparent"; } } else { rowData.push(""); }
+                        }
+                        tsv += rowData.join("\t") + "\n";
+                    }
+                    if(e.key.toLowerCase() === 'x') updateAllStats();
+                    const temp = document.createElement("textarea"); temp.value = tsv; document.body.appendChild(temp); temp.select(); document.execCommand("copy"); document.body.removeChild(temp);
+                    showToast(e.key.toLowerCase() === 'x' ? "Kesildi! ✂️" : "Kopyalandı! 📋");
+                }
+            }
+        });
+
+        document.addEventListener('dblclick', e => {
+            if(e.target.classList.contains('shift-cell')) {
+                let val = e.target.innerText; let bg = e.target.style.background; if(!val) return;
+                saveHistory(); let row = e.target.closest('tr');
+                row.querySelectorAll('.shift-cell').forEach(cell => { if(cell.innerText === "") { cell.innerText = val; cell.style.background = bg; } });
+                updateAllStats(); showToast("Tüm Satır Dolduruldu! 🚀");
+            }
+        });
+
+        document.addEventListener('paste', e => {
+            const activeInput = document.activeElement; if(activeInput && (activeInput.tagName === 'INPUT' || activeInput.tagName === 'TEXTAREA' || activeInput.classList.contains('editable-name'))) return;
+            const selected = Array.from(document.querySelectorAll('.selected-cell.shift-cell'));
+            if(selected.length > 0) {
+                e.preventDefault(); saveHistory(); 
+                let pasteData = (e.clipboardData || window.clipboardData).getData('text'); 
+                let rows = pasteData.split("\n").map(r => r.trimRight()).filter(r => r !== "");
+                if(rows.length === 0) return;
+                
+                let tName = selected[0].closest('.table-wrapper').querySelector('.table-title').innerText.replace("📌", "").trim();
+                logKaydet(`[${tName}] tablosuna dışarıdan (Excel vb.) toplu veri yapıştırdı.`);
+
+                if (rows.length === 1 && rows[0].split('\t').length === 1 && selected.length > 1) {
+                    let val = rows[0].trim(); let safeVal = val.replace(/[\s.,]/g, ':').toUpperCase(); 
+                    let matchedKey = val; let matchedColor = "transparent";
+                    for (let key in shiftRules) { if (key.replace(/[\s.,]/g, ':').toUpperCase() === safeVal) { matchedKey = key; matchedColor = shiftRules[key].color; break; } }
+                    selected.forEach(cell => { cell.innerText = matchedKey; cell.style.background = matchedColor; });
+                } 
+                else {
+                    let startCell = selected[0]; 
+                    let tr = startCell.closest('tr'); let tbody = tr.parentElement; 
+                    let allTrs = Array.from(tbody.querySelectorAll('tr:not(.summary-row)')); let startRowIdx = allTrs.indexOf(tr); 
+                    let shiftCellsInStartRow = Array.from(tr.querySelectorAll('.shift-cell')); let startColIdx = shiftCellsInStartRow.indexOf(startCell);
+                    
+                    for (let i = 0; i < rows.length; i++) {
+                        if (startRowIdx + i >= allTrs.length) break; 
+                        let currentTr = allTrs[startRowIdx + i]; 
+                        let cols = rows[i].split('\t'); 
+                        let shiftCellsInRow = Array.from(currentTr.querySelectorAll('.shift-cell'));
+                        
+                        for (let j = 0; j < cols.length; j++) {
+                            if (startColIdx + j >= shiftCellsInRow.length) break; 
+                            let targetCell = shiftCellsInRow[startColIdx + j];
+                            let sVal = cols[j].trim(); let finalBg = "transparent";
+                            if(sVal) { 
+                                let tNorm = sVal.replace(/[\s.,]/g, ':').toUpperCase(); 
+                                for (let key in shiftRules) { 
+                                    let kNorm = key.replace(/[\s.,]/g, ':').toUpperCase(); 
+                                    if (kNorm === tNorm || (tNorm.includes(kNorm) && kNorm.length > 2)) { sVal = key; finalBg = shiftRules[key].color; break; } 
+                                } 
+                            }
+                            targetCell.innerText = sVal; targetCell.style.background = finalBg;
+                            targetCell.classList.add('selected-cell'); 
+                        }
+                    }
+                }
+                updateAllStats(); showToast("Yapıştırma Başarılı! ✅");
+            }
+        });
+
+// ====================================================================
+        // 🚀 SHIFTMASTER V6.4 - ADIM ADIM SİHİRBAZ & KUSURSUZ KAYIT
+        // ====================================================================
+
+        if (!document.getElementById('cyberMenuStyles')) {
+            const style = document.createElement('style');
+            style.id = 'cyberMenuStyles';
+            style.innerHTML = `
+                .cyber-menu-container { position: fixed; display: none; z-index: 999999; font-family: 'Consolas', 'Courier New', monospace; animation: cyberGlitch 0.2s ease-out forwards; }
+                @keyframes cyberGlitch { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+                .cyber-panel { background: rgba(10, 15, 25, 0.98); backdrop-filter: blur(15px); border: 1px solid rgba(56, 189, 248, 0.8); border-radius: 12px; width: 310px; padding: 15px; box-shadow: 0 15px 50px rgba(0,0,0,0.9); position: relative; overflow: hidden; }
+                .cyber-scanline { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: rgba(56, 189, 248, 0.5); box-shadow: 0 0 10px #38bdf8; animation: scanline 3s linear infinite; pointer-events: none; z-index: 100; }
+                @keyframes scanline { 0% { transform: translateY(-10px); } 100% { transform: translateY(400px); } }
+                .cyber-scroll::-webkit-scrollbar { width: 5px; }
+                .cyber-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 5px; }
+                .cyber-scroll::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 5px; }
+                .cyber-btn { background: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 11px; text-transform: uppercase; width: 100%; }
+                .cyber-btn:hover { background: #38bdf8; color: #000; box-shadow: 0 0 15px #38bdf8; }
+                .cyber-btn-red { border-color: #ef4444; color: #ef4444; }
+                .cyber-btn-red:hover { background: #ef4444; box-shadow: 0 0 15px #ef4444; color: white; }
+                .cyber-btn-purple { border-color: #a855f7; color: #a855f7; }
+                .cyber-btn-purple:hover { background: #a855f7; box-shadow: 0 0 15px #a855f7; color: white; }
+                .shift-badge { position: relative; border-radius: 6px; cursor: pointer; transition: 0.2s; text-align: center; color: white; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; height: 40px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+                .shift-badge:hover { transform: translateY(-2px); filter: brightness(1.2); }
+                .color-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; transition: 0.2s; display: inline-block; margin: 3px; }
+                .color-dot:hover { transform: scale(1.3); z-index: 10; border-color: white; }
+                .rainbow-btn { background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; text-shadow: 0 0 2px black; box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const geminiColors = [
+            '#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d', '#fdba74', '#f97316', '#c2410c', '#7c2d12', 
+            '#fcd34d', '#f59e0b', '#b45309', '#78350f', '#86efac', '#22c55e', '#15803d', '#14532d', 
+            '#93c5fd', '#3b82f6', '#1d4ed8', '#1e3a8a', '#d8b4fe', '#a855f7', '#7e22ce', '#581c87', 
+            '#cbd5e1', '#64748b', '#334155', '#0f172a'
+        ];
+
+        // ====================================================================
+        // 🚀 SHIFTMASTER V6.5 - GECE SAATİ TAMİRLİ & ADIM ADIM SİHİRBAZ
+        // ====================================================================
+
+// 🔥 1. GLOBAL RENK, SAAT VE GECE MOTORU (ÇİFT ZIRHLI KAYIT) 🔥
+    window.applyGlobalShiftLogic = function(shiftText, color, hours = 8, nightHours = 0) {
+        if(!shiftText) return;
+        
+        let safeText = shiftText.toLocaleUpperCase('tr-TR').replace(/\./g, ':');
+        let firebaseKey = safeText.replace(/[\#\$\/\[\]]/g, '-');
+
+        if(typeof saveHistory === "function") saveHistory();
+
+        // 1. ZIRH: Kuralı hem RAM'e hem de yerel hafızaya (Çökmelere karşı) kaydet
+        shiftRules[safeText] = { w: parseFloat(hours), n: parseFloat(nightHours), color: color };
+        localStorage.setItem("sm_yedek_kurallar", JSON.stringify(shiftRules));
+
+        // 2. ZIRH: Firebase'e gönder, eğer anlık kopma olursa çökmesin
+        db.ref("vardiya_kurallari/" + firebaseKey).set(shiftRules[safeText]).catch(err => {
+            console.warn("Firebase anlık yanıt vermedi, yerel hafıza devrede:", err.message);
+        });
+
+        document.querySelectorAll('.shift-cell').forEach(td => {
+            let tdText = td.innerText.trim().toLocaleUpperCase('tr-TR').replace(/\./g, ':');
+            if(tdText === safeText) {
+                td.innerText = safeText;
+                td.style.background = color;
+            }
+        });
+
+        document.querySelectorAll('.selected-cell').forEach(c => {
+            c.innerText = safeText;
+            c.style.background = color;
+        });
+
+      if(typeof updateAllStats === "function") updateAllStats();
+        
+        let m = document.getElementById("cyberContextMenu");
+        if(m) m.style.display = "none";
+    };
+
+        // ====================================================================
+        // 🔥 2. ADIM ADIM SİHİRBAZ (KAYIP KOD GERİ GELDİ) 🔥
+        // ====================================================================
+        window.newShiftData = { name: "", hours: 8, night: 0 };
+
+        window.startNewShiftWizard = function() {
+            document.getElementById("cyberContextMenu").style.display = "none";
+            
+            setTimeout(() => {
+                // ADIM 1: İSİM
+                let ad = prompt("1. ADIM: Vardiya Adı Nedir?\n(Örn: 08:00-20:00 veya GECE)");
+                if(!ad || ad.trim() === "") return;
+                
+                // ADIM 2: TOPLAM SAAT
+                let saatStr = prompt(`2. ADIM: '${ad}' vardiyası TOPLAM kaç saat sürüyor?\n(Puantaj için rakam girin, Örn: 12)`);
+                if(saatStr === null) return;
+                let saat = parseFloat(saatStr) || 8;
+                
+                // ADIM 2.5: GECE SAATİ
+                let geceStr = prompt(`3. ADIM: Bu ${saat} saatin kaç saati 'GECE' sayılacak?\n(Gece farkı hesaplanması için, Örn: 8 veya 0)`);
+                if(geceStr === null) return;
+                let gece = parseFloat(geceStr) || 0;
+                
+                // Verileri geçici belleğe al
+                window.newShiftData = { name: ad.trim(), hours: saat, night: gece };
+                
+                // ADIM 3: RENK PALETİNİ AÇ
+                let m = document.getElementById("cyberContextMenu");
+                renderCyberMenu('pickColorForNew');
+                m.style.display = "block";
+            }, 100);
+        };
+
+        window.finalizeNewShift = function(color) {
+            let safeText = window.newShiftData.name.toLocaleUpperCase('tr-TR').replace(/\./g, ':');
+            if(!vardiyaSiralamasi.includes(safeText)) vardiyaSiralamasi.push(safeText);
+            
+            // Tüm bilgileri (Gece dahil) sisteme çakıyoruz ve hafızaya alıyoruz
+            applyGlobalShiftLogic(safeText, color, window.newShiftData.hours, window.newShiftData.night);
+            renderCyberMenu('main');
+        };
+
+        // 🔥 3. RENK ÇEMBERİNDEN GLOBAL DEĞİŞİM (MEVCUT GECE SAATİNİ KORUR) 🔥
+        window.applyCustomColor = function(color) {
+            if (!activeCell) return;
+            let shiftText = activeCell.innerText.trim().toLocaleUpperCase('tr-TR').replace(/\./g, ':');
+            if (shiftText) {
+                let rule = shiftRules[shiftText] || { w: 8, n: 0 };
+                applyGlobalShiftLogic(shiftText, color, rule.w, rule.n);
+            } else {
+                document.querySelectorAll('.selected-cell.shift-cell').forEach(cell => { cell.style.background = color; });
+                if(typeof updateAllStats === "function") updateAllStats();
+                document.getElementById("cyberContextMenu").style.display = "none";
+            }
+        };
+
+        // ... (Diğer renderCyberMenu, contextmenu listener ve sürükle-bırak fonksiyonları aynı kalsın)
+
+        // 🔥 4. MENÜ ÇİZİM MOTORU 🔥
+        window.renderCyberMenu = function(viewState) {
+            const m = document.getElementById("cyberContextMenu");
+            if (!m) return;
+
+            if(viewState === 'main') {
+                Object.keys(shiftRules).forEach(k => { if(!vardiyaSiralamasi.includes(k)) vardiyaSiralamasi.push(k); });
+                vardiyaSiralamasi = vardiyaSiralamasi.filter(k => shiftRules[k]);
+
+              let vardiyaHtml = vardiyaSiralamasi.map(sName => {
+                    let r = shiftRules[sName];
+                    return `
+                    <div draggable="true" ondragstart="dragStart(event, '${sName}')" ondragover="dragOver(event)" ondrop="drop(event, '${sName}')" style="position:relative; width:100%;">
+                        <div class="shift-badge" onclick="applyGlobalShiftLogic('${sName}','${r.color}', ${r.w}, ${r.n || 0})" style="background:${r.color};">${sName}</div>
+                        <div onclick="deleteCustomShift(event, '${sName}')" style="position:absolute; top:-5px; right:-5px; background:#ef4444; color:white; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; font-weight:bold; z-index:10; border:2px solid #0f172a; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">X</div>
+                    </div>`;
+                }).join('');
+
+                let colorGridHtml = geminiColors.map(c => `<div class="color-dot" style="background:${c};" onclick="applyCustomColor('${c}')"></div>`).join('');
+                colorGridHtml += `<div class="color-dot rainbow-btn" onclick="document.getElementById('nativeColorCatcher').click()">+<input type="color" id="nativeColorCatcher" style="position:absolute; opacity:0; width:1px; height:1px;" onchange="applyCustomColor(this.value)"></div>`;
+
+                m.innerHTML = `
+                    <div class="cyber-panel">
+                        <div class="cyber-scanline"></div>
+                        <div style="color:#38bdf8; font-size:13px; margin-bottom:12px; border-bottom:1px dashed rgba(56,189,248,0.4); padding-bottom:8px; text-align:center; font-weight:900; letter-spacing:1px;">[ KONTROL TERMİNALİ ]</div>
+                        <div class="cyber-scroll" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; max-height:220px; overflow-y:auto; padding-right:5px; margin-bottom:12px;">
+                            ${vardiyaHtml}
+                        </div>
+                        
+                        <button class="cyber-btn" style="border:1px dashed #10b981; color:#10b981; margin-bottom:12px;" onclick="startNewShiftWizard()">➕ YENİ VARDİYA EKLE</button>
+                        
+                        <div style="font-size:11px; color:#f59e0b; margin-bottom:8px; font-weight:bold; text-align:center;">HÜCREYİ BOYALARLA RENKLENDİR:</div>
+                        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2px; margin-bottom:12px;">${colorGridHtml}</div>
+                        
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:12px;">
+                            <button class="cyber-btn cyber-btn-purple" onclick="splitRowFromHere()">✂️ BÖL</button>
+                            <button class="cyber-btn" style="color:#be185d; border-color:#be185d;" onclick="addGhostPinToCell()">📍 İĞNE</button>
+                            <button class="cyber-btn" style="color:#64748b; border-color:#64748b;" onclick="removeGhostPinFromCell()">🧷 SİL</button>
+                            <button class="cyber-btn cyber-btn-red" onclick="setShift('', 'transparent')">🗑️ TEMİZLE</button>
+                        </div>
+                    </div>
+                `;
+            } else if (viewState === 'pickColorForNew') {
+                // Sihirbazın 3. Adımı: Özel Renk Ekranı
+                let colorGridHtml = geminiColors.map(c => `<div class="color-dot" style="background:${c}; width:35px; height:35px;" onclick="finalizeNewShift('${c}')"></div>`).join('');
+                colorGridHtml += `<div class="color-dot rainbow-btn" style="width:35px; height:35px;" onclick="document.getElementById('wizardColorCatcher').click()">+<input type="color" id="wizardColorCatcher" style="position:absolute; opacity:0; width:1px; height:1px;" onchange="finalizeNewShift(this.value)"></div>`;
+                
+                m.innerHTML = `
+                    <div class="cyber-panel" style="text-align:center;">
+                        <div class="cyber-scanline"></div>
+                        <div style="color:#10b981; font-size:16px; margin-bottom:15px; font-weight:900;">[ 3. ADIM: RENK SEÇİMİ ]</div>
+                        <div style="color:#fff; font-size:13px; margin-bottom:20px;">Lütfen <b>'${window.newShiftData.name}'</b> vardiyası için bir renk seçin:</div>
+                        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:20px;">
+                            ${colorGridHtml}
+                        </div>
+                        <button class="cyber-btn cyber-btn-red" onclick="renderCyberMenu('main')">İPTAL ET</button>
+                    </div>
+                `;
+            }
+        };
+
+// 🔥 5. SAĞ TIK DİNLEYİCİSİ (ÇOKLU SEÇİM KORUMASI EKLENDİ) 🔥
+        document.addEventListener('contextmenu', function(e) {
+            let shiftCell = e.target.closest('.shift-cell');
+            if (shiftCell) {
+                e.preventDefault();
+                
+                // EĞER SAĞ TIKLANAN HÜCRE ZATEN SEÇİLİYSE (MAVİYSE), SEÇİMİ ASLA BOZMA!
+                if (!shiftCell.classList.contains('selected-cell')) {
+                    document.querySelectorAll('.selected-cell').forEach(el => el.classList.remove('selected-cell'));
+                    shiftCell.classList.add('selected-cell');
+                }
+                
+                activeCell = shiftCell; window.targetCell = shiftCell;
+
+                let m = document.getElementById("cyberContextMenu");
+                if(!m) { m = document.createElement('div'); m.id = "cyberContextMenu"; m.className = "cyber-menu-container"; document.body.appendChild(m); }
+
+                renderCyberMenu('main');
+                m.style.display = "block";
+                
+                let x = e.clientX, y = e.clientY;
+                if (x + 330 > window.innerWidth) x = window.innerWidth - 340;
+                if (y + 550 > window.innerHeight) y = window.innerHeight - 560;
+                m.style.left = x + "px"; m.style.top = y + "px";
+            }
+        });
+        // 🔥 6. DİĞER ARAÇLAR VE SÜRÜKLE BIRAK 🔥
+        let draggedShift = null;
+        window.dragStart = function(e, shiftName) { draggedShift = shiftName; }
+        window.dragOver = function(e) { e.preventDefault(); }
+        window.drop = function(e, targetShiftName) {
+            e.preventDefault();
+            if(draggedShift && draggedShift !== targetShiftName) {
+                let draggedIdx = vardiyaSiralamasi.indexOf(draggedShift); let targetIdx = vardiyaSiralamasi.indexOf(targetShiftName);
+                vardiyaSiralamasi.splice(draggedIdx, 1); vardiyaSiralamasi.splice(targetIdx, 0, draggedShift);
+                renderCyberMenu('main');
+            }
+        }
+
+        window.deleteCustomShift = function(e, shiftName) {
+            e.stopPropagation();
+            if(confirm(`'${shiftName}' silinecek. Onaylıyor musun?`)) {
+                delete shiftRules[shiftName]; 
+                try { db.ref("vardiya_kurallari/" + shiftName.replace(/\./g, ':')).remove(); } catch(err){}
+                vardiyaSiralamasi = vardiyaSiralamasi.filter(k => k !== shiftName); renderCyberMenu('main');
+            }
+        }
+
+        window.setShift = function(v, c) {
+            const selectedCells = document.querySelectorAll('.selected-cell.shift-cell');
+            if(selectedCells.length > 0) {
+                if(typeof saveHistory === "function") saveHistory();
+                selectedCells.forEach(cell => { cell.innerText = v; cell.style.background = v === "" ? "transparent" : c; });
+                if(typeof updateAllStats === "function") updateAllStats();
+            }
+            document.getElementById("cyberContextMenu").style.display = "none";
+        }
+
+        window.splitRowFromHere = function() {
+            if(!activeCell) return; if(typeof saveHistory === "function") saveHistory();
+            const tr = activeCell.closest('tr'); const tbody = tr.parentElement;
+            const shiftCells = Array.from(tr.querySelectorAll('.shift-cell')); const cellIndex = shiftCells.indexOf(activeCell);
+            if(cellIndex === -1) return;
+            const newTr = tr.cloneNode(true); const oldCells = tr.querySelectorAll('.shift-cell');
+            for(let i = cellIndex; i < oldCells.length; i++) { oldCells[i].innerText = ""; oldCells[i].style.background = "transparent"; oldCells[i].removeAttribute('data-pin'); oldCells[i].classList.remove('selected-cell'); }
+            const newCells = newTr.querySelectorAll('.shift-cell');
+            for(let i = 0; i < cellIndex; i++) { newCells[i].innerText = ""; newCells[i].style.background = "transparent"; newCells[i].removeAttribute('data-pin'); newCells[i].classList.remove('selected-cell'); }
+            const nameDiv = newTr.querySelector('.editable-name'); if(nameDiv) { nameDiv.innerText = "YENİ İSİM..."; nameDiv.removeAttribute('data-tc'); }
+            tbody.insertBefore(newTr, tr.nextSibling); newTr.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            newTr.style.backgroundColor = "rgba(56, 189, 248, 0.4)"; setTimeout(() => { newTr.style.backgroundColor = "transparent"; }, 1000);
+            document.getElementById("cyberContextMenu").style.display = "none"; if(typeof updateAllStats === "function") updateAllStats(); 
+        }
+
+        window.addGhostPinToCell = function() { 
+            let notText = prompt("Notunuzu yazın:", ""); 
+            if(notText) { document.querySelectorAll('.selected-cell').forEach(c => c.setAttribute("data-pin", notText)); if(typeof saveHistory === "function") saveHistory(); } 
+            document.getElementById("cyberContextMenu").style.display = "none"; 
+        }
+
+        window.removeGhostPinFromCell = function() { 
+            document.querySelectorAll('.selected-cell').forEach(c => c.removeAttribute("data-pin")); if(typeof saveHistory === "function") saveHistory();
+            document.getElementById("cyberContextMenu").style.display = "none"; 
+        }
+
+        window.addEventListener('click', (e) => {
+            const m = document.getElementById("cyberContextMenu");
+            if(m && !e.target.closest('#cyberContextMenu') && !e.target.closest('.shift-cell') && !e.target.closest('.rainbow-btn')) {
+                m.style.display = "none";
+            }
+        });
+        function openDateEditModal() { let tableWrapper = activeHeaderCell.closest('.table-wrapper'); let currentStart = tableWrapper.getAttribute("data-startdt"); document.getElementById("dateEditInput").value = new Date(currentStart).toISOString().split('T')[0]; openModal('dateEditModal'); document.getElementById("headerContextMenu").style.display = "none"; }
+        function confirmDateEdit() { let tableWrapper = activeHeaderCell.closest('.table-wrapper'); let nDate = new Date(document.getElementById("dateEditInput").value); if(!isNaN(nDate.getTime())) { tableWrapper.setAttribute("data-startdt", nDate.toISOString()); rebuildTableColumns(tableWrapper, 'edit'); showToast("Tarihler hesaplandı! 🗓️"); logKaydet("Bir tablonun başlangıç tarihini güncelledi."); } closeModal('dateEditModal'); }
+        function editColumnDate() { openDateEditModal(); }
+
+        function rebuildTableColumns(wrapper, action, indexDirection) {
+            let table = wrapper.querySelector('table');
+            if(action === 'add' && indexDirection === 'left' && activeColIndex === 2) { let oldStart = new Date(wrapper.getAttribute("data-startdt")); oldStart.setDate(oldStart.getDate() - 1); wrapper.setAttribute("data-startdt", oldStart.toISOString()); }
+            table.querySelectorAll('.week-summary-cell').forEach(el => el.remove());
+            let theadTr = table.querySelector('thead tr'); let tbodyTrs = table.querySelectorAll('tbody tr');
+            let dataHeaders = Array.from(theadTr.querySelectorAll('th:not(.no-export):not(.total-summary-cell):not(:nth-child(2))'));
+            wrapper.setAttribute("data-colcount", dataHeaders.length); let startDt = new Date(wrapper.getAttribute("data-startdt")); let offset = 0; 
+            dataHeaders.forEach((th, i) => {
+                let d = new Date(startDt); d.setDate(startDt.getDate() + i); let fullD = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                th.innerHTML = `${d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})}<br><small>${d.toLocaleDateString('tr-TR',{weekday:'short'})}</small>`; th.setAttribute("data-date", fullD);
+                if(d.getDay() === 0) { 
+                    let hsTh = document.createElement('th'); hsTh.className = "week-summary-cell"; hsTh.innerHTML = "H.S"; theadTr.insertBefore(hsTh, th.nextSibling);
+                    tbodyTrs.forEach(tr => { let hsTd = document.createElement('th'); hsTd.className = "week-summary-cell"; let currentTd = tr.children[2 + i + offset]; if(currentTd) tr.insertBefore(hsTd, currentTd.nextSibling); });
+                    offset++; 
+                }
+            });
+        }
+
+        function deleteColumn() { if(activeColIndex > -1) { if(!confirm("Sütun silinsin mi? (Haftalık hesaplamalar kaydırılacak!)")) return; saveHistory(); let table = activeHeaderCell.closest('table'); table.querySelectorAll('tr').forEach(tr => { if(tr.children[activeColIndex]) tr.children[activeColIndex].remove(); }); rebuildTableColumns(table.closest('.table-wrapper'), 'delete'); updateAllStats(); logKaydet("Tablodan bir sütunu (günü) sildi."); } document.getElementById("headerContextMenu").style.display = "none"; showToast("Sütun Silindi 🗑️"); }
+        function insertColumn(direction) {
+            if(activeColIndex > -1) {
+                saveHistory(); let table = activeHeaderCell.closest('table');
+                table.querySelectorAll('tr').forEach((tr, index) => {
+                    let cellToClone = tr.children[activeColIndex]; let newCell = cellToClone.cloneNode(true);
+                    if(index > 0) { newCell.innerText = ""; newCell.style.background = "transparent"; newCell.classList.remove('selected-cell'); newCell.removeAttribute('data-pin'); } 
+                    if(direction === 'left') tr.insertBefore(newCell, cellToClone); else tr.insertBefore(newCell, cellToClone.nextSibling);
+                });
+                rebuildTableColumns(table.closest('.table-wrapper'), 'add', direction); updateAllStats(); logKaydet("Tabloya yeni bir sütun (gün) ekledi.");
+            }
+            document.getElementById("headerContextMenu").style.display = "none"; showToast("Sütun Eklendi ➕");
+        }
+
+// ====================================================================
+// 🔥 SİHİRBAZ POPUP AÇMA MOTORU 🔥
+// ====================================================================
+window.openAiWizardForSpecificTable = function(btn) {
+    const wrapper = btn.closest('.table-wrapper'); 
+    const colCountVal = wrapper.getAttribute("data-colcount") || 30;
+    const startDateVal = wrapper.getAttribute("data-startdt"); 
+    
+    let names = [];
+    wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => {
+        let nameDiv = tr.querySelector(".editable-name");
+        if(nameDiv) names.push(nameDiv.innerText.trim());
+    });
+    
+    if(names.length === 0) return alert("⚠️ Tabloda personel bulunamadı!");
+    
+    // Hedef tabloyu hafızaya alıyoruz
+    window.targetTableWrapperForAI = wrapper; 
+    
+    const namesParam = encodeURIComponent(names.join(','));
+    const startParam = startDateVal ? `&start=${startDateVal}` : '';
+    const wizardUrl = `isci_sihirbaz.html?mode=fill_table&names=${namesParam}${startParam}&days=${colCountVal}`;
+    
+    const frame = document.getElementById('aiWizardFrame');
+    const popup = document.getElementById('aiWizardPopup');
+    
+    if(frame && popup) {
+        frame.src = wizardUrl;
+        popup.style.display = 'flex';
+        setTimeout(() => popup.classList.add('show'), 10);
+    } else {
+        window.open(wizardUrl, 'Sihirbaz', 'width=1000,height=800');
+    }
+};
+
+// ====================================================================
+// 🔥 TELSİZ ALICISI: SİHİRBAZDAN GELEN MESAJI YAKALA VE TABLOYU DOLDUR 🔥
+// ====================================================================
+window.addEventListener('message', function(event) {
+    // Sadece Sihirbazdan gelen 'AI_WIZARD_DATA' şifreli mesajları kabul et
+    if (event.data && event.data.type === 'AI_WIZARD_DATA') {
+        const aiRows = event.data.aiRows;
+        
+        // 1. ZORLA KAPATMA İŞLEMİ (Popup'ı havada yok et)
+        const popup = document.getElementById('aiWizardPopup');
+        if(popup) {
+            popup.classList.remove('show');
+            setTimeout(() => popup.style.display = 'none', 300);
+        }
+        if(typeof closeAiWizardPopup === "function") closeAiWizardPopup();
+
+        // 2. TABLOYU IŞIK HIZINDA DOLDURMA İŞLEMİ
+        if (window.targetTableWrapperForAI) {
+            const wrapper = window.targetTableWrapperForAI;
+            const tbodyRows = wrapper.querySelectorAll('tbody tr:not(.summary-row)');
+            
+            tbodyRows.forEach(tr => {
+                let nameDiv = tr.querySelector('.editable-name');
+                if(!nameDiv) return;
+                
+                // İsimleri eşleştirerek kaymayı sıfıra indiriyoruz
+                let rowName = nameDiv.innerText.trim();
+                let rowData = aiRows.find(r => r.name === rowName);
+                
+                if(rowData) {
+                    const cells = tr.querySelectorAll('.shift-cell');
+                    cells.forEach((cell, cellIndex) => {
+                        const shiftObj = rowData.shifts[cellIndex];
+                        if(shiftObj) {
+                            cell.innerText = shiftObj.t || "";
+                            cell.style.backgroundColor = shiftObj.b || "transparent";
+                            cell.setAttribute('data-shift', shiftObj.t || "");
+                            cell.setAttribute('data-bg', shiftObj.b || "transparent");
+                        }
+                    });
+                }
+            });
+
+            // 3. İstatistikleri güncelle ve başarı mesajı ver
+            if(typeof updateAllStats === "function") updateAllStats();
+            if(typeof checkUnsaved === "function") checkUnsaved();
+            if(typeof showToast === "function") showToast("🪄 Yapay Zeka tabloyu başarıyla doldurdu!");
+        }
+    }
+});
+
+// 3. SİHİRBAZDAN GELEN VERİYİ TABLOYA YAZMA MOTORU
+window.receiveDataFromAiWizard = function(aiRows, startDateStr, colCount) {
+    // Sihirbaz penceresini (küçük popup) kapat
+    if(typeof closeAiWizardPopup === "function") closeAiWizardPopup();
+
+    let sDate = new Date(startDateStr);
+    
+    // Veriyi ekrandaki mevcut tabloya işle
+    if (window.targetTableWrapperForAI) {
+        const wrapper = window.targetTableWrapperForAI;
+        const tbodyRows = wrapper.querySelectorAll('tbody tr:not(.summary-row)');
+        
+        tbodyRows.forEach((tr, rowIndex) => {
+            const rowData = aiRows[rowIndex];
+            if(rowData) {
+                const cells = tr.querySelectorAll('.shift-cell');
+                cells.forEach((cell, cellIndex) => {
+                    const shiftObj = rowData.shifts[cellIndex];
+                    if(shiftObj) {
+                        cell.innerText = shiftObj.t || shiftObj.text;
+                        cell.style.backgroundColor = shiftObj.b || shiftObj.bg;
+                        cell.setAttribute('data-shift', cell.innerText);
+                    }
+                });
+            }
+        });
+
+        // İstatistikleri güncelle ve kaydet uyarısını aç
+        if(typeof updateAllStats === "function") updateAllStats();
+        if(typeof checkUnsaved === "function") checkUnsaved();
+        if(typeof showToast === "function") showToast("Sihirbaz tabloyu başarıyla doldurdu! 🪄");
+    } else {
+        // Havuzdan yeni tablo yapılıyorsa sıfırdan oluştur
+        generateTable(true, aiRows, "🤖 A.I. Yeni Tablo", sDate, parseInt(colCount));
+    }
+};
+
+// 3. YAPAY ZEKA HESAPLAMA MERKEZİ (Sihirbazın Beyni)
+function runAiEngine(names, colCount, startDateStr, wrapper, tName) {
+    // A. Şık Bir Yükleniyor Ekranı Çıkar
+    const loadingId = "aiLoadingModal";
+    if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+    document.body.insertAdjacentHTML('beforeend', `
+        <div id="${loadingId}" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(2,6,23,0.95); z-index:999999; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+            <div style="font-size:70px; animation: pulseGlow 1s infinite; filter:drop-shadow(0 0 20px rgba(56,189,248,0.8));">🤖</div>
+            <h3 style="color:#38bdf8; margin-top:25px; font-weight:900; text-transform:uppercase; letter-spacing:3px;">Yapay Zeka Planlıyor...</h3>
+            <p style="color:#cbd5e1; font-size:14px; margin-top:10px; max-width:350px; text-align:center; line-height:1.6;">Adalet sistemi, dinlenme süreleri ve vardiya kuralları hesaplanıyor. Lütfen bekleyin...</p>
+        </div>
+    `);
+
+    // B. Veriyi Üret (1.5 Saniye Simülasyon)
+    setTimeout(() => {
+        // shiftRules global değişkeninden kuralları ve renkleri çek
+        const shiftTypes = Object.keys(shiftRules || {"08:00-16:00":{color:"rgba(56,189,248,0.2)"}, "16:00-00:00":{color:"rgba(245,158,11,0.2)"}, "OFF":{color:"rgba(244,63,94,0.2)"}});
+        const offTypes = shiftTypes.filter(s => s.toUpperCase().includes('OFF') || s.toUpperCase() === 'İ' || s.toUpperCase() === 'R');
+        const defaultOff = offTypes.length > 0 ? offTypes[0] : "OFF";
+
+        let aiRows = names.map(isim => {
+            let shifts = [];
+            let offCount = 0;
+            let lastShift = "";
+            for(let i=0; i<colCount; i++) {
+                let s = shiftTypes[Math.floor(Math.random() * shiftTypes.length)];
+                
+                // Basit Mantık: Gece sonrası off, çok mesaiye off
+                if(lastShift.includes("00:00-08:00") || lastShift.includes("24:00")) s = defaultOff; 
+                else if (offCount < (colCount/6) && Math.random() > 0.8) s = defaultOff;
+                
+                if(s === defaultOff) offCount++;
+                lastShift = s;
+                
+                shifts.push({ t: s, b: (shiftRules[s] ? shiftRules[s].color : "rgba(255,255,255,0.1)") });
+            }
+            return { name: isim, shifts: shifts };
+        });
+
+        // Yüklemeyi kapat ve Karar Panelini aç!
+        document.getElementById(loadingId).remove();
+        showAiChoiceModal(aiRows, startDateStr, colCount, wrapper, tName);
+
+    }, 1500);
+}
+
+// 4. KARAR (MODAL) EKRANI (Ümit Abi'nin Siber Menüsü)
+function showAiChoiceModal(aiRows, startDateStr, colCount, wrapper, tName) {
+    const modalId = "aiChoiceModal";
+    if(document.getElementById(modalId)) document.getElementById(modalId).remove();
+
+    const modalHtml = `
+    <div id="${modalId}" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(2,6,23,0.9); z-index:999999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+        <div style="background:var(--bg-light, #0f172a); border:1px solid #38bdf8; border-radius:16px; padding:30px; max-width:450px; width:90%; text-align:center; box-shadow:0 10px 40px rgba(56,189,248,0.3);">
+            <div style="font-size:45px; margin-bottom:15px; filter:drop-shadow(0 0 10px rgba(56,189,248,0.5));">🤖</div>
+            <h3 style="color:white; margin:0 0 10px 0; font-weight:900; letter-spacing:1px;">A.I. Tablosu Hazır!</h3>
+            <p style="color:#94a3b8; font-size:13px; margin-bottom:25px; line-height:1.6;">Yapay zeka planlamayı bitirdi. Bu veriyi ekrandaki tabloya mı aktaralım, yoksa ana sayfaya yepyeni bir arşiv dosyası olarak mı gönderelim?</p>
+            
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <button id="btnAiEkranaYaz" style="background:linear-gradient(135deg, #3b82f6, #2563eb); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; box-shadow:0 4px 15px rgba(59,130,246,0.4); transition:0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                    ✏️ Ekranda Göster & Tabloya Yaz
+                </button>
+                <button id="btnAiArsiveGonder" style="background:linear-gradient(135deg, #10b981, #059669); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; box-shadow:0 4px 15px rgba(16,185,129,0.4); transition:0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                    🚀 Yeni Arşiv Olarak Ana Sayfaya Gönder
+                </button>
+                <button id="btnAiIptal" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px; margin-top:5px; transition:0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                    İptal Et
+                </button>
+            </div>
+        </div>
+    </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // SEÇENEK 1: Ekrana Yaz
+    document.getElementById('btnAiEkranaYaz').onclick = () => {
+        document.getElementById(modalId).remove();
+        
+        if (wrapper) {
+            const tbodyRows = wrapper.querySelectorAll('tbody tr:not(.summary-row)');
+            tbodyRows.forEach((tr, rowIndex) => {
+                const rowData = aiRows[rowIndex];
+                if(rowData) {
+                    const cells = tr.querySelectorAll('.shift-cell');
+                    cells.forEach((cell, cellIndex) => {
+                        const shiftObj = rowData.shifts[cellIndex];
+                        if(shiftObj) {
+                            cell.innerText = shiftObj.t;
+                            cell.style.backgroundColor = shiftObj.b;
+                            cell.setAttribute('data-shift', shiftObj.t);
+                            cell.setAttribute('data-bg', shiftObj.b);
+                        }
+                    });
+                }
+            });
+            if(typeof updateAllStats === "function") updateAllStats();
+            if(typeof saveHistory === "function") saveHistory();
+            if(typeof checkUnsaved === "function") checkUnsaved();
+            if(typeof showToast === "function") showToast("Tablo başarıyla dolduruldu! ✍️");
+        } else {
+            generateTable(true, aiRows, tName, new Date(startDateStr), parseInt(colCount));
+            if(typeof showToast === "function") showToast("Yeni A.I. Tablosu eklendi! ✍️");
+        }
+    };
+
+    // SEÇENEK 2: Arşive Fırlat
+    document.getElementById('btnAiArsiveGonder').onclick = () => {
+        document.getElementById('btnAiArsiveGonder').innerText = "⏳ Gönderiliyor...";
+        document.getElementById('btnAiArsiveGonder').style.pointerEvents = "none";
+
+        let exportData = aiRows.map(r => { 
+            return { name: r.name, shifts: r.shifts.map(s => ({ text: s.t !== undefined ? s.t : s.text, bg: s.b !== undefined ? s.b : s.bg, pin: "" })) }; 
+        });
+
+        let newTable = { tableName: tName, startDate: new Date(startDateStr).toISOString(), colCount: parseInt(colCount), data: exportData, notes: "A.I. tarafından oluşturuldu.", isPublished: false };
+        let klasorAdi = "🤖 AI Arşivi: " + new Date().toLocaleDateString('tr-TR') + " (" + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) + ")";
+        let yeniKlasorObj = { name: klasorAdi, tenant: localStorage.getItem('sm_current_tenant') || 'genel', tables: [newTable] };
+
+        db.ref("arsivlenmis_shiftler").push(yeniKlasorObj).then(() => {
+            document.getElementById(modalId).remove();
+            if(typeof showToast === "function") showToast("Tablo ana sayfadaki Siber Arşive fırlatıldı! 🚀");
+            setTimeout(() => { 
+                if(window.akilliGeriDon) window.akilliGeriDon(); else window.location.href = 'shiftmaster.html?direktGecis=1';
+            }, 2000);
+        });
+    };
+
+    // SEÇENEK 3: İptal
+    document.getElementById('btnAiIptal').onclick = () => document.getElementById(modalId).remove();
+}
+
+// 🔥 EXCEL'E KUSURSUZ (RENKLİ VE DÜZENLİ) KOPYALAMA MOTORU 🔥
+        window.copyTableToExcel = function(btn) {
+            const wrapper = btn.closest('.table-wrapper'); 
+            const table = wrapper.querySelector('table');
+            
+            let html = "<table border='1' style='border-collapse:collapse; font-family:Calibri, sans-serif; text-align:center;'>";
+            let tsv = "";
+            
+            table.querySelectorAll('tr').forEach(tr => {
+                html += "<tr>"; 
+                let rowData = [];
+                
+                tr.querySelectorAll('th, td').forEach(cell => {
+                    // no-export sınıfı olanları (Örn: en baştaki checkbox sütununu) atla
+                    if(!cell.classList.contains('no-export')) { 
+                        let text = "";
+                        
+                        // 1. GÜNLERİ VE TARİHLERİ BİRLİKTE AL
+                        if (cell.hasAttribute('data-date')) {
+                            let smallTag = cell.querySelector('small');
+                            let dayName = smallTag ? smallTag.innerText : "";
+                            text = cell.getAttribute('data-date') + (dayName ? " " + dayName : "");
+                        } 
+                        // 2. HAFTALIK VE GENEL TOPLAMLARI DÜZENLE (3311 yerine 33 / 11)
+                        else if (cell.classList.contains("week-summary-cell") || cell.classList.contains("total-summary-cell")) {
+                            if (cell.tagName === "TH") {
+                                text = cell.innerText.replace(/\n/g, " ").trim();
+                            } else {
+                                let divs = cell.querySelectorAll('.stat-sub');
+                                if(divs.length === 2) {
+                                    // Araya net bir ayırıcı koyuyoruz
+                                    text = divs[0].innerText.trim() + " / " + divs[1].innerText.trim();
+                                } else {
+                                    text = cell.innerText.replace(/\n/g, " ").trim();
+                                }
+                            }
+                        } 
+                        // 3. DİĞER NORMAL HÜCRELER
+                        else {
+                            text = cell.innerText.replace(/\n/g, " ").trim(); 
+                        }
+                        
+                        // RENKLERİ EXCEL'E UYGUN HALE GETİR
+                        let bgColor = cell.style.background || cell.style.backgroundColor || (cell.tagName === 'TH' ? '#1e293b' : '#ffffff');
+                        let color = cell.style.color || (cell.tagName === 'TH' ? '#38bdf8' : '#000000');
+                        // Saydam arka planları Excel'de beyaz yap ki çirkin durmasın
+                        if (bgColor === 'transparent' || bgColor === '' || bgColor === 'rgba(0, 0, 0, 0)') bgColor = '#ffffff';
+                        
+                        html += `<td style="background-color: ${bgColor}; color: ${color}; border: 1px solid #d1d5db; padding: 5px; font-weight: ${cell.tagName === 'TH' ? 'bold' : 'normal'}; white-space: nowrap;">${text}</td>`; 
+                        rowData.push(text); 
+                    }
+                }); 
+                
+                html += "</tr>"; 
+                tsv += rowData.join("\t") + "\n";
+            }); 
+            
+            html += "</table>";
+            
+            // Tarayıcı engelini aşan kopyalama hilesi
+            const temp = document.createElement('div'); 
+            temp.innerHTML = html; 
+            temp.style.position = 'absolute'; 
+            temp.style.left = '-9999px'; 
+            temp.style.top = (window.scrollY || window.pageYOffset) + 'px';
+            document.body.appendChild(temp);
+            
+            const range = document.createRange(); 
+            range.selectNodeContents(temp); 
+            const sel = window.getSelection(); 
+            sel.removeAllRanges(); 
+            sel.addRange(range);
+            
+            try { 
+                if (navigator.clipboard && window.ClipboardItem) {
+                    const blobHtml = new Blob([html], { type: "text/html" });
+                    const blobText = new Blob([tsv], { type: "text/plain" });
+                    const data = [new ClipboardItem({ "text/html": blobHtml, "text/plain": blobText })];
+                    navigator.clipboard.write(data).then(() => {
+                        if(typeof showToast === "function") showToast("Renkleriyle Birlikte Excel'e Kopyalandı! 📋");
+                    }).catch(() => fallbackCopy());
+                } else {
+                    fallbackCopy();
+                }
+            } catch (err) {
+                fallbackCopy();
+            }
+
+            function fallbackCopy() {
+                try {
+                    document.execCommand('copy'); 
+                    if(typeof showToast === "function") showToast("Excel'e Kopyalandı! Şimdi Excel'e (CTRL+V) Yapıştırın. 📋"); 
+                } catch(e) {
+                    alert("Kopyalama başarısız oldu. Tarayıcınız izin vermiyor olabilir.");
+                }
+            }
+            
+            setTimeout(() => {
+                sel.removeAllRanges(); 
+                document.body.removeChild(temp);
+            }, 100);
+        };
+
+        function saveMasterArchive() {
+            const tables = document.querySelectorAll('.table-wrapper'); if(tables.length === 0) return alert("Kaydedilecek tablo yok!");
+            const tablesData = [];
+            tables.forEach((wrapper) => {
+                let tName = wrapper.querySelector('.table-title').innerText.replace("📌", "").trim();
+                const rowsData = []; wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => { let nameEl = tr.querySelector(".editable-name"); if (nameEl) rowsData.push({ name: nameEl.innerText.trim(), tc: nameEl.getAttribute("data-tc") || "", shifts: Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText, bg: td.style.background, pin: td.getAttribute("data-pin") || "" })) }); });
+                let notesVal = wrapper.querySelector(".table-notes") ? wrapper.querySelector(".table-notes").value : ""; 
+                let pubBtn = wrapper.querySelector("button[onclick='yayinlaTablo(this)']"); let isPub = pubBtn ? (pubBtn.getAttribute("data-ispub") === "true") : false;
+                tablesData.push({ tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal, isPublished: isPub });
+            });
+            const saveData = { name: (currentMasterArchiveId ? document.getElementById("masterArchiveTitle").innerText.replace("📁 DOSYA:", "").trim() : "Arşiv " + new Date().toLocaleDateString('tr-TR')), date: new Date().toLocaleString('tr-TR'), tables: tablesData }; 
+            if(currentMasterArchiveId) { db.ref("arsivlenmis_shiftler").child(currentMasterArchiveId).update(saveData).then(() => { showToast("Arşiv Güncellendi! ✅"); logKaydet("Sistemdeki klasörü güncelledi."); }); } 
+            else { const ref = db.ref("arsivlenmis_shiftler").push(); ref.set(saveData).then(() => { currentMasterArchiveId = ref.key; showToast("Yeni Arşiv Kaydedildi! ✅"); logKaydet("Sisteme yeni bir klasör kaydetti."); }); }
+        }
+
+        function sendTableToDepot(btn) {
+            const wrapper = btn.closest('.table-wrapper'); let tName = wrapper.querySelector('.table-title').innerText.replace("📌", "").trim();
+            const rowsData = []; wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => { let nameEl = tr.querySelector(".editable-name"); if (nameEl) rowsData.push({ name: nameEl.innerText.trim(), tc: nameEl.getAttribute("data-tc") || "", shifts: Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText, bg: td.style.background, pin: td.getAttribute("data-pin") || "" })) }); });
+            let notesVal = wrapper.querySelector(".table-notes") ? wrapper.querySelector(".table-notes").value : ""; 
+            let tableData = { tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal };
+            let depoData = { name: tName + " (Tekil Arşiv)", date: new Date().toLocaleString('tr-TR'), tables: [tableData] };
+            db.ref("kalici_depo").push(depoData).then(() => { showToast("Tablo Depoya Gönderildi! 📦"); logKaydet(`"${tName}" adlı tabloyu Kalıcı Depo'ya gönderdi.`); });
+        }
+
+        window.yayinlaTablo = function(btn) {
+            const wrapper = btn.closest('.table-wrapper'); let tName = wrapper.querySelector('.table-title').innerText.replace("📌", "").trim(); let safeTabloAdi = tName.replace(/[\.\#\$\/\[\]]/g, '_');
+            let isPub = btn.getAttribute("data-ispub") === "true";
+            if (isPub) {
+                if(!confirm(`"${tName}" tablosunu personelin ekranından (Yayından) kaldırmak istiyor musunuz?`)) return;
+                db.ref("yayinlanmis_tablolar/" + safeTabloAdi).remove().then(() => { btn.setAttribute("data-ispub", "false"); wrapper.setAttribute("data-published", "false"); btn.innerHTML = "🔒 YAYINLA"; btn.style.cssText = "background:rgba(255,255,255,0.05); color:#94a3b8; border:1px dashed #475569;"; showToast("Tablo yayından kaldırıldı! 🔒"); logKaydet(`"${tName}" tablosunu yayından kaldırdı.`); saveMasterArchive(); }).catch(err => alert("Firebase İzin Hatası: " + err.message));
+            } else {
+                if(!confirm(`"${tName}" tablosunu Personel Portalı'nda yayınlamak istiyor musunuz?`)) return;
+                const rowsData = []; wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(tr => { let nameEl = tr.querySelector(".editable-name"); if (nameEl) rowsData.push({ name: nameEl.innerText.trim(), tc: nameEl.getAttribute("data-tc") || "", shifts: Array.from(tr.querySelectorAll(".shift-cell")).map(td => ({ text: td.innerText, bg: td.style.background, pin: td.getAttribute("data-pin") || "" })) }); });
+                let notesVal = wrapper.querySelector(".table-notes") ? wrapper.querySelector(".table-notes").value : ""; 
+                let tableData = { tableName: tName, startDate: wrapper.getAttribute("data-startdt"), colCount: wrapper.getAttribute("data-colcount"), data: rowsData, notes: notesVal, publishDate: new Date().toLocaleString('tr-TR') };
+                db.ref("yayinlanmis_tablolar/" + safeTabloAdi).set(tableData).then(() => { btn.setAttribute("data-ispub", "true"); wrapper.setAttribute("data-published", "true"); btn.innerHTML = "📢 YAYINDA"; btn.style.cssText = "background:var(--success) !important; color:white !important; border-color:white !important; box-shadow:0 0 15px rgba(16,185,129,0.5) !important;"; showToast("Tablo Yayında! 📢"); logKaydet(`"${tName}" tablosunu Personel Portalında yayınladı.`); saveMasterArchive(); }).catch(err => alert("Firebase Hatası: Lütfen Kurallar (Rules) kısmına 'yayinlanmis_tablolar' iznini ekleyin!\nDetay: " + err.message));
+            }
+        };
+
+        // 🔥 FİREBASE KUTU-LİSTE (OBJECT-ARRAY) HATASI ÇÖZÜMÜ 🔥
+        function loadActiveArchive() {
+            if(currentMasterArchiveId && currentMasterArchiveId !== "null") {
+                db.ref("arsivlenmis_shiftler/" + currentMasterArchiveId).once("value").then(snap => {
+                    if(snap.exists()) {
+                        let data = snap.val(); 
+                        document.getElementById("masterArchiveTitle").innerText = "📁 DOSYA: " + (data.name || "İsimsiz");
+                        
+                        if(data.tables) { 
+                            let tArray = Array.isArray(data.tables) ? data.tables : Object.values(data.tables || {});
+                            tArray.forEach(t => {
+                                let sDate = t.startDate ? new Date(t.startDate) : new Date();
+                                if(isNaN(sDate.getTime())) sDate = new Date();
+                                let isPub = t.isPublished === true || t.isPublished === "true";
+                                generateTable(true, t.data || [], t.tableName || "Tablo", sDate, parseInt(t.colCount) || 30, null, t.notes || "", isPub); 
+                            }); 
+                        } else if(data.data) {
+                            let sDate = data.startDate ? new Date(data.startDate) : new Date();
+                            if(isNaN(sDate.getTime())) sDate = new Date();
+                            let isPub = data.isPublished === true || data.isPublished === "true";
+                            generateTable(true, data.data || [], data.name || "Tablo", sDate, parseInt(data.colCount) || 30, null, data.notes || "", isPub);
+                        }
+                    } else {
+                        db.ref("kalici_depo/" + currentMasterArchiveId).once("value").then(snapDepo => {
+                            if(snapDepo.exists()) {
+                                let data = snapDepo.val(); 
+                                document.getElementById("masterArchiveTitle").innerText = "📦 DEPO: " + (data.name || "İsimsiz");
+                                
+                                if(data.tables) { 
+                                    let tArray = Array.isArray(data.tables) ? data.tables : Object.values(data.tables || {});
+                                    tArray.forEach(t => {
+                                        let sDate = t.startDate ? new Date(t.startDate) : new Date();
+                                        if(isNaN(sDate.getTime())) sDate = new Date();
+                                        let isPub = t.isPublished === true || t.isPublished === "true";
+                                        generateTable(true, t.data || [], t.tableName || "Tablo", sDate, parseInt(t.colCount) || 30, null, t.notes || "", isPub); 
+                                    }); 
+                                } else if(data.data) {
+                                    let sDate = data.startDate ? new Date(data.startDate) : new Date();
+                                    if(isNaN(sDate.getTime())) sDate = new Date();
+                                    let isPub = data.isPublished === true || data.isPublished === "true";
+                                    generateTable(true, data.data || [], data.name || "Tablo", sDate, parseInt(data.colCount) || 30, null, data.notes || "", isPub);
+                                }
+                            }
+                        });
+                    }
+                }).catch(err => console.log("Tablo yükleme hatası:", err));
+            } else {
+                openNewTableModal(null);
+            }
+        }
+            
+        let statsTimer = null;
+      // 🔥 3. TÜM İSTATİSTİKLERİ HESAPLA (HARF VE RAKAM AYIRICI + PERFORMANS MOTORU) 🔥
+        function updateAllStats() {
+            if(statsTimer) clearTimeout(statsTimer);
+            statsTimer = setTimeout(() => {
+                document.querySelectorAll(".table-wrapper").forEach(wrapper => {
+                    wrapper.querySelectorAll("tbody tr:not(.summary-row)").forEach(row => {
+                        const cells = Array.from(row.querySelectorAll("td, th"));
+                        let aW=0, aN=0, hW=0, hN=0;
+
+                        cells.forEach(td => {
+                            if(td.classList.contains("shift-cell")) {
+                                const val = td.innerText.trim().toLocaleUpperCase('tr-TR').replace(/\./g, ':');
+                                let rule = null;
+
+                                if(val) {
+                                    // 1. ADIM: Tam eşleşme (Sadece harf olan HT, İİ, R vb. VEYA direkt 08:00-20:00 yazılanlar)
+                                    if(shiftRules[val]) {
+                                        rule = shiftRules[val];
+                                    } 
+                                    // 2. ADIM: Tam eşleşme yoksa ve içinde RAKAM varsa (Örn: 08:00-20:00 ACİL)
+                                    else if (/\d/.test(val)) {
+                                        // Sadece rakam, tire ve iki nokta olan kısmı cımbızla çek (Harfleri at)
+                                        let cikarilanSaat = val.match(/[\d:-]+/); 
+                                        
+                                        if (cikarilanSaat && shiftRules[cikarilanSaat[0]]) {
+                                            rule = shiftRules[cikarilanSaat[0]];
+                                        } else {
+                                            // Cımbızla çekilen saat bulunamazsa, rakamlı kuralları cümlenin içinde ara
+                                            let saatKurallari = Object.keys(shiftRules).filter(k => /\d/.test(k)).sort((a,b) => b.length - a.length);
+                                            for(let kural of saatKurallari) {
+                                                if(val.includes(kural)) {
+                                                    rule = shiftRules[kural];
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if(rule) {
+                                    // Rengi bas ve saatleri topla (Hücredeki "ACİL" yazısı silinmez, görünmeye devam eder)
+                                    td.style.background = rule.color;
+                                    hW += parseFloat(rule.w) || 0;
+                                    hN += parseFloat(rule.n) || 0;
+                                    aW += parseFloat(rule.w) || 0;
+                                    aN += parseFloat(rule.n) || 0;
+                                } else if(!val) {
+                                    // Eğer kural uymadıysa veya hücre boşsa şeffaf yap
+                                    td.style.background = "transparent";
+                                }
+                            }
+                            if(td.classList.contains("week-summary-cell")) {
+                                td.innerHTML = `<div class="stat-sub">${hW}</div><div class="stat-sub" style="color:var(--warning)">${hN}</div>`;
+                                hW=0; hN=0;
+                            }
+                            if(td.classList.contains("total-summary-cell")) {
+                                td.innerHTML = `<div class="stat-sub">${aW}</div><div class="stat-sub" style="color:var(--warning)">${aN}</div>`;
+                            }
+                        });
+                    });
+                });
+            }, 400); // Sistemin kasmasını engelleyen 400 milisaniye gecikme
+        }
+
+        function closeTable(btn) { if(confirm("Tabloyu silmek istiyor musunuz?")) { btn.closest('.table-wrapper').remove(); logKaydet("Ekranda açık olan bir tabloyu sildi."); } }
+        function renameLocalTable(span) { let pName = prompt("Tablo adı:", span.innerText.replace("📌", "").trim()); if(pName) span.innerHTML = `📌 ${pName.trim()}`; }
+
+        function loadStaffPool() { 
+            db.ref("personel_havuzu").on("value", snap => { 
+                havuzIsimleri = []; 
+                if(snap.val()) {
+                    let uniqueNames = new Map();
+                    Object.entries(snap.val()).forEach(([id, rawVal]) => { 
+                        let rawName = typeof rawVal === 'string' ? rawVal : (rawVal.name || rawVal.isim || "");
+                        if(rawName) {
+                            let cleanName = rawName.includes("-") ? rawName.split("-")[1].trim() : rawName.trim();
+                            cleanName = cleanName.toLocaleUpperCase('tr-TR');
+                            if(!uniqueNames.has(cleanName)) uniqueNames.set(cleanName, {id: id, name: cleanName, tc: ""});
+                        }
+                    }); 
+                    havuzIsimleri = Array.from(uniqueNames.values());
+                    havuzIsimleri.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+                }
+            }); 
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            db.ref("vardiya_kurallari").once('value', snap => { if(snap.exists()) { shiftRules = snap.val(); vardiyaSiralamasi = Object.keys(shiftRules); } });
+            db.ref("personel_cinsiyetleri").on('value', snap => { cinsiyetKayitlari = snap.val() || {}; loadStaffPool(); });
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'new') {
+                let tempSelected = localStorage.getItem("sm_temp_selected");
+                if (tempSelected) {
+                    let names = JSON.parse(tempSelected);
+                    localStorage.removeItem("sm_temp_selected");
+                    let sel = names.map(n => ({name: n, tc: ""}));
+                    let d = new Date();
+                    let dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                    let userDate = prompt("Tablo Başlangıç Tarihi (Yıl-Ay-Gün):", dateStr);
+                    if(userDate) {
+                        let days = prompt("Kaç Günlük?", "30");
+                        generateTable(false, sel, "Yeni Tablo", new Date(userDate), parseInt(days||30));
+                    }
+                } else {
+                    openNewTableModal(null);
+                }
+            } else {
+                loadActiveArchive();
+            }
+        });
+        
+        let currentTableZoom = 1;
+        document.addEventListener('wheel', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault(); 
+                if (e.deltaY < 0) { currentTableZoom += 0.05; } else { currentTableZoom -= 0.05; }
+                if (currentTableZoom < 0.3) currentTableZoom = 0.3;
+                if (currentTableZoom > 1.5) currentTableZoom = 1.5;
+                document.querySelectorAll('.scroll-area table').forEach(tbl => { tbl.style.zoom = currentTableZoom; });
+                let toast = document.getElementById("toast");
+                if(toast) { toast.innerText = `🔍 Zoom: %${Math.round(currentTableZoom * 100)}`; toast.className = "show"; setTimeout(() => toast.className = "", 1000); }
+            }
+        }, { passive: false });
+
+// ====================================================================
+// 🚀 ÜMİT ABİ ÖZEL: SİHİRBAZ BAĞLANTI MOTORU (SADE VE GÜÇLÜ)
+// ====================================================================
+window.receiveDataFromAiWizard = function(aiRows, startDateStr, colCount) {
+    // 1. Sihirbaz penceresini (küçük popup) kapat
+    if(typeof closeAiWizardPopup === "function") closeAiWizardPopup();
+
+    let sDate = new Date(startDateStr);
+    
+    // 2. Veriyi ekrandaki mevcut tabloya (wrapper) işle
+    if (window.targetTableWrapperForAI) {
+        const wrapper = window.targetTableWrapperForAI;
+        const tbodyRows = wrapper.querySelectorAll('tbody tr:not(.summary-row)');
+        
+        tbodyRows.forEach((tr, rowIndex) => {
+            const rowData = aiRows[rowIndex];
+            if(rowData) {
+                const cells = tr.querySelectorAll('.shift-cell');
+                cells.forEach((cell, cellIndex) => {
+                    const shiftObj = rowData.shifts[cellIndex];
+                    if(shiftObj) {
+                        cell.innerText = shiftObj.t || shiftObj.text;
+                        cell.style.backgroundColor = shiftObj.b || shiftObj.bg;
+                        cell.setAttribute('data-shift', cell.innerText);
+                    }
+                });
+            }
+        });
+
+        // İstatistikleri güncelle ve kaydet uyarısını aç
+        if(typeof updateAllStats === "function") updateAllStats();
+        if(typeof checkUnsaved === "function") checkUnsaved();
+        if(typeof showToast === "function") showToast("Sihirbaz tabloyu başarıyla doldurdu! 🪄");
+    } else {
+        // Eğer havuzdan yeni tablo yapılıyorsa sıfırdan oluştur
+        generateTable(true, aiRows, "🤖 A.I. Yeni Tablo", sDate, parseInt(colCount));
+    }
+};
+
+// ====================================================================
+// 🔥 AKILLI HAFIZA - YÜZEN BUTONLAR VE ZAMANDA GERİ SARMA 🔥
+// ====================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    const splash = document.getElementById('splash');
+    if(splash) splash.style.display = 'none';
+
+    if(!document.getElementById('floatingActionBar')) {
+        const floatBar = document.createElement('div');
+        floatBar.id = 'floatingActionBar';
+        floatBar.style.cssText = 'position: fixed; bottom: 30px; right: 30px; z-index: 999999; display: flex; gap: 15px;';
+
+        floatBar.innerHTML = `
+            <button onclick="akilliGeriDon()" class="btn" style="background: rgba(15,23,42,0.9); border: 2px solid #38bdf8; color: #38bdf8; padding: 15px 25px; border-radius: 50px; font-weight: 900; box-shadow: 0 10px 25px rgba(0,0,0,0.8); backdrop-filter: blur(5px); cursor: pointer;">🔙 GERİ DÖN</button>
+            <button onclick="saveMasterArchive()" class="btn" style="background: linear-gradient(135deg, #10b981, #047857); border: 2px solid #34d399; color: white; padding: 15px 30px; border-radius: 50px; font-weight: 900; box-shadow: 0 10px 25px rgba(0,0,0,0.8); animation: pulseGlow 2s infinite; cursor: pointer;">💾 KAYDET</button>
+        `;
+        document.body.appendChild(floatBar);
+    }
+});
+
+// HAFIZA MOTORU: Lobiye VIP şifreyle (direktGecis=1) gönderir.
+window.akilliGeriDon = function() {
+    const rol = localStorage.getItem('sm_role');
+    window.location.href = (rol === 'superadmin') ? 'patron.html' : 'shiftmaster.html?direktGecis=1';
+};
+
+// ====================================================================
+// 🔥 KLAVYE RADARI: ELLE YAZILANLARI ANINDA HESAPLA VE HAFIZAYA AL 🔥
+// ====================================================================
+
+// Bir hücreye tıklayıp yazmaya başladığın an tabloyu hafızaya alır (Ctrl+Z için)
+document.addEventListener('focusin', function(e) {
+    if(e.target.classList.contains('shift-cell')) {
+        if(typeof saveHistory === "function") saveHistory();
+    }
+});
+
+// Sen klavyeden harfe/rakama bastığın an puantaj motorunu anında çalıştırır
+document.addEventListener('input', function(e) {
+    if(e.target.classList.contains('shift-cell')) {
+        if(typeof updateAllStats === "function") updateAllStats();
+    }
+});
+
+</script>
+</body>
+</html>
+=======
     <div id="toast">İşlem Başarılı!</div>
 
     <script>
@@ -231,3 +1803,4 @@ function _0x3c13(_0x5912d0,_0x4df2e9){_0x5912d0=_0x5912d0-0x8a;const _0x116edd=_
  </script>
 </body>
 </html>
+>>>>>>> a9b4b1def209679b9bb302ab834c85786ba773c6
