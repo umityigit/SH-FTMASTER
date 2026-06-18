@@ -4,6 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ShiftMaster | Kurumsal Vardiya Portalı</title>
+    <script>
+        // ==========================================
+        // 🛡️ DEVASA F12, CTRL+U VE SAĞ TIK KİLİDİ 
+        // ==========================================
+        (function() {
+            window.addEventListener('keydown', function(e) {
+                // F12, Ctrl+Shift+I, Ctrl+U ve Ctrl+S tuşlarını en üst düzeyde engeller
+                if (e.key === 'F12' || 
+                   (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) || 
+                   (e.ctrlKey && (e.key === 'U' || e.key === 'u')) || 
+                   (e.ctrlKey && (e.key === 'S' || e.key === 's'))) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, { capture: true });
+
+            // Sadece hücrelere ve isimlere sağ tıklamaya izin ver, geri kalan her yeri kilitle
+            window.addEventListener('contextmenu', function(e) {
+                if (e.target.closest('.shift-cell') || e.target.closest('th') || e.target.closest('.editable-name') || e.target.closest('.veri-tablosu') || e.target.closest('.table-wrapper')) {
+                    return; 
+                }
+                e.preventDefault();
+            }, { capture: true });
+        })();
+    </script>
     <link rel="icon" href="LOGO.SVG" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
