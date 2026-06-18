@@ -294,18 +294,7 @@
             });
         }
 
-        // --- GERÇEK SİSTEME GİRİŞ FONKSİYONU ---
-        async function sihirliGirisYap() {
-            const kod = document.getElementById("loginKurumKod").value.trim().toLowerCase();
-            const sifre = document.getElementById("loginSifre").value.trim();
-
-            if ((kod === "patron" && sifre === "86488648") || kod === "patron-86488648") {
-                localStorage.setItem('sm_current_tenant', 'addh'); localStorage.setItem('sm_active_user', 'SYSTEM FOUNDER');
-                localStorage.setItem('sm_current_kurum_adi', 'MASTER KONTROL PANELİ'); localStorage.setItem('sm_role', 'superadmin');
-                window.location.href = 'shiftmaster.html'; return; 
-            }
-            if(!kod || !sifre) return alert("Lütfen boş alan bırakmayın!");
-            let kriptoluSifre = await sifreKriptola(sifre);
+       
 
             rtdb.ref('kurum_kayitlari/' + kod).once('value').then(snap => {
                 if(!snap.exists()) return alert("Geçersiz Kurum Kodu!");
